@@ -1,0 +1,57 @@
+plugins {
+    id("com.github.johnrengelman.shadow") version "7.1.2"
+    id("io.micronaut.application") version "3.7.7"
+}
+
+version = "0.1"
+group = "mz.org.fgh"
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    annotationProcessor("org.projectlombok:lombok")
+    annotationProcessor("io.micronaut:micronaut-http-validation")
+    annotationProcessor("io.micronaut.openapi:micronaut-openapi")
+    implementation("io.micronaut:micronaut-http-client")
+    implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("jakarta.annotation:jakarta.annotation-api")
+    runtimeOnly("ch.qos.logback:logback-classic")
+    implementation("io.micronaut:micronaut-validation")
+    implementation("io.micronaut.data:micronaut-data-hibernate-jpa")
+    implementation("io.micronaut.sql:micronaut-jdbc-hikari")
+    implementation("io.micronaut.liquibase:micronaut-liquibase")
+    runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
+    implementation 'io.swagger.core.v3:swagger-annotations'
+    compileOnly("org.projectlombok:lombok")
+
+
+
+
+
+
+
+}
+
+
+application {
+    mainClass.set("mz.org.fgh.Application")
+}
+java {
+    sourceCompatibility = JavaVersion.toVersion("11")
+    targetCompatibility = JavaVersion.toVersion("11")
+}
+
+graalvmNative.toolchainDetection = false
+micronaut {
+    runtime("netty")
+    testRuntime("junit5")
+    processing {
+        incremental(true)
+        annotations("mz.org.fgh.*")
+    }
+}
+
+
+
