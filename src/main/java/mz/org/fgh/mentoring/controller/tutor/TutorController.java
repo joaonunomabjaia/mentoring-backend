@@ -9,28 +9,26 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Post;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.error.MentoringAPIError;
-import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
+import mz.org.fgh.mentoring.service.tutor.TutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller("/tutors")
 public class TutorController {
 
-    TutorRepository tutorRepository;
+    TutorService tutorService;
 
-    public TutorController(TutorRepository tutorRepository) {
-        this.tutorRepository = tutorRepository;
+    public TutorController(TutorService tutorService) {
+        this.tutorService = tutorService;
     }
 
     public static final Logger LOG = LoggerFactory.getLogger(TutorController.class);
 
     @Get
     public List<Tutor> getAll() {
-        return tutorRepository.findAll();
+        return tutorService.findAll();
     }
 
     @Post(
