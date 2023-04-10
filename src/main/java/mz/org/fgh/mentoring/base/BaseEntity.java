@@ -1,4 +1,4 @@
-package mz.org.fgh.mentoring.util;
+package mz.org.fgh.mentoring.base;
 
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 
