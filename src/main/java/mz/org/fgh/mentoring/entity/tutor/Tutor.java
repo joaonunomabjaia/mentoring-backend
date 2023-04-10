@@ -1,24 +1,21 @@
 package mz.org.fgh.mentoring.entity.tutor;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import mz.org.fgh.mentoring.util.BaseEntity;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
+import mz.org.fgh.mentoring.base.BaseEntity;
 
 import javax.persistence.*;
 import java.util.Objects;
 
+@Schema(name = "Tutor", description = "A professional that provide mentoring to the tutored individuals")
 @Entity(name = "tutor")
 @Table(name = "tutors")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString
 public class Tutor extends BaseEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column( name = "ID",nullable = false)
-    private Long id;
 
     @Column(name = "CODE", nullable = false, length = 50)
     private String code;
@@ -39,16 +36,4 @@ public class Tutor extends BaseEntity {
     @Column(name = "IS_USER", nullable = false)
     private Boolean isUser = Boolean.FALSE;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        Tutor tutor = (Tutor) o;
-        return id.equals(tutor.id);
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }
