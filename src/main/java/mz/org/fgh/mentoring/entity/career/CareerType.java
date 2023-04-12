@@ -1,5 +1,4 @@
-package mz.org.fgh.mentoring.entity.question;
-
+package mz.org.fgh.mentoring.entity.career;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,12 +12,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name = "question_type")
+@Table(name = "CARRER_TYPE")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionType  extends BaseEntity {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class CareerType extends BaseEntity {
 
     @NotEmpty
     @Column(name = "description", nullable = false)
@@ -27,5 +26,4 @@ public class QuestionType  extends BaseEntity {
     @NotEmpty
     @Column(name = "code", nullable = false)
     private  String code;
-
 }

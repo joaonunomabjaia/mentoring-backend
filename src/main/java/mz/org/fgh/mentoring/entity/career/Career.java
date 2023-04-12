@@ -14,7 +14,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity(name = "career")
-@Table(name = "careers")
+@Table(name = "CARRERS")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -22,8 +22,8 @@ import java.util.Set;
 public class Career extends BaseEntity {
 
     @NotNull
-    @Column(name = "CARRER_TYPE", nullable = false, length = 50  )
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "CARRER_TYPE")
     private CareerType careerType;
 
     @NotEmpty

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
-@Singleton
+
 public class Utilities {
 
     public static boolean stringHasValue(String string){

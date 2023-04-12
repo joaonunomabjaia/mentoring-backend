@@ -1,10 +1,20 @@
 package mz.org.fgh.mentoring.base;
 
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Calendar;
+
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
+@AllArgsConstructor
+@NoArgsConstructor
 @MappedSuperclass
 public abstract class BaseEntity implements RestAPIResponse, Serializable {
     @Id
@@ -44,4 +54,12 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
     )
     @Temporal(TemporalType.TIMESTAMP)
     private Calendar updatedAt;
+
+    @Column(
+            name = "LIFE_CYCLE_STATUS",
+            nullable = false,
+            length = 100
+    )
+    @Enumerated(EnumType.STRING)
+    private LifeCycleStatus lifeCycleStatus;
 }
