@@ -4,6 +4,7 @@ import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgramaticArea;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -34,7 +35,7 @@ public class Form extends BaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
-    private ProgrammaticArea programmaticArea;
+    private ProgramaticArea programmaticArea;
 
     @NotNull
     @Column(name = "FORM_TYPE", nullable = false, length = 50)
