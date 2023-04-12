@@ -1,32 +1,29 @@
 package mz.org.fgh.mentoring.entity.career;
 
-public enum CareerType {
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import mz.org.fgh.mentoring.base.BaseEntity;
 
-    HEALTH_TECHNICAL_ASSISTANT,
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
-    ADMINISTRATIVE_ASSISTANT,
+@Entity
+@Table(name = "CARRER_TYPE")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class CareerType extends BaseEntity {
 
-    HEALTH_TECHNICIAN_AUXILIARY,
+    @NotEmpty
+    @Column(name = "description", nullable = false)
+    private String description;
 
-    HEALTH_SPECIALIST,
-
-    MEDICAL_PUBLIC_HEALTH,
-
-    MEDICAL_GENERALIST,
-
-    MEDICAL_HOSPITAL,
-
-    HEALTH_TECHNICIAN,
-
-    HEALTH_TECHNICIAL_SPECIALIST,
-
-    HEALTH_ASSOCIATE_DEGREE_N1,
-
-    HEALTH_ASSOCIATE_DEGREE_N2,
-
-    SERVICE_AGENT,
-
-    CLINICAL_AREA,
-
-    MONITORING_AND_EVALUATION;
+    @NotEmpty
+    @Column(name = "code", nullable = false)
+    private  String code;
 }

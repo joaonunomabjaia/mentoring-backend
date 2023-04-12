@@ -4,7 +4,6 @@ import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.programmaticArea.ProgrammaticArea;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -12,7 +11,7 @@ import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity(name = "form")
-@Table(name = "form")
+@Table(name = "forms")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
