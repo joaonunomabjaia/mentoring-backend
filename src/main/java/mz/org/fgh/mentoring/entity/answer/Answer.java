@@ -20,7 +20,7 @@ import javax.validation.constraints.NotNull;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Answer extends BaseEntity {
+public abstract class Answer extends BaseEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
@@ -40,5 +40,8 @@ public class Answer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "INDICATOR_ID")
     private Indicator indicator;
+
+    public abstract void setValue(String value);
+    public abstract String getValue();
 
 }
