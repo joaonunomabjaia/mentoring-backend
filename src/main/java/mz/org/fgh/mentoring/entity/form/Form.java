@@ -37,9 +37,8 @@ public class Form extends BaseEntity {
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
     private ProgramaticArea programmaticArea;
 
-    @NotNull
-    @Column(name = "FORM_TYPE", nullable = false, length = 50)
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FORM_TYPE", nullable = false)
     private FormType formType;
 
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "form")
