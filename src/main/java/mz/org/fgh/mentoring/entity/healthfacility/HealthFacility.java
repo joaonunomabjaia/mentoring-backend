@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.location.District;
-import mz.org.fgh.mentoring.entity.location.TutorLocation;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
