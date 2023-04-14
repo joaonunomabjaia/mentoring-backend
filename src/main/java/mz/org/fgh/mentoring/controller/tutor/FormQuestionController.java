@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 
@@ -50,6 +51,11 @@ public class FormQuestionController extends BaseController {
     public List<FormQuestion> getAllV1() {
         LOG.debug("Searching formQuestions version 1");
         return formQuestionService.findAll();
+    }
+
+    @Get
+    public Optional<FormQuestion> findById(@Body Long id){
+        return formQuestionService.findById(id);
     }
 
     @Post(

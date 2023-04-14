@@ -19,6 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Optional;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 
@@ -46,6 +47,11 @@ public class CareerController extends BaseController {
     public List<Career> getAllV1() {
         LOG.debug("Searching careers version 1");
         return careerService.findAll();
+    }
+
+    @Get
+    public Optional<Career> findById(@Body Long id){
+        return careerService.findById(id);
     }
 
     @Post(
