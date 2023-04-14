@@ -7,4 +7,101 @@
          http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
     <changeSet id="01" author="username">
     </changeSet>
+    <changeSet  author="voloide"  id="renameTable-tutors">
+        <renameTable  newTableName="tutors"
+                      oldTableName="TUTORS"/>
+    </changeSet>
+    <changeSet id="createTable-question_type" author="voloide">
+        <createTable tableName="question_type">
+            <column name="id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="createTable-form_type" author="voloide">
+        <createTable tableName="form_type">
+            <column name="id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="createTable-career_type" author="voloide">
+        <createTable tableName="career_type">
+            <column name="id" type="long">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

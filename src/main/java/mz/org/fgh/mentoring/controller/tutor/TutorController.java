@@ -28,7 +28,7 @@ import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 public class TutorController extends BaseController {
 
     @Inject
-    TutorService tutorService;
+    private TutorService tutorService;
 
     public TutorController() {
     }

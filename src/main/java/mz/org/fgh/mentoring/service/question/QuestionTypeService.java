@@ -3,7 +3,7 @@ package mz.org.fgh.mentoring.service.question;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.question.QuestionType;
-import mz.org.fgh.mentoring.repository.tutor.QuestionTypeRepository;
+import mz.org.fgh.mentoring.repository.question.QuestionTypeRepository;
 
 @Singleton
 public class QuestionTypeService {

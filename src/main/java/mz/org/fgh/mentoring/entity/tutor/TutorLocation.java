@@ -1,4 +1,4 @@
-package mz.org.fgh.mentoring.entity.location;
+package mz.org.fgh.mentoring.entity.tutor;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

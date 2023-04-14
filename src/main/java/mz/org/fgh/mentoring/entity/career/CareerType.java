@@ -12,7 +12,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
 @Entity
-@Table(name = "CARRER_TYPE")
+@Table(name = "CAREER_TYPE")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor

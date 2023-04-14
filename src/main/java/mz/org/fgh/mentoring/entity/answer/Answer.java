@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.indicator.Indicator;
-import mz.org.fgh.mentoring.entity.mentorship.MentorShip;
 import mz.org.fgh.mentoring.entity.question.Question;
 
 import javax.persistence.*;
