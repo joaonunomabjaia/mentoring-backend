@@ -9,7 +9,7 @@ import java.util.List;
 @Singleton
 public class TutorService {
 
-    TutorRepository tutorRepository;
+    private final TutorRepository tutorRepository;
 
     public TutorService(TutorRepository tutorRepository) {
         this.tutorRepository = tutorRepository;

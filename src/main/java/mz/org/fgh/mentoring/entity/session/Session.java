@@ -1,11 +1,9 @@
 package mz.org.fgh.mentoring.entity.session;
 
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -18,6 +16,7 @@ import java.util.List;
 @Entity
 @Table(name = "sessions")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
