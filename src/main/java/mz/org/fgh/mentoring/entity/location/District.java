@@ -1,19 +1,18 @@
 package mz.org.fgh.mentoring.entity.location;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.Objects;
 
 @Entity
 @Table(name = "districts")
-@Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@Getter
+@Setter
 @AllArgsConstructor
 @NoArgsConstructor
 public class District extends BaseEntity {
@@ -26,4 +25,17 @@ public class District extends BaseEntity {
     @NotEmpty
     @Column(name = "DISTRICT", nullable = false, length = 50)
     private String district;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
+        District district = (District) o;
+        return getId() != null && Objects.equals(getId(), district.getId());
+    }
+
+    @Override
+    public int hashCode() {
+        return getClass().hashCode();
+    }
 }
