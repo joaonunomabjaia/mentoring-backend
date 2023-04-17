@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.indicator.Indicator;
+import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.Question;
 
 import javax.persistence.*;
@@ -28,7 +29,7 @@ public abstract class Answer extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MENTORSHIP_ID")
-    private MentorShip mentorship;
+    private Mentorship mentorship;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)

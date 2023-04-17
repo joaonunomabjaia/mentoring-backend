@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.entity.session;
 
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;

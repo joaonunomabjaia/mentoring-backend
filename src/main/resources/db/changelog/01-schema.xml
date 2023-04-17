@@ -8,12 +8,92 @@
     <changeSet id="01" author="username">
     </changeSet>
     <changeSet  author="voloide"  id="renameTable-tutors">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="TUTORS"/>
+        </preConditions>
         <renameTable  newTableName="tutors"
                       oldTableName="TUTORS"/>
     </changeSet>
-    <changeSet id="createTable-question_type" author="voloide">
+    <changeSet  author="voloide"  id="renameTable-partners">
+        <renameTable  newTableName="partners"
+                      oldTableName="PARTNERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-answers">
+        <renameTable  newTableName="answers"
+                      oldTableName="ANSWERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-cabinets">
+        <renameTable  newTableName="cabinets"
+                      oldTableName="CABINETS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-carrers">
+        <renameTable  newTableName="carrers"
+                      oldTableName="CARRERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-forms">
+        <renameTable  newTableName="forms"
+                      oldTableName="FORMS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-forms_questions">
+        <renameTable  newTableName="forms_questions"
+                      oldTableName="FORMS_QUESTIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-health_facilities">
+        <renameTable  newTableName="health_facilities"
+                      oldTableName="HEALTH_FACILITIES"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-indicators">
+        <renameTable  newTableName="indicators"
+                      oldTableName="INDICATORS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-cabinets">
+        <renameTable  newTableName="cabinets"
+                      oldTableName="CABINETS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-mentorships">
+        <renameTable  newTableName="mentorships"
+                      oldTableName="MENTORSHIPS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-partners">
+        <renameTable  newTableName="partners"
+                      oldTableName="PARTNERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-programmatic_areas">
+        <renameTable  newTableName="programmatic_areas"
+                      oldTableName="PROGRAMMATIC_AREAS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-questions">
+        <renameTable  newTableName="questions"
+                      oldTableName="QUESTIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-question_categories">
+        <renameTable  newTableName="question_categories"
+                      oldTableName="QUESTION_CATEGORIES"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-sessions">
+        <renameTable  newTableName="sessions"
+                      oldTableName="SESSIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-tutor_locations">
+        <renameTable  newTableName="tutor_locations"
+                      oldTableName="TUTOR_LOCATIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-TUTOREDS">
+        <renameTable  newTableName="tutoreds"
+                      oldTableName="TUTOREDS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-tutor_programmatic_area">
+        <renameTable  newTableName="tutor_programmatic_area"
+                      oldTableName="TUTOR_PROGRAMMATIC_AREA"/>
+    </changeSet>
+    <changeSet id="Table_question_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question_type"/>
+            </not>
+        </preConditions>
         <createTable tableName="question_type">
-            <column name="id" type="long">
+            <column name="id" type="bigint(20)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="description" type="varchar(200)">
@@ -42,9 +122,14 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="createTable-form_type" author="voloide">
+    <changeSet id="Table_form_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="form_type"/>
+            </not>
+        </preConditions>
         <createTable tableName="form_type">
-            <column name="id" type="long">
+            <column name="id" type="bigint(20)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="description" type="varchar(200)">
@@ -73,9 +158,14 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="createTable-career_type" author="voloide">
+    <changeSet id="Table_career_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="career_type"/>
+            </not>
+        </preConditions>
         <createTable tableName="career_type">
-            <column name="id" type="long">
+            <column name="id" type="bigint(20)" autoIncrement="true">
                 <constraints primaryKey="true"/>
             </column>
             <column name="description" type="varchar(200)">
@@ -103,5 +193,52 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
+    </changeSet>
+    <changeSet id="data_insert_form_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="form_type"/>
+        </preConditions>
+        <sql>
+            INSERT INTO form_type
+            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, description, code)
+            VALUES  (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '77831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Mentoring Form', 'MENTORING'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '78831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Mentoring Custom Form', 'MENTORING_CUSTOM'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '79831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Indicator', 'INDICATORS');
+        </sql>
+    </changeSet>
+    <changeSet id="data_insert_career_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="career_type"/>
+        </preConditions>
+        <sql>
+            INSERT INTO career_type
+            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, description, code)
+            VALUES  (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '80831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technical assistant', 'HEALTH_TECHNICAL_ASSISTANT'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '81831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Administrative assistant', 'ADMINISTRATIVE_ASSISTANT'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '82831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technician auxiliary', 'HEALTH_TECHNICIAN_AUXILIARY'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '83831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health_specialist', 'HEALTH_SPECIALIST'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '84831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Medical public health', 'MEDICAL_PUBLIC_HEALTH'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '85831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Medical generalist', 'MEDICAL_GENERALIST'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '86831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Medical hospital', 'MEDICAL_HOSPITAL'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '87831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technician', 'HEALTH_TECHNICIAN'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '88831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technicial specialist', 'HEALTH_TECHNICIAL_SPECIALIST'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '89831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health associate degree_n1', 'HEALTH_ASSOCIATE_DEGREE_N1'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '90831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health associate degree_n2', 'HEALTH_ASSOCIATE_DEGREE_N2'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '91831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Clinical Area', 'CLINICAL_AREA'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '92831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Monitoring and Evaluation', 'MONITORING_AND_EVALUATION'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '93831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Service Agent', 'SERVICE_AGENT');
+        </sql>
+    </changeSet>
+    <changeSet id="data_insert_question_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="question_type"/>
+        </preConditions>
+        <sql>
+            INSERT INTO question_type
+            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, description, code)
+            VALUES  (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '94831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Text', 'TEXT'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '95831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Boolean', 'BOOLEAN'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '96831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Numeric', 'NUMERIC');
+        </sql>
     </changeSet>
 </databaseChangeLog>
