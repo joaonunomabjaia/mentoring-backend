@@ -1,9 +1,6 @@
 package mz.org.fgh.mentoring.entity.career;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 
 import javax.persistence.Column;
@@ -17,6 +14,7 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString
 public class CareerType extends BaseEntity {
 
     @NotEmpty

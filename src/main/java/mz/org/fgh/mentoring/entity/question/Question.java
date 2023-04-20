@@ -32,7 +32,7 @@ public class Question  extends BaseEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "QUESTION_TYPE")
+    @JoinColumn(name = "QUESTION_TYPE_ID")
     private QuestionType questionType;
 
     @ManyToOne(fetch = FetchType.LAZY)

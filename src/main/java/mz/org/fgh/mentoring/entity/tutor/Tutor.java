@@ -34,7 +34,7 @@ public class Tutor extends BaseEntity {
     private String surname;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CARRER_ID", nullable = false)
     private Career career;
 
