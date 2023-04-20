@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.career;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -22,14 +23,15 @@ import java.util.Set;
 public class Career extends BaseEntity {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "CARRER_TYPE")
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "CARRER_TYPE_ID")
     private CareerType careerType;
 
     @NotEmpty
     @Column(name = "POSITION", nullable = false)
     private String position;
 
+    @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "career" )
     private final Set<Tutor> tutors = new HashSet<>();
 }

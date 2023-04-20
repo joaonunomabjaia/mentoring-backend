@@ -82,11 +82,15 @@
         <renameTable  newTableName="tutoreds"
                       oldTableName="TUTOREDS"/>
     </changeSet>
+    <changeSet  author="voloide"  id="renameTable-DISTRICTS">
+        <renameTable  newTableName="districts"
+                      oldTableName="DISTRICTS"/>
+    </changeSet>
     <changeSet  author="voloide"  id="renameTable-tutor_programmatic_area">
         <renameTable  newTableName="tutor_programmatic_area"
                       oldTableName="TUTOR_PROGRAMMATIC_AREA"/>
     </changeSet>
-    <changeSet id="Table_question_type" author="voloide">
+    <changeSet id="table_question_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="question_type"/>
@@ -122,7 +126,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="Table_form_type" author="voloide">
+    <changeSet id="table_form_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="form_type"/>
@@ -158,7 +162,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="Table_career_type" author="voloide">
+    <changeSet id="table_career_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="career_type"/>
@@ -194,7 +198,7 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="data_insert_form_type" author="voloide">
+    <changeSet id="Data_insert_form_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <rowCount expectedRows="0" tableName="form_type"/>
         </preConditions>
@@ -206,7 +210,7 @@
                     (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '79831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Indicator', 'INDICATORS');
         </sql>
     </changeSet>
-    <changeSet id="data_insert_career_type" author="voloide">
+    <changeSet id="Data_insert_career_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <rowCount expectedRows="0" tableName="career_type"/>
         </preConditions>
@@ -229,7 +233,7 @@
                     (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '93831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Service Agent', 'SERVICE_AGENT');
         </sql>
     </changeSet>
-    <changeSet id="data_insert_question_type" author="voloide">
+    <changeSet id="Data_insert_question_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <rowCount expectedRows="0" tableName="question_type"/>
         </preConditions>
@@ -240,5 +244,92 @@
                     (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '95831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Boolean', 'BOOLEAN'),
                     (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '96831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Numeric', 'NUMERIC');
         </sql>
+    </changeSet>
+    <changeSet author="voloide" id="Forms-addColumn-form_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="forms" columnName="FORM_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="forms">
+            <column name="FORM_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="Question-addColumn-question_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="questions">
+            <column name="QUESTION_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="Career-addColumn-career_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="carrers" columnName="CARRER_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="carrers">
+            <column name="CARRER_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="update_form_type_id" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM forms
+                WHERE FORM_TYPE_ID is not null
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            update forms SET FORM_TYPE_ID = (SELECT ID FROM form_type  where code = forms.FORM_TYPE) where FORM_TYPE_ID is null;
+        </sql>
+    </changeSet>
+    <changeSet id="update_carrer_type_id" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM carrers
+                WHERE CARRER_TYPE_ID is not null
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            update carrers SET CARRER_TYPE_ID = (SELECT ID FROM career_type  where code = carrers.CARRER_TYPE) where CARRER_TYPE_ID is null;
+        </sql>
+    </changeSet>
+    <changeSet id="update_question_type_id" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM questions
+                WHERE QUESTION_TYPE_ID is not null
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            update questions SET QUESTION_TYPE_ID = (SELECT ID FROM question_type  where code = questions.QUESTION_TYPE) where QUESTION_TYPE_ID is null;
+        </sql>
+    </changeSet>
+    <changeSet id="createTable-question_type_question_fk" author="voloide">
+        <comment>
+            Create question type foreign key on question table
+        </comment>
+        <addForeignKeyConstraint constraintName="question_type_question_fk"
+                                 baseTableName="questions" baseColumnNames="question_type_id"
+                                 referencedTableName="question_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="createTable-form_type_form_fk" author="voloide">
+        <comment>
+            Create form type foreign key on form table
+        </comment>
+        <addForeignKeyConstraint constraintName="form_type_form_fk"
+                                 baseTableName="forms" baseColumnNames="form_type_id"
+                                 referencedTableName="form_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="createTable-carrer_type_form_fk" author="voloide">
+        <addForeignKeyConstraint constraintName="carrer_type_carrer_fk"
+                                 baseTableName="carrers" baseColumnNames="carrer_type_id"
+                                 referencedTableName="career_type" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
