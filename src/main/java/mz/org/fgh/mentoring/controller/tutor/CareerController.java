@@ -2,10 +2,7 @@ package mz.org.fgh.mentoring.controller.tutor;
 
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +10,7 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.entity.career.Career;
+import mz.org.fgh.mentoring.entity.career.CareerType;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.service.career.CareerService;
 import org.slf4j.Logger;
@@ -49,9 +47,11 @@ public class CareerController extends BaseController {
         return careerService.findAll();
     }
 
-    @Get
-    public Optional<Career> findById(@Body Long id){
-        return careerService.findById(id);
+    @Get("{/careerType}")
+    public List<Career> findByCarrerType(@Body CareerType careerType){
+
+        LOG.debug("Searching careers by careerType, {careerType}", careerType);
+        return this.careerService.findByCarrerType(careerType);
     }
 
     @Post(

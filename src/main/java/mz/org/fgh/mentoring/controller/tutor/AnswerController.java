@@ -2,10 +2,7 @@ package mz.org.fgh.mentoring.controller.tutor;
 
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -44,14 +41,15 @@ public class AnswerController {
     }
 
     @Get
-    public Optional<Answer> findById(@Body Long id){
-        return answerService.findById(id);
-    }
-
-    @Get
     public List<Answer> getAllV1(){
         LOG.debug("Searching Answer version 1");
         return answerService.findAll();
+    }
+
+    @Get("{/mentorshipUuid}")
+    public List<Answer> fetchAnswersByMentorshipUuid(@PathVariable("mentorshipUuid") String mentorshipUuid){
+        LOG.debug("Searching Answer By MentorshipUuid ,{}", mentorshipUuid);
+        return  this.answerService.fetchByMentorishipUuid(mentorshipUuid);
     }
 
     @Post(consumes = MediaType.APPLICATION_JSON,

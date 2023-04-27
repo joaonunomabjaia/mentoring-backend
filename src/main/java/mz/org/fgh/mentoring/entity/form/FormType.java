@@ -1,22 +1,23 @@
 package mz.org.fgh.mentoring.entity.form;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import java.util.Set;
 
-@Entity
+@Schema(name = "FormType", description = "A professional that provide mentoring to the tutored individuals")
+@Entity(name = "FormType")
 @Table(name = "FORM_TYPE")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString
 public class FormType extends BaseEntity {
 
     @NotEmpty

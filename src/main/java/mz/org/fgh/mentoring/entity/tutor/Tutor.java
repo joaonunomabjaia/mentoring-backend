@@ -12,7 +12,7 @@ import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 
 @Schema(name = "Tutor", description = "A professional that provide mentoring to the tutored individuals")
-@Entity(name = "tutor")
+@Entity(name = "Tutor")
 @Table(name = "tutors")
 @Data
 @AllArgsConstructor

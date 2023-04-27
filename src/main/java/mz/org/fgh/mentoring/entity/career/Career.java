@@ -14,7 +14,7 @@ import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
-@Entity(name = "career")
+@Entity(name = "Career")
 @Table(name = "CARRERS")
 @Data
 @AllArgsConstructor

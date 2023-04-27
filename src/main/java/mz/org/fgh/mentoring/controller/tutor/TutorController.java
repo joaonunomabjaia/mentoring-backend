@@ -3,10 +3,7 @@ package mz.org.fgh.mentoring.controller.tutor;
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -49,6 +46,11 @@ public class TutorController extends BaseController {
     public List<Tutor> getAllV1() {
         LOG.debug("Searching tutors version 1");
         return tutorService.findAll();
+    }
+
+    @Get("{/id}")
+    public Tutor findTutorById(@PathVariable("id") Long id){
+       return this.tutorService.findById(id).get();
     }
 
     @Post(

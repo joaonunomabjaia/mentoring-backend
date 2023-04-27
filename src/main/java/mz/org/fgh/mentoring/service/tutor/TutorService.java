@@ -3,8 +3,10 @@ package mz.org.fgh.mentoring.service.tutor;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class TutorService {
@@ -17,6 +19,9 @@ public class TutorService {
 
     public List<Tutor> findAll() {
         return this.tutorRepository.findAll();
+    }
+    public Optional<Tutor> findById(final Long id){
+      return this.tutorRepository.findById(id);
     }
 
     public Tutor create(Tutor tutor) {

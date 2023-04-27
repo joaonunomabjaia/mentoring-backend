@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.entity.formQuestion;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -8,7 +10,8 @@ import mz.org.fgh.mentoring.entity.question.Question;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@Entity(name = "formQuestion")
+@Schema(name = "FormQuestion", description = "A professional that provide mentoring to the tutored individuals")
+@Entity(name = "FormQuestion")
 @Table(name = "forms_questions")
 @Data
 @AllArgsConstructor
@@ -18,10 +21,11 @@ import javax.validation.constraints.NotNull;
 public class FormQuestion extends BaseEntity {
 
     @NotNull
-    @ManyToOne( fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.EAGER)
     @JoinColumn( name = "FORM_ID", nullable = false )
     private Form form;
 
+    @JsonIgnore
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn( name = "QUESTION_ID", nullable = false )

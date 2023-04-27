@@ -2,10 +2,7 @@ package mz.org.fgh.mentoring.controller.tutor;
 
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -50,14 +47,20 @@ public class FormController extends BaseController {
         return formService.findAll();
     }
 
-    @Get
-    public Optional<Form> findById(@Body Long id){
+    @Get("{/id}")
+    public Optional<Form> findById(@PathVariable("id") Long id){
         return formService.findById(id);
     }
 
-    @Get
-    public Form findByCode(@Body String code){
-        return formService.findByCode(code);
+    @Get("/sample-forms")
+    public List<Form> findSampleIndicatorForms(){
+      return  this.formService.findSampleIndicatorForms();
+    }
+
+    @Get( consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON)
+    public List<Form> findBySelectedFilter(String code, String name, String programaticAreaCode, String partnerUUID ){
+        return this.formService.findBySelectedFilter(code, name, programaticAreaCode, partnerUUID);
     }
 
     @Post(
@@ -67,6 +70,15 @@ public class FormController extends BaseController {
     public Form create (@Body Form form) {
         LOG.debug("Created form {} ", form);
         return this.formService.create(form);
+    }
+
+    @Put(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON
+    )
+    public Form update(@Body Form form){
+        LOG.debug("update form {} ", form);
+        return this.formService.update(form);
     }
 
 }

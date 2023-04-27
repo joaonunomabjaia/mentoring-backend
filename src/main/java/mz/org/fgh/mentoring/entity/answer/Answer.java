@@ -14,8 +14,8 @@ import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
-@Entity(name = "answer")
-@Table(name = "ANSWERS")
+@Entity(name = "Answer")
+@Table(name = "answers")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor

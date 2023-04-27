@@ -1,16 +1,18 @@
 package mz.org.fgh.mentoring.entity.programaticarea;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
 @Schema(name = "ProgramaticArea", description = "A professional that provide mentoring to the tutored individuals")
-@Entity
+@Entity(name = "ProgramaticArea")
 @Table(name = "programmatic_areas")
 @Data
 @AllArgsConstructor
@@ -27,4 +29,8 @@ public class ProgramaticArea extends BaseEntity {
 
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "programmaticArea")
+    private Set<TutorProgrammaticArea> tutorProgrammaticAreas = new HashSet<>();
 }
