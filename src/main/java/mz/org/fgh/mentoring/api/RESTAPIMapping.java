@@ -12,4 +12,6 @@ public class RESTAPIMapping {
     public final static String FORM_CONTROLLER = "forms";
 
     public final static String FORM_QUESTION_CONTROLLER = "formquestions";
+
+    public final static String UTILS_CONTROLLER = "utils";
 }
