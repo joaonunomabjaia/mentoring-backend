@@ -9,12 +9,13 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.Objects;
 
-@Entity
+@Entity(name = "District")
 @Table(name = "districts")
-@Getter
-@Setter
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class District extends BaseEntity {
 
     @NotNull
@@ -26,16 +27,4 @@ public class District extends BaseEntity {
     @Column(name = "DISTRICT", nullable = false, length = 50)
     private String district;
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || Hibernate.getClass(this) != Hibernate.getClass(o)) return false;
-        District district = (District) o;
-        return getId() != null && Objects.equals(getId(), district.getId());
-    }
-
-    @Override
-    public int hashCode() {
-        return getClass().hashCode();
-    }
 }

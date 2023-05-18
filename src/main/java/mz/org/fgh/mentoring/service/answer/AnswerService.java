@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.service.answer;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.repository.tutor.AnswerRepository;
@@ -12,8 +11,11 @@ import java.util.Optional;
 @Singleton
 public class AnswerService {
 
-    @Inject
-    AnswerRepository answerRepository;
+    private final AnswerRepository answerRepository;
+
+    public AnswerService(AnswerRepository answerRepository) {
+        this.answerRepository = answerRepository;
+    }
 
     public List<Answer> findAll(){
       return   this.answerRepository.findAll();

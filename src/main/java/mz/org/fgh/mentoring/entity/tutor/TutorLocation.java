@@ -1,9 +1,6 @@
 package mz.org.fgh.mentoring.entity.tutor;
 
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
@@ -11,12 +8,13 @@ import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
-@Entity
+@Entity(name = "TutorLocation")
 @Table(name = "tutor_locations")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
+@ToString
 public class TutorLocation extends BaseEntity {
 
     @NotNull
