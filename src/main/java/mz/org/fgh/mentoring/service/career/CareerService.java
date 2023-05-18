@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.service.career;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.career.Career;
 import mz.org.fgh.mentoring.entity.career.CareerType;
@@ -13,8 +12,10 @@ import java.util.Optional;
 @Singleton
 public class CareerService {
 
-    @Inject
-    CareerRepository careerRepository;
+    private final CareerRepository careerRepository;
+    public CareerService(CareerRepository careerRepository) {
+        this.careerRepository = careerRepository;
+    }
 
     public List<Career> findAll(){
         return this.careerRepository.findAll();
