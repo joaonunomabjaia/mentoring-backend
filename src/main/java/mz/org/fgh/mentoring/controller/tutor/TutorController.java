@@ -48,7 +48,7 @@ public class TutorController extends BaseController {
         return tutorService.findAll();
     }
 
-    @Get("{/id}")
+    @Get("/{id}")
     public Tutor findTutorById(@PathVariable("id") Long id){
        return this.tutorService.findById(id).get();
     }

@@ -42,7 +42,7 @@ public class MetadataController {
     @Inject
     private FormTargetService formTargetService;
 
-    @Get("{/uuid}")
+    @Get("/{uuid}")
     public Metadata loadMetadata(@PathVariable("uuid") String uuid){
 
         List<HealthFacility> healthFacilities = this.healthFacilityService.findAllHealthFacilities();

@@ -24,6 +24,7 @@ dependencies {
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     implementation 'io.swagger.core.v3:swagger-annotations'
+
     compileOnly("org.projectlombok:lombok")
 
 

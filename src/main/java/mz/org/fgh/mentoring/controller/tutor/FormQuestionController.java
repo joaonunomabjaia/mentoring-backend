@@ -60,7 +60,7 @@ public class FormQuestionController extends BaseController {
         return formQuestionService.findById(id);
     }
 
-    @Get("{/form}")
+    @Get("/{form}")
     public List<FormQuestion> findFormQuestionByForm(@PathVariable("form") Long formId){
 
         if(formId != null) {

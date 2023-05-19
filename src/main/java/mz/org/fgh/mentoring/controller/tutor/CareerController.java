@@ -47,10 +47,10 @@ public class CareerController extends BaseController {
         return careerService.findAll();
     }
 
-    @Get("{/careerType}")
+    @Get("/{careerType}")
     public List<Career> findByCarrerType(@Body CareerType careerType){
 
-        LOG.debug("Searching careers by careerType, {careerType}", careerType);
+        LOG.debug("Searching careers by careerType, {}", careerType);
         return this.careerService.findByCarrerType(careerType);
     }
 
