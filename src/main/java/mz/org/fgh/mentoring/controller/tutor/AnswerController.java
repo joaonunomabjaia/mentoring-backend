@@ -46,7 +46,7 @@ public class AnswerController {
         return answerService.findAll();
     }
 
-    @Get("{/mentorshipUuid}")
+    @Get("/{mentorshipUuid}")
     public List<Answer> fetchAnswersByMentorshipUuid(@PathVariable("mentorshipUuid") String mentorshipUuid){
         LOG.debug("Searching Answer By MentorshipUuid ,{}", mentorshipUuid);
         return  this.answerService.fetchByMentorishipUuid(mentorshipUuid);

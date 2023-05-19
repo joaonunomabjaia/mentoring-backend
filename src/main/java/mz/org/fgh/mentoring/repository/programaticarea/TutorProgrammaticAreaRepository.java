@@ -6,8 +6,5 @@ import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
 @Repository
 public interface TutorProgrammaticAreaRepository extends CrudRepository<TutorProgrammaticArea, Long> {
-    @Override
-    TutorProgrammaticArea save(TutorProgrammaticArea tutorProgrammaticArea);
-    @Override
-    TutorProgrammaticArea update(TutorProgrammaticArea tutorProgrammaticArea);
+
 }
