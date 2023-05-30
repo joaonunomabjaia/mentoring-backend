@@ -37,4 +37,9 @@ public class PartnerService {
     public List<Partner> findAllPartners(){
         return partnerRepository.findAll();
     }
+
+    public Partner updatePartner(final Partner partner){
+
+        return this.partnerRepository.update(partner);
+    }
 }
