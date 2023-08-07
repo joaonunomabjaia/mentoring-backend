@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.repository.location;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
+import mz.org.fgh.mentoring.entity.form.Form;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -16,4 +17,6 @@ public interface CabinetRepository extends CrudRepository<Cabinet, Long> {
 
     @Override
     Optional<Cabinet> findById(@NotNull Long id);
+
+    Optional<Cabinet> findByUuid(String uuid);
 }

@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.healthFacility;
 
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 
 import javax.validation.constraints.NotNull;
@@ -16,4 +17,6 @@ public interface HealthFacilityRepository extends CrudRepository<HealthFacility,
 
     @Override
     Optional<HealthFacility> findById(@NotNull Long id);
+
+    Optional<HealthFacility> findByUuid(String uuid);
 }

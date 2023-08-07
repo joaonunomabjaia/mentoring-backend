@@ -332,4 +332,34 @@
                                  baseTableName="carrers" baseColumnNames="carrer_type_id"
                                  referencedTableName="career_type" referencedColumnNames="id"/>
     </changeSet>
+    <changeSet author="voloide" id="202308071159">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="SETTINGS" columnName="SETTING_TYPE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="SETTINGS">
+            <column name="SETTING_TYPE"  type="varchar(100)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="202308071201">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="SETTINGS" columnName="ENABLED"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="SETTINGS">
+            <column name="ENABLED"  type="tinyint(1)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="202308071203">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="PARTNER_SETTINGS" columnName="ENABLED"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="PARTNER_SETTINGS">
+            <column name="ENABLED"  type="tinyint(1)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
