@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.tutor;
 
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -18,5 +19,7 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
 
     @Override
     Optional<Tutor> findById(@NotNull Long id);
+
+    Optional<Tutor> findByUuid(String uuid);
 
 }

@@ -16,6 +16,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     List<Form> findAll();
     Optional<Form> findById(@NotNull Long id);
 
+    Optional<Form> findByUuid(String uuid);
     Form findByCode(String code);
 
     @Query("select f FROM Answer a INNER JOIN a.form f INNER JOIN a.question q INNER JOIN FETCH f.programmaticArea WHERE q.uuid IN (:questionUuids) AND f.lifeCycleStatus = :lifeCycleStatus")
