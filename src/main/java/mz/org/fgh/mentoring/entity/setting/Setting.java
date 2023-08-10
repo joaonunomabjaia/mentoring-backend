@@ -15,17 +15,18 @@ import java.time.LocalDateTime;
 @Schema(name = "settings", description = "Represent the system settings")
 @Entity(name = "settings")
 @Table(name = "SETTINGS")
-@Setter
-@Getter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class Setting extends BaseEntity {
 
+    /*
     public static final String SETTING_TYPE_DATE = "DATE";
     public static final String SETTING_TYPE_TEXT = "TEXT";
     public static final String SETTING_TYPE_NUMERIC = "NUMERIC";
+     */
 
     @NotNull
     @Column(name = "DESIGNATION", nullable = false)
@@ -41,7 +42,7 @@ public class Setting extends BaseEntity {
 
     @NotNull
     @Column(name = "ENABLED", nullable = false)
-    private boolean enabled;
+    private Boolean enabled;
 
     @NotNull
     @Column(name = "DESCRIPTION")
