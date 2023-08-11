@@ -21,17 +21,17 @@ import javax.validation.constraints.NotNull;
 public class PartnerSetting extends BaseEntity {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PARTNER_ID", nullable = false)
     private Partner partner;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SETTING_ID", nullable = false)
     private Setting setting;
 
     @NotNull
     @Column(name = "ENABLED", nullable = false)
-    private boolean enabled;
+    private Boolean enabled;
 
 }

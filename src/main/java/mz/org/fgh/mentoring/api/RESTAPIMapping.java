@@ -23,4 +23,6 @@ public class RESTAPIMapping {
 
     public final static String PROGRAMMATIC_AREAS ="programmaticareas";
 
+    public final static String SETTING_CONTROLLER = "settings";
+
 }

@@ -90,6 +90,14 @@
         <renameTable  newTableName="tutor_programmatic_area"
                       oldTableName="TUTOR_PROGRAMMATIC_AREA"/>
     </changeSet>
+    <changeSet  author="ialuj"  id="renameTable-settings">
+        <renameTable  newTableName="settings"
+                      oldTableName="SETTINGS"/>
+    </changeSet>
+    <changeSet  author="ialuj"  id="renameTable-partner_settings">
+        <renameTable  newTableName="partner_settings"
+                      oldTableName="PARTNER_SETTINGS"/>
+    </changeSet>
     <changeSet id="table_question_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <not>
