@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.service.tutor;
 
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutor.TutorLocation;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.tutor.TutorLocationRepository;
@@ -35,5 +36,9 @@ public class TutorLocationService {
 
     public List<TutorLocation> findAllTutorLocations(){
         return tutorLocationRepository.findAll();
+    }
+
+    public List<TutorLocation> findTutorLocationsByTutor(final Tutor tutor){
+        return tutorLocationRepository.findByTutor(tutor);
     }
 }

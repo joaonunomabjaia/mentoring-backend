@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.tutor;
 
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutor.TutorLocation;
 
 import javax.validation.constraints.NotNull;
@@ -16,4 +17,6 @@ public interface TutorLocationRepository extends CrudRepository<TutorLocation, L
 
     @Override
     Optional<TutorLocation> findById(@NotNull Long id);
+
+    List<TutorLocation> findByTutor(final Tutor tutor);
 }

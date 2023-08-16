@@ -19,12 +19,12 @@ import java.util.Objects;
 public class District extends BaseEntity {
 
     @NotNull
-    @Column(name = "PROVINCE", nullable = false, length = 30)
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PROVINCE_ID", nullable = false)
     private Province province;
 
     @NotEmpty
-    @Column(name = "DISTRICT", nullable = false, length = 50)
+    @Column(name = "DISTRICT", unique = true, nullable = false, length = 50)
     private String district;
 
 }

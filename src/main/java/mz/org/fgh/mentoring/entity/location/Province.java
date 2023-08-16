@@ -1,24 +1,25 @@
 package mz.org.fgh.mentoring.entity.location;
 
-public enum Province {
+import lombok.*;
+import mz.org.fgh.mentoring.base.BaseEntity;
 
-    MAPUTO,
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.Table;
+import javax.validation.constraints.NotEmpty;
 
-    GAZA,
+@Entity(name = "Province")
+@Table(name = "provinces")
+@Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@AllArgsConstructor
+@NoArgsConstructor
+@ToString
+public class Province extends BaseEntity {
 
-    INHAMBANE,
+    @NotEmpty
+    @Column(name = "DESIGNATION", unique = true, nullable = false, length = 50)
+    private String designation;
 
-    SOFALA,
 
-    TETE,
-
-    MANICA,
-
-    ZAMBEZIA,
-
-    NAMPULA,
-
-    NIASSA,
-
-    CABO_DELEGADO;
 }

@@ -1,14 +1,7 @@
 package mz.org.fgh.mentoring.repository.session;
 
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
-import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
-import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import mz.org.fgh.mentoring.entity.location.District;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgramaticArea;
 import mz.org.fgh.mentoring.entity.session.Session;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.PerformedSession;
 import mz.org.fgh.mentoring.util.SubmitedSessions;

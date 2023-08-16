@@ -37,19 +37,19 @@ public class SettingService {
     public List<SettingDTO> findAll() {
         List<Setting> settings = this.settingsRepository.findAll();
         List<SettingDTO> settingDTOS = new ArrayList<SettingDTO>(settings.size());
-        for (Setting setting: settings) {
+        for (Setting setting : settings) {
             settingDTOS.add(new SettingDTO(setting));
         }
         return settingDTOS;
     }
 
-    public SettingDTO findSettingById(final Long id){
+    public SettingDTO findSettingById(final Long id) {
         Setting setting = this.settingsRepository.findById(id).get();
         SettingDTO settingDTO = new SettingDTO(setting);
         return settingDTO;
     }
 
-    public List<SettingDTO> findSettingByTutor(final String uuid){
+    public List<SettingDTO> findSettingByTutor(final String uuid) {
 
         List<Setting> settings = new ArrayList<Setting>(0);
 
@@ -59,7 +59,7 @@ public class SettingService {
             final Partner partner = tutor.getPartner();
 
             List<PartnerSetting> partnerSettings = this.partnerSettingRepository.findByPartner(partner);
-            if(partnerSettings.isEmpty()) {
+            if (partnerSettings.isEmpty()) {
                 return new ArrayList<>(0);
             }
             for (PartnerSetting partnerSetting : partnerSettings) {
@@ -71,7 +71,7 @@ public class SettingService {
         }
 
         List<SettingDTO> settingDTOS = new ArrayList<SettingDTO>(settings.size());
-        for (Setting setting: settings) {
+        for (Setting setting : settings) {
             settingDTOS.add(new SettingDTO(setting));
         }
         return settingDTOS;

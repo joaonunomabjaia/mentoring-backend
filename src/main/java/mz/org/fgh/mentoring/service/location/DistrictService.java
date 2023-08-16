@@ -30,7 +30,16 @@ public class DistrictService {
         return optDistrict.get();
     }
 
-    public List<District> findAllDistritcs() {
+    public List<District> findAllDistricts() {
+
         return districtRepository.findAll();
+    }
+
+    public District findDistrictByDesignation(final String designation){
+        List<District>  districts = this.districtRepository.findByDistrict(designation);
+        if(districts.isEmpty()){
+            throw new MentoringBusinessException("District : "+designation+" was not found.");
+        }
+        return districts.get(0);
     }
 }
