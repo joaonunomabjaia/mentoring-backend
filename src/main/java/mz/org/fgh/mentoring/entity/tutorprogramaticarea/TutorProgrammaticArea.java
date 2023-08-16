@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.entity.tutorprogramaticarea;
 
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 
 import javax.persistence.*;
@@ -24,7 +25,7 @@ public class TutorProgrammaticArea extends BaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
-    private TutorProgrammaticArea programmaticArea;
+    private ProgrammaticArea programmaticArea;
 
     @Transient
     private Boolean mapAsUser = Boolean.FALSE;

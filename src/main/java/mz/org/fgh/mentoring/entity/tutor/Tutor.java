@@ -6,6 +6,7 @@ import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.career.Career;
 import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.entity.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -51,5 +52,9 @@ public class Tutor extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PARTNER_ID")
     private Partner partner;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
 }

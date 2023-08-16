@@ -12,10 +12,11 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.controller.tutor.TutorController;
+import mz.org.fgh.mentoring.dto.career.CareerTypeDTO;
 import mz.org.fgh.mentoring.entity.career.CareerType;
 import mz.org.fgh.mentoring.entity.form.FormType;
 import mz.org.fgh.mentoring.entity.question.QuestionType;
-import mz.org.fgh.mentoring.service.career.CareeTypeService;
+import mz.org.fgh.mentoring.service.career.CareerTypeService;
 import mz.org.fgh.mentoring.service.form.FormTypeService;
 import mz.org.fgh.mentoring.service.question.QuestionTypeService;
 import org.slf4j.Logger;
@@ -29,7 +30,7 @@ import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 public class ResourceUtilsController extends BaseController {
 
     @Inject
-    private CareeTypeService careeTypeService;
+    private CareerTypeService careeTypeService;
     @Inject
     private FormTypeService formTypeService;
 
@@ -38,6 +39,7 @@ public class ResourceUtilsController extends BaseController {
 
     public static final Logger LOG = LoggerFactory.getLogger(TutorController.class);
 
+    /*
     @Operation(summary = "Return a list off all CareerType")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "CareerType")
@@ -47,6 +49,7 @@ public class ResourceUtilsController extends BaseController {
         LOG.debug("Searching CareerTypes version 1");
         return this.careeTypeService.findAllCareeType();
     }
+     */
 
     @Operation(summary = "Return a list off all FormType")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
@@ -68,11 +71,14 @@ public class ResourceUtilsController extends BaseController {
         return this.questionTypeService.findAll();
     }
 
+    /*
     @Get("/careertypes")
     public List<CareerType> findAllCareeType(){
         LOG.debug("Searching CareerTypes version 2");
         return this.careeTypeService.findAllCareeType();
     }
+
+     */
 
     @Get("/formtypes")
     public List<FormType> findAllFormType(){

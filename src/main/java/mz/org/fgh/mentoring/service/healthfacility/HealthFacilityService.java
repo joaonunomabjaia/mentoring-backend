@@ -15,26 +15,26 @@ public class HealthFacilityService {
 
     private final HealthFacilityRepository healthFacilityRepository;
 
-    public HealthFacilityService(HealthFacilityRepository healthFacilityRepository){
+    public HealthFacilityService(HealthFacilityRepository healthFacilityRepository) {
         this.healthFacilityRepository = healthFacilityRepository;
     }
 
-    public HealthFacility createHealthfacility(HealthFacility healthFacility){
-        if(StringUtils.isEmpty(healthFacility.getHealthFacility()) && healthFacility.getDistrict() == null){
+    public HealthFacility createHealthfacility(HealthFacility healthFacility) {
+        if (StringUtils.isEmpty(healthFacility.getHealthFacility()) && healthFacility.getDistrict() == null) {
             throw new MentoringBusinessException("Fields 'HEALTH FACILITY' and 'DISTRICT' are required.");
         }
         return healthFacilityRepository.save(healthFacility);
     }
 
-    public HealthFacility findHealthFacilityById(@NotNull Long id){
+    public HealthFacility findHealthFacilityById(@NotNull Long id) {
         Optional<HealthFacility> optionalHealthFacility = healthFacilityRepository.findById(id);
-        if(optionalHealthFacility.isEmpty()){
-            throw new MentoringBusinessException("Health Facility with ID: "+id+" ws not found.");
+        if (optionalHealthFacility.isEmpty()) {
+            throw new MentoringBusinessException("Health Facility with ID: " + id + " ws not found.");
         }
         return optionalHealthFacility.get();
     }
 
-    public List<HealthFacility> findAllHealthFacilities(){
+    public List<HealthFacility> findAllHealthFacilities() {
         return healthFacilityRepository.findAll();
     }
 }

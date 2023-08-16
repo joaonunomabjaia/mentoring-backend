@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.career.Career;
+import mz.org.fgh.mentoring.entity.user.User;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -48,5 +49,9 @@ public class Tutored extends BaseEntity {
     @Version
     @Column(name = "VERSION")
     private int version;
+
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "USER_ID")
+    private User user;
 
 }

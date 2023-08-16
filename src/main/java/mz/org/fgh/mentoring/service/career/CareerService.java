@@ -25,8 +25,7 @@ public class CareerService {
         return this.careerRepository.findById(id);
     }
 
-    public List<Career> findByCarrerType(final CareerType careerType){
-
+    public List<Career> findAllCareerTypes(final CareerType careerType){
         return this.careerRepository.findByCarrerTyp(careerType, LifeCycleStatus.ACTIVE);
     }
 

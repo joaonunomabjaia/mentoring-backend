@@ -1,7 +1,7 @@
 package mz.org.fgh.mentoring.service.programaticarea;
 
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgramaticArea;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -16,21 +16,21 @@ public class ProgramaticAreaService {
         this.programaticAreaRepository = programaticAreaRepository;
     }
 
-    public ProgramaticArea createProgrammaticArea(final ProgramaticArea programaticArea){
+    public ProgrammaticArea createProgrammaticArea(final ProgrammaticArea programaticArea){
 
         return this.programaticAreaRepository.save(programaticArea);
     }
 
-    public ProgramaticArea updateProgrammaticArea(final ProgramaticArea programaticArea){
+    public ProgrammaticArea updateProgrammaticArea(final ProgrammaticArea programaticArea){
 
         return this.programaticAreaRepository.update(programaticArea);
     }
 
-    public List<ProgramaticArea> findProgrammaticAreasAll(){
+    public List<ProgrammaticArea> findProgrammaticAreasAll(){
         return this.programaticAreaRepository.findAll();
     }
 
-    public List<ProgramaticArea> findProgrammaticAreas(final String code, final String name){
+    public List<ProgrammaticArea> findProgrammaticAreas(final String code, final String name){
         return this.programaticAreaRepository.findBySelectedFilter(code, name, LifeCycleStatus.ACTIVE);
     }
 }

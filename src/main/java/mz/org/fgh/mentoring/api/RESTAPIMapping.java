@@ -25,4 +25,6 @@ public class RESTAPIMapping {
 
     public final static String SETTING_CONTROLLER = "settings";
 
+    public final static String CABINET_CONTROLLER = "cabinets";
+
 }

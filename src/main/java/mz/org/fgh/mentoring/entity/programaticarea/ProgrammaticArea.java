@@ -8,7 +8,6 @@ import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
 import javax.persistence.*;
 import java.util.HashSet;
-import java.util.Objects;
 import java.util.Set;
 
 @Schema(name = "ProgramaticArea", description = "A professional that provide mentoring to the tutored individuals")
@@ -19,7 +18,7 @@ import java.util.Set;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
-public class ProgramaticArea extends BaseEntity {
+public class ProgrammaticArea extends BaseEntity {
 
     @Column(name = "CODE", nullable = false, length = 50)
     private String code;

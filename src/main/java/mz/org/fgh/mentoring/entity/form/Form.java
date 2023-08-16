@@ -5,7 +5,7 @@ import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgramaticArea;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -37,7 +37,7 @@ public class Form extends BaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
-    private ProgramaticArea programmaticArea;
+    private ProgrammaticArea programmaticArea;
 
     @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
@@ -59,6 +59,6 @@ public class Form extends BaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PARTNER_ID")
-    private Partner partiner;
+    private Partner partner;
 
 }

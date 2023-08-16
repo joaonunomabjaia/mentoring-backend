@@ -8,6 +8,8 @@ import java.io.Serializable;
 @Data
 public class SettingDTO implements Serializable {
 
+    private String uuid;
+
     private String designation;
 
     private String value;
@@ -22,19 +24,29 @@ public class SettingDTO implements Serializable {
     }
 
     public SettingDTO(String designation, String value, String description, String type, Boolean enabled) {
-        this.designation = designation;
-        this.value = value;
-        this.description = description;
-        this.type = type;
-        this.enabled = enabled;
+        this.setDesignation(designation);
+        this.setDescription(description);
+        this.setValue(value);
+        this.setType(type);
+        this.setEnabled(enabled);
+    }
+
+    public SettingDTO(String uuid, String designation, String value, String description, String type, Boolean enabled) {
+        this.setUuid(uuid);
+        this.setDesignation(designation);
+        this.setDescription(description);
+        this.setValue(value);
+        this.setType(type);
+        this.setEnabled(enabled);
     }
 
     public SettingDTO(final Setting setting) {
-        this.designation = setting.getDesignation();
-        this.value = setting.getValue();
-        this.description = setting.getDescription();
-        this.type = setting.getType();
-        this.enabled = setting.getEnabled();
+        this.setUuid(setting.getUuid());
+        this.setDesignation(setting.getDesignation());
+        this.setDescription(setting.getDescription());
+        this.setValue(setting.getValue());
+        this.setType(setting.getType());
+        this.setEnabled(setting.getEnabled());
     }
 
 }
