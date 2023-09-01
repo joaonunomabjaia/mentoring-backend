@@ -42,7 +42,7 @@ public class Tutored extends BaseEntity {
     private String email;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "CARRER_ID", nullable = false)
     private Career career;
 
