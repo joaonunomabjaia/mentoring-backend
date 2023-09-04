@@ -568,4 +568,24 @@
         <renameTable  newTableName="tutor_tutored"
                       oldTableName="TUTOR_TUTORED"/>
     </changeSet>
+    <changeSet author="voloide" id="USERS202309041605">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="SALT"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="users">
+            <column name="SALT" type="varchar(500)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="USERS202309041606">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="ADMIN"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="ADMIN">
+            <column name="SALT" type="tinyint(1)"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

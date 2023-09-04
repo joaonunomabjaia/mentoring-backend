@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.career.Career;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.entity.user.UserIndividual;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -19,7 +20,7 @@ import javax.validation.constraints.NotEmpty;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tutored extends BaseEntity {
+public class Tutored extends BaseEntity implements UserIndividual {
 
     @NotEmpty
     @Column(name = "CODE", nullable = false, length = 50)
