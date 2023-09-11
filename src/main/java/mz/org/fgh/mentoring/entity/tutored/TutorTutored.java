@@ -20,7 +20,7 @@ import java.io.Serializable;
  * @author Jose Julai Ritsure
  */
 @Entity
-@Table(name = "TUTOR_TUTOREDS")
+@Table(name = "tutor_tutored")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @NoArgsConstructor

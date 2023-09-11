@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import java.util.Calendar;
 
@@ -24,12 +25,23 @@ import java.util.Calendar;
 public class User extends BaseEntity {
 
     @NotEmpty
-    @Column(name = "USERNAME", nullable = false, length = 50)
+    @Column(name = "USERNAME", nullable = false, length = 250)
     private String username;
 
     @NotEmpty
-    @Column(name = "PASSWORD", nullable = false, length = 50)
+    @Column(name = "PASSWORD", nullable = false, length = 500)
     private String password;
+
+    @NotEmpty
+    @Column(name = "SALT", nullable = false, length = 500)
+    private String salt;
+
+    @NotEmpty
+    @Column(name = "ADMIN", nullable = false, length = 500)
+    private boolean admin;
+
+    @Transient
+    private UserIndividual userIndividual;
 
     public User(String username, String password) {
         this.username = username;
