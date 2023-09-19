@@ -584,8 +584,18 @@
                 <columnExists tableName="users" columnName="ADMIN"/>
             </not>
         </preConditions>
-        <addColumn tableName="ADMIN">
-            <column name="SALT" type="tinyint(1)"/>
+        <addColumn tableName="users">
+            <column name="ADMIN" type="tinyint(1)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="USERS202309051605">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="TYPE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="users">
+            <column name="TYPE" type="varchar(50)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

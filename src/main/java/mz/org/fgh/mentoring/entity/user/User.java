@@ -24,6 +24,9 @@ import java.util.Calendar;
 @ToString
 public class User extends BaseEntity {
 
+    public final static String USER_TYPE_TUTOR = "TUTOR";
+    public final static String USER_TYPE_TUTORED = "TUTORED";
+
     @NotEmpty
     @Column(name = "USERNAME", nullable = false, length = 250)
     private String username;
@@ -37,6 +40,10 @@ public class User extends BaseEntity {
     private String salt;
 
     @NotEmpty
+    @Column(name = "TYPE", nullable = false, length = 50)
+    private String type;
+
+    @NotEmpty
     @Column(name = "ADMIN", nullable = false, length = 500)
     private boolean admin;
 
@@ -46,5 +53,9 @@ public class User extends BaseEntity {
     public User(String username, String password) {
         this.username = username;
         this.password = password;
+    }
+
+    public boolean isTutor() {
+        return this.type.equals(USER_TYPE_TUTOR);
     }
 }

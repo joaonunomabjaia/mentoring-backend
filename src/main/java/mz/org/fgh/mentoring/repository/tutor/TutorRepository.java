@@ -4,6 +4,7 @@ import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -21,5 +22,7 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
     Optional<Tutor> findById(@NotNull Long id);
 
     Optional<Tutor> findByUuid(String uuid);
+
+    Tutor findByUser(User user);
 
 }

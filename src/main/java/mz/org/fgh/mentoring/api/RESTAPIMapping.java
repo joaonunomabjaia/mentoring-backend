@@ -29,4 +29,6 @@ public class RESTAPIMapping {
 
     public final static String TUTORED_CONTROLLER = "tutored";
 
+    public final static String USER_CONTROLLER = "user";
+
 }
