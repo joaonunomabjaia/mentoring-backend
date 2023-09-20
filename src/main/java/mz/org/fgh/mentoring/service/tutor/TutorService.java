@@ -27,4 +27,8 @@ public class TutorService {
     public Tutor create(Tutor tutor) {
         return this.tutorRepository.save(tutor);
     }
+
+    public List<Tutor> findTutorWithLimit(long limit, long offset){
+      return this.tutorRepository.findTutorWithLimit(limit, offset);
+    }
 }

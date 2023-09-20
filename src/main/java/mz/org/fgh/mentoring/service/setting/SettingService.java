@@ -34,8 +34,15 @@ public class SettingService {
         this.tutorRepository = tutorRepository;
     }
 
-    public List<SettingDTO> findAll() {
-        List<Setting> settings = this.settingsRepository.findAll();
+    public List<SettingDTO> findAll(long limit, long offset) {
+        List<Setting> settings = new ArrayList<>();
+
+        if(limit > 0){
+            settings = this.settingsRepository.findSettingWithLimit(limit, offset);
+        }else {
+            settings = this.settingsRepository.findAll();
+        }
+
         List<SettingDTO> settingDTOS = new ArrayList<SettingDTO>(settings.size());
         for (Setting setting : settings) {
             settingDTOS.add(new SettingDTO(setting));
@@ -75,5 +82,9 @@ public class SettingService {
             settingDTOS.add(new SettingDTO(setting));
         }
         return settingDTOS;
+    }
+
+    public List<Setting> findSettingWithLimit(long limit, long offset){
+        return this.findSettingWithLimit(limit, offset);
     }
 }

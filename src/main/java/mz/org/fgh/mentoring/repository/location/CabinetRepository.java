@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.repository.location;
 
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
@@ -19,4 +20,7 @@ public interface CabinetRepository extends CrudRepository<Cabinet, Long> {
     Optional<Cabinet> findById(@NotNull Long id);
 
     Optional<Cabinet> findByUuid(String uuid);
+
+    @Query(value = "select * from cabinets limit :lim offset :of ", nativeQuery = true)
+    List<Cabinet> findCabinetWithLimit(long lim, long of);
 }

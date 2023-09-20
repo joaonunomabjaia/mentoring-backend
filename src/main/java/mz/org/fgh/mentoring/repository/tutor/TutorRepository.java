@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.repository.tutor;
 
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -24,5 +25,8 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
     Optional<Tutor> findByUuid(String uuid);
 
     Tutor findByUser(User user);
+
+    @Query(value = "select * from tutors limit :lim offset :of ", nativeQuery = true)
+    List<Tutor> findTutorWithLimit(long lim, long of);
 
 }

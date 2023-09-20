@@ -27,10 +27,16 @@ public class CareerController extends BaseController {
     private CareerTypeService careerTypeService;
 
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Career")
-    @Get
-    public List<CareerDTO> getAll() {
-        List<Career> careers = careerService.findAll();
+    @Get("/career/{limit}/{offset}")
+    public List<CareerDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+
+        List<Career> careers = new ArrayList<>();
+
+        if(limit > 0){
+            careers = careerService.findCareerWithLimit(limit, offset);
+        }else {
+            careers = careerService.findAll();
+        }
         List<CareerDTO> careerDTOS = new ArrayList<>(careers.size());
         for (Career career: careers) {
             CareerDTO careerDTO = new CareerDTO(career);

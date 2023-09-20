@@ -29,11 +29,10 @@ public class SettingController extends BaseController {
 
     @Operation(summary = "Return a list off all Settings")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Setting")
     @Version(API_VERSION)
-    @Get
-    public List<SettingDTO> getAll() {
-        return settingService.findAll();
+    @Get("/setting/{limit}/{offset}")
+    public List<SettingDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+        return settingService.findAll(limit, offset);
     }
 
     @Get("/tutor/{uuid}")

@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.controller.location;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -27,8 +28,8 @@ public class CabinetController extends BaseController {
     @Operation(summary = "Return a list off all Cabinets")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Cabinet")
-    @Get
-    public List<CabinetDTO> getAll() {
-        return cabinetService.findAllCabinets();
+    @Get("/cabinet/{limit}/{offset}")
+    public List<CabinetDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+        return cabinetService.findAllCabinets(limit, offset);
     }
 }
