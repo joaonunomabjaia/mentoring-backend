@@ -48,9 +48,9 @@ public class CareerController extends BaseController {
     @Operation(summary = "Return a list off all Cabinets")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Cabinet")
-    @Get("/career-types")
-    public List<CareerTypeDTO> getCareerTypes() {
-        return this.careerTypeService.findAllCareerTypes();
+    @Get("/career-types/{limit}/{offset}")
+    public List<CareerTypeDTO> getCareerTypes(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+        return this.careerTypeService.findAllCareerTypes(limit, offset);
     }
 
     @Post(
