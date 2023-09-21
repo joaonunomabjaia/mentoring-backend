@@ -23,8 +23,15 @@ public class CabinetService {
         return cabinetRepository.findAll();
     }
 
-    public List<CabinetDTO> findAllCabinets() {
-        List<Cabinet> cabinets = cabinetRepository.findAll();
+    public List<CabinetDTO> findAllCabinets(long limit, long offset) {
+        List<Cabinet> cabinets = new ArrayList<>();
+
+        if(limit > 0){
+            cabinets = this.findCabinetWithLimit(limit, offset);
+        }else {
+            cabinets = cabinetRepository.findAll();
+        }
+
         List<CabinetDTO> cabinetDTOS = new ArrayList<CabinetDTO>(0);
         for (Cabinet cabinet : cabinets) {
             CabinetDTO dto = new CabinetDTO(cabinet);
@@ -35,7 +42,7 @@ public class CabinetService {
 
     public Cabinet findCabinetById(@NotNull Long id) {
         Optional<Cabinet> optCabinet = cabinetRepository.findById(id);
-        if (optCabinet.isEmpty()) {
+        if (optCabinet == null) {
             throw new MentoringBusinessException("Cabinet with ID - " + id + " does not exist.");
         }
         return optCabinet.get();
@@ -43,5 +50,9 @@ public class CabinetService {
 
     public Cabinet createCabinet(Cabinet cabinet) {
         return cabinetRepository.save(cabinet);
+    }
+
+    public List<Cabinet> findCabinetWithLimit(long limit, long offset){
+        return this.cabinetRepository.findCabinetWithLimit(limit, offset);
     }
 }

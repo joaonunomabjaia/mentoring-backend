@@ -18,8 +18,15 @@ public class CareerTypeService {
         this.careerTypeRepository = careerTypeRepository;
     }
 
-    public List<CareerTypeDTO> findAllCareerTypes(){
-        List<CareerType> careerTypes = this.careerTypeRepository.findAll();
+    public List<CareerTypeDTO> findAllCareerTypes(long limit, long offset){
+
+        List<CareerType> careerTypes = new ArrayList<>();
+        if(limit > 0){
+           careerTypes = this.careerTypeRepository.findCareerTypeWithLimit(limit, offset);
+        }else{
+            careerTypes = this.careerTypeRepository.findAll();
+        }
+
         List<CareerTypeDTO> careerTypeDTOS = new ArrayList<>(0);
         for (CareerType careerType: careerTypes) {
             CareerTypeDTO careerTypeDTO = new CareerTypeDTO(careerType);

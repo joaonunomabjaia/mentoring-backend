@@ -17,6 +17,7 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
@@ -36,10 +37,17 @@ public class TutorController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Tutor")
     @Version(API_VERSION)
-    @Get
-    public List<Tutor> getAll() {
+    @Get("/career/{limit}/{offset}")
+    public List<Tutor> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
         LOG.debug("Searching tutors version 2");
-        return tutorService.findAll();
+        List<Tutor> tutors = new ArrayList<>();
+
+        if(limit > 0){
+             tutors = this.tutorService.findTutorWithLimit(limit, offset);
+        }else {
+            tutors =  tutorService.findAll();
+        }
+        return tutors;
     }
 
     @Get

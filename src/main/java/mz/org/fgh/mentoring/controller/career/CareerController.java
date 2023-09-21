@@ -27,10 +27,16 @@ public class CareerController extends BaseController {
     private CareerTypeService careerTypeService;
 
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Career")
-    @Get
-    public List<CareerDTO> getAll() {
-        List<Career> careers = careerService.findAll();
+    @Get("/career/{limit}/{offset}")
+    public List<CareerDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+
+        List<Career> careers = new ArrayList<>();
+
+        if(limit > 0){
+            careers = careerService.findCareerWithLimit(limit, offset);
+        }else {
+            careers = careerService.findAll();
+        }
         List<CareerDTO> careerDTOS = new ArrayList<>(careers.size());
         for (Career career: careers) {
             CareerDTO careerDTO = new CareerDTO(career);
@@ -42,9 +48,9 @@ public class CareerController extends BaseController {
     @Operation(summary = "Return a list off all Cabinets")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Cabinet")
-    @Get("/career-types")
-    public List<CareerTypeDTO> getCareerTypes() {
-        return this.careerTypeService.findAllCareerTypes();
+    @Get("/career-types/{limit}/{offset}")
+    public List<CareerTypeDTO> getCareerTypes(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+        return this.careerTypeService.findAllCareerTypes(limit, offset);
     }
 
     @Post(

@@ -32,4 +32,8 @@ public class CareerService {
     public Career create(Career career){
         return this.careerRepository.save(career);
     }
+
+    public List<Career> findCareerWithLimit(long limit, long offset){
+        return this.careerRepository.findCareerWithLimit(limit, offset);
+    }
 }
