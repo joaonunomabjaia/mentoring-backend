@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
+import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
@@ -38,28 +39,52 @@ public class TutorController extends BaseController {
     @Tag(name = "Tutor")
     @Version(API_VERSION)
     @Get("/career/{limit}/{offset}")
-    public List<Tutor> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+    public List<TutorDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
         LOG.debug("Searching tutors version 2");
         List<Tutor> tutors = new ArrayList<>();
+        List<TutorDTO> tutorDTOS = new ArrayList<>();
 
         if(limit > 0){
-             tutors = this.tutorService.findTutorWithLimit(limit, offset);
+            tutors = this.tutorService.findTutorWithLimit(limit, offset);
         }else {
             tutors =  tutorService.findAll();
         }
-        return tutors;
+
+        for (Tutor tutor : tutors){
+            tutorDTOS.add(new TutorDTO(tutor));
+        }
+        return tutorDTOS;
     }
 
     @Get
-    public List<Tutor> getAllV1() {
+    public List<TutorDTO> getAllV1() {
         LOG.debug("Searching tutors version 1");
-        return tutorService.findAll();
+
+        List<Tutor> tutors = new ArrayList<>();
+        List<TutorDTO> tutorDTOS = new ArrayList<>();
+
+        tutors = tutorService.findAll();
+
+        for(Tutor tutor : tutors){
+            tutorDTOS.add(new TutorDTO(tutor));
+        }
+        return tutorDTOS;
     }
 
     @Get("/{id}")
-    public Tutor findTutorById(@PathVariable("id") Long id){
-       return this.tutorService.findById(id).get();
+    public TutorDTO findTutorById(@PathVariable("id") Long id){
+
+        Tutor tutor = this.tutorService.findById(id).get();
+        return new TutorDTO(tutor);
     }
+
+    @Get("/user/{userUuid}")
+    public TutorDTO findTutorByUserUuid(@PathVariable("userUuid") String userUuid){
+
+        Tutor tutor = this.tutorService.findTutorByUserUuid(userUuid);
+        return new TutorDTO(tutor);
+    }
+
 
     @Post(
             consumes = MediaType.APPLICATION_JSON,
