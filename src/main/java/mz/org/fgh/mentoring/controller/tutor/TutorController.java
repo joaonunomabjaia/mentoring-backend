@@ -38,7 +38,7 @@ public class TutorController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Tutor")
     @Version(API_VERSION)
-    @Get("/career/{limit}/{offset}")
+    @Get("/tutors/{limit}/{offset}")
     public List<TutorDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
         LOG.debug("Searching tutors version 2");
         List<Tutor> tutors = new ArrayList<>();
