@@ -31,4 +31,8 @@ public class TutorService {
     public List<Tutor> findTutorWithLimit(long limit, long offset){
       return this.tutorRepository.findTutorWithLimit(limit, offset);
     }
+
+    public Tutor findTutorByUserUuid(final String userUuid) {
+        return this.tutorRepository.findTutorByUserUuid(userUuid);
+    }
 }

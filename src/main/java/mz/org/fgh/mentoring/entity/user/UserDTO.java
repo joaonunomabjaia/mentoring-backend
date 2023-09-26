@@ -32,7 +32,7 @@ public class UserDTO {
     public UserDTO(User user) {
         this.setUsername(user.getUsername());
         this.setPassword(user.getPassword());
-        this.setType(user.getType());
+        this.setType(user.getUserType());
         this.setAdmin(user.isAdmin());
         this.setSalt(user.getSalt());
         this.setUserIndividual(user.getUserIndividual());

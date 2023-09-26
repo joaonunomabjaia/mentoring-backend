@@ -40,8 +40,8 @@ public class User extends BaseEntity {
     private String salt;
 
     @NotEmpty
-    @Column(name = "TYPE", nullable = false, length = 50)
-    private String type;
+    @Column(name = "USERTYPE", nullable = false, length = 50)
+    private String userType;
 
     @NotEmpty
     @Column(name = "ADMIN", nullable = false, length = 500)
@@ -56,6 +56,6 @@ public class User extends BaseEntity {
     }
 
     public boolean isTutor() {
-        return this.type.equals(USER_TYPE_TUTOR);
+        return this.userType.equals(USER_TYPE_TUTOR);
     }
 }
