@@ -16,11 +16,28 @@ public class TutoredService {
         this.tutoredRepository = tutoredRepository;
     }
 
-    public List<TutoredDTO> findAll(){
-        List<Tutored> tutoreds = this.tutoredRepository.findAll();
-        List<TutoredDTO> tutoredDTOS = new ArrayList<>(tutoreds.size());
+    public List<TutoredDTO> findAll(long limit, long offset){
+        List<Tutored> tutoreds = new ArrayList<>();
+        List<TutoredDTO> tutoredDTOS = new ArrayList<>();
+
+        if(limit > 0){
+            tutoreds = this.tutoredRepository.findTutoredWithLimit(limit, offset);
+        }else {
+            tutoreds = this.tutoredRepository.findAll();
+        }
+
         for (Tutored tutored :tutoreds) {
             tutoredDTOS.add(new TutoredDTO(tutored));
+        }
+        return tutoredDTOS;
+    }
+
+    public List<TutoredDTO> findTutorByUserUuid(String tutorUuid){
+        List<Tutored> tutoreds = this.tutoredRepository.findTutoredByTutorUuid(tutorUuid);
+        List<TutoredDTO> tutoredDTOS = new ArrayList<>(tutoreds.size());
+
+        for (Tutored tutored : tutoreds){
+           tutoredDTOS.add(new TutoredDTO(tutored));
         }
         return tutoredDTOS;
     }
