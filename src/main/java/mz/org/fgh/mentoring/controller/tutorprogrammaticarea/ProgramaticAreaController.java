@@ -3,6 +3,8 @@ package mz.org.fgh.mentoring.controller.tutorprogrammaticarea;
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -10,6 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.controller.tutor.TutorController;
+import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
 import org.slf4j.Logger;
@@ -32,17 +35,21 @@ public class ProgramaticAreaController extends BaseController {
     @Operation(summary = "Return a list off all ProgramaticArea")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "ProgramaticArea")
-    @Version(API_VERSION)
-    @Get
-    public List<ProgrammaticArea> getAll() {
+    @Get("/programmaticareas")
+    public List<ProgrammaticAreaDTO> getAll() {
         LOG.debug("Searching tutors version 2");
         return programaticAreaService.findProgrammaticAreasAll();
     }
 
     @Get
-    public List<ProgrammaticArea> findProgrammaticAreas(final String code, final String name){
+    public List<ProgrammaticAreaDTO> findProgrammaticAreas(final String code, final String name){
 
        return this.programaticAreaService.findProgrammaticAreas(code, name);
+    }
+
+    @Get("/tutor-progammatic-area/{tutorUuid}")
+    public List<ProgrammaticAreaDTO> findProgrammaticAreaByTutorProgrammaticAreaUuid(@PathVariable("tutorUuid") final String tutorUuid){
+      return this.programaticAreaService.findProgrammaticAreaByTutorProgrammaticAreaUuid(tutorUuid);
     }
 
     @Post(  consumes = MediaType.APPLICATION_JSON,

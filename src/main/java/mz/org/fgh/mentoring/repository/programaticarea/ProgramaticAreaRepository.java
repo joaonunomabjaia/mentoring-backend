@@ -16,4 +16,7 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
 
     @Query("select p from ProgramaticArea p where p.code like concat(concat('%', :code) ,'%')  and p.name like concat(concat('%', :name),'%') and p.lifeCycleStatus =:lifeCycleStatus")
     public List<ProgrammaticArea> findBySelectedFilter(final String code, final String name, final LifeCycleStatus lifeCycleStatus);
+
+    @Query("select p from ProgramaticArea p inner join fetch p.tutorProgrammaticAreas tpa inner join fetch tpa.tutor t where t.uuid =:tutorUuid")
+    List<ProgrammaticArea> findProgrammaticAreaByTutorProgrammaticAreaUuid(final String tutorUuid);
 }
