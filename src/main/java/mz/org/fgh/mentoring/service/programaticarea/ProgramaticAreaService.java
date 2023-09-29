@@ -1,10 +1,12 @@
 package mz.org.fgh.mentoring.service.programaticarea;
 
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
@@ -26,11 +28,35 @@ public class ProgramaticAreaService {
         return this.programaticAreaRepository.update(programaticArea);
     }
 
-    public List<ProgrammaticArea> findProgrammaticAreasAll(){
-        return this.programaticAreaRepository.findAll();
+    public List<ProgrammaticAreaDTO> findProgrammaticAreasAll(){
+        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
+
+        List<ProgrammaticArea> programmaticAreas = this.programaticAreaRepository.findAll();
+        for(ProgrammaticArea programmaticArea : programmaticAreas){
+            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
+        }
+        return programmaticAreaDTOS;
     }
 
-    public List<ProgrammaticArea> findProgrammaticAreas(final String code, final String name){
-        return this.programaticAreaRepository.findBySelectedFilter(code, name, LifeCycleStatus.ACTIVE);
+    public List<ProgrammaticAreaDTO> findProgrammaticAreas(final String code, final String name){
+        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
+
+        List<ProgrammaticArea> programmaticAreas = this.programaticAreaRepository.findBySelectedFilter(code, name, LifeCycleStatus.ACTIVE);
+        for(ProgrammaticArea programmaticArea : programmaticAreas){
+            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
+        }
+        return programmaticAreaDTOS;
+    }
+    public List<ProgrammaticAreaDTO> findProgrammaticAreaByTutorProgrammaticAreaUuid(final String tutorUuid){
+
+        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
+
+        List<ProgrammaticArea> programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaByTutorProgrammaticAreaUuid(tutorUuid);
+
+        for (ProgrammaticArea programmaticArea : programmaticAreas){
+            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
+        }
+
+        return programmaticAreaDTOS;
     }
 }
