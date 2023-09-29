@@ -29,6 +29,8 @@ public class UserDTO {
 
     private UserIndividual userIndividual;
 
+    private String uuid;
+
     public UserDTO(User user) {
         this.setUsername(user.getUsername());
         this.setPassword(user.getPassword());
@@ -36,5 +38,6 @@ public class UserDTO {
         this.setAdmin(user.isAdmin());
         this.setSalt(user.getSalt());
         this.setUserIndividual(user.getUserIndividual());
+        this.setUuid(user.getUuid());
     }
 }

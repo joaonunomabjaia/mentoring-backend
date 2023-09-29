@@ -591,11 +591,11 @@
     <changeSet author="voloide" id="USERS202309051605">
         <preConditions onFail="MARK_RAN">
             <not>
-                <columnExists tableName="users" columnName="TYPE"/>
+                <columnExists tableName="users" columnName="USERTYPE"/>
             </not>
         </preConditions>
         <addColumn tableName="users">
-            <column name="TYPE" type="varchar(50)"/>
+            <column name="USERTYPE" type="varchar(50)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

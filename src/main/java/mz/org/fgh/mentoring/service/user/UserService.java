@@ -31,9 +31,9 @@ public class UserService {
 
         if (possibleUser.isPresent()) {
             if (possibleUser.get().getPassword().equals(user.getPassword())) {
-                if (possibleUser.get().isTutor()) {
+                /*if (possibleUser.get().isTutor()) {
                     possibleUser.get().setUserIndividual(tutorRepository.findByUser(possibleUser.get()));
-                }
+                }*/
                 return new UserDTO(possibleUser.get());
             }
         }

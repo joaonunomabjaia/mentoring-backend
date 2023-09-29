@@ -20,29 +20,33 @@ public class TutorDTO implements Serializable {
 
     private String sunname;
 
-    @JsonProperty(value = "career")
+    @JsonProperty(value = "careerDTO")
     private CareerDTO careerDTO;
 
     private String phoneNumber;
+
+    private String code;
 
     private String email;
 
     private boolean isUser;
 
-    @JsonProperty(value = "partner")
+    @JsonProperty(value = "partnerDTO")
     private PartnerDTO partnerDTO;
 
-    @JsonProperty(value = "user")
+    @JsonProperty(value = "userDTO")
     private UserDTO userDTO;
 
     public TutorDTO(Tutor tutor) {
         this.setUuid(tutor.getUuid());
         this.setName(tutor.getName());
+        this.setCode(tutor.getCode());
         this.setSunname(tutor.getSurname());
         this.setCareerDTO(new CareerDTO(tutor.getCareer()));
         this.setPhoneNumber(tutor.getPhoneNumber());
         this.setEmail(tutor.getEmail());
         this.setUserDTO(new UserDTO(tutor.getUser()));
+        this.setPartnerDTO(new PartnerDTO(tutor.getPartner()));
 
     }
 }
