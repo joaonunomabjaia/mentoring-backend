@@ -2,6 +2,8 @@ package mz.org.fgh.mentoring.controller.career;
 
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -26,8 +28,9 @@ public class CareerController extends BaseController {
     @Inject
     private CareerTypeService careerTypeService;
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Get("/career/{limit}/{offset}")
+    @Get("/{limit}/{offset}")
     public List<CareerDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
 
         List<Career> careers = new ArrayList<>();

@@ -4,6 +4,8 @@ import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -23,6 +25,7 @@ import java.util.List;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.TUTOR_CONTROLLER)
 public class TutorController extends BaseController {
 
@@ -38,7 +41,7 @@ public class TutorController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Tutor")
     @Version(API_VERSION)
-    @Get("/tutors/{limit}/{offset}")
+    @Get("/{limit}/{offset}")
     public List<TutorDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
         LOG.debug("Searching tutors version 2");
         List<Tutor> tutors = new ArrayList<>();
