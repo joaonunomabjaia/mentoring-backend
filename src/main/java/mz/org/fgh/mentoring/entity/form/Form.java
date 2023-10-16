@@ -35,12 +35,12 @@ public class Form extends BaseEntity {
 
     @JsonIgnore
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
     private ProgrammaticArea programmaticArea;
 
     @JsonIgnore
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FORM_TYPE_ID", nullable = false)
     private FormType formType;
 

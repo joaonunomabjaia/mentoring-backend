@@ -35,10 +35,10 @@ public class ProgramaticAreaController extends BaseController {
     @Operation(summary = "Return a list off all ProgramaticArea")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "ProgramaticArea")
-    @Get("/programmaticareas")
-    public List<ProgrammaticAreaDTO> getAll() {
+    @Get("/programmaticareas/{limit}/{offset}")
+    public List<ProgrammaticAreaDTO> getAll(@PathVariable("limit") long limit, @PathVariable("offset") long offset) {
         LOG.debug("Searching tutors version 2");
-        return programaticAreaService.findProgrammaticAreasAll();
+        return programaticAreaService.findProgrammaticAreasAll(limit, offset);
     }
 
     @Get

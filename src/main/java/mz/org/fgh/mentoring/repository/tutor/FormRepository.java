@@ -27,4 +27,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
 
     @Query("select f FROM Form f INNER JOIN FETCH f.programmaticArea pa INNER JOIN FETCH f.formType  where pa.uuid = :programaticaAreaUuid")
     List<Form> findFormByProgrammaticAreaUuid(final String programaticaAreaUuid);
+
+    @Query(value = "select * from forms limit :lim offset :of ", nativeQuery = true)
+    List<Form> findFormWithLimit(long lim, long of);
 }
