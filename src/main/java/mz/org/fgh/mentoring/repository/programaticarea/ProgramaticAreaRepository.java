@@ -19,4 +19,7 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
 
     @Query("select p from ProgramaticArea p inner join fetch p.tutorProgrammaticAreas tpa inner join fetch tpa.tutor t where t.uuid =:tutorUuid")
     List<ProgrammaticArea> findProgrammaticAreaByTutorProgrammaticAreaUuid(final String tutorUuid);
+
+    @Query(value = "select * from programmatic_areas limit :lim offset :of ", nativeQuery = true)
+    List<ProgrammaticArea> findProgrammaticAreaWithLimit(long lim, long of);
 }

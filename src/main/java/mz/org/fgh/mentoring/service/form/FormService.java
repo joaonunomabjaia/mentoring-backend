@@ -19,11 +19,16 @@ public class FormService {
     @Inject
     FormRepository formRepository;
 
-    public List<FormDTO> findAll(){
+    public List<FormDTO> findAll(long limit, long offset){
 
         List<FormDTO> formDTOS = new ArrayList<>();
+        List<Form> forms = new ArrayList<>();
 
-        List<Form> forms = this.formRepository.findAll();
+        if(limit > 0){
+            forms = this.formRepository.findFormWithLimit(limit, offset);
+        }else{
+            forms = this.formRepository.findAll();
+        }
 
         for(Form form : forms){
             formDTOS.add(new FormDTO(form));

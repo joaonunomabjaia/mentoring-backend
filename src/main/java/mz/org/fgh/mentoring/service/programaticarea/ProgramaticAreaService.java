@@ -28,10 +28,16 @@ public class ProgramaticAreaService {
         return this.programaticAreaRepository.update(programaticArea);
     }
 
-    public List<ProgrammaticAreaDTO> findProgrammaticAreasAll(){
+    public List<ProgrammaticAreaDTO> findProgrammaticAreasAll(final long limit,final long offset){
         List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
+        List<ProgrammaticArea> programmaticAreas = new ArrayList<>();
 
-        List<ProgrammaticArea> programmaticAreas = this.programaticAreaRepository.findAll();
+        if(limit > 0){
+            programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaWithLimit(limit, offset);
+        }else{
+            programmaticAreas  = this.programaticAreaRepository.findAll();
+        }
+
         for(ProgrammaticArea programmaticArea : programmaticAreas){
             programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
         }

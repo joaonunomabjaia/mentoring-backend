@@ -36,11 +36,10 @@ public class FormController extends BaseController {
             .getLogger(FormController.class);
 
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Form")
-    @Get("/form")
-    public List<FormDTO> getAll() {
+    @Get("/form/{limit}/{offset}")
+    public List<FormDTO> getAll(@PathVariable("limit") long limit, @PathVariable("offset") long offset) {
         LOG.debug("Searching forms version 2");
-        return formService.findAll();
+        return formService.findAll(limit, offset);
     }
 
     @Get("/{id}")
