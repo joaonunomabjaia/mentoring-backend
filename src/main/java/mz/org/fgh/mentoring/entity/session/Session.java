@@ -22,12 +22,12 @@ import java.util.List;
 @ToString
 public class Session extends BaseEntity {
     @NotNull
-    @Column(name = "START_DATE", nullable = false)
-    private LocalDateTime startDate;
+    @Column(name = "DATE_BEGIN", nullable = false)
+    private LocalDateTime dateBigin;
 
     @NotNull
-    @Column(name = "END_DATE", nullable = false)
-    private LocalDateTime endDate;
+    @Column(name = "DATE_END", nullable = false)
+    private LocalDateTime dateEnd;
 
     @NotNull
     @Column(name = "PERFORMED_DATE", nullable = false)
