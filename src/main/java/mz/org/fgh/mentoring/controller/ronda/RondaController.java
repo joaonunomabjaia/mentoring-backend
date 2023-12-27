@@ -3,6 +3,8 @@ package mz.org.fgh.mentoring.controller.ronda;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
@@ -16,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.RONDA)
 public class RondaController extends BaseController {
 
