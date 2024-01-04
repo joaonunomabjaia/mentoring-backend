@@ -17,6 +17,7 @@ dependencies {
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
     implementation("io.micronaut:micronaut-http-client")
     implementation("io.micronaut:micronaut-jackson-databind")
+    implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("jakarta.annotation:jakarta.annotation-api")
     runtimeOnly("ch.qos.logback:logback-classic")
     implementation("io.micronaut:micronaut-validation")
@@ -25,6 +26,7 @@ dependencies {
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
     implementation 'io.swagger.core.v3:swagger-annotations'
+    runtimeOnly("org.yaml:snakeyaml")
 
     //implementation 'io.micronaut:micronaut-security-jwt:2.0.0.M2'
     implementation("io.micronaut.security:micronaut-security-jwt")
@@ -32,12 +34,6 @@ dependencies {
     implementation 'io.reactivex.rxjava2:rxjava:2.2.21'
 
     compileOnly("org.projectlombok:lombok")
-
-
-
-
-
-
 
 }
 
