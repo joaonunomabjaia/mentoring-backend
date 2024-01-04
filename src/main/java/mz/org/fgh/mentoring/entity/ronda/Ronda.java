@@ -29,7 +29,7 @@ public class Ronda extends BaseEntity {
     private LocalDateTime dateBegin;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "RONDA_TYPE")
+    @JoinColumn(name = "RONDA_TYPE_ID")
     private RondaType rondaType;
 
 
