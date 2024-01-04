@@ -31,4 +31,6 @@ public class RESTAPIMapping {
 
     public final static String USER_CONTROLLER = "user";
 
+    public final static String RONDA = "ronda";
+
 }
