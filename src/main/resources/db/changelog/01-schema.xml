@@ -90,6 +90,18 @@
         <renameTable  newTableName="tutor_programmatic_area"
                       oldTableName="TUTOR_PROGRAMMATIC_AREA"/>
     </changeSet>
+    <changeSet  author="miguel"  id="renameTable-rondas">
+        <renameTable  newTableName="rondas"
+                      oldTableName="RONDAS"/>
+    </changeSet>
+    <changeSet  author="miguel"  id="renameTable-ronda_mentor">
+        <renameTable  newTableName="ronda_mentor"
+                      oldTableName="RONDA_MENTOR"/>
+    </changeSet>
+    <changeSet  author="miguel"  id="renameTable-ronda_mentorandos">
+        <renameTable  newTableName="ronda_mentorandos"
+                      oldTableName="RONDA_MENTORANDOS"/>
+    </changeSet>
     <changeSet id="table_question_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -275,6 +287,18 @@
             <column name="CARRER_TYPE_ID"  type="bigint(20)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet author="voloide" id="Ronda-addColumn-question_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="rondas" columnName="RONDA_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="questions">
+            <column name="QUESTION_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+
     <changeSet id="update_form_type_id" author="voloide">
         <preConditions onFail="MARK_RAN">
             <sqlCheck expectedResult="0">
@@ -311,6 +335,18 @@
             update questions SET QUESTION_TYPE_ID = (SELECT ID FROM question_type  where code = questions.QUESTION_TYPE) where QUESTION_TYPE_ID is null;
         </sql>
     </changeSet>
+    <changeSet id="update_ronda_type_id" author="miguel">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM rondas
+                WHERE RONDA_TYPE_ID is not null
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            update rondas SET RONDA_TYPE_ID = (SELECT ID FROM rondatype  where code = rondas.RONDA_TYPE) where RONDA_TYPE_ID is null;
+        </sql>
+    </changeSet>
     <changeSet id="createTable-question_type_question_fk" author="voloide">
         <comment>
             Create question type foreign key on question table
@@ -332,6 +368,16 @@
                                  baseTableName="carrers" baseColumnNames="carrer_type_id"
                                  referencedTableName="career_type" referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet id="createTable-ronda_type_ronda_fk" author="miguel">
+        <comment>
+            Create ronda type foreign key on rondas table
+        </comment>
+        <addForeignKeyConstraint constraintName="ronda_type_ronda_fk"
+                                 baseTableName="rondas" baseColumnNames="ronda_type_id"
+                                 referencedTableName="ronda_type" referencedColumnNames="id"/>
+    </changeSet>
+
     <changeSet author="voloide" id="202308071159">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -375,6 +421,16 @@
         </preConditions>
         <renameTable  newTableName="partner_settings"
                       oldTableName="PARTNER_SETTINGS"/>
+    </changeSet>
+    <changeSet author="miguel" id="Ronda-addColumn-ronda_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="rondas" columnName="RONDA_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="questions">
+            <column name="RONDA_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
     </changeSet>
     <changeSet id="table_users" author="ialuj">
         <preConditions onFail="MARK_RAN">
@@ -445,6 +501,44 @@
             </column>
         </createTable>
     </changeSet>
+
+    <changeSet id="table_rondatype" author="miguel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="rondatype"/>
+            </not>
+        </preConditions>
+        <createTable tableName="rondatype">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="CODE" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
     <changeSet author="ialuj" id="Tutor-addColumn-user_id">
         <preConditions onFail="MARK_RAN">
             <not>
