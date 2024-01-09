@@ -37,7 +37,6 @@ public class UserDTO {
         this.setType(user.getUserType());
         this.setAdmin(user.isAdmin());
         this.setSalt(user.getSalt());
-        this.setUserIndividual(user.getUserIndividual());
         this.setUuid(user.getUuid());
     }
 }

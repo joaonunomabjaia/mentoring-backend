@@ -32,7 +32,7 @@ public class TutorService {
       return this.tutorRepository.findTutorWithLimit(limit, offset);
     }
 
-    public Tutor findTutorByUserUuid(final String userUuid) {
+    /*public Tutor findTutorByUserUuid(final String userUuid) {
         return this.tutorRepository.findTutorByUserUuid(userUuid);
-    }
+    }*/
 }

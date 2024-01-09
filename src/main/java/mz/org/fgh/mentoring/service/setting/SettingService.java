@@ -63,7 +63,7 @@ public class SettingService {
         try {
             final Tutor tutor = tutorRepository.findByUuid(uuid).get();
 
-            final Partner partner = tutor.getPartner();
+            final Partner partner = tutor.getEmployee().getPartner();
 
             List<PartnerSetting> partnerSettings = this.partnerSettingRepository.findByPartner(partner);
             if (partnerSettings.isEmpty()) {

@@ -81,12 +81,12 @@ public class TutorController extends BaseController {
         return new TutorDTO(tutor);
     }
 
-    @Get("/user/{userUuid}")
+  /*  @Get("/user/{userUuid}")
     public TutorDTO findTutorByUserUuid(@PathVariable("userUuid") String userUuid){
 
         Tutor tutor = this.tutorService.findTutorByUserUuid(userUuid);
         return new TutorDTO(tutor);
-    }
+    }*/
 
 
     @Post(

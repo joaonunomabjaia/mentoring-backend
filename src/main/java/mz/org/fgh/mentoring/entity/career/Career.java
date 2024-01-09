@@ -31,7 +31,4 @@ public class Career extends BaseEntity {
     @Column(name = "POSITION", nullable = false)
     private String position;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "career" )
-    private final Set<Tutor> tutors = new HashSet<>();
 }

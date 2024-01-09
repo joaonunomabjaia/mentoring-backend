@@ -598,6 +598,30 @@
             <column name="USERTYPE" type="varchar(50)"/>
         </addColumn>
     </changeSet>
+    <changeSet id="REF_TOKEN202309291150" author="voloide">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="refresh_token"/>
+            </not>
+        </preConditions>
+        <createTable tableName="refresh_token">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="USER_NAME" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="REFRESH_TOKEN" type="varchar(250)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVOKED" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
     <changeSet id="table_ronda_type" author="miguel">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -747,5 +771,172 @@
                 <constraints foreignKeyName="fk_mentorandos_ronda_mentorandos_id" references="tutoreds(id)" />
             </column>
         </createTable>
+    </changeSet>
+    <changeSet id="table_professional_category" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="professional_category"/>
+            </not>
+        </preConditions>
+        <createTable tableName="professional_category">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="EMPLOYEE_20231228" author="voloide">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="employee"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="employee">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="NAME" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SURNAME" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="NUIT" type="bigint(9)" >
+                <constraints unique="true"/>
+            </column>
+            <column name="CATEGORY_ID" type="bigint(20)" >
+                <constraints nullable="true" />
+            </column>
+            <column name="TRAINING_YEAR" type="bigint(4)" >
+                <constraints nullable="true" />
+            </column>
+            <column name="PHONE_NUMBER" type="varchar(50)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="EMAIL" type="varchar(200)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="PARTNER_ID" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="employee_category_fk" author="voloide">
+        <comment>
+            Create employee professional category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="employee_category_fk"
+                                 baseTableName="employee" baseColumnNames="CATEGORY_ID"
+                                 referencedTableName="professional_category" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="employee_partner_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="employee_partner_fk"
+                                 baseTableName="employee" baseColumnNames="PARTNER_ID"
+                                 referencedTableName="partners" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="TUTORS202401051201" author="voloide">
+        <dropForeignKeyConstraint baseTableName="tutors" constraintName="FK_TUTORS_PARTNER_ID" />
+        <dropForeignKeyConstraint baseTableName="tutors" constraintName="FK_e1hyoncgd4kv7kin3t7k352dj" />
+    </changeSet>
+    <changeSet author="voloide" id="TUTORS202401051200">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutors" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutors">
+            <column name="EMPLOYEE_ID" type="bigint(20)"/>
+        </addColumn>
+        <dropColumn tableName="tutors" columnName="NAME" />
+        <dropColumn tableName="tutors" columnName="CODE" />
+        <dropColumn tableName="tutors" columnName="PHONE_NUMBER" />
+        <dropColumn tableName="tutors" columnName="SURNAME" />
+        <dropColumn tableName="tutors" columnName="CARRER_ID" />
+        <dropColumn tableName="tutors" columnName="EMAIL" />
+        <dropColumn tableName="tutors" columnName="IS_USER" />
+        <dropColumn tableName="tutors" columnName="PARTNER_ID" />
+        <dropColumn tableName="tutors" columnName="is_admin" />
+        <dropColumn tableName="tutors" columnName="USER_ID" />
+    </changeSet>
+    <changeSet id="tutor_employee_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="tutor_employee_fk"
+                                 baseTableName="tutors" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="TUTORRED202401051201" author="voloide">
+        <dropForeignKeyConstraint baseTableName="tutoreds" constraintName="FK_allb4qoaputbxbex26qhgt6g1" />
+    </changeSet>
+    <changeSet author="voloide" id="TUTORED202401051200">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutoreds" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutoreds">
+            <column name="EMPLOYEE_ID" type="bigint(20)"/>
+        </addColumn>
+        <dropColumn tableName="tutoreds" columnName="NAME" />
+        <dropColumn tableName="tutoreds" columnName="CODE" />
+        <dropColumn tableName="tutoreds" columnName="PHONE_NUMBER" />
+        <dropColumn tableName="tutoreds" columnName="SURNAME" />
+        <dropColumn tableName="tutoreds" columnName="CARRER_ID" />
+        <dropColumn tableName="tutoreds" columnName="EMAIL" />
+        <dropColumn tableName="tutoreds" columnName="IS_USER" />
+    </changeSet>
+    <changeSet id="tutored_employee_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="tutored_employee_fk"
+                                 baseTableName="tutoreds" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

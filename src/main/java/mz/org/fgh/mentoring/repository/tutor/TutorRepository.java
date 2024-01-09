@@ -23,13 +23,13 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
     Optional<Tutor> findById(@NotNull Long id);
 
     Optional<Tutor> findByUuid(String uuid);
-
-    Tutor findByUser(User user);
+/*
+    Tutor findByUser(User user);*/
 
     @Query(value = "select * from tutors limit :lim offset :of ", nativeQuery = true)
     List<Tutor> findTutorWithLimit(long lim, long of);
-
+/*
     @Query("From Tutor t inner join fetch t.user u where u.uuid = :userUUID ")
-    Tutor findTutorByUserUuid(String userUUID);
+    Tutor findTutorByUserUuid(String userUUID);*/
 
 }
