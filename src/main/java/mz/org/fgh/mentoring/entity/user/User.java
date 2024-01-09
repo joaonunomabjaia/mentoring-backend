@@ -1,11 +1,14 @@
 package mz.org.fgh.mentoring.entity.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
+import mz.org.fgh.mentoring.entity.role.UserRole;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.persistence.Column;
@@ -13,10 +16,13 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
 import java.util.Calendar;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * @author Jose Julai Ritsure
@@ -45,26 +51,18 @@ public class User extends BaseEntity {
     @Column(name = "SALT", nullable = false, length = 500)
     private String salt;
 
-    @NotEmpty
-    @Column(name = "USERTYPE", nullable = false, length = 50)
-    private String userType;
-
-    @NotEmpty
-    @Column(name = "ADMIN", nullable = false, length = 500)
-    private boolean admin;
-
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EMPLOYEE_ID")
     private Employee employee;
 
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
+    private Set<UserRole> userRoles = new HashSet<>();
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
     }
 
-    public boolean isTutor() {
-        return this.userType.equals(USER_TYPE_TUTOR);
-    }
 }

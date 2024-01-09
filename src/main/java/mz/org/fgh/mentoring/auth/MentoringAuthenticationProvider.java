@@ -16,6 +16,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -60,5 +61,9 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
 
     private void getRelatedUserIndivudual(User user) {
 
+    }
+
+    private Collection<String> getAutorities(User user) {
+        return null;
     }
 }

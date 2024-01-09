@@ -34,8 +34,6 @@ public class UserDTO {
     public UserDTO(User user) {
         this.setUsername(user.getUsername());
         this.setPassword(user.getPassword());
-        this.setType(user.getUserType());
-        this.setAdmin(user.isAdmin());
         this.setSalt(user.getSalt());
         this.setUuid(user.getUuid());
     }
