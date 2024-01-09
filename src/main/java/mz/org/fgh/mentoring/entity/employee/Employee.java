@@ -31,10 +31,6 @@ import javax.validation.constraints.NotEmpty;
 public class Employee extends BaseEntity {
 
     @NotEmpty
-    @Column(name = "CODE", nullable = false, length = 50)
-    private String code;
-
-    @NotEmpty
     @Column(name = "NAME", nullable = false, length = 50)
     private String name;
 
