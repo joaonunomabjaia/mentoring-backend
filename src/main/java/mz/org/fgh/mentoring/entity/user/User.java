@@ -17,11 +17,14 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -36,9 +39,6 @@ import java.util.Set;
 @ToString
 public class User extends BaseEntity {
 
-    public final static String USER_TYPE_TUTOR = "TUTOR";
-    public final static String USER_TYPE_TUTORED = "TUTORED";
-
     @NotEmpty
     @Column(name = "USERNAME", nullable = false, length = 250)
     private String username;
@@ -52,13 +52,13 @@ public class User extends BaseEntity {
     private String salt;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EMPLOYEE_ID")
     private Employee employee;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "user")
-    private Set<UserRole> userRoles = new HashSet<>();
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
+    private List<UserRole> userRoles = new ArrayList<>();
 
     public User(String username, String password) {
         this.username = username;

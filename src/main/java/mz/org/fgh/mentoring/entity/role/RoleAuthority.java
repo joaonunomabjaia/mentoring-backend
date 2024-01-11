@@ -32,7 +32,7 @@ public class RoleAuthority extends BaseEntity {
     private Role role;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "authority_id", nullable = false)
     private Authority authority;
 }

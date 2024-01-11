@@ -18,15 +18,29 @@ micronaut:
     port: 8087
     cors:
       enabled: true
+---
 #tag::security[]
+micronaut:
   security:
-    authentication: bearer
+    authentication: bearer # <1>
     token:
       jwt:
         signatures:
           secret:
             generator:
-              secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"'
+              secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"' # <2>
+#end::security[]
+---
+#tag::refresh[]
+micronaut:
+  security:
+    token:
+      jwt:
+        generator:
+          refresh-token:
+            secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"' # <1>
+#end::refresh[]
+---
 # management endpoints settings
 endpoints:
   all:
@@ -34,16 +48,19 @@ endpoints:
     sensitive: false
   stop:
     enabled: false
+---
 netty:
   default:
     allocator:
       max-order: 3
+---
 # JSON settings
 jackson:
   property-naming-strategy: SNAKE_CASE
   serialization:
     writeDatesAsTimestamps: false
     writeDatesWithZoneId: true
+---
 # DB sources
 datasources:
   default:
@@ -54,6 +71,7 @@ datasources:
     db-type: mariadb
     dialect: MYSQL
     driver-class-name: org.mariadb.jdbc.Driver
+---
 #liquibase
 liquibase:
   datasources:
@@ -61,6 +79,7 @@ liquibase:
       enabled: true
       change-log: classpath:db/liquibase-changelog.xml
       drop-first: false
+---
 # micronaut-data-jpa
 jpa:
   default:
