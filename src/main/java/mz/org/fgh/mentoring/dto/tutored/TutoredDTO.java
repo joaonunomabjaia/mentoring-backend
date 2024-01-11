@@ -36,12 +36,9 @@ public class TutoredDTO implements Serializable {
 
     public TutoredDTO(Tutored tutored){
        this.setUuid(tutored.getUuid());
-       this.setCode(tutored.getCode());
-       this.setName(tutored.getName());
-       this.setSurname(tutored.getSurname());
-       this.setPhoneNumber(tutored.getPhoneNumber());
-       this.setEmail(tutored.getEmail());
-       this.setVersion(tutored.getVersion());
-       this.setCareerDTO(new CareerDTO(tutored.getCareer()));
+       this.setName(tutored.getEmployee().getName());
+       this.setSurname(tutored.getEmployee().getSurname());
+       this.setPhoneNumber(tutored.getEmployee().getPhoneNumber());
+       this.setEmail(tutored.getEmployee().getEmail());
     }
 }

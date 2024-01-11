@@ -9,14 +9,21 @@ import io.micronaut.security.authentication.AuthenticationResponse;
 import io.reactivex.BackpressureStrategy;
 import io.reactivex.Flowable;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.entity.user.UserDTO;
+import mz.org.fgh.mentoring.repository.authority.AuthorityRepository;
+import mz.org.fgh.mentoring.repository.role.RoleAuthorityRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Optional;
 
 @Singleton
@@ -24,9 +31,11 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
     private static final Logger LOG = LoggerFactory.getLogger(MentoringAuthenticationProvider.class);
 
     final UserRepository users;
+    final RoleAuthorityRepository roleAuthorityRepository;
 
-    public MentoringAuthenticationProvider(UserRepository users) {
+    public MentoringAuthenticationProvider(UserRepository users, RoleAuthorityRepository roleAuthorityRepository) {
         this.users = users;
+        this.roleAuthorityRepository = roleAuthorityRepository;
     }
 
     @Override
@@ -45,7 +54,10 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
                 if (possibleUser.get().getPassword().equals(secret)) {
                     this.getRelatedUserIndivudual(possibleUser.get());
                     LOG.debug("User {} logged in...", identity);
-                    emitter.onNext(AuthenticationResponse.success((String) identity, Collections.singletonList("USER_ROLE")));
+                    Map<String, Object> userMap = new HashMap<>();
+                    userMap.put("userInfo", new UserDTO(possibleUser.get()));
+
+                    emitter.onNext(AuthenticationResponse.success((String) identity, getAutorities(possibleUser.get()), userMap));
                     emitter.onComplete();
                     return;
                 } else {
@@ -60,5 +72,15 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
 
     private void getRelatedUserIndivudual(User user) {
 
+    }
+
+    private Collection<String> getAutorities(User user) {
+
+        Collection<String> autorities = new ArrayList<>();
+
+        for (UserRole userRole : user.getUserRoles()) {
+            autorities.add(userRole.getRole().getCode());
+        }
+        return autorities;
     }
 }

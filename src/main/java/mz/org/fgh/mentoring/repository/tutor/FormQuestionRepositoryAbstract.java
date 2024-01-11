@@ -33,7 +33,7 @@ public abstract class FormQuestionRepositoryAbstract implements FormQuestionRepo
                 "		AND (fp.uuid = :partnerUUID OR fp.uuid = :MISAUUUUID)", FormQuestion.class)
                 .setParameter("lifeCycleStatus", lifeCycleStatus)
                 .setParameter("tutorUuid", tutor.getUuid())
-                .setParameter("partnerUUID", tutor.getPartner().getUuid())
+                .setParameter("partnerUUID", tutor.getEmployee().getPartner().getUuid())
                 .setParameter("MISAUUUUID", "398f0ffeb8fe11edafa10242ac120002")
                 .getResultList();
     }

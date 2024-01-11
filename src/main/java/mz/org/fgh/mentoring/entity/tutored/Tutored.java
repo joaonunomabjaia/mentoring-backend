@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.career.Career;
+import mz.org.fgh.mentoring.entity.employee.Employee;
+import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.entity.user.UserIndividual;
 
@@ -20,39 +22,9 @@ import javax.validation.constraints.NotEmpty;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class Tutored extends BaseEntity implements UserIndividual {
-
-    @NotEmpty
-    @Column(name = "CODE", nullable = false, length = 50)
-    private String code;
-
-    @NotEmpty
-    @Column(name = "NAME", nullable = false, length = 50)
-    private String name;
-
-    @NotEmpty
-    @Column(name = "SURNAME", nullable = false, length = 50)
-    private String surname;
-
-    @NotEmpty
-    @Column(name = "PHONE_NUMBER", nullable = false, length = 100)
-    private String phoneNumber;
-
-    @Column(name = "EMAIL", length = 50)
-    @Email
-    private String email;
-
-    @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "CARRER_ID", nullable = false)
-    private Career career;
-
-    @Version
-    @Column(name = "VERSION")
-    private int version;
+public class Tutored extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "USER_ID")
-    private User user;
-
+    @JoinColumn(name = "EMPLOYEE_ID")
+    private Employee employee;
 }

@@ -598,6 +598,30 @@
             <column name="USERTYPE" type="varchar(50)"/>
         </addColumn>
     </changeSet>
+    <changeSet id="REF_TOKEN202309291150" author="voloide">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="refresh_token"/>
+            </not>
+        </preConditions>
+        <createTable tableName="refresh_token">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="USER_NAME" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="REFRESH_TOKEN" type="varchar(250)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVOKED" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
     <changeSet id="table_ronda_type" author="miguel">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -747,5 +771,459 @@
                 <constraints foreignKeyName="fk_mentorandos_ronda_mentorandos_id" references="tutoreds(id)" />
             </column>
         </createTable>
+    </changeSet>
+    <changeSet id="table_professional_category" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="professional_category"/>
+            </not>
+        </preConditions>
+        <createTable tableName="professional_category">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="EMPLOYEE_20231228" author="voloide">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="employee"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="employee">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="NAME" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SURNAME" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="NUIT" type="bigint(9)" >
+                <constraints unique="true"/>
+            </column>
+            <column name="CATEGORY_ID" type="bigint(20)" >
+                <constraints nullable="true" />
+            </column>
+            <column name="TRAINING_YEAR" type="bigint(4)" >
+                <constraints nullable="true" />
+            </column>
+            <column name="PHONE_NUMBER" type="varchar(50)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="EMAIL" type="varchar(200)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="PARTNER_ID" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="employee_category_fk" author="voloide">
+        <comment>
+            Create employee professional category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="employee_category_fk"
+                                 baseTableName="employee" baseColumnNames="CATEGORY_ID"
+                                 referencedTableName="professional_category" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="employee_partner_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="employee_partner_fk"
+                                 baseTableName="employee" baseColumnNames="PARTNER_ID"
+                                 referencedTableName="partners" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="TUTORS202401051201" author="voloide">
+        <dropForeignKeyConstraint baseTableName="tutors" constraintName="FK_TUTORS_PARTNER_ID" />
+        <dropForeignKeyConstraint baseTableName="tutors" constraintName="FK_e1hyoncgd4kv7kin3t7k352dj" />
+    </changeSet>
+    <changeSet author="voloide" id="TUTORS202401051200">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutors" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutors">
+            <column name="EMPLOYEE_ID" type="bigint(20)"/>
+        </addColumn>
+        <dropColumn tableName="tutors" columnName="NAME" />
+        <dropColumn tableName="tutors" columnName="CODE" />
+        <dropColumn tableName="tutors" columnName="PHONE_NUMBER" />
+        <dropColumn tableName="tutors" columnName="SURNAME" />
+        <dropColumn tableName="tutors" columnName="CARRER_ID" />
+        <dropColumn tableName="tutors" columnName="EMAIL" />
+        <dropColumn tableName="tutors" columnName="IS_USER" />
+        <dropColumn tableName="tutors" columnName="PARTNER_ID" />
+        <dropColumn tableName="tutors" columnName="is_admin" />
+        <dropColumn tableName="tutors" columnName="USER_ID" />
+    </changeSet>
+    <changeSet id="tutor_employee_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="tutor_employee_fk"
+                                 baseTableName="tutors" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="TUTORRED202401051201" author="voloide">
+        <dropForeignKeyConstraint baseTableName="tutoreds" constraintName="FK_allb4qoaputbxbex26qhgt6g1" />
+    </changeSet>
+    <changeSet author="voloide" id="TUTORED202401051200">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutoreds" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutoreds">
+            <column name="EMPLOYEE_ID" type="bigint(20)"/>
+        </addColumn>
+        <dropColumn tableName="tutoreds" columnName="NAME" />
+        <dropColumn tableName="tutoreds" columnName="CODE" />
+        <dropColumn tableName="tutoreds" columnName="PHONE_NUMBER" />
+        <dropColumn tableName="tutoreds" columnName="SURNAME" />
+        <dropColumn tableName="tutoreds" columnName="CARRER_ID" />
+        <dropColumn tableName="tutoreds" columnName="EMAIL" />
+        <dropColumn tableName="tutoreds" columnName="IS_USER" />
+    </changeSet>
+    <changeSet id="tutored_employee_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="tutored_employee_fk"
+                                 baseTableName="tutoreds" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet author="voloide" id="USER202401091200">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="users" columnName="USERTYPE"/>
+                <columnExists tableName="users" columnName="ADMIN"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="users" columnName="USERTYPE" />
+        <dropColumn tableName="users" columnName="ADMIN" />
+    </changeSet>
+    <changeSet id="ROLE_202401091037" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="role"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="role">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="level" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="authority_202401091039" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="authority"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="authority">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="module" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="role_authority_202401091040" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="role_authority"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="role_authority">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="role_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="authority_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="role_authority_role_fk"
+                                 baseTableName="role_authority" baseColumnNames="role_id"
+                                 referencedTableName="role" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="role_authority_authority_fk"
+                                 baseTableName="role_authority" baseColumnNames="authority_id"
+                                 referencedTableName="authority" referencedColumnNames="ID"/>
+    </changeSet>
+    <changeSet id="user_role_202401091050" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_role"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="user_role">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="role_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="user_role_role_fk"
+                                 baseTableName="user_role" baseColumnNames="role_id"
+                                 referencedTableName="role" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="user_role_user_fk"
+                                 baseTableName="user_role" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="ID"/>
+    </changeSet>
+    <changeSet id="role_creation_20240109113100" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM role
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (100,'Administrador','NATIONAL_ADMINISTRATOR','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (101,'Administrador','PROVINCIAL_ADMINISTRATOR','Provincial',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (102,'Administrador','DISTRICT_ADMINISTRATOR','Distrital',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (103,'Mentor','NATIONAL_MENTOR','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (104,'Mentor','PROVINCIAL_MENTOR','Provincial',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (105,'Mentor','DISTRICT_MENTOR','Distrital',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (106,'Mentor','HEALTH_FACILITY_MENTOR','US',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (107,'Mentorando','MENTEE','US',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="authority_creation_202401091229" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM authority
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (100,'Registo de tabelas de competencias','CREATE_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (101,'Edicao de tabelas de competencias','EDIT_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (102,'Remover de tabelas de competencias','REMOVE_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (103,'Pesquisar de tabelas de competencias','SEARCH_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (104,'Registo de mentores','CREATE_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (105,'Edicao de mentores','EDIT_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (106,'Remover de mentores','REMOVE_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (107,'Pesquisar de mentores','SEARCH_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (108,'Registo de mentorandos','CREATE_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (109,'Edicao de mentorandos','EDIT_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (110,'Remover de mentorandos','REMOVE_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (111,'Pesquisar de mentorandos','SEARCH_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (112,'Registo de recursos de EA','CREATE_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (113,'Edicao de recursos de EA','EDIT_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (114,'Remover de recursos de EA','REMOVE_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (115,'Pesquisar de recursos de EA','SEARCH_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (116,'Registo de rondas','CREATE_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (117,'Edicao de rondas','EDIT_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (118,'Remover de rondas','REMOVE_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (119,'Pesquisar de rondas','SEARCH_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (120,'Relatorios','REPORTS','Relatorios',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (121,'Configuracoes','SYSTEM_CONFIGURATION','Configuracoes',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="root_role_20240109113100" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM role WHERE code = 'ROOT';
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (500,'root','ROOT','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO role_authority (ID,role_id,authority_id,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            SELECT NULL,500,ID,uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE' FROM authority;
+            INSERT IGNORE INTO users (id,uuid,username,password,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT,LIFE_CYCLE_STATUS,SALT) VALUES
+                (4,'9225441d-4bfd-11ee-9e75-0242ac150002','admin','admin','admin','2023-09-05 17:04:54',NULL,NULL,'ACTIVE','379c69f2-4bca-11ee-9e75-0242ac150002');
+            INSERT INTO user_role (ID,role_id,user_id,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (1,500,4, uuid() ,'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet author="voloide" id="USER202401091400">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="users">
+            <column name="EMPLOYEE_ID" type="bigint(20)"> </column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="users_employee_fk"
+                                 baseTableName="users" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
