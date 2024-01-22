@@ -6,6 +6,10 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.employee.Employee;
+import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.location.District;
+import mz.org.fgh.mentoring.entity.location.Location;
+import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
@@ -65,4 +69,56 @@ public class User extends BaseEntity {
         this.password = password;
     }
 
+
+    public boolean hasNationalAccess() {
+        for (UserRole userRole : this.userRoles) {
+            if (userRole.getRole().getHierarchyLevel() == 1) return true;
+        }
+        return false;
+    }
+
+    public boolean hasProvincialAccess() {
+        for (UserRole userRole : this.userRoles) {
+            if (userRole.getRole().getHierarchyLevel() == 2) return true;
+        }
+        return false;
+    }
+
+    public boolean hasDistrictAccess() {
+        for (UserRole userRole : this.userRoles) {
+            if (userRole.getRole().getHierarchyLevel() == 3) return true;
+        }
+        return false;
+    }
+
+    public boolean hasHFAccess() {
+        for (UserRole userRole : this.userRoles) {
+            if (userRole.getRole().getHierarchyLevel() == 4) return true;
+        }
+        return false;
+    }
+
+    public List<Province> getGrantedProvinces() {
+        List<Province> locations = new ArrayList<>();
+        for (Location location : this.employee.getLocations()) {
+            if (location.getProvince() != null) locations.add(location.getProvince());
+        }
+        return locations;
+    }
+
+    public List<District> getGrantedDistricts() {
+        List<District> locations = new ArrayList<>();
+        for (Location location : this.employee.getLocations()) {
+            if (location.getDistrict()!= null) locations.add(location.getDistrict());
+        }
+        return locations;
+    }
+
+    public List<HealthFacility> getGrantedHFs() {
+        List<HealthFacility> locations = new ArrayList<>();
+        for (Location location : this.employee.getLocations()) {
+            if (location.getHealthFacility() != null) locations.add(location.getHealthFacility());
+        }
+        return locations;
+    }
 }

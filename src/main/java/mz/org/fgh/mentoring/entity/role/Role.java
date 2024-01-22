@@ -43,6 +43,10 @@ public class Role extends BaseEntity {
     @Column(name = "level", nullable = false)
     private  String level;
 
+    @NotEmpty
+    @Column(name = "HIERARCHY_LEVEL", nullable = false)
+    private  int hierarchyLevel;
+
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "role")
     private List<RoleAuthority> roleAuthorities;
 

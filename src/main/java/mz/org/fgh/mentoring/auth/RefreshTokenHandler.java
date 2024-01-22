@@ -15,14 +15,13 @@ import java.util.Optional;
 import static io.micronaut.security.errors.IssuingAnAccessTokenErrorCode.INVALID_GRANT;
 
 @Singleton
-public class RefreshTokenHandler {
+public class RefreshTokenHandler implements RefreshTokenPersistence {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
     public RefreshTokenHandler(RefreshTokenRepository refreshTokenRepository) {
         this.refreshTokenRepository = refreshTokenRepository;
     }
-
 
     public void persistToken(RefreshTokenGeneratedEvent event) {
         if (event != null &&
@@ -31,7 +30,13 @@ public class RefreshTokenHandler {
                 event.getAuthentication().getName() != null) {
             String payload = event.getRefreshToken();
             RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity(event.getAuthentication().getName(), payload, false);
-            refreshTokenRepository.save(refreshTokenEntity);
+            RefreshTokenEntity existingRefreshToken =  refreshTokenRepository.findByUsername(event.getAuthentication().getName());
+            if (existingRefreshToken != null) {
+                existingRefreshToken.setRefreshToken(refreshTokenEntity.getRefreshToken());
+                refreshTokenRepository.updateByUsername(existingRefreshToken, event.getAuthentication().getName());
+            } else {
+                refreshTokenRepository.save(refreshTokenEntity);
+            }
         }
     }
 

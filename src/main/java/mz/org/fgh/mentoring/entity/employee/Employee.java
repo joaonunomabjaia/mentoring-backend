@@ -8,17 +8,23 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import java.util.List;
+import java.util.Set;
 
 @Schema(name = "Employee", description = "A professional that works on an health facility")
 @Entity(name = "Employee")
@@ -61,5 +67,9 @@ public class Employee extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PARTNER_ID")
     private Partner partner;
+
+    @NotNull
+    @OneToMany(mappedBy="employee", fetch = FetchType.EAGER)
+    private Set<Location> locations;
 
 }

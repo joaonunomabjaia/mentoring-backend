@@ -31,7 +31,4 @@ public class HealthFacility extends BaseEntity {
     @Column(name = "HEALTH_FACILITY", nullable = false, length = 80)
     private String healthFacility;
 
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.EAGER, mappedBy = "location")
-    private Set<TutorLocation> tutorLocations = new HashSet<>();
 }

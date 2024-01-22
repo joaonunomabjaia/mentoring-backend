@@ -4,7 +4,7 @@ import io.micronaut.core.annotation.Introspected;
 import io.micronaut.security.token.jwt.render.BearerAccessRefreshToken;
 import lombok.Getter;
 import lombok.Setter;
-import mz.org.fgh.mentoring.entity.user.UserDTO;
+import mz.org.fgh.mentoring.dto.user.UserDTO;
 
 import java.util.Collection;
 

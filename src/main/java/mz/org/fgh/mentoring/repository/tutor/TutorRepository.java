@@ -1,19 +1,16 @@
 package mz.org.fgh.mentoring.repository.tutor;
 
 import io.micronaut.data.annotation.Query;
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
 
-@Repository
+
 public interface TutorRepository extends CrudRepository<Tutor, Long> {
 
     @Override
@@ -28,6 +25,9 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
 
     @Query(value = "select * from tutors limit :lim offset :of ", nativeQuery = true)
     List<Tutor> findTutorWithLimit(long lim, long of);
+
+    List<Tutor> search(String name, Long nuit, User User, String phoneNumber);
+
 /*
     @Query("From Tutor t inner join fetch t.user u where u.uuid = :userUUID ")
     Tutor findTutorByUserUuid(String userUUID);*/

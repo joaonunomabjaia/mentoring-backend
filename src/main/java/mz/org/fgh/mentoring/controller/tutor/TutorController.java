@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.controller.tutor;
 
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
@@ -17,16 +19,18 @@ import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@Controller(RESTAPIMapping.TUTOR_CONTROLLER)
+@Controller("mentor")
 public class TutorController extends BaseController {
 
     @Inject
@@ -59,6 +63,27 @@ public class TutorController extends BaseController {
         return tutorDTOS;
     }
 
+    @Operation(summary = "Return a list off all Tutor")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Mentor")
+    @Get("/search")
+    public List<TutorDTO> search(@Nullable @QueryValue("name") String name,
+                                 @Nullable @QueryValue("nuit") Long nuit,
+                                 @NonNull @QueryValue("userId") Long userId,
+                                 @Nullable @QueryValue("phoneNumber") String phoneNumber) {
+        LOG.debug("Searching tutors ....");
+        List<Tutor> tutors = new ArrayList<>();
+        List<TutorDTO> tutorDTOS = new ArrayList<>();
+
+        tutors =  tutorService.search(name, nuit, userId, phoneNumber);
+
+
+        for (Tutor tutor : tutors){
+            tutorDTOS.add(new TutorDTO(tutor));
+        }
+        return tutorDTOS;
+    }
+
     @Get
     public List<TutorDTO> getAllV1() {
         LOG.debug("Searching tutors version 1");
@@ -68,6 +93,7 @@ public class TutorController extends BaseController {
 
         tutors = tutorService.findAll();
 
+        if (!Utilities.listHasElements((ArrayList<?>) tutors)) return null;
         for(Tutor tutor : tutors){
             tutorDTOS.add(new TutorDTO(tutor));
         }
