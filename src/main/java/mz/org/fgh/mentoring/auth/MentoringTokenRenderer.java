@@ -7,7 +7,7 @@ import io.micronaut.security.token.jwt.render.AccessRefreshToken;
 import io.micronaut.security.token.jwt.render.BearerTokenRenderer;
 import io.micronaut.security.token.jwt.render.TokenRenderer;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.entity.user.UserDTO;
+import mz.org.fgh.mentoring.dto.user.UserDTO;
 
 @Singleton
 @Replaces(value = BearerTokenRenderer.class)

@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.role;
 
+import io.micronaut.data.annotation.Where;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -24,6 +25,7 @@ import javax.validation.constraints.NotNull;
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
+@Where("@.lifeCycleStatus = 'ACTIVE'")
 public class UserRole  extends BaseEntity {
 
     @NotNull

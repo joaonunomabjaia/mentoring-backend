@@ -11,8 +11,7 @@ import io.reactivex.Flowable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.entity.user.UserDTO;
-import mz.org.fgh.mentoring.repository.authority.AuthorityRepository;
+import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.repository.role.RoleAuthorityRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import org.reactivestreams.Publisher;
@@ -21,7 +20,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -49,13 +47,15 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
 
             if (possibleUser.isPresent()) {
 
+                UserDTO userDTO = users.findOne(possibleUser.get().getId());
+
                 String secret = (String) authenticationRequest.getSecret();
 
                 if (possibleUser.get().getPassword().equals(secret)) {
                     this.getRelatedUserIndivudual(possibleUser.get());
                     LOG.debug("User {} logged in...", identity);
                     Map<String, Object> userMap = new HashMap<>();
-                    userMap.put("userInfo", new UserDTO(possibleUser.get()));
+                    userMap.put("userInfo", userDTO);
 
                     emitter.onNext(AuthenticationResponse.success((String) identity, getAutorities(possibleUser.get()), userMap));
                     emitter.onComplete();

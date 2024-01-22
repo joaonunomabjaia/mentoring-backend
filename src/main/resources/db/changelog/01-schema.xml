@@ -1226,4 +1226,95 @@
                                  baseTableName="users" baseColumnNames="EMPLOYEE_ID"
                                  referencedTableName="employee" referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="LOCATION_202401181702" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="location"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="location">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EMPLOYEE_ID" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="PROVINCE_ID" type="bigint(20)" >
+            </column>
+            <column name="DISTRICT_ID" type="bigint(20)" >
+            </column>
+            <column name="HEALTH_FACILITY_ID" type="bigint(20)" >
+            </column>
+            <column name="LOCATION_LEVEL" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="location_employee_fk"
+                                 baseTableName="location" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_province_fk"
+                                 baseTableName="location" baseColumnNames="PROVINCE_ID"
+                                 referencedTableName="provinces" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_district_fk"
+                                 baseTableName="location" baseColumnNames="DISTRICT_ID"
+                                 referencedTableName="districts" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_health_facility_fk"
+                                 baseTableName="location" baseColumnNames="HEALTH_FACILITY_ID"
+                                 referencedTableName="health_facilities" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_created_by_fk"
+                                 baseTableName="location" baseColumnNames="CREATED_BY"
+                                 referencedTableName="users" referencedColumnNames="uuid"/>
+    </changeSet>
+    <changeSet author="voloide" id="ROLE202401190848">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="role" columnName="HIERARCHY_LEVEL"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="role">
+            <column name="HIERARCHY_LEVEL" type="bigint(2)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="ROLE202401190851">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="role" columnName="HIERARCHY_LEVEL"/>
+        </preConditions>
+        <sql>
+            UPDATE role SET HIERARCHY_LEVEL = 1 WHERE code in ('NATIONAL_ADMINISTRATOR', 'NATIONAL_MENTOR', 'ROOT');
+            UPDATE role SET HIERARCHY_LEVEL = 2 WHERE code in ('PROVINCIAL_ADMINISTRATOR', 'PROVINCIAL_MENTOR');
+            UPDATE role SET HIERARCHY_LEVEL = 3 WHERE code in ('DISTRICT_ADMINISTRATOR', 'DISTRICT_MENTOR');
+            UPDATE role SET HIERARCHY_LEVEL = 4 WHERE code in ('HEALTH_FACILITY_MENTOR', 'MENTEE');
+        </sql>
+    </changeSet>
+    <changeSet author="voloide" id="LOCATION202401191111">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM location WHERE id = 1;
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO location (ID,EMPLOYEE_ID,LOCATION_LEVEL,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (1,1,'NATIONAL','9225441d-4bfd-11ee-9e75-0242ac150023','9225441d-4bfd-11ee-9e75-0242ac150002','2023-09-05 17:04:54.000','ACTIVE');
+        </sql>
+    </changeSet>
 </databaseChangeLog>

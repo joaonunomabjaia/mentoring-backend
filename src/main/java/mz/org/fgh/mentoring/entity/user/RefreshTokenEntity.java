@@ -24,6 +24,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
+import java.util.Date;
 
 
 @Schema(name = "RefreshTokenEntity", description = "Entidade responsavel em guardar os tokens para refresh")
@@ -70,5 +71,6 @@ public class RefreshTokenEntity {
         this.username = username;
         this.refreshToken = refreshToken;
         this.revoked = revoked;
+        this.dateCreated = new Date().toInstant();
     }
 }

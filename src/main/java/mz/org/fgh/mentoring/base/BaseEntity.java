@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.base;
 
+import io.micronaut.data.annotation.Where;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -16,6 +17,7 @@ import java.util.Calendar;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
+@Where("@.lifeCycleStatus = 'ACTIVE'")
 public abstract class BaseEntity implements RestAPIResponse, Serializable {
     @Id
     @GeneratedValue(

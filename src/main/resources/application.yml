@@ -43,6 +43,7 @@ micronaut:
 ---
 # management endpoints settings
 endpoints:
+
   all:
     enabled: false
     sensitive: false
@@ -56,7 +57,7 @@ netty:
 ---
 # JSON settings
 jackson:
-  property-naming-strategy: SNAKE_CASE
+  property-naming-strategy: LOWER_CAMEL_CASE
   serialization:
     writeDatesAsTimestamps: false
     writeDatesWithZoneId: true

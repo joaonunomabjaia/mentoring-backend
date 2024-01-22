@@ -3,11 +3,10 @@ package mz.org.fgh.mentoring.service.user;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.entity.user.UserDTO;
+import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
-import mz.org.fgh.mentoring.service.tutored.TutoredService;
 
 import java.util.Optional;
 
@@ -34,7 +33,7 @@ public class UserService {
                 /*if (possibleUser.get().isTutor()) {
                     possibleUser.get().setUserIndividual(tutorRepository.findByUser(possibleUser.get()));
                 }*/
-                return new UserDTO(possibleUser.get());
+                return null;
             }
         }
 
