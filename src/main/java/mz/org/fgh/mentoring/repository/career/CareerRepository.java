@@ -1,4 +1,4 @@
-package mz.org.fgh.mentoring.repository.tutor;
+package mz.org.fgh.mentoring.repository.career;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;

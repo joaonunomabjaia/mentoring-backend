@@ -1,29 +1,27 @@
-package mz.org.fgh.mentoring.controller.tutor;
+package mz.org.fgh.mentoring.controller.form;
 
-import io.micronaut.core.version.annotation.Version;
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.dto.tutor.FormDTO;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.service.form.FormService;
-import mz.org.fgh.mentoring.service.formquestion.FormQuestionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
-
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.FORM_CONTROLLER)
 public class FormController extends BaseController {
 
@@ -80,6 +78,19 @@ public class FormController extends BaseController {
     public Form update(@Body Form form){
         LOG.debug("update form {} ", form);
         return this.formService.update(form);
+    }
+
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Get("/getformsbycodeornameorprogrammaticarea")
+    public List<FormDTO> getFormsByCodeAndNameAndProgrammaticAreaName(
+            @NonNull @QueryValue("userId") Long userId,
+            @Nullable @QueryValue("code") String code,
+            @Nullable @QueryValue("name") String name,
+            @Nullable @QueryValue("programmaticArea") String programmaticArea
+    ) {
+        List<FormDTO> forms = new ArrayList<>(0);
+        forms = formService.search(userId, code, name, programmaticArea);;
+        return forms;
     }
 
 }

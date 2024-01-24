@@ -1,18 +1,20 @@
-package mz.org.fgh.mentoring.repository.tutor;
+package mz.org.fgh.mentoring.repository.form;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface FormRepository extends CrudRepository<Form, Long> {
 
+    @Override
     List<Form> findAll();
     Optional<Form> findById(@NotNull Long id);
 
@@ -30,4 +32,6 @@ public interface FormRepository extends CrudRepository<Form, Long> {
 
     @Query(value = "select * from forms limit :lim offset :of ", nativeQuery = true)
     List<Form> findFormWithLimit(long lim, long of);
+
+    List<Form> search(final String code, final String name, final String programmaticArea);
 }

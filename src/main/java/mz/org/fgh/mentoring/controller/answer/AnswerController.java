@@ -1,4 +1,4 @@
-package mz.org.fgh.mentoring.controller.tutor;
+package mz.org.fgh.mentoring.controller.answer;
 
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
@@ -14,8 +14,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 

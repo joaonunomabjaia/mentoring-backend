@@ -4,9 +4,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -28,6 +30,11 @@ public class ProgrammaticArea extends BaseEntity {
 
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "PROGRAM_ID", nullable = false)
+    private Program program;
 
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "programmaticArea")
