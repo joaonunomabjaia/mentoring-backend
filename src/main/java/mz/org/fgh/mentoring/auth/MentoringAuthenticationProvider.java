@@ -47,15 +47,14 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
 
             if (possibleUser.isPresent()) {
 
-                UserDTO userDTO = users.findOne(possibleUser.get().getId());
+                UserDTO userDTO = new UserDTO(possibleUser.get());
 
                 String secret = (String) authenticationRequest.getSecret();
 
                 if (possibleUser.get().getPassword().equals(secret)) {
-                    this.getRelatedUserIndivudual(possibleUser.get());
                     LOG.debug("User {} logged in...", identity);
                     Map<String, Object> userMap = new HashMap<>();
-                    userMap.put("userInfo", userDTO);
+                    userMap.put("userInfo", possibleUser.get().getId());
 
                     emitter.onNext(AuthenticationResponse.success((String) identity, getAutorities(possibleUser.get()), userMap));
                     emitter.onComplete();
@@ -68,10 +67,6 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
             }
             emitter.onError(new AuthenticationException(new AuthenticationFailed("Wrong username or password")));
         }, BackpressureStrategy.ERROR);
-    }
-
-    private void getRelatedUserIndivudual(User user) {
-
     }
 
     private Collection<String> getAutorities(User user) {
