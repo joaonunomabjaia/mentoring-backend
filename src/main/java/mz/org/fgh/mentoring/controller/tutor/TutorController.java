@@ -119,7 +119,7 @@ public class TutorController extends BaseController {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON
     )
-    public HttpResponse<RestAPIResponse> create (@Body Tutor tutor) {
+    public HttpResponse<RestAPIResponse> create (@Body TutorDTO tutorDTO) {
 
 
         LOG.debug("Created tutor {}", new Tutor());

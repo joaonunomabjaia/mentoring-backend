@@ -1,46 +1,48 @@
 package mz.org.fgh.mentoring.controller.Partner;
 
-import io.micronaut.core.version.annotation.Version;
-import io.micronaut.http.HttpResponse;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.controller.tutor.TutorController;
+import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.service.partner.PartnerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
-
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.PARTNER)
 public class PartnerController extends BaseController {
 
-    private PartnerService partnerService;
+    private final PartnerService partnerService;
 
-    public static final Logger LOG = LoggerFactory.getLogger(TutorController.class);
+    public static final Logger LOG = LoggerFactory.getLogger(PartnerController.class);
 
     public PartnerController(PartnerService partnerService) {
         this.partnerService = partnerService;
     }
 
-    @Operation(summary = "Return a list off all Partner")
+    @Operation(summary = "Return a list off all Partners")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Partner")
-    @Version(API_VERSION)
-    @Get
-    public List<Partner> getAll() {
-        LOG.debug("Searching tutors version 2");
-        return this.partnerService.findAllPartners();
+    @Get("getall")
+    public List<PartnerDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
+                                   @Nullable @QueryValue("offset") Long offset) {
+        return this.partnerService.getAll(limit, offset);
     }
 
     @Get

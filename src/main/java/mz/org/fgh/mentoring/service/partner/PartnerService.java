@@ -1,12 +1,15 @@
 package mz.org.fgh.mentoring.service.partner;
 
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +44,14 @@ public class PartnerService {
     public Partner updatePartner(final Partner partner){
 
         return this.partnerRepository.update(partner);
+    }
+
+    public List<PartnerDTO> getAll(Long limit, Long offset) {
+        try {
+            return Utilities.parseList(this.partnerRepository.findAll(), PartnerDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

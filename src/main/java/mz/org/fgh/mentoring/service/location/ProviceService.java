@@ -1,10 +1,13 @@
 package mz.org.fgh.mentoring.service.location;
 
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.location.ProvinceRepository;
+import mz.org.fgh.mentoring.util.Utilities;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
 
@@ -41,5 +44,14 @@ public class ProviceService {
 
     public List<Province> findAllProvinces() {
         return this.provinceRepository.findAll();
+    }
+
+    public List<ProvinceDTO> getAll(Long limit, Long offset) {
+        try {
+            return Utilities.parseList(this.provinceRepository.findAll(), ProvinceDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

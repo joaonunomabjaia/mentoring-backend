@@ -19,7 +19,7 @@ public class RESTAPIMapping {
 
     public final static String METADATA ="metadata";
 
-    public final static String PARTNER = "v2/partners";
+    public final static String PARTNER = "partner";
 
     public final static String PROGRAMMATIC_AREAS ="programmaticareas";
 
