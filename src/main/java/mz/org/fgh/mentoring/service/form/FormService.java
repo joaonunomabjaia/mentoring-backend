@@ -2,10 +2,12 @@ package mz.org.fgh.mentoring.service.form;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.tutor.FormDTO;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.SampleQuestion;
-import mz.org.fgh.mentoring.repository.tutor.FormRepository;
+import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.form.FormRepository;
+import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.ArrayList;
@@ -16,8 +18,13 @@ import java.util.Optional;
 @Singleton
 public class FormService {
 
-    @Inject
-    FormRepository formRepository;
+    private FormRepository formRepository;
+    private UserRepository userRepository;
+
+    public FormService(UserRepository userRepository, FormRepository formRepository) {
+        this.userRepository = userRepository;
+        this.formRepository = formRepository;
+    }
 
     public List<FormDTO> findAll(long limit, long offset){
 
@@ -93,5 +100,15 @@ public class FormService {
     }
     public Form update(Form form){
         return  this.formRepository.update(form);
+    }
+
+    public List<FormDTO> search(final Long userId, final String code, final String name, final String programmaticArea) {
+        User user = userRepository.findById(userId).get();
+        List<Form> formList = this.formRepository.search(code, name, programmaticArea);
+        List<FormDTO> forms = new ArrayList<FormDTO>();
+        for (Form form: formList) {
+            forms.add(new FormDTO(form));
+        }
+        return forms;
     }
 }

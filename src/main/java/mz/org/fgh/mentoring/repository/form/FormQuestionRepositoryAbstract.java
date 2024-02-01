@@ -1,4 +1,4 @@
-package mz.org.fgh.mentoring.repository.tutor;
+package mz.org.fgh.mentoring.repository.form;
 
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.transaction.annotation.TransactionalAdvice;

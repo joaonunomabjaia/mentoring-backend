@@ -65,4 +65,17 @@ public class ProgramaticAreaService {
 
         return programmaticAreaDTOS;
     }
+
+    public List<ProgrammaticAreaDTO> findProgrammaticAreasByProgram(final String program){
+
+        List<ProgrammaticAreaDTO> programmaticAreas = new ArrayList<>();
+
+        List<ProgrammaticArea> programmaticAreaList = this.programaticAreaRepository.findProgrammaticAreasByProgram(program);
+
+        for (ProgrammaticArea programmaticArea : programmaticAreaList){
+            programmaticAreas.add(new ProgrammaticAreaDTO(programmaticArea));
+        }
+
+        return programmaticAreas;
+    }
 }

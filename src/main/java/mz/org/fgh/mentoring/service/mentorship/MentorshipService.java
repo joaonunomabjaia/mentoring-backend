@@ -2,7 +2,6 @@ package mz.org.fgh.mentoring.service.mentorship;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.mentorship.IterationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.session.Session;
@@ -11,7 +10,7 @@ import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.location.CabinetRepository;
 import mz.org.fgh.mentoring.repository.mentorship.MentorshipRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRepository;
-import mz.org.fgh.mentoring.repository.tutor.FormRepository;
+import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -19,7 +18,6 @@ import mz.org.fgh.mentoring.util.PerformedSession;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
-import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
