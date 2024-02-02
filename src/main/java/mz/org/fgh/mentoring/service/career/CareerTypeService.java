@@ -3,7 +3,7 @@ package mz.org.fgh.mentoring.service.career;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.career.CareerTypeDTO;
 import mz.org.fgh.mentoring.entity.career.CareerType;
-import mz.org.fgh.mentoring.repository.tutor.CareerTypeRepository;
+import mz.org.fgh.mentoring.repository.career.CareerTypeRepository;
 
 import java.util.ArrayList;
 import java.util.List;

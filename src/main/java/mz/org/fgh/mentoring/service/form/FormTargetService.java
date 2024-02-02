@@ -3,7 +3,7 @@ package mz.org.fgh.mentoring.service.form;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.formtarget.FormTarget;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.repository.tutor.FormTargetRepository;
+import mz.org.fgh.mentoring.repository.form.FormTargetRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.List;

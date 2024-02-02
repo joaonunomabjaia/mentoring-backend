@@ -1,22 +1,21 @@
-package mz.org.fgh.mentoring.dto.tutor;
+package mz.org.fgh.mentoring.dto.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.form.FormType;
-import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FormDTO implements Serializable {
+public class FormDTO extends BaseEntityDTO implements Serializable {
 
     private String uuid;
 
@@ -39,15 +38,24 @@ public class FormDTO implements Serializable {
 
     private Integer targetFile;
 
+    private String lifeCycleStatus;
+
     public FormDTO(Form form) {
-        this.uuid = form.getUuid();
+        super(form);
         this.code = form.getCode();
         this.name = form.getName();
         this.description = form.getDescription();
-        this.partnerDTO = new PartnerDTO(form.getPartner());
-        this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
-        this.formTypeDTO = new FormTypeDTO(form.getFormType());
+        if(form.getPartner()!=null) {
+            this.partnerDTO = new PartnerDTO(form.getPartner());
+        }
+        if(form.getProgrammaticArea()!=null) {
+            this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
+        }
+        if(form.getFormType()!=null) {
+            this.formTypeDTO = new FormTypeDTO(form.getFormType());
+        }
         this.targetPatient = form.getTargetPatient();
         this.targetFile = form.getTargetFile();
+        this.lifeCycleStatus = form.getLifeCycleStatus().name();
     }
 }

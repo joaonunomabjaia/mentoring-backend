@@ -929,7 +929,7 @@
         <dropColumn tableName="tutoreds" columnName="SURNAME" />
         <dropColumn tableName="tutoreds" columnName="CARRER_ID" />
         <dropColumn tableName="tutoreds" columnName="EMAIL" />
-        <dropColumn tableName="tutoreds" columnName="IS_USER" />
+        <dropColumn tableName="tutoreds" columnName="USER_ID" />
     </changeSet>
     <changeSet id="tutored_employee_fk" author="voloide">
         <comment>
@@ -1123,21 +1123,21 @@
             </sqlCheck>
         </preConditions>
         <sql>
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (100,'Administrador','NATIONAL_ADMINISTRATOR','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (101,'Administrador','PROVINCIAL_ADMINISTRATOR','Provincial',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (102,'Administrador','DISTRICT_ADMINISTRATOR','Distrital',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (103,'Mentor','NATIONAL_MENTOR','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (104,'Mentor','PROVINCIAL_MENTOR','Provincial',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (105,'Mentor','DISTRICT_MENTOR','Distrital',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (106,'Mentor','HEALTH_FACILITY_MENTOR','US',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (107,'Mentorando','MENTEE','US',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
         </sql>
     </changeSet>
@@ -1203,7 +1203,7 @@
             </sqlCheck>
         </preConditions>
         <sql>
-            INSERT INTO mentoring.`role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (500,'root','ROOT','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
             INSERT INTO role_authority (ID,role_id,authority_id,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             SELECT NULL,500,ID,uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE' FROM authority;
@@ -1316,5 +1316,83 @@
             INSERT INTO location (ID,EMPLOYEE_ID,LOCATION_LEVEL,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
             VALUES (1,1,'NATIONAL','9225441d-4bfd-11ee-9e75-0242ac150023','9225441d-4bfd-11ee-9e75-0242ac150002','2023-09-05 17:04:54.000','ACTIVE');
         </sql>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241201" author="ialuj">
+    <preConditions onFail="MARK_RAN">
+        <not>
+            <tableExists tableName="programs"/>
+        </not>
+    </preConditions>
+    <comment></comment>
+    <createTable tableName="programs">
+        <column name="ID" type="bigint(20)" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="uuid" type="varchar(200)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="name" type="varchar(300)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="description" type="varchar(300)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="CREATED_BY" type="varchar(200)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="CREATED_AT" type="datetime">
+            <constraints nullable="false"/>
+        </column>
+        <column name="UPDATED_BY" type="varchar(200)">
+            <constraints nullable="true"/>
+        </column>
+        <column name="UPDATED_AT" type="datetime">
+            <constraints nullable="true"/>
+        </column>
+        <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+            <constraints nullable="false"/>
+        </column>
+    </createTable>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241202" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM programs WHERE id IN (1, 2);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO programs (ID, uuid, name, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '91e6b886-9f0c-42f2-8ef7-8d07d4772618', 'Programa de HIV', 'Programa de HIV', '9225441d-4bfd-11ee-9e75-0242ac150002','2023-09-05 17:04:54.000','ACTIVE');
+            INSERT INTO programs (ID, uuid, name, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, 'a9f0f471-e518-478a-a9a2-cc3887f406a6', 'Programa de TB', 'Programa de TB', '9225441d-4bfd-11ee-9e75-0242ac150002','2023-09-05 17:04:54.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241203" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+              <columnExists tableName="programmatic_areas" columnName="PROGRAM_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="programmatic_areas">
+            <column name="PROGRAM_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241211" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="programmatic_areas" columnName="PROGRAM_ID"/>
+        </preConditions>
+        <sql>
+            UPDATE programmatic_areas SET PROGRAM_ID = 1 WHERE ID NOT IN (14);
+            UPDATE programmatic_areas SET PROGRAM_ID = 2 WHERE ID = 14;
+        </sql>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241215" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="programmatic_areas" columnName="PROGRAM_ID"/>
+        </preConditions>
+        <addForeignKeyConstraint constraintName="program_fk"
+                                 baseTableName="programmatic_areas" baseColumnNames="PROGRAM_ID"
+                                 referencedTableName="programs" referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>

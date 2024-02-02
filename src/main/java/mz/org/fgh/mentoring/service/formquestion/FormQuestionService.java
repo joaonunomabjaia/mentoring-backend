@@ -5,8 +5,7 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.repository.tutor.FormQuestionRepository;
-import mz.org.fgh.mentoring.repository.tutor.FormRepository;
+import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.List;

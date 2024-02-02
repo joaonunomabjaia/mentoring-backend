@@ -2,7 +2,7 @@ package mz.org.fgh.mentoring.service.answer;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.answer.Answer;
-import mz.org.fgh.mentoring.repository.tutor.AnswerRepository;
+import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.List;
