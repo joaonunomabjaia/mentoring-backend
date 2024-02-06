@@ -13,4 +13,6 @@ public interface DistrictRepository extends CrudRepository<District, Long> {
     List<District> findAll();
 
     List<District> findByProvinceId(@NotNull Long provinceId);
+
+    List<District> findByDescription(String designation);
 }

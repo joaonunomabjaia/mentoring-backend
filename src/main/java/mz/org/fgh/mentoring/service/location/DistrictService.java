@@ -3,7 +3,7 @@ package mz.org.fgh.mentoring.service.location;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
-import mz.org.fgh.mentoring.repository.location.DistrictRepository;
+import mz.org.fgh.mentoring.repository.district.DistrictRepository;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
@@ -36,7 +36,7 @@ public class DistrictService {
     }
 
     public District findDistrictByDesignation(final String designation){
-        List<District>  districts = this.districtRepository.findByDistrict(designation);
+        List<District>  districts = this.districtRepository.findByDescription(designation);
         if(districts.isEmpty()){
             throw new MentoringBusinessException("District : "+designation+" was not found.");
         }

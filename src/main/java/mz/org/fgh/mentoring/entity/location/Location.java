@@ -1,23 +1,20 @@
 package mz.org.fgh.mentoring.entity.location;
 
+import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.location.LocationDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import mz.org.fgh.mentoring.entity.partner.Partner;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 @Entity(name = "Location")
@@ -25,7 +22,6 @@ import javax.persistence.Table;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class Location extends BaseEntity {
     public static final String LOCATION_LEVEL_NATIONAL = "NATIONAL";
@@ -53,6 +49,18 @@ public class Location extends BaseEntity {
     @Column(name = "LOCATION_LEVEL", nullable = false, length = 80)
     private String locationLevel;
 
+
+    @Creator
+    public Location(){}
+
+    public Location(LocationDTO locationDTO, Employee employee) {
+        super(locationDTO);
+        this.setEmployee(employee);
+        this.setLocationLevel(locationDTO.getLocationLevel());
+        this.setDistrict(new District(locationDTO.getDistrictDTO()));
+        this.setProvince(new Province(locationDTO.getProvinceDTO()));
+        this.setHealthFacility(new HealthFacility(locationDTO.getHealthFacilityDTO()));
+    }
 
 
     private void determineLocationLevel() {

@@ -4,7 +4,7 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
-import mz.org.fgh.mentoring.repository.location.ProvinceRepository;
+import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import java.lang.reflect.InvocationTargetException;

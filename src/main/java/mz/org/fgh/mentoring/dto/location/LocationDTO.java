@@ -7,10 +7,7 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.district.DistrictDTO;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
-import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Location;
-import mz.org.fgh.mentoring.entity.location.Province;
 
 @Data
 @NoArgsConstructor

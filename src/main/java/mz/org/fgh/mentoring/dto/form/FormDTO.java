@@ -8,7 +8,6 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
 
@@ -38,7 +37,6 @@ public class FormDTO extends BaseEntityDTO implements Serializable {
 
     private Integer targetFile;
 
-    private String lifeCycleStatus;
 
     public FormDTO(Form form) {
         super(form);
@@ -56,6 +54,5 @@ public class FormDTO extends BaseEntityDTO implements Serializable {
         }
         this.targetPatient = form.getTargetPatient();
         this.targetFile = form.getTargetFile();
-        this.lifeCycleStatus = form.getLifeCycleStatus().name();
     }
 }

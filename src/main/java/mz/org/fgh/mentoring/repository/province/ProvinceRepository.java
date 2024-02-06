@@ -10,4 +10,6 @@ import java.util.List;
 public interface ProvinceRepository extends CrudRepository<Province, Long> {
 
     List<Province> findAll();
+
+    List<Province> findByDesignation(String designation);
 }

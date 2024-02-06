@@ -5,8 +5,14 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -18,12 +24,10 @@ import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
-import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.validation.constraints.Null;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,16 +118,19 @@ public class TutorController extends BaseController {
         return new TutorDTO(tutor);
     }*/
 
+    @Operation(summary = "Save Mentor to database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Mentor")
+    @Post("/save")
+    public HttpResponse<RestAPIResponse> create (@Body TutorDTO tutorDTO, Authentication authentication) {
 
-    @Post(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON
-    )
-    public HttpResponse<RestAPIResponse> create (@Body TutorDTO tutorDTO) {
+        Tutor tutor = new Tutor(tutorDTO);
+        tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
 
+        LOG.info("Created mentor {}", tutor);
 
-        LOG.debug("Created tutor {}", new Tutor());
-
-        return HttpResponse.ok().body(new Tutor());
+        return HttpResponse.ok().body(new TutorDTO(tutor));
     }
+
+
 }

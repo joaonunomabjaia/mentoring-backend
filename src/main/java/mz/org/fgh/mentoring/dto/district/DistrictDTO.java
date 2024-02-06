@@ -11,12 +11,12 @@ import mz.org.fgh.mentoring.entity.location.District;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DistrictDTO extends BaseEntityDTO {
-    private String district;
+    private String description;
     private ProvinceDTO provinceDTO;
 
     public DistrictDTO(District district) {
         super(district);
-        this.setDistrict(district.getDistrict());
-        this.setProvinceDTO(new ProvinceDTO(district.getProvince()));
+        this.setDescription(district.getDescription());
+        if (district.getProvince() != null) this.setProvinceDTO(new ProvinceDTO(district.getProvince()));
     }
 }

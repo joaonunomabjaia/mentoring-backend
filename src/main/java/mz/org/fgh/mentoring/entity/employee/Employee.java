@@ -1,29 +1,29 @@
 package mz.org.fgh.mentoring.entity.employee;
 
 import com.sun.istack.NotNull;
+import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
+import mz.org.fgh.mentoring.dto.location.LocationDTO;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
-import java.util.List;
+import java.util.HashSet;
 import java.util.Set;
 
 @Schema(name = "Employee", description = "A professional that works on an health facility")
@@ -31,7 +31,6 @@ import java.util.Set;
 @Table(name = "employee")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class Employee extends BaseEntity {
@@ -72,4 +71,27 @@ public class Employee extends BaseEntity {
     @OneToMany(mappedBy="employee", fetch = FetchType.EAGER)
     private Set<Location> locations;
 
+    @Creator
+    public Employee () {}
+    public Employee(EmployeeDTO employeeDTO) {
+        super(employeeDTO);
+        this.setName(employeeDTO.getName());
+        this.setSurname(employeeDTO.getSurname());
+        this.setLocations(retriveLocations(employeeDTO.getLocationDTOSet()));
+        this.setPartner(new Partner(employeeDTO.getPartnerDTO()));
+        this.setProfessionalCategory(new ProfessionalCategory(employeeDTO.getProfessionalCategoryDTO()));
+        this.setEmail(employeeDTO.getEmail());
+        this.setNuit(employeeDTO.getNuit());
+        this.setTrainingYear(employeeDTO.getTrainingYear());
+        this.setPhoneNumber(employeeDTO.getPhoneNumber());
+    }
+
+    private Set<Location> retriveLocations(Set<LocationDTO> locationDTOSet) {
+        Set<Location> locations = new HashSet<>();
+        for (LocationDTO locationDTO : locationDTOSet) {
+            Location location = new Location(locationDTO, this);
+            locations.add(location);
+        }
+        return locations;
+    }
 }

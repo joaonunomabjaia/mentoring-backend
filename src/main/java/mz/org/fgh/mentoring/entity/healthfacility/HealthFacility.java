@@ -1,11 +1,12 @@
 package mz.org.fgh.mentoring.entity.healthfacility;
 
+import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.location.District;
 
 import javax.persistence.Column;
@@ -22,7 +23,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class HealthFacility extends BaseEntity {
 
@@ -35,4 +35,10 @@ public class HealthFacility extends BaseEntity {
     @Column(name = "HEALTH_FACILITY", nullable = false, length = 80)
     private String healthFacility;
 
+    @Creator
+    public HealthFacility(){}
+    public HealthFacility(HealthFacilityDTO healthFacilityDTO) {
+        super(healthFacilityDTO);
+        this.setDistrict(new District(healthFacilityDTO.getDistrictDTO()));
+    }
 }
