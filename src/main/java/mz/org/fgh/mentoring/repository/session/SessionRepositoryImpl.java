@@ -34,15 +34,15 @@ public abstract class SessionRepositoryImpl implements SessionRepository {
 
     @Override
     public List<SubmitedSessions> findNumberOfSessionsPerDistrict(LifeCycleStatus active) {
-        String sql =    "SELECT NEW mz.org.fgh.mentoring.util.SubmitedSessions(d.district, pa.name, COUNT(s.id), MAX(s.createdAt)) " +
+        String sql =    "SELECT NEW mz.org.fgh.mentoring.util.SubmitedSessions(d.description, pa.name, COUNT(s.id), MAX(s.createdAt)) " +
                         "FROM Session s INNER JOIN s.mentorships m " +
                         "				INNER JOIN m.form f " +
                         "				INNER JOIN f.programmaticArea pa " +
                         "				INNER JOIN m.healthFacility hf " +
                         "				INNER JOIN hf.district d " +
                         "WHERE s.lifeCycleStatus = :lifeCycleStatus " +
-                        "GROUP BY d.district, pa.name " +
-                        "ORDER BY d.district";
+                        "GROUP BY d.description, pa.name " +
+                        "ORDER BY d.description";
 
         return this.entityManager.createQuery(sql, SubmitedSessions.class)
                 .setParameter("lifeCycleStatus", active)
@@ -51,7 +51,7 @@ public abstract class SessionRepositoryImpl implements SessionRepository {
 
     @Override
     public List<SubmitedSessions> findNumberOfSessionsPerDistrict(String tutoruuid, LifeCycleStatus active) {
-        String sql =    "SELECT NEW mz.org.fgh.mentoring.util.SubmitedSessions(d.district, pa.name, COUNT(s.id), MAX(s.createdAt)) " +
+        String sql =    "SELECT NEW mz.org.fgh.mentoring.util.SubmitedSessions(d.description, pa.name, COUNT(s.id), MAX(s.createdAt)) " +
                         "FROM Session s INNER JOIN s.mentorships m " +
                         "				INNER JOIN m.form f " +
                         "				INNER JOIN f.programmaticArea pa " +
@@ -59,8 +59,8 @@ public abstract class SessionRepositoryImpl implements SessionRepository {
                         "				INNER JOIN m.tutor t " +
                         "				INNER JOIN hf.district d " +
                         "WHERE s.lifeCycleStatus = :lifeCycleStatus and t.uuid = :tutoruuid " +
-                        "GROUP BY d.district, pa.name " +
-                        "ORDER BY d.district";
+                        "GROUP BY d.description, pa.name " +
+                        "ORDER BY d.description";
 
         return this.entityManager.createQuery(sql, SubmitedSessions.class)
                 .setParameter("lifeCycleStatus", active)

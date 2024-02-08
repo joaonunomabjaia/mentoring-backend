@@ -33,10 +33,7 @@ public class MentoringTokenRenderer implements TokenRenderer {
         MentoringAccessRefreshToken token =  new MentoringAccessRefreshToken(authentication.getName(), authentication.getRoles(), expiresIn, accessToken, refreshToken, BEARER_TOKEN_TYPE);
 
         Optional<User> optUser = this.users.findById((Long) authentication.getAttributes().get("userInfo"));
-        if (optUser.isPresent()) {
-            UserDTO userDTO = new UserDTO(optUser.get());
-            token.setUserInfo(userDTO);
-        }
+        optUser.ifPresent(user -> token.setUserInfo(new UserDTO(user)));
         return token;
     }
 }

@@ -1,7 +1,11 @@
 package mz.org.fgh.mentoring.util;
 
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.base.BaseEntityDTO;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -90,5 +94,82 @@ public class Utilities {
         String strDate = dateFormat.format(date);
 
         return strDate;
+    }
+
+
+    public static <T>  List<T> parseObjectToList(Object obj, Class<T> objClass_) throws InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        List<Object> list = new ArrayList<>();
+
+        list.add(obj);
+
+        return parseList(list, objClass_);
+    }
+
+    public static <T extends Object, S extends Object> List<S> parseList(List<T> list, Class<S> classe) throws InstantiationException, IllegalAccessException, NoSuchMethodException, InvocationTargetException {
+        if (list == null) return null;
+        List<S> parsedList = new ArrayList<S>();
+
+        for (T t : list){
+            parsedList.add(classe.getDeclaredConstructor(t.getClass()).newInstance(t));
+        }
+        return parsedList;
+    }
+
+
+    public static <T> T[] parseObjectToArray(T ...objts){
+        T[] array = (T[]) Array.newInstance(objts[0].getClass(), objts.length);
+
+        for (int i=0; i < objts.length; i++){
+            array[i] = objts[i];
+        }
+
+        return array;
+    }
+
+    public Character parseToCharacter(char chr){
+        return new Character(chr);
+    }
+
+    public Character[] parseToCharacter(char ... toParse){
+        Character[] parsed = new Character[toParse.length];
+
+        int i = 0;
+
+        for (char chr : toParse){
+            parsed[i] = parseToCharacter(chr);
+            i++;
+        }
+
+        return parsed;
+    }
+
+    /**
+     * Verifica se uma determinada {@link List} contem todos os elementos passados pelo parametro
+     *
+     * @param list lista cujo elementos se pretende verificar
+     * @param o elementos a verificar
+     * @return true se a lista contem todos os elementos ou false no caso contrario
+     */
+
+    public static <T> boolean containsAll(List<T> list, T ...o){
+        for (T t : o){
+            if (!list.contains(t)) return false;
+        }
+
+        return true;
+    }
+
+    public static int getPosOfElementOnList(List<?> list, Object toFind){
+        if (!listHasElements((ArrayList<?>) list)) return -1;
+
+        return list.indexOf(toFind);
+    }
+
+    public static <T> T findOnList(List<T> list, Object toFind){
+        if (!listHasElements((ArrayList<?>) list)) return null;
+
+        int pos = getPosOfElementOnList(list, toFind);
+
+        return pos >= 0 ? list.get(pos) : null;
     }
 }

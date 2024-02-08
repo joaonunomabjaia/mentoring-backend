@@ -6,12 +6,10 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 
-import java.io.Serializable;
-
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class PartnerDTO extends BaseEntityDTO implements Serializable {
+public class PartnerDTO extends BaseEntityDTO {
     private String name;
 
     private String description;

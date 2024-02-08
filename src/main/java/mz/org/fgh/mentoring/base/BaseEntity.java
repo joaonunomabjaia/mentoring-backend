@@ -8,9 +8,17 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.MappedSuperclass;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
-import java.util.Calendar;
+import java.util.Date;
 
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
@@ -45,7 +53,7 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
             nullable = false
     )
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar createdAt;
+    private Date createdAt;
     @Column(
             name = "UPDATED_BY",
             length = 50
@@ -55,7 +63,7 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
             name = "UPDATED_AT"
     )
     @Temporal(TemporalType.TIMESTAMP)
-    private Calendar updatedAt;
+    private Date updatedAt;
 
     @Column(
             name = "LIFE_CYCLE_STATUS",
@@ -64,4 +72,10 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
     )
     @Enumerated(EnumType.STRING)
     private LifeCycleStatus lifeCycleStatus;
+
+    public BaseEntity(BaseEntityDTO baseEntityDTO) {
+        this.setId(baseEntityDTO.getId());
+        this.setUuid(baseEntityDTO.getUuid());
+        this.setLifeCycleStatus(baseEntityDTO.getLifeCycleStatus());
+    }
 }

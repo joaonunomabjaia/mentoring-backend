@@ -1,20 +1,27 @@
 package mz.org.fgh.mentoring.entity.location;
 
-import lombok.*;
+import io.micronaut.core.annotation.Creator;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import org.hibernate.Hibernate;
+import mz.org.fgh.mentoring.dto.district.DistrictDTO;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Objects;
 
 @Entity(name = "District")
 @Table(name = "districts")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 @ToString
 public class District extends BaseEntity {
 
@@ -25,6 +32,13 @@ public class District extends BaseEntity {
 
     @NotEmpty
     @Column(name = "DISTRICT", unique = true, nullable = false, length = 50)
-    private String district;
+    private String description;
 
+    @Creator
+    public District(){}
+    public District(DistrictDTO districtDTO) {
+        super(districtDTO);
+        this.setDescription(districtDTO.getDescription());
+        if (districtDTO.getProvinceDTO() != null) this.setProvince(new Province(districtDTO.getProvinceDTO()));
+    }
 }

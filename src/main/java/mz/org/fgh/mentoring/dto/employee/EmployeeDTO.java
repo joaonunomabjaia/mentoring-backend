@@ -1,20 +1,20 @@
 package mz.org.fgh.mentoring.dto.employee;
 
+import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.location.LocationDTO;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.location.Location;
+
 import java.util.HashSet;
 import java.util.Set;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Introspected
 public class EmployeeDTO extends BaseEntityDTO {
@@ -37,6 +37,10 @@ public class EmployeeDTO extends BaseEntityDTO {
 
     private Set<LocationDTO> locationDTOSet;
 
+    @Creator
+    public EmployeeDTO () {
+
+    }
     public EmployeeDTO(Employee employee) {
         super(employee);
 

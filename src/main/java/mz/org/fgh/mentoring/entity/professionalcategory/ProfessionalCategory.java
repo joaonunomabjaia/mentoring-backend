@@ -1,11 +1,13 @@
 package mz.org.fgh.mentoring.entity.professionalcategory;
 
+import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +18,7 @@ import javax.validation.constraints.NotEmpty;
 @Entity
 @Table(name = "professional_category")
 @Data
-@NoArgsConstructor
+@AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class ProfessionalCategory extends BaseEntity {
@@ -28,4 +30,12 @@ public class ProfessionalCategory extends BaseEntity {
     @NotEmpty
     @Column(name = "code", nullable = false)
     private  String code;
+
+    @Creator
+    public ProfessionalCategory(){}
+    public ProfessionalCategory(ProfessionalCategoryDTO professionalCategoryDTO) {
+        super(professionalCategoryDTO);
+        this.setDescription(professionalCategoryDTO.getDescription());
+        this.setCode(professionalCategoryDTO.getCode());
+    }
 }

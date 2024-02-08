@@ -6,17 +6,17 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 import mz.org.fgh.mentoring.entity.location.District;
-import mz.org.fgh.mentoring.entity.location.Province;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 public class DistrictDTO extends BaseEntityDTO {
-    private String district;
+    private String description;
     private ProvinceDTO provinceDTO;
 
     public DistrictDTO(District district) {
-        this.setDistrict(district.getDistrict());
-        this.setProvinceDTO(new ProvinceDTO(district.getProvince()));
+        super(district);
+        this.setDescription(district.getDescription());
+        if (district.getProvince() != null) this.setProvinceDTO(new ProvinceDTO(district.getProvince()));
     }
 }
