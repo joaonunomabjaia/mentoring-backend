@@ -61,4 +61,10 @@ public class HealthFacilityService {
     public List<HealthFacilityDTO> findAllOfProvince(Long provinceId) {
         return null;
     }
+
+    public HealthFacilityDTO findById(Long id){
+
+        HealthFacility healthFacility = this.healthFacilityRepository.findById(id).get();
+        return  new HealthFacilityDTO(healthFacility);
+    }
 }

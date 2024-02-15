@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.service.professionalcategory;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
+import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -25,5 +26,12 @@ public class ProfessionalCategoryService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public ProfessionalCategoryDTO getById(Long id){
+
+        ProfessionalCategory professionalCategory = this.professionalCategoryRepository.findById(id).get();
+
+        return new ProfessionalCategoryDTO(professionalCategory);
     }
 }

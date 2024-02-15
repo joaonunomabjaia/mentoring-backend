@@ -54,4 +54,11 @@ public class ProviceService {
         }
 
     }
+
+    public ProvinceDTO getById(Long id){
+
+        Province province = this.provinceRepository.findById(id).get();
+
+        return new ProvinceDTO(province);
+    }
 }
