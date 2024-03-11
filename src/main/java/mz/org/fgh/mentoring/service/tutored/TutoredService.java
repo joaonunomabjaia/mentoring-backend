@@ -23,6 +23,7 @@ import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.*;
 
@@ -121,57 +122,41 @@ public class TutoredService {
 
         User user = this.userRepository.findById(userId).get();
 
-        Employee employee = this.employeeRepository.findById(tutoredDTO.getEmployeeDTO().getId()).get();
-        ProfessionalCategory professionalCategory = this.professionalCategoryRepository.findById(tutoredDTO.getEmployeeDTO().getProfessionalCategoryDTO().getId()).get();
-        Tutored tutored = this.tutoredRepository.findById(tutoredDTO.getId()).get();
+        Employee employee = new Employee(tutoredDTO.getEmployeeDTO());
 
-        employee.setName(tutoredDTO.getEmployeeDTO().getName());
-        employee.setSurname(tutoredDTO.getEmployeeDTO().getSurname());
-        employee.setNuit(tutoredDTO.getEmployeeDTO().getNuit());
-        employee.setProfessionalCategory(professionalCategory);
-        employee.setTrainingYear(tutoredDTO.getEmployeeDTO().getTrainingYear());
-        employee.setPhoneNumber(tutoredDTO.getEmployeeDTO().getPhoneNumber());
-        employee.setEmail(tutoredDTO.getEmployeeDTO().getEmail());
+        Tutored tutored = new Tutored(tutoredDTO);
+
+        employee.setCreatedBy(user.getUuid());
+        employee.setCreatedAt(user.getCreatedAt());
+        employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         employee.setUpdatedAt(DateUtils.getCurrentDate());
         employee.setUpdatedBy(user.getUuid());
-        //employee.setPartner();
-
-        employee = this.getEmploee(tutoredDTO.getEmployeeDTO(), employee);
 
         this.employeeRepository.update(employee);
 
-        tutored.setEmployee(employee);
+        this.updateLocations(employee.getLocations(), user);
+
+        tutored.setCreatedBy(user.getUuid());
+        tutored.setCreatedAt(user.getCreatedAt());
+        tutored.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        tutored.setUpdatedAt(DateUtils.getCurrentDate());
+        tutored.setUpdatedBy(user.getUuid());
         this.tutoredRepository.update(tutored);
 
-        return new TutoredDTO(tutored);
+        return tutoredDTO;
     }
 
-    private Employee getEmploee(EmployeeDTO employeeDTO, Employee employee){
+    private void updateLocations(Set<Location> locationList, User user){
 
+        for(Location location : locationList){
 
-        Set<Location> locations = new HashSet<>();
-        for (LocationDTO location : employeeDTO.getLocationDTOSet() ){
-
-            Province province = this.provinceRepository.findById(location.getProvinceDTO().getId()).get();
-            District district = this.districtRepository.findById(location.getDistrictDTO().getId()).get();
-            HealthFacility healthFacility = this.healthFacilityRepository.findById(location.getHealthFacilityDTO().getId()).get();
-
-            Location locationEntity = this.locationRepository.findById(location.getId()).get();
-
-            locationEntity.setProvince(province);
-            locationEntity.setDistrict(district);
-            locationEntity.setHealthFacility(healthFacility);
-            locationEntity.setLocationLevel(location.getLocationLevel());
-            locationEntity.setEmployee(employee);
-            locationEntity.setUpdatedAt(employee.getUpdatedAt());
-            locationEntity.setUpdatedBy(employee.getUpdatedBy());
-
-            locations.add(locationEntity);
-
-            this.locationRepository.update(locationEntity);
+            location.setCreatedBy(user.getUuid());
+            location.setCreatedAt(user.getCreatedAt());
+            location.setUpdatedBy(user.getUuid());
+            location.setUpdatedAt(DateUtils.getCurrentDate());
+            location.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            this.locationRepository.update(location);
         }
-
-        employee.setLocations(locations);
-        return employee;
     }
+
 }

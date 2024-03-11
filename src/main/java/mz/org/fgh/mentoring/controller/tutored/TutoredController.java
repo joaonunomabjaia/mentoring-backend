@@ -68,11 +68,11 @@ public class TutoredController extends BaseController {
                                           @Nullable @QueryValue("phoneNumber") String phoneNumber) {
 
 
-        List<TutoredDTO> tutorDTOS = new ArrayList<>();
+        List<TutoredDTO> tutoredDTOs = new ArrayList<>();
 
-        tutorDTOS =  tutoredService.searchTutored(userId, nuit, name, phoneNumber);
+        tutoredDTOs =  tutoredService.searchTutored(userId, nuit, name, phoneNumber);
 
-        return tutorDTOS;
+        return tutoredDTOs;
     }
     @Operation(summary = "Save Mentorados to database")
     @Tag(name = "mentorados")
