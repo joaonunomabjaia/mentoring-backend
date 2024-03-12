@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.service.district;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.district.DistrictDTO;
+import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.repository.district.DistrictRepository;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -33,5 +34,12 @@ public class DistrictService {
             throw new RuntimeException(e);
         }
 
+    }
+
+    public DistrictDTO getById(Long id){
+
+        District district = this.districtRepository.findById(id).get();
+
+        return new DistrictDTO(district);
     }
 }

@@ -54,4 +54,11 @@ public class PartnerService {
         }
 
     }
+
+    public PartnerDTO getById(Long id){
+
+        Partner partner = this.partnerRepository.findById(id).get();
+
+        return new PartnerDTO(partner);
+    }
 }

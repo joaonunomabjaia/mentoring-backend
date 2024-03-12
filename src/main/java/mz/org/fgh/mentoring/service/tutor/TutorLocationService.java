@@ -28,7 +28,7 @@ public class TutorLocationService {
 
     public TutorLocation findTutorLocationById(@NotNull Long id){
         Optional<TutorLocation> optionalTutorLocation = tutorLocationRepository.findById(id);
-        if(optionalTutorLocation.isEmpty()){
+        if(optionalTutorLocation == null){
             throw new MentoringBusinessException("Tutor Location with ID: "+id+" was not found.");
         }
         return optionalTutorLocation.get();
