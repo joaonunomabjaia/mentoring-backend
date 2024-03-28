@@ -70,6 +70,13 @@ public class TutorController extends BaseController {
     @Operation(summary = "Return a list off all Tutor")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentor")
+    @Get("/employee/{uuid}")
+    public TutorDTO getTutorByEmployeeUuid(@PathVariable("uuid") String uuid) {
+        return new TutorDTO(tutorService.getTutorByEmployeeUuid(uuid));
+    }
+    @Operation(summary = "Return a list off all Tutor")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Mentor")
     @Get("/search")
     public List<TutorDTO> search(@Nullable @QueryValue("name") String name,
                                  @Nullable @QueryValue("nuit") Long nuit,

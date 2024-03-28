@@ -34,6 +34,7 @@ public class MentoringTokenRenderer implements TokenRenderer {
 
         Optional<User> optUser = this.users.findById((Long) authentication.getAttributes().get("userInfo"));
         optUser.ifPresent(user -> token.setUserInfo(new UserDTO(user)));
+        optUser.ifPresent(user ->token.setUserUuid(optUser.get().getUuid()));
         return token;
     }
 }

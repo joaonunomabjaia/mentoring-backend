@@ -55,6 +55,7 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
                     LOG.debug("User {} logged in...", identity);
                     Map<String, Object> userMap = new HashMap<>();
                     userMap.put("userInfo", possibleUser.get().getId());
+                    userMap.put("useruuid", possibleUser.get().getUuid());
 
                     emitter.onNext(AuthenticationResponse.success((String) identity, getAutorities(possibleUser.get()), userMap));
                     emitter.onComplete();

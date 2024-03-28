@@ -1,15 +1,21 @@
 package mz.org.fgh.mentoring.service.healthfacility;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.location.Location;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
+import mz.org.fgh.mentoring.repository.location.LocationRepository;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,6 +23,11 @@ import java.util.Optional;
 public class HealthFacilityService {
 
     private final HealthFacilityRepository healthFacilityRepository;
+
+    @Inject
+    private TutorRepository tutorRepository;
+
+    private LocationRepository locationRepository;
 
     public HealthFacilityService(HealthFacilityRepository healthFacilityRepository) {
         this.healthFacilityRepository = healthFacilityRepository;
@@ -60,5 +71,22 @@ public class HealthFacilityService {
 
     public List<HealthFacilityDTO> findAllOfProvince(Long provinceId) {
         return null;
+    }
+
+
+    public List<HealthFacilityDTO> getAllOfMentor(String uuid, Long limit, Long offset) {
+        Optional<Tutor> tutor = tutorRepository.findByUuid(uuid);
+        List<HealthFacility> healthFacilities = new ArrayList<>();
+
+        if (tutor.isPresent()) {
+            for (Location location : tutor.get().getEmployee().getLocations()) {
+                healthFacilities.addAll(healthFacilityRepository.findByDistrictId(location.getDistrict().getId()));
+            }
+        }
+        try {
+            return Utilities.parseList(healthFacilities, HealthFacilityDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 }

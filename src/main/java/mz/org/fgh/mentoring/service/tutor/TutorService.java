@@ -72,6 +72,10 @@ public class TutorService {
         return this.tutorRepository.search(name, nuit, user, phoneNumber);
     }
 
+    public Tutor getTutorByEmployeeUuid(String uuid) {
+        return tutorRepository.findByEmployee(employeeRepository.findByUuid(uuid));
+    }
+
     /*public Tutor findTutorByUserUuid(final String userUuid) {
         return this.tutorRepository.findTutorByUserUuid(userUuid);
     }*/
