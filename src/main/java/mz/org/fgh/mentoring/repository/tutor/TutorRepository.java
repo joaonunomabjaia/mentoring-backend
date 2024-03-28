@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.tutor;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 
@@ -29,6 +30,7 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
 
     List<Tutor> search(String name, Long nuit, User User, String phoneNumber);
 
+    Tutor findByEmployee(Employee employee);
 /*
     @Query("From Tutor t inner join fetch t.user u where u.uuid = :userUUID ")
     Tutor findTutorByUserUuid(String userUUID);*/

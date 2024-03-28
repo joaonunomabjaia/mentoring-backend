@@ -14,6 +14,7 @@ import java.util.Collection;
 public class MentoringAccessRefreshToken extends BearerAccessRefreshToken {
 
     private UserDTO userInfo;
+    private String userUuid;
 
     public MentoringAccessRefreshToken(String username,
                                        Collection<String> roles,

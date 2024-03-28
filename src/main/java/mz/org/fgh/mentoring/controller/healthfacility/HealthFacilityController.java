@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.controller.healthfacility;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -47,6 +48,16 @@ public class HealthFacilityController extends BaseController {
     public List<HealthFacilityDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
                                           @Nullable @QueryValue("offset") Long offset) {
         return this.healthFacilityService.getAll(limit, offset);
+    }
+
+    @Operation(summary = "Return a list off all HealthFacilities")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "HealthFacilities")
+    @Get("getAllOfMentor/{uuid}")
+    public List<HealthFacilityDTO> getAllOfMentor(@NonNull @PathVariable("uuid") String uuid,
+                                                  @Nullable @QueryValue("limit") Long limit ,
+                                                  @Nullable @QueryValue("offset") Long offset) {
+        return this.healthFacilityService.getAllOfMentor(uuid, limit, offset);
     }
 
     @Operation(summary = "Return a list off all HealthFacilities of specified Province")

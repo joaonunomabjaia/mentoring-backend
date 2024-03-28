@@ -34,6 +34,7 @@ public class ProvinceController extends BaseController {
     @Operation(summary = "Return a list off all Provinces")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Province")
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Get("getall")
     public List<ProvinceDTO> getAll(@Nullable @QueryValue("limit") Long limit,
                                     @Nullable @QueryValue("offset") Long offset) {
