@@ -73,6 +73,11 @@ public class HealthFacilityService {
         return null;
     }
 
+    public HealthFacilityDTO findById(Long id){
+
+        HealthFacility healthFacility = this.healthFacilityRepository.findById(id).get();
+        return  new HealthFacilityDTO(healthFacility);
+    }
 
     public List<HealthFacilityDTO> getAllOfMentor(String uuid, Long limit, Long offset) {
         Optional<Tutor> tutor = tutorRepository.findByUuid(uuid);
