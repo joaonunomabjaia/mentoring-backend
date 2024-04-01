@@ -17,10 +17,9 @@ import mz.org.fgh.mentoring.service.location.ProviceService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 
-@Secured(SecurityRule.IS_ANONYMOUS)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller("province")
 public class ProvinceController extends BaseController {
 
@@ -35,17 +34,10 @@ public class ProvinceController extends BaseController {
     @Operation(summary = "Return a list off all Provinces")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Province")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Get("getall")
     public List<ProvinceDTO> getAll(@Nullable @QueryValue("limit") Long limit,
                                     @Nullable @QueryValue("offset") Long offset) {
         return this.proviceService.getAll(limit, offset);
-    }
-
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Province")
-    @Get("/provinces")
-    public List<ProvinceDTO> getProvince(){
-        List<ProvinceDTO> provinceDTOS = new ArrayList<>();
-        provinceDTOS = this.proviceService.findAllProvinces();
-        return provinceDTOS;
     }
 }

@@ -6,4 +6,6 @@ import mz.org.fgh.mentoring.entity.employee.Employee;
 
 @Repository
 public interface EmployeeRepository extends CrudRepository<Employee, Long> {
+
+    Employee findByUuid(String uuid);
 }

@@ -43,16 +43,10 @@ public class DistrictController extends BaseController {
     @Operation(summary = "Return a list off all Districts")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Districts")
-    @Get("/getall")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Get("getall")
     public List<DistrictDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
                                     @Nullable @QueryValue("offset") Long offset) {
         return this.districtService.getAll(limit, offset);
-    }
-
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Districts")
-    @Get("/districts")
-    public List<DistrictDTO> getAll() {
-        return this.districtService.getAll();
     }
 }
