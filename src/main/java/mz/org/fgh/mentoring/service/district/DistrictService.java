@@ -27,6 +27,15 @@ public class DistrictService {
 
     }
 
+    public List<DistrictDTO> getAll() {
+        try {
+            return Utilities.parseList(this.districtRepository.findAll(), DistrictDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
+    }
+
     public List<DistrictDTO> getAllOfProvince(Long provinceId) {
         try {
             return Utilities.parseList(this.districtRepository.findByProvinceId(provinceId), DistrictDTO.class);

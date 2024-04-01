@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-@Secured(SecurityRule.IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller(RESTAPIMapping.TUTORED_CONTROLLER)
 public class TutoredController extends BaseController {
 
@@ -35,11 +35,19 @@ public class TutoredController extends BaseController {
     private static final Logger LOGGER = LoggerFactory.getLogger(TutoredController.class);
 
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Tutored")
-    @Get("/{limit}/{offset}")
-    public List<TutoredDTO> getAll(@PathVariable("limit") long limit, @PathVariable("offset") long offset) {
-        List<TutoredDTO> tutoredDTOS = tutoredService.findAll(limit, offset);
+    @Get("/{offset}/{limit}")
+    public List<TutoredDTO> getAll(@PathVariable("offset") long offset, @PathVariable("limit") long limit) {
+        List<TutoredDTO> tutoredDTOS = tutoredService.findAll(offset, limit);
         return tutoredDTOS;
+    }
+
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Get("/tutoreds")
+    public List<TutoredDTO> getTutoredAll() {
+        List<TutoredDTO> tutoredDTOs = new ArrayList<>();
+
+        tutoredDTOs =  tutoredService.searchTutored(4l, null, null, null);
+        return tutoredDTOs;
     }
 
     @Get("/tutor/{tutorUuid}")
