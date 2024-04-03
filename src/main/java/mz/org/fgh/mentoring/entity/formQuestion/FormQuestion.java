@@ -9,6 +9,7 @@ import mz.org.fgh.mentoring.entity.question.Question;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
+import java.util.Comparator;
 
 @Schema(name = "FormQuestion", description = "A professional that provide mentoring to the tutored individuals")
 @Entity(name = "FormQuestion")
@@ -20,11 +21,13 @@ import javax.validation.constraints.NotNull;
 @ToString
 public class FormQuestion extends BaseEntity {
 
+    @ToString.Exclude
     @NotNull
-    @ManyToOne( fetch = FetchType.EAGER)
+    @ManyToOne( fetch = FetchType.LAZY)
     @JoinColumn( name = "FORM_ID", nullable = false )
     private Form form;
 
+    @ToString.Exclude
     @JsonIgnore
     @NotNull
     @ManyToOne( fetch = FetchType.LAZY)

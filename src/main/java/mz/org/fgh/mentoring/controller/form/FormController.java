@@ -6,14 +6,18 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.rules.SecurityRule;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.service.form.FormService;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +44,7 @@ public class FormController extends BaseController {
         return formService.findAll(limit, offset);
     }
 
-    @Get("/{id}")
+    @Get("/getById/{id}")
     public Optional<Form> findById(@PathVariable("id") Long id){
         return formService.findById(id);
     }
@@ -50,10 +54,16 @@ public class FormController extends BaseController {
       return  this.formService.findSampleIndicatorForms();
     }
 
-    @Get( consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON)
-    public List<FormDTO> findBySelectedFilter(String code, String name, String programaticAreaCode, String partnerUUID ){
-        return this.formService.findBySelectedFilter(code, name, programaticAreaCode, partnerUUID);
+    @Operation(summary = "Return a list of forms for the listed params")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Get("/search")
+    @Tag(name = "Form")
+    public List<FormDTO> findBySelectedFilter(@Nullable @QueryValue("code") String code,
+                                              @Nullable @QueryValue("name") String name,
+                                              @Nullable @QueryValue("programmaticAreaCode") String programmaticAreaCode){
+        return this.formService.findBySelectedFilter(code==null? StringUtils.EMPTY:code,
+                name==null? StringUtils.EMPTY:name,
+                programmaticAreaCode==null? StringUtils.EMPTY:programmaticAreaCode);
     }
 
     @Get("/programaticarea/{progrArea}")
@@ -83,14 +93,23 @@ public class FormController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Get("/getformsbycodeornameorprogrammaticarea")
     public List<FormDTO> getFormsByCodeAndNameAndProgrammaticAreaName(
-            @NonNull @QueryValue("userId") Long userId,
             @Nullable @QueryValue("code") String code,
             @Nullable @QueryValue("name") String name,
             @Nullable @QueryValue("programmaticArea") String programmaticArea
     ) {
         List<FormDTO> forms = new ArrayList<>(0);
-        forms = formService.search(userId, code, name, programmaticArea);;
+        forms = formService.search(code, name, programmaticArea);;
         return forms;
+    }
+
+    @Operation(summary = "Save or update a form and its associated objects")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Post("/saveOrUpdate")
+    @Tag(name = "Form")
+    public FormDTO saveOrUpdate(@NonNull @QueryValue("userId") Long userId,
+                                @NonNull @Body FormDTO formDTO){
+        FormDTO dto = this.formService.saveOrUpdate(userId, formDTO);
+        return dto;
     }
 
 }

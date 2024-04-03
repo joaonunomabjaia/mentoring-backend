@@ -1,9 +1,11 @@
 package mz.org.fgh.mentoring.entity.question;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 
@@ -13,8 +15,8 @@ import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 import java.util.HashSet;
 import java.util.Set;
-
-@Entity(name = "question")
+@Schema(name = "Question", description = "A professional that provide mentoring to the tutored individuals")
+@Entity(name = "Question")
 @Table(name = "questions")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -30,16 +32,21 @@ public class Question  extends BaseEntity {
     @Column(name = "QUESTION", nullable = false)
     private String question;
 
+    @ToString.Exclude
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_TYPE_ID")
     private QuestionType questionType;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_CATEGORY_ID")
     private QuestionsCategory questionsCategory;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
-    private Set<FormQuestion> formQuestions = new HashSet<>();
+    @ToString.Exclude
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RESPONSE_TYPE_ID")
+    private ResponseType responseType;
 
 }

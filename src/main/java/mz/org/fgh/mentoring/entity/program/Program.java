@@ -37,8 +37,4 @@ public class Program extends BaseEntity {
 
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
-
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "program")
-    private Set<ProgrammaticArea> programmaticAreas = new HashSet<>();
 }

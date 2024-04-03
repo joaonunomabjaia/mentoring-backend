@@ -24,11 +24,16 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     @Query("select f FROM Answer a INNER JOIN a.form f INNER JOIN a.question q INNER JOIN FETCH f.programmaticArea WHERE q.uuid IN (:questionUuids) AND f.lifeCycleStatus = :lifeCycleStatus")
     List<Form> findSampleIndicatorForms(List<String> questionUuids ,LifeCycleStatus lifeCycleStatus);
 
-    @Query("select f from Form f INNER JOIN FETCH f.programmaticArea pa INNER JOIN FETCH f.partiner p where f.code like concat(concat('%',:code) ,'%') and f.name like concat(concat('%',:name),'%') and pa.code like concat(concat('%',:programmaticAreaCode) ,'%') and f.lifeCycleStatus = :lifeCycleStatus and p.uuid like concat(concat('%',:partnerUUID),'%')")
-    List<Form> findBySelectedFilter(final String code, final String name, final String programmaticAreaCode, final LifeCycleStatus lifeCycleStatus, final String partnerUUID);
+    @Query("select f from Form f " +
+            "INNER JOIN FETCH f.programmaticArea pa " +
+            "INNER JOIN FETCH pa.program p " +
+            "INNER JOIN FETCH f.partner pt " +
+            "where f.code like concat(concat('%',:code) ,'%') and f.name like concat(concat('%',:name),'%') " +
+            "and pa.code like concat(concat('%',:programmaticAreaCode) ,'%') and f.lifeCycleStatus = :lifeCycleStatus ")
+    List<Form> findBySelectedFilter(final String code, final String name, final String programmaticAreaCode, final LifeCycleStatus lifeCycleStatus);
 
-    @Query("select f FROM Form f INNER JOIN FETCH f.programmaticArea pa INNER JOIN FETCH f.formType  where pa.uuid = :programaticaAreaUuid")
-    List<Form> findFormByProgrammaticAreaUuid(final String programaticaAreaUuid);
+    @Query("select f FROM Form f INNER JOIN FETCH f.programmaticArea pa INNER JOIN FETCH f.formType  where pa.uuid = :programmaticAreaUuid")
+    List<Form> findFormByProgrammaticAreaUuid(final String programmaticAreaUuid);
 
     @Query(value = "select * from forms limit :lim offset :of ", nativeQuery = true)
     List<Form> findFormWithLimit(long lim, long of);

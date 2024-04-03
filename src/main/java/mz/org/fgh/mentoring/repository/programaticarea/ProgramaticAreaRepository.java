@@ -25,4 +25,7 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
 
     @Query("select pa from ProgramaticArea pa inner join fetch pa.program p where p.description =:program")
     List<ProgrammaticArea> findProgrammaticAreasByProgram(final String program);
+
+    @Query("select p from ProgramaticArea p inner join fetch p.program where p.lifeCycleStatus =:lifeCycleStatus")
+    public List<ProgrammaticArea> fetchAll(final LifeCycleStatus lifeCycleStatus);
 }
