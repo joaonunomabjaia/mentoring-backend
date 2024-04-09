@@ -1,10 +1,7 @@
 package mz.org.fgh.mentoring.repository.tutored;
 
 import io.micronaut.data.annotation.Query;
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
-import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
 
@@ -29,4 +26,5 @@ public interface TutoredRepository extends CrudRepository<Tutored, Long> {
 
     List<Tutored> search( Long nuit, String name,User user, String phoneNumber);
 
+    List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids);
 }

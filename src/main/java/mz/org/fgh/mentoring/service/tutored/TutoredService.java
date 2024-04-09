@@ -1,16 +1,9 @@
 package mz.org.fgh.mentoring.service.tutored;
 
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
-import mz.org.fgh.mentoring.dto.location.LocationDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
-import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Location;
-import mz.org.fgh.mentoring.entity.location.Province;
-import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.district.DistrictRepository;
@@ -25,7 +18,10 @@ import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
-import java.util.*;
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 @Singleton
 public class TutoredService {
@@ -159,4 +155,19 @@ public class TutoredService {
         }
     }
 
+    public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {
+        return tutoredRepository.getTutoredsByHealthFacilityUuids(uuids);
+    }
+
+    @Transactional
+    public Tutored create(Tutored tutored, Long userId) {
+        User user = userRepository.findById(userId).get();
+        tutored.setCreatedBy(user.getUuid());
+        tutored.setCreatedAt(DateUtils.getCurrentDate());
+        tutored.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+
+        employeeRepository.createOrUpdate(tutored.getEmployee(), user);
+        locationRepository.createOrUpdate(tutored.getEmployee().getLocations(), user);
+        return this.tutoredRepository.save(tutored);
+    }
 }

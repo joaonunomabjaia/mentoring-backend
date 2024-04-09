@@ -13,6 +13,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Repository
 public abstract class AbstractTutoredRepository extends AbstaractBaseRepository implements TutoredRepository {
@@ -41,6 +42,30 @@ public abstract class AbstractTutoredRepository extends AbstaractBaseRepository 
         }
 
         sql += addUserAuthCondition(user);
+
+        Query qw = this.session.getCurrentSession().createSQLQuery(sql);
+
+        List<Long> ids = qw.getResultList();
+
+        CriteriaBuilder builder = session.getCriteriaBuilder();
+        CriteriaQuery<Tutored> criteria = builder.createQuery(Tutored.class);
+        Root<Tutored> root = criteria.from(Tutored.class);
+        criteria.select(root).where(root.get("id").in(ids));
+        Query q = this.session.getCurrentSession().createQuery(criteria);
+        List<Tutored> tutoreds =  q.getResultList();
+
+        return tutoreds;
+    }
+
+    @Override
+    public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {
+
+        String sql = "select DISTINCT(t.ID) " +
+                "from tutoreds t inner join employee e on t.EMPLOYEE_ID  = e.ID  " +
+                "               inner join location l on l.EMPLOYEE_ID = e.ID  " +
+                "               inner join districts d on d.ID = l.DISTRICT_ID  " +
+                "               INNER  join health_facilities hf on hf.DISTRICT_ID = d.ID  " +
+                "where l.LIFE_CYCLE_STATUS = 'ACTIVE' and hf.LIFE_CYCLE_STATUS = 'ACTIVE' AND hf.UUID  in ("+String.join(",", uuids.stream().map(n -> ("'" + n + "'")).collect(Collectors.toList()))+")";
 
         Query qw = this.session.getCurrentSession().createSQLQuery(sql);
 
