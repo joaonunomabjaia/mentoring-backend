@@ -10,7 +10,7 @@ import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
-import java.util.Set;
+import java.util.List;
 
 @Entity(name = "Form")
 @Table(name = "forms")
@@ -33,20 +33,17 @@ public class Form extends BaseEntity {
     @Column(name = "DESCRIPTION")
     private String description;
 
+    @ToString.Exclude
     @JsonIgnore
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
     private ProgrammaticArea programmaticArea;
 
-    @JsonIgnore
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "FORM_TYPE_ID", nullable = false)
-    private FormType formType;
-
+    @ToString.Exclude
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "form")
-    private Set<FormQuestion> formQuestions;
+    private List<FormQuestion> formQuestions;
 
     @NotNull
     @Column(name = "TARGET_PATIENT", nullable = false )

@@ -28,7 +28,7 @@ public class ProviceService {
 
     public Province findProvinceById(final Long id) {
         Optional<Province> optProvince = this.provinceRepository.findById(id);
-        if(optProvince.isEmpty()){
+        if(optProvince == null){
             throw new MentoringBusinessException("Province with ID: "+id+" was not found.");
         }
         return optProvince.get();
@@ -42,8 +42,12 @@ public class ProviceService {
         return provinces.get(0);
     }
 
-    public List<Province> findAllProvinces() {
-        return this.provinceRepository.findAll();
+    public List<ProvinceDTO> findAllProvinces() {
+        try {
+            return Utilities.parseList(this.provinceRepository.findAll(), ProvinceDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<ProvinceDTO> getAll(Long limit, Long offset) {

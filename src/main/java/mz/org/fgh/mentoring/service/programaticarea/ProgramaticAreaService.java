@@ -28,13 +28,16 @@ public class ProgramaticAreaService {
         return this.programaticAreaRepository.update(programaticArea);
     }
 
-    public List<ProgrammaticAreaDTO> findProgrammaticAreasAll(final long limit,final long offset){
+    public List<ProgrammaticAreaDTO> fetchProgrammaticAreasAll(final Long limit,final Long offset){
         List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
         List<ProgrammaticArea> programmaticAreas = new ArrayList<>();
 
-        if(limit > 0){
+        if(limit==null || offset==null) {
+            programmaticAreas  = this.programaticAreaRepository.findAll();
+        } else if(limit > 0){
             programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaWithLimit(limit, offset);
-        }else{
+        }
+        else {
             programmaticAreas  = this.programaticAreaRepository.findAll();
         }
 
@@ -71,6 +74,19 @@ public class ProgramaticAreaService {
         List<ProgrammaticAreaDTO> programmaticAreas = new ArrayList<>();
 
         List<ProgrammaticArea> programmaticAreaList = this.programaticAreaRepository.findProgrammaticAreasByProgram(program);
+
+        for (ProgrammaticArea programmaticArea : programmaticAreaList){
+            programmaticAreas.add(new ProgrammaticAreaDTO(programmaticArea));
+        }
+
+        return programmaticAreas;
+    }
+
+    public List<ProgrammaticAreaDTO> fetchAllProgrammaticAreas(){
+
+        List<ProgrammaticAreaDTO> programmaticAreas = new ArrayList<>();
+
+        List<ProgrammaticArea> programmaticAreaList = this.programaticAreaRepository.fetchAll(LifeCycleStatus.ACTIVE);
 
         for (ProgrammaticArea programmaticArea : programmaticAreaList){
             programmaticAreas.add(new ProgrammaticAreaDTO(programmaticArea));

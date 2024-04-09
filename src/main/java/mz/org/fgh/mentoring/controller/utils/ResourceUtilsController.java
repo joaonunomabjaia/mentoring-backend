@@ -13,6 +13,7 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.controller.tutor.TutorController;
 import mz.org.fgh.mentoring.dto.career.CareerTypeDTO;
+import mz.org.fgh.mentoring.dto.question.QuestionTypeDTO;
 import mz.org.fgh.mentoring.entity.career.CareerType;
 import mz.org.fgh.mentoring.entity.form.FormType;
 import mz.org.fgh.mentoring.entity.question.QuestionType;
@@ -66,7 +67,7 @@ public class ResourceUtilsController extends BaseController {
     @Tag(name = "QuestionType")
     @Version(API_VERSION)
     @Get("/questiontypes")
-    public List<QuestionType> findAllQuestionType1(){
+    public List<QuestionTypeDTO> findAllQuestionType1(){
         LOG.debug("Searching QuestionType version 2");
         return this.questionTypeService.findAll();
     }
@@ -84,12 +85,6 @@ public class ResourceUtilsController extends BaseController {
     public List<FormType> findAllFormType(){
         LOG.debug("Searching FormType version 2");
         return this.formTypeService.findAll();
-    }
-
-    @Get("/questiontypes")
-    public List<QuestionType> findAllQuestionType(){
-        LOG.debug("Searching QuestionType version 2");
-        return this.questionTypeService.findAll();
     }
 
 }

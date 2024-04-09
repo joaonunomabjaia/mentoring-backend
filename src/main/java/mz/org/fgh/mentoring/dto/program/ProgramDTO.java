@@ -15,11 +15,13 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ProgramDTO extends BaseEntityDTO implements Serializable {
+    private Long id;
     private String name;
     private String description;
 
     public  ProgramDTO(Program program) {
         super(program);
+        this.id = program.getId();
         this.name = program.getName();
         this.description = program.getDescription();
     }

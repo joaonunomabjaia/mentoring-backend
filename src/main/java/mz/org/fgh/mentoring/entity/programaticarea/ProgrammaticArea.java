@@ -31,12 +31,9 @@ public class ProgrammaticArea extends BaseEntity {
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
+    @ToString.Exclude
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "PROGRAM_ID", nullable = false)
     private Program program;
-
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "programmaticArea")
-    private Set<TutorProgrammaticArea> tutorProgrammaticAreas = new HashSet<>();
 }
