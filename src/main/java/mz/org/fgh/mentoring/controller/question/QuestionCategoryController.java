@@ -13,31 +13,31 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
+import mz.org.fgh.mentoring.dto.question.QuestionCategoryDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
+import mz.org.fgh.mentoring.entity.question.QuestionsCategory;
+import mz.org.fgh.mentoring.service.question.QuestionCategoryService;
 import mz.org.fgh.mentoring.service.question.QuestionService;
+import mz.org.fgh.mentoring.service.question.QuestionTypeService;
 
 import java.util.List;
+
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@Controller(RESTAPIMapping.QUESTION)
-public class QuestionController extends BaseController {
+@Controller(RESTAPIMapping.QUESTION_CATEGORY)
+public class QuestionCategoryController extends BaseController {
 
     @Inject
-    private QuestionService questionService;
+    private QuestionCategoryService questionCategoryService;
 
-    public QuestionController() {
+    public QuestionCategoryController() {
     }
 
-    @Get("/{formCode}")
-    public List<Question> getByFormCode(@PathVariable String formCode) {
-        return questionService.getQuestionsByFormCode(formCode);
-    }
-
-    @Operation(summary = "Return a list off all Questions")
+    @Operation(summary = "Return a list off all Question Category")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Question")
+    @Tag(name = "QuestionsCategory")
     @Get("/getAll")
-    public List<QuestionDTO> getAllQuestions() {
-        return questionService.getAllQuestions();
+    public List<QuestionCategoryDTO> getAllQuestionCategories() {
+        return questionCategoryService.findAll();
     }
 }

@@ -1,7 +1,6 @@
 package mz.org.fgh.mentoring.entity.question;
 
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -13,16 +12,20 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-@Schema(name = "QuestionsCategory", description = "All possible questions categories")
-@Entity(name = "QuestionsCategory")
-@Table(name = "QUESTION_CATEGORIES")
+@Entity
+@Table(name = "response_type")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-public class QuestionsCategory extends BaseEntity {
+public class ResponseType extends BaseEntity {
 
     @NotEmpty
-    @Column(name = "CATEGORY", nullable = false, length = 100)
-    private String category;
+    @Column(name = "description", nullable = false)
+    private String description;
+
+    @NotEmpty
+    @Column(name = "code", nullable = false)
+    private  String code;
+
 }

@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.controller.programmaticArea;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
@@ -32,10 +33,10 @@ public class ProgramaticAreaController extends BaseController {
     @Operation(summary = "Return a list off all ProgramaticArea")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "ProgramaticArea")
-    @Get("/programmaticareas/{limit}/{offset}")
-    public List<ProgrammaticAreaDTO> getAll(@PathVariable("limit") long limit, @PathVariable("offset") long offset) {
+    @Get("/getAll")
+    public List<ProgrammaticAreaDTO> getAll() {
         LOG.debug("Searching tutors version 2");
-        return programaticAreaService.findProgrammaticAreasAll(limit, offset);
+        return programaticAreaService.fetchAllProgrammaticAreas();
     }
 
     @Get

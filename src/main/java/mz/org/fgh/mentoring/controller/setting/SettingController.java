@@ -4,6 +4,8 @@ import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,7 +19,7 @@ import mz.org.fgh.mentoring.service.setting.SettingService;
 import java.util.List;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
-
+@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.SETTING_CONTROLLER)
 public class SettingController extends BaseController {
 
@@ -29,8 +31,7 @@ public class SettingController extends BaseController {
 
     @Operation(summary = "Return a list off all Settings")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Version(API_VERSION)
-    @Get("/setting/{limit}/{offset}")
+    @Get("/{limit}/{offset}")
     public List<SettingDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
         return settingService.findAll(limit, offset);
     }

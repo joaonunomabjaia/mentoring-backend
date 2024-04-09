@@ -55,11 +55,13 @@ public class User extends BaseEntity {
     @Column(name = "SALT", nullable = false, length = 500)
     private String salt;
 
+    @ToString.Exclude
     @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EMPLOYEE_ID")
     private Employee employee;
 
+    @ToString.Exclude
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<UserRole> userRoles = new ArrayList<>();

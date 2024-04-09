@@ -30,7 +30,7 @@ public abstract class AbstractFormRepository extends AbstaractBaseRepository imp
     @Override
     public List<Form> search(final String code, final String name, final String programmaticArea) {
 
-        String sql = "SELECT f.id FROM forms f " +
+        String sql = "SELECT DISTINCT(f.id) FROM forms f " +
                 " INNER JOIN form_type ft ON f.FORM_TYPE_ID = ft.ID " +
                 " INNER JOIN partners p ON f.PARTNER_ID = p.ID " +
                 " INNER JOIN programmatic_areas pa ON f.PROGRAMMATIC_AREA_ID = pa.ID ";
