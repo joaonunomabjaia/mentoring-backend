@@ -58,7 +58,7 @@ public class TutoredService {
         this.employeeRepository = employeeRepository;
     }
 
-    public List<TutoredDTO> findAll(long limit, long offset){
+    public List<TutoredDTO> findAll(long offset, long  limit){
         List<Tutored> tutoreds = new ArrayList<>();
         List<TutoredDTO> tutoredDTOS = new ArrayList<>();
 
