@@ -5,6 +5,7 @@ import io.micronaut.data.annotation.Repository;
 import mz.org.fgh.mentoring.base.AbstaractBaseRepository;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import javax.persistence.Query;
@@ -60,6 +61,8 @@ public abstract class AbstractTutoredRepository extends AbstaractBaseRepository 
     @Override
     public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {
 
+        Session sess = this.session.openSession();
+
         String sql = "select DISTINCT(t.ID) " +
                 "from tutoreds t inner join employee e on t.EMPLOYEE_ID  = e.ID  " +
                 "               inner join location l on l.EMPLOYEE_ID = e.ID  " +
@@ -67,7 +70,7 @@ public abstract class AbstractTutoredRepository extends AbstaractBaseRepository 
                 "               INNER  join health_facilities hf on hf.DISTRICT_ID = d.ID  " +
                 "where l.LIFE_CYCLE_STATUS = 'ACTIVE' and hf.LIFE_CYCLE_STATUS = 'ACTIVE' AND hf.UUID  in ("+String.join(",", uuids.stream().map(n -> ("'" + n + "'")).collect(Collectors.toList()))+")";
 
-        Query qw = this.session.getCurrentSession().createSQLQuery(sql);
+        Query qw = sess.createSQLQuery(sql);
 
         List<Long> ids = qw.getResultList();
 
@@ -75,9 +78,9 @@ public abstract class AbstractTutoredRepository extends AbstaractBaseRepository 
         CriteriaQuery<Tutored> criteria = builder.createQuery(Tutored.class);
         Root<Tutored> root = criteria.from(Tutored.class);
         criteria.select(root).where(root.get("id").in(ids));
-        Query q = this.session.getCurrentSession().createQuery(criteria);
+        Query q = sess.createQuery(criteria);
         List<Tutored> tutoreds =  q.getResultList();
-
+        sess.close();
         return tutoreds;
     }
 }

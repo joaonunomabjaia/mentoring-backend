@@ -16,4 +16,6 @@ public interface PartnerRepository extends CrudRepository<Partner, Long> {
 
     @Override
     Optional<Partner> findById(@NotNull Long id);
+
+    Partner findByUuid(String uuid);
 }

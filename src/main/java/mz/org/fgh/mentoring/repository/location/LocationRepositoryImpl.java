@@ -6,6 +6,7 @@ import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
+import java.util.Optional;
 import java.util.Set;
 import java.util.UUID;
 
@@ -15,9 +16,9 @@ public abstract class LocationRepositoryImpl implements LocationRepository{
     @Override
     public void createOrUpdate(Set<Location> locations, User user) {
         for (Location location : locations) {
-            Location l = findByUuid(location.getUuid());
-            if (l != null) {
-                location.setId(l.getId());
+            Optional<Location> l = findByUuid(location.getUuid());
+            if (l.isPresent()) {
+                location.setId(l.get().getId());
                 location.setUpdatedAt(DateUtils.getCurrentDate());
                 location.setUpdatedBy(user.getUuid());
                 update(location);

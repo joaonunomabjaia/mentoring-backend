@@ -2,7 +2,6 @@ package mz.org.fgh.mentoring.controller.tutored;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
@@ -20,7 +19,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
@@ -118,17 +116,18 @@ public class TutoredController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentee")
     @Post("/save")
-    public HttpResponse<List<RestAPIResponse>> create (@Body List<TutoredDTO> tutoredDTOS, Authentication authentication) {
+    public List<TutoredDTO> create (@Body List<TutoredDTO> tutoredDTOS, Authentication authentication) {
 
         try {
             List<Tutored> tutoreds = Utilities.parseList(tutoredDTOS, Tutored.class);
             for (Tutored tutored : tutoreds) {
+                tutored.setId(null);
                 Tutored t = this.tutoredService.create(tutored, (Long) authentication.getAttributes().get("userInfo"));
             }
-            return HttpResponse.created(new ArrayList<>());
+            return Utilities.parseList(tutoreds, TutoredDTO.class);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             LOGGER.info("Error on saving mentees: {}", e.getMessage());
         }
-        return HttpResponse.badRequest();
+        return null;
     }
 }

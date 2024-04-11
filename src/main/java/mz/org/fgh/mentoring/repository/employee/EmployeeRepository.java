@@ -4,10 +4,13 @@ import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.user.User;
 
+import java.util.Optional;
+
 
 public interface EmployeeRepository extends CrudRepository<Employee, Long> {
 
-    Employee findByUuid(String uuid);
+    //Employee findByUuid(String uuid);
+    Optional<Employee> findByUuid(String uuid);
 
     Employee createOrUpdate(Employee employee, User user);
 }

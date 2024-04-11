@@ -1480,4 +1480,16 @@
                                  baseTableName="questions" baseColumnNames="RESPONSE_TYPE_ID"
                                  referencedTableName="response_type" referencedColumnNames="id"/>
     </changeSet>
+    <changeSet author="voloide" id="202404111232_tutored-drop-colums">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="tutoreds" columnName="CARRER_ID"/>
+                <columnExists tableName="tutoreds" columnName="EMAIL"/>
+                <columnExists tableName="tutoreds" columnName="USER_ID"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="tutoreds" columnName="CARRER_ID"/>
+        <dropColumn tableName="tutoreds" columnName="EMAIL"/>
+        <dropColumn tableName="tutoreds" columnName="USER_ID"/>
+    </changeSet>
 </databaseChangeLog>

@@ -61,7 +61,7 @@ public class TutorService {
     }
 
     public Tutor getTutorByEmployeeUuid(String uuid) {
-        return tutorRepository.findByEmployee(employeeRepository.findByUuid(uuid));
+        return tutorRepository.findByEmployee(employeeRepository.findByUuid(uuid).get());
     }
 
     /*public Tutor findTutorByUserUuid(final String userUuid) {

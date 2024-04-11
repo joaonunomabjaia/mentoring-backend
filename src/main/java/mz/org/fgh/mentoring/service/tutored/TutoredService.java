@@ -2,19 +2,12 @@ package mz.org.fgh.mentoring.service.tutored;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
-import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.repository.district.DistrictRepository;
-import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
-import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
-import mz.org.fgh.mentoring.repository.location.LocationRepository;
-import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
-import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
-import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -26,32 +19,16 @@ import java.util.Set;
 @Singleton
 public class TutoredService {
 
+    private final EmployeeService employeeService;
     private final TutoredRepository tutoredRepository;
     private final UserRepository userRepository;
-    private final ProvinceRepository provinceRepository;
 
-    private final DistrictRepository districtRepository;
 
-    private final HealthFacilityRepository healthFacilityRepository;
 
-    private final ProfessionalCategoryRepository professionalCategoryRepository;
-
-    private final PartnerRepository partnerRepository;
-
-    private final LocationRepository locationRepository;
-
-    private final EmployeeRepository employeeRepository;
-
-    public TutoredService(TutoredRepository tutoredRepository, UserRepository userRepository, ProvinceRepository provinceRepository, DistrictRepository districtRepository, HealthFacilityRepository healthFacilityRepository, ProfessionalCategoryRepository professionalCategoryRepository, PartnerRepository partnerRepository, LocationRepository locationRepository, EmployeeRepository employeeRepository) {
+    public TutoredService(EmployeeService employeeService, TutoredRepository tutoredRepository, UserRepository userRepository) {
+        this.employeeService = employeeService;
         this.tutoredRepository = tutoredRepository;
         this.userRepository = userRepository;
-        this.provinceRepository = provinceRepository;
-        this.districtRepository = districtRepository;
-        this.healthFacilityRepository = healthFacilityRepository;
-        this.professionalCategoryRepository = professionalCategoryRepository;
-        this.partnerRepository = partnerRepository;
-        this.locationRepository = locationRepository;
-        this.employeeRepository = employeeRepository;
     }
 
     public List<TutoredDTO> findAll(long offset, long  limit){
@@ -115,26 +92,16 @@ public class TutoredService {
     }
 
     public TutoredDTO updateTutored(TutoredDTO tutoredDTO, Long userId){
-
         User user = this.userRepository.findById(userId).get();
-
-        Employee employee = new Employee(tutoredDTO.getEmployeeDTO());
-
         Tutored tutored = new Tutored(tutoredDTO);
 
-        employee.setCreatedBy(user.getUuid());
-        employee.setCreatedAt(user.getCreatedAt());
-        employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        employee.setUpdatedAt(DateUtils.getCurrentDate());
-        employee.setUpdatedBy(user.getUuid());
+        tutored.getEmployee().setUpdatedAt(DateUtils.getCurrentDate());
+        tutored.getEmployee().setUpdatedBy(user.getUuid());
 
-        this.employeeRepository.update(employee);
+        this.updateLocations(tutored.getEmployee().getLocations(), user);
 
-        this.updateLocations(employee.getLocations(), user);
+        this.employeeService.createOrUpdate(tutored.getEmployee(), user);
 
-        tutored.setCreatedBy(user.getUuid());
-        tutored.setCreatedAt(user.getCreatedAt());
-        tutored.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         tutored.setUpdatedAt(DateUtils.getCurrentDate());
         tutored.setUpdatedBy(user.getUuid());
         this.tutoredRepository.update(tutored);
@@ -146,12 +113,8 @@ public class TutoredService {
 
         for(Location location : locationList){
 
-            location.setCreatedBy(user.getUuid());
-            location.setCreatedAt(user.getCreatedAt());
             location.setUpdatedBy(user.getUuid());
             location.setUpdatedAt(DateUtils.getCurrentDate());
-            location.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-            this.locationRepository.update(location);
         }
     }
 
@@ -165,9 +128,7 @@ public class TutoredService {
         tutored.setCreatedBy(user.getUuid());
         tutored.setCreatedAt(DateUtils.getCurrentDate());
         tutored.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-
-        employeeRepository.createOrUpdate(tutored.getEmployee(), user);
-        locationRepository.createOrUpdate(tutored.getEmployee().getLocations(), user);
+        employeeService.createOrUpdate(tutored.getEmployee(), user);
         return this.tutoredRepository.save(tutored);
     }
 }
