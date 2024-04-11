@@ -2,7 +2,6 @@ package mz.org.fgh.mentoring.service.tutor;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
@@ -46,19 +45,8 @@ public class TutorService {
         tutor.setUuid(UUID.randomUUID().toString());
         tutor.setCreatedAt(DateUtils.getCurrentDate());
         tutor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        tutor.getEmployee().setCreatedBy(user.getUuid());
-        tutor.getEmployee().setUuid(UUID.randomUUID().toString());
-        tutor.getEmployee().setCreatedAt(DateUtils.getCurrentDate());
-        tutor.getEmployee().setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        employeeRepository.save(tutor.getEmployee());
-        for (Location location : tutor.getEmployee().getLocations()) {
-            location.setUuid(UUID.randomUUID().toString());
-            location.setCreatedAt(DateUtils.getCurrentDate());
-            location.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-            location.setCreatedBy(user.getUuid());
-            location.setLocationLevel("N/A");
-            locationRepository.save(location);
-        }
+       employeeRepository.createOrUpdate(tutor.getEmployee(), user);
+       locationRepository.createOrUpdate(tutor.getEmployee().getLocations(), user);
         return this.tutorRepository.save(tutor);
     }
 
@@ -73,7 +61,7 @@ public class TutorService {
     }
 
     public Tutor getTutorByEmployeeUuid(String uuid) {
-        return tutorRepository.findByEmployee(employeeRepository.findByUuid(uuid));
+        return tutorRepository.findByEmployee(employeeRepository.findByUuid(uuid).get());
     }
 
     /*public Tutor findTutorByUserUuid(final String userUuid) {
