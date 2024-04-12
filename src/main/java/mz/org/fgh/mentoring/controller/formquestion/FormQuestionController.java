@@ -6,6 +6,7 @@ import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -15,10 +16,8 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.service.formquestion.FormQuestionService;
+import mz.org.fgh.mentoring.service.form.FormQuestionService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,5 +79,14 @@ public class FormQuestionController extends BaseController {
     public FormQuestion create (@Body FormQuestion formQuestion) {
         LOG.debug("Created formQuestion {} ", formQuestion);
         return this.formQuestionService.create(formQuestion);
+    }
+
+    @Operation(summary = "Remove a formQuestion")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "FormQuestion")
+    @Patch("/remove")
+    public void remove (@NonNull @QueryValue("formId") Long formId, @Body FormQuestionDTO formQuestionDTO, Authentication authentication) {
+        LOG.debug("Removing a formQuestion {} ");
+        this.formQuestionService.inactivate((Long) authentication.getAttributes().get("userInfo"), formId, formQuestionDTO);
     }
 }

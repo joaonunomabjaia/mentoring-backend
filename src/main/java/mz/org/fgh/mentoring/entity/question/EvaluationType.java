@@ -1,11 +1,9 @@
-package mz.org.fgh.mentoring.entity.answertype;
+package mz.org.fgh.mentoring.entity.question;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 
 import javax.persistence.Column;
@@ -13,15 +11,16 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-@Schema(name = "AnswerType", description = "Possible answers to the questions")
-@Entity(name = "AnswerType")
-@Table(name = "ANSWER_TYPE")
+/**
+ * @author Jose Julai Ritsure
+ */
+@Entity
+@Table(name = "evaluation_type")
 @Data
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
-public class AnswerType extends BaseEntity {
+public class EvaluationType extends BaseEntity {
 
     @NotEmpty
     @Column(name = "description", nullable = false)

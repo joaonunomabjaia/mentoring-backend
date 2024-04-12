@@ -33,20 +33,8 @@ public class Question  extends BaseEntity {
     private String question;
 
     @ToString.Exclude
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "QUESTION_TYPE_ID")
-    private QuestionType questionType;
-
-    @ToString.Exclude
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_CATEGORY_ID")
     private QuestionsCategory questionsCategory;
-
-    @ToString.Exclude
-    @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "RESPONSE_TYPE_ID")
-    private ResponseType responseType;
 
 }

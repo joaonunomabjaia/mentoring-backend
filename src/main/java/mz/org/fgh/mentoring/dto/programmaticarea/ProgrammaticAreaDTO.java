@@ -34,4 +34,13 @@ public class ProgrammaticAreaDTO extends BaseEntityDTO implements Serializable {
             this.program = new ProgramDTO(programmaticArea.getProgram());
         }
     }
+
+    public ProgrammaticArea toProgrammaticArea() {
+        ProgrammaticArea programmaticArea = new ProgrammaticArea();
+        programmaticArea.setCode(this.getCode());
+        programmaticArea.setDescription(this.getDescription());
+        programmaticArea.setId(this.getId());
+        programmaticArea.setUuid(this.getUuid());
+        return programmaticArea;
+    }
 }

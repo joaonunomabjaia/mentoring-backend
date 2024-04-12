@@ -5,6 +5,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -97,8 +98,7 @@ public class FormController extends BaseController {
             @Nullable @QueryValue("name") String name,
             @Nullable @QueryValue("programmaticArea") String programmaticArea
     ) {
-        List<FormDTO> forms = new ArrayList<>(0);
-        forms = formService.search(code, name, programmaticArea);;
+        List<FormDTO> forms = formService.search(code, name, programmaticArea);;
         return forms;
     }
 
@@ -106,9 +106,8 @@ public class FormController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Post("/saveOrUpdate")
     @Tag(name = "Form")
-    public FormDTO saveOrUpdate(@NonNull @QueryValue("userId") Long userId,
-                                @NonNull @Body FormDTO formDTO){
-        FormDTO dto = this.formService.saveOrUpdate(userId, formDTO);
+    public FormDTO saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication){
+        FormDTO dto = this.formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
         return dto;
     }
 
