@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Data
@@ -34,22 +35,21 @@ public class FormDTO extends BaseEntityDTO implements Serializable {
     @JsonProperty(value = "formQuestions")
     private List<FormQuestionDTO> formQuestions = new ArrayList<FormQuestionDTO>();
 
-    @JsonProperty(value = "addedFormQuestionDTOs")
-    private List<FormQuestionDTO> addedFormQuestionDTOs;
-
-    @JsonProperty(value = "removedFormQuestionDTOs")
-    private List<FormQuestionDTO> removedFormQuestionDTOs;
-
     private Integer targetPatient;
 
     private Integer targetFile;
 
+    private Date createdAt;
+
+    private String createdBy;
 
     public FormDTO(Form form) {
         super(form);
         this.code = form.getCode();
         this.name = form.getName();
         this.description = form.getDescription();
+        this.createdAt = form.getCreatedAt();
+        this.createdBy = form.getCreatedBy();
         if(form.getPartner()!=null) {
             this.partnerDTO = new PartnerDTO(form.getPartner());
         }
@@ -76,6 +76,11 @@ public class FormDTO extends BaseEntityDTO implements Serializable {
         form.setDescription(this.getDescription());
         form.setTargetFile(this.getTargetFile());
         form.setTargetPatient(this.getTargetPatient());
+        form.setCreatedAt(this.getCreatedAt());
+        form.setCreatedBy(this.getCreatedBy());
+        if(this.getProgrammaticAreaDTO()!=null) {
+            form.setProgrammaticArea(this.getProgrammaticAreaDTO().toProgrammaticArea());
+        }
         return form;
     }
 }

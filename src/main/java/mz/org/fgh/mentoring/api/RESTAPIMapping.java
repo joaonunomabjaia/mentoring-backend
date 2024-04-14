@@ -40,6 +40,6 @@ public class RESTAPIMapping {
     public final static String RESPONSE_TYPE ="responseTypes";
     public final static String QUESTION_TYPE ="questionTypes";
 
-
+    public final static String EVALUATION_TYPE ="evaluationTypes";
 
 }

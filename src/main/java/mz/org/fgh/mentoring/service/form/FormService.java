@@ -10,8 +10,10 @@ import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
+import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
@@ -24,6 +26,7 @@ import java.util.Optional;
 public class FormService {
 
     private FormRepository formRepository;
+
     private UserRepository userRepository;
 
     private FormQuestionRepository formQuestionRepository;
@@ -117,47 +120,53 @@ public class FormService {
     }
 
     public FormDTO saveOrUpdate(Long userId, FormDTO formDTO) {
-        User user = this.userRepository.findById(userId).get();
+        User user = this.userRepository.fetchByUserId(userId);
+        Partner partner = user.getEmployee().getPartner();
         Form form = formDTO.toForm();
-        List<FormQuestionDTO> formQuestions = new ArrayList<>();
-        List<FormQuestionDTO> addedFormQuestionDTOs = formDTO.getAddedFormQuestionDTOs();
-        List<FormQuestionDTO> removedFormQuestionDTOs = formDTO.getRemovedFormQuestionDTOs();
-        if(addedFormQuestionDTOs!=null && !addedFormQuestionDTOs.isEmpty()) {
-            for (FormQuestionDTO formQuestionDTO : addedFormQuestionDTOs) {
-                FormQuestion formQuestion = formQuestionDTO.toFormQuestion();
-                if (form.getId() != null && formQuestion.getId() != null) {
-                    formQuestion.setUpdatedAt(new Date());
-                    formQuestion.setUpdatedBy(user.getUuid());
-                    this.formQuestionRepository.update(formQuestion);
-                    form.setUpdatedAt(new Date());
-                    form.setUpdatedBy(user.getUuid());
-                    form = this.formRepository.update(form);
-                    formQuestions.add(new FormQuestionDTO(formQuestion));
-                } else if (form.getId() == null) {
-                    formQuestion.setCreatedAt(new Date());
-                    formQuestion.setCreatedBy(user.getUuid());
-                    this.formQuestionRepository.save(formQuestion);
-                    form.setCreatedAt(new Date());
-                    form.setCreatedBy(user.getUuid());
-                    form = this.create(form);
-                    formQuestions.add(new FormQuestionDTO(formQuestion));
-                }
+        form.setDescription(form.getName());
+        form.setPartner(partner);
+        List<FormQuestionDTO> formQuestions = formDTO.getFormQuestions();
+        Date currDate = new Date();
+
+        if(StringUtils.isEmpty(formDTO.getUuid())) {
+            form.setUuid(Utilities.generateUUID());
+            form.setCreatedBy(user.getUuid());
+            form.setCreatedAt(currDate);
+            form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            Form newForm = this.formRepository.save(form);
+            List<FormQuestion> newFormQuestions = new ArrayList<>();
+            for (FormQuestionDTO dto : formQuestions) {
+                FormQuestion formQuestion = dto.toFormQuestion();
+                formQuestion.setCreatedBy(user.getUuid());
+                formQuestion.setCreatedAt(currDate);
+                formQuestion.setForm(newForm);
+                formQuestion.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                FormQuestion newFQ = this.formQuestionRepository.save(formQuestion);
+                newFormQuestions.add(newFQ);
+            }
+            newForm.setFormQuestions(newFormQuestions);
+            return new FormDTO(newForm);
+        }
+
+        List<FormQuestion> listOfFormQuestions = new ArrayList<>();
+        for (FormQuestionDTO dto : formQuestions) {
+            if(dto.getId()==null) {
+                FormQuestion formQuestion = dto.toFormQuestion();
+                formQuestion.setCreatedBy(user.getUuid());
+                formQuestion.setCreatedAt(currDate);
+                formQuestion.setForm(form);
+                formQuestion.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                FormQuestion newFQ = this.formQuestionRepository.save(formQuestion);
+                listOfFormQuestions.add(newFQ);
+            } else {
+                listOfFormQuestions.add(dto.toFormQuestion());
             }
         }
-        if(removedFormQuestionDTOs!=null && !removedFormQuestionDTOs.isEmpty()) {
-            for (FormQuestionDTO formQuestionDTO : removedFormQuestionDTOs) {
-                FormQuestion formQuestion = formQuestionDTO.toFormQuestion();
-                formQuestion.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
-                formQuestion.setUpdatedAt(new Date());
-                formQuestion.setUpdatedBy(user.getUuid());
-                this.formQuestionRepository.update(formQuestion);
-                form.setUpdatedAt(new Date());
-                form.setUpdatedBy(user.getUuid());
-                this.formRepository.update(form);
-            }
-        }
-        FormDTO dto = new FormDTO(form);
-        dto.setFormQuestions(formQuestions);
-        return dto;
+            form.setUpdatedBy(user.getUuid());
+            form.setUpdatedAt(currDate);
+            form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            Form updatedForm = this.formRepository.update(form);
+            updatedForm.setFormQuestions(listOfFormQuestions);
+            return new FormDTO(updatedForm);
     }
 }
