@@ -9,8 +9,6 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
-import mz.org.fgh.mentoring.entity.question.QuestionsCategory;
-
 import java.io.Serializable;
 
 @Data

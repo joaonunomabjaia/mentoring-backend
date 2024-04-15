@@ -8,13 +8,8 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
-import javax.validation.constraints.NotNull;
-import java.util.HashSet;
-import java.util.Set;
 @Schema(name = "Question", description = "A professional that provide mentoring to the tutored individuals")
 @Entity(name = "Question")
 @Table(name = "questions")
@@ -35,7 +30,7 @@ public class Question  extends BaseEntity {
     @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "QUESTION_CATEGORY_ID")
-    private QuestionCategory questionsCategory;
+    private QuestionCategory questionCategory;
 
     @Creator
     public Question(){}
@@ -43,7 +38,7 @@ public class Question  extends BaseEntity {
         super(questionDTO);
         this.code=questionDTO.getCode();
         this.question=questionDTO.getQuestion();
-        this.questionsCategory = new QuestionCategory(questionDTO.getQuestionCategoryDTO());
+        this.questionCategory = new QuestionCategory(questionDTO.getQuestionCategoryDTO());
     }
 
     @Override
@@ -51,7 +46,7 @@ public class Question  extends BaseEntity {
         return "Question{" +
                 "code='" + code + '\'' +
                 ", question='" + question + '\'' +
-                ", questionsCategory=" + questionsCategory +
+                ", questionCategory=" + questionCategory +
                 '}';
     }
 }

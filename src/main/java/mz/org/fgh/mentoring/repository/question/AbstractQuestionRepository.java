@@ -2,7 +2,7 @@ package mz.org.fgh.mentoring.repository.question;
 
 import io.micronaut.data.annotation.Repository;
 import mz.org.fgh.mentoring.base.AbstaractBaseRepository;
-import mz.org.fgh.mentoring.entity.question.QuestionsCategory;
+import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import org.hibernate.SessionFactory;
 
 import javax.persistence.Query;
@@ -23,12 +23,12 @@ public abstract class AbstractQuestionRepository extends AbstaractBaseRepository
 
     @Transactional
     @Override
-    public List<Long> search(final String code, final String description, final QuestionsCategory questionsCategory) {
+    public List<Long> search(final String code, final String description, final QuestionCategory questionCategory) {
 
         String sql = "SELECT DISTINCT(q.id) FROM questions q " +
                 " INNER JOIN question_categories qc ON q.QUESTION_CATEGORY_ID = qc.ID ";
 
-        if(code != null || description != null || questionsCategory != null) {
+        if(code != null || description != null || questionCategory != null) {
             sql += " WHERE 1=1 ";
         }
         if (code != null) {
@@ -37,8 +37,8 @@ public abstract class AbstractQuestionRepository extends AbstaractBaseRepository
         if (description != null) {
             sql += " AND q.question like '%" + description + "%' ";
         }
-        if (questionsCategory != null) {
-            sql += " AND qc.id like '%" + questionsCategory.getId() + "%' ";
+        if (questionCategory != null) {
+            sql += " AND qc.id like '%" + questionCategory.getId() + "%' ";
         }
 
         Query qw = this.session.getCurrentSession().createSQLQuery(sql);

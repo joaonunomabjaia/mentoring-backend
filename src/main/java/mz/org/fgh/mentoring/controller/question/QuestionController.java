@@ -110,7 +110,7 @@ public class QuestionController extends BaseController {
 
         Question question = this.questionService.findById(questionDTO.getId()).get();
         question.setQuestion(questionDTO.getQuestion());
-        question.setQuestionsCategory(new QuestionCategory(questionDTO.getQuestionCategoryDTO()));
+        question.setQuestionCategory(new QuestionCategory(questionDTO.getQuestionCategoryDTO()));
         question = this.questionService.update(question, (Long) authentication.getAttributes().get("userInfo"));
 
         LOG.info("Updated question {}", question);
