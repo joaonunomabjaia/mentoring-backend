@@ -1,8 +1,10 @@
 package mz.org.fgh.mentoring.entity.tutorprogramaticarea;
 
+import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.programmaticarea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 
@@ -31,4 +33,9 @@ public class TutorProgrammaticArea extends BaseEntity {
     @Transient
     private Boolean mapAsUser = Boolean.FALSE;
 
+    @Creator
+    public TutorProgrammaticArea(TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO){
+        this.tutor =new Tutor(tutorProgrammaticAreaDTO.getTutorDTO());
+        this.programmaticArea = new ProgrammaticArea(tutorProgrammaticAreaDTO.getProgrammaticAreaDTO());
+    }
 }

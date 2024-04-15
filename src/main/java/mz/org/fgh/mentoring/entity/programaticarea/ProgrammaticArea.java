@@ -1,9 +1,11 @@
 package mz.org.fgh.mentoring.entity.programaticarea;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
@@ -39,4 +41,12 @@ public class ProgrammaticArea extends BaseEntity {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "programmaticArea")
     private Set<TutorProgrammaticArea> tutorProgrammaticAreas = new HashSet<>();
+
+    @Creator
+    public ProgrammaticArea (ProgrammaticAreaDTO programmaticAreaDTO ){
+        this.code=programmaticAreaDTO.getCode();
+        this.name=programmaticAreaDTO.getName();
+        this.description=programmaticAreaDTO.getDescription();
+        this.program= new Program(programmaticAreaDTO.getProgramDTO());
+    }
 }

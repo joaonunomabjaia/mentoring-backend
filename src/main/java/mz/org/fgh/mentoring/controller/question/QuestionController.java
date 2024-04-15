@@ -1,26 +1,86 @@
 package mz.org.fgh.mentoring.controller.question;
 
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import jakarta.inject.Inject;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.*;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
+import io.micronaut.security.rules.SecurityRule;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
+import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
+import mz.org.fgh.mentoring.entity.question.QuestionCategory;
+import mz.org.fgh.mentoring.entity.question.QuestionType;
 import mz.org.fgh.mentoring.service.question.QuestionService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
-
-@Controller("/questions")
+@Secured(SecurityRule.IS_AUTHENTICATED)
+@Controller("questions")
 public class QuestionController extends BaseController {
+    public static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
 
-    @Inject
     private QuestionService questionService;
 
-    public QuestionController() {
+    public QuestionController(QuestionService questionService) {
+        this.questionService = questionService;
     }
 
     @Get("/{formCode}")
     public List<Question> getByFormCode(@PathVariable String formCode) {
         return questionService.getQuestionsByFormCode(formCode);
+    }
+
+    @Operation(summary = "Return a list off all Questions")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Get("/all")
+    public List<QuestionDTO> getAll() {
+        return questionService.findAllQuestions();
+    }
+
+    @Operation(summary = "Save Program to database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Post("/save")
+    public HttpResponse<RestAPIResponse> create (@Body QuestionDTO questionDTO, Authentication authentication) {
+
+        Question question = new Question(questionDTO);
+        question = this.questionService.create(question, (Long) authentication.getAttributes().get("userInfo"));
+
+        LOG.info("Created question {}", question);
+
+        return HttpResponse.ok().body(new QuestionDTO(question));
+    }
+
+    @Operation(summary = "Get Question from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Get("/{id}")
+    public QuestionDTO findProgramById(@PathVariable("id") Long id){
+        Question question = this.questionService.findById(id).get();
+        return new QuestionDTO(question);
+    }
+
+    @Operation(summary = "Update Question to database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Patch("/update")
+    public HttpResponse<RestAPIResponse> update (@Body QuestionDTO questionDTO, Authentication authentication) {
+
+        Question question = this.questionService.findById(questionDTO.getId()).get();
+        question.setQuestion(questionDTO.getQuestion());
+        question.setQuestionsCategory(new QuestionCategory(questionDTO.getQuestionCategory()));
+        question = this.questionService.update(question, (Long) authentication.getAttributes().get("userInfo"));
+
+        LOG.info("Updated question {}", question);
+
+        return HttpResponse.ok().body(new QuestionDTO(question));
     }
 }
