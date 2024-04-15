@@ -11,7 +11,7 @@ public class RESTAPIMapping {
 
     public final static String FORM_CONTROLLER = "forms";
 
-    public final static String FORM_QUESTION_CONTROLLER = "formquestions";
+    public final static String FORM_QUESTION_CONTROLLER = "formQuestions";
 
     public final static String UTILS_CONTROLLER = "utils";
 
@@ -33,5 +33,13 @@ public class RESTAPIMapping {
 
     public final static String RONDA = "ronda";
     public final static String PROGRAM ="programs";
+
+    public final static String QUESTION ="questions";
+    public final static String QUESTION_CATEGORY ="questionCategories";
+
+    public final static String RESPONSE_TYPE ="responseTypes";
+    public final static String QUESTION_TYPE ="questionTypes";
+
+    public final static String EVALUATION_TYPE ="evaluationTypes";
 
 }

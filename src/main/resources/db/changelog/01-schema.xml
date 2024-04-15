@@ -1395,4 +1395,225 @@
                                  baseTableName="programmatic_areas" baseColumnNames="PROGRAM_ID"
                                  referencedTableName="programs" referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="Table-forms-dropConstraint-form_type_form_fk" author="ialuj">
+        <dropForeignKeyConstraint baseTableName="forms" constraintName="form_type_form_fk" />
+    </changeSet>
+    <changeSet id="Table-forms-dropColumn-form_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="forms" columnName="FORM_TYPE_ID"/>
+        </preConditions>
+        <dropColumn tableName="forms" columnName="FORM_TYPE_ID" />
+    </changeSet>
+    <changeSet id="table_response_type" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="response_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="response_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="RESPONSE_TYPE_202404030855" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM response_type WHERE id IN (1, 2);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO response_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '325d03c8-5aec-4a00-bcd7-f69d3c3dfa88', 'SIM/NAO/NA', 'SIM/NAO/NA', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO response_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, '8c108f8d-b454-4b82-a462-892088004ad3', 'TEXT', 'TEXT', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="Table-questions-addColumn-response_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="questions">
+            <column name="RESPONSE_TYPE_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-questions-Update-response_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+        </preConditions>
+        <sql>
+            UPDATE questions SET RESPONSE_TYPE_ID = 1;
+        </sql>
+    </changeSet>
+    <changeSet id="Table-questions-addFkConstraint-response_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+        </preConditions>
+        <addForeignKeyConstraint constraintName="response_type_id_fk"
+                                 baseTableName="questions" baseColumnNames="RESPONSE_TYPE_ID"
+                                 referencedTableName="response_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet author="voloide" id="202404111232_tutored-drop-colums">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="tutoreds" columnName="CARRER_ID"/>
+                <columnExists tableName="tutoreds" columnName="EMAIL"/>
+                <columnExists tableName="tutoreds" columnName="USER_ID"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="tutoreds" columnName="CARRER_ID"/>
+        <dropColumn tableName="tutoreds" columnName="EMAIL"/>
+        <dropColumn tableName="tutoreds" columnName="USER_ID"/>
+    </changeSet>
+    <changeSet author="ialuj" id="Form_Question-dropColumns-mandatory-applicable">
+        <preConditions onFail="MARK_RAN">
+            <and>
+            <columnExists tableName="forms_questions" columnName="MANDATORY"/>
+            <columnExists tableName="forms_questions" columnName="APPLICABLE"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="forms_questions" columnName="MANDATORY" />
+        <dropColumn tableName="forms_questions" columnName="APPLICABLE" />
+    </changeSet>
+    <changeSet id="table_evaluation_type" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="evaluation_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="evaluation_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="EVALUATION_TYPE_202404111400" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM evaluation_type WHERE id IN (1, 2, 3);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO evaluation_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '4ec6bfa7-9bc8-4e7f-9836-d67a476432f9', 'Consulta', 'Consulta', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO evaluation_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, 'd5a6fc46-b4bb-4eeb-8c82-921836fdc31d', 'Ficha', 'Ficha', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO evaluation_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (3, '5177e57b-9350-465c-ab57-b30a644022b5', 'Ambos', 'Ambos', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="Table-forms_questions-addColumns-response_type_id-evaluation_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <and>
+                    <columnExists tableName="forms_questions" columnName="EVALUATION_TYPE_ID"/>
+                    <columnExists tableName="forms_questions" columnName="RESPONSE_TYPE_ID"/>
+                </and>
+            </not>
+        </preConditions>
+        <addColumn tableName="forms_questions">
+            <column name="EVALUATION_TYPE_ID" type="bigint(20)"> </column>
+            <column name="RESPONSE_TYPE_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="FORMS_QUESTION_FK_UPDATE_202404111400" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="forms_questions" columnName="EVALUATION_TYPE_ID"/>
+                <columnExists tableName="forms_questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <sql>
+            UPDATE forms_questions SET EVALUATION_TYPE_ID = 1;
+            UPDATE forms_questions SET RESPONSE_TYPE_ID = 1;
+        </sql>
+    </changeSet>
+    <changeSet id="FORMS_QUESTION_FK_202404111400" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="forms_questions" columnName="EVALUATION_TYPE_ID"/>
+                <columnExists tableName="forms_questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint constraintName="evaluation_type_fq_fk"
+                                 baseTableName="forms_questions" baseColumnNames="EVALUATION_TYPE_ID"
+                                 referencedTableName="evaluation_type" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="response_type_fq_fk"
+                                 baseTableName="forms_questions" baseColumnNames="RESPONSE_TYPE_ID"
+                                 referencedTableName="response_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-questions-dropConstraint-question_type_fk-response_type_fk" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE_ID"/>
+                <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="questions" constraintName="response_type_id_fk" />
+        <dropForeignKeyConstraint baseTableName="questions" constraintName="question_type_question_fk" />
+    </changeSet>
+    <changeSet id="Table-questions-dropColumns" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE"/>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE_ID"/>
+                <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="questions" columnName="QUESTION_TYPE" />
+        <dropColumn tableName="questions" columnName="QUESTION_TYPE_ID" />
+        <dropColumn tableName="questions" columnName="RESPONSE_TYPE_ID" />
+    </changeSet>
 </databaseChangeLog>

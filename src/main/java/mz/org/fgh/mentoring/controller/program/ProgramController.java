@@ -43,7 +43,7 @@ public class ProgramController extends BaseController {
     @Operation(summary = "Return a list off all Programs")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Program")
-    @Get("/all")
+    @Get("/getAll")
     public List<ProgramDTO> getAll() {
         return programService.findAllPrograms();
     }

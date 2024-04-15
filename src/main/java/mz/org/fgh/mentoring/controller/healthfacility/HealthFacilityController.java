@@ -15,10 +15,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
+import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.service.healthfacility.HealthFacilityService;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -44,12 +48,28 @@ public class HealthFacilityController extends BaseController {
     @Operation(summary = "Return a list off all HealthFacilities")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "HealthFacilities")
-    @Get("getall")
+    @Get("/getall")
     public List<HealthFacilityDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
                                           @Nullable @QueryValue("offset") Long offset) {
         return this.healthFacilityService.getAll(limit, offset);
     }
 
+    @Operation(summary = "Return a list off all HealthFacilities")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "HealthFacilities")
+    @Get("getByDistricts")
+    public List<HealthFacilityDTO> getByDistricts(@QueryValue("uuids") List<String> uuids) {
+        List<HealthFacility> healthFacilities =  this.healthFacilityService.getByDistricts(uuids);
+        if (Utilities.listHasElements((ArrayList<?>) healthFacilities)) {
+            try {
+                return Utilities.parseList(healthFacilities, HealthFacilityDTO.class);
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                     InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
     @Operation(summary = "Return a list off all HealthFacilities")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "HealthFacilities")

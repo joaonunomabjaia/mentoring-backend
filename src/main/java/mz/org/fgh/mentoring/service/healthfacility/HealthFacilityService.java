@@ -94,4 +94,8 @@ public class HealthFacilityService {
             throw new RuntimeException(e);
         }
     }
+
+    public List<HealthFacility> getByDistricts(List<String> uuids) {
+        return healthFacilityRepository.getAllOfDistrict(uuids);
+    }
 }

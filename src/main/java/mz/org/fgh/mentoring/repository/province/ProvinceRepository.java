@@ -12,4 +12,6 @@ public interface ProvinceRepository extends CrudRepository<Province, Long> {
     List<Province> findAll();
 
     List<Province> findByDesignation(String designation);
+
+    Province findByUuid(String uuid);
 }

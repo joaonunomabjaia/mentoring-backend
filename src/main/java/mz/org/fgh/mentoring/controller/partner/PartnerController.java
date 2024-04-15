@@ -1,4 +1,4 @@
-package mz.org.fgh.mentoring.controller.Partner;
+package mz.org.fgh.mentoring.controller.partner;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
@@ -39,7 +39,6 @@ public class PartnerController extends BaseController {
     @Operation(summary = "Return a list off all Partners")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Partner")
-    @Secured(SecurityRule.IS_ANONYMOUS)
     @Get("getall")
     public List<PartnerDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
                                    @Nullable @QueryValue("offset") Long offset) {

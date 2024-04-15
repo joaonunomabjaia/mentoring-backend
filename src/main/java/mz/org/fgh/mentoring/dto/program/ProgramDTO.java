@@ -15,6 +15,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 public class ProgramDTO extends BaseEntityDTO implements Serializable {
+    private Long id;
     private String name;
     private String description;
 
@@ -22,6 +23,7 @@ public class ProgramDTO extends BaseEntityDTO implements Serializable {
     public ProgramDTO(){}
     public  ProgramDTO(Program program) {
         super(program);
+        this.id = program.getId();
         this.name = program.getName();
         this.description = program.getDescription();
     }

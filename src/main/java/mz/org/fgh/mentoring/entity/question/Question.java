@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.question;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,8 +15,8 @@ import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 import java.util.HashSet;
 import java.util.Set;
-
-@Entity(name = "question")
+@Schema(name = "Question", description = "A professional that provide mentoring to the tutored individuals")
+@Entity(name = "Question")
 @Table(name = "questions")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
@@ -31,12 +32,10 @@ public class Question  extends BaseEntity {
     @Column(name = "QUESTION", nullable = false)
     private String question;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "QUESTION_CATEGORY_ID")
     private QuestionCategory questionsCategory;
-
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "question")
-    private Set<FormQuestion> formQuestions = new HashSet<>();
 
     @Creator
     public Question(){}
@@ -44,7 +43,7 @@ public class Question  extends BaseEntity {
         super(questionDTO);
         this.code=questionDTO.getCode();
         this.question=questionDTO.getQuestion();
-        this.questionsCategory = new QuestionCategory(questionDTO.getQuestionCategory());
+        this.questionsCategory = new QuestionCategory(questionDTO.getQuestionCategoryDTO());
     }
 
     @Override

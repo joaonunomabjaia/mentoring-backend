@@ -1,10 +1,8 @@
 package mz.org.fgh.mentoring.entity.form;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
