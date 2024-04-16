@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.service.question;
 
+import io.micronaut.core.annotation.Creator;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -21,11 +23,14 @@ import java.util.UUID;
 
 @Singleton
 public class QuestionService {
-
+    @Inject
     private QuestionRepository questionRepository;
+    @Inject
     private QuestionsCategoryRepository questionCategoryRepository;
+    @Inject
     private UserRepository userRepository;
-
+    @Creator
+    public QuestionService(){}
 
     public QuestionService(QuestionRepository questionRepository, QuestionsCategoryRepository questionsCategoryRepository) {
         this.questionRepository = questionRepository;

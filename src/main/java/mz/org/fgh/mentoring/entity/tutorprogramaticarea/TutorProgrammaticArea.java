@@ -16,17 +16,15 @@ import javax.validation.constraints.NotNull;
 @Table(name = "TUTOR_PROGRAMMATIC_AREA", uniqueConstraints = @UniqueConstraint(columnNames = { "TUTOR_ID", "PROGRAMMATIC_AREA_ID"}))
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@NoArgsConstructor
-@ToString
 public class TutorProgrammaticArea extends BaseEntity {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TUTOR_ID", nullable = false)
     private Tutor tutor;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
     private ProgrammaticArea programmaticArea;
 
@@ -34,8 +32,19 @@ public class TutorProgrammaticArea extends BaseEntity {
     private Boolean mapAsUser = Boolean.FALSE;
 
     @Creator
+    public TutorProgrammaticArea(){}
     public TutorProgrammaticArea(TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO){
+        super();
         this.tutor =new Tutor(tutorProgrammaticAreaDTO.getTutorDTO());
         this.programmaticArea = new ProgrammaticArea(tutorProgrammaticAreaDTO.getProgrammaticAreaDTO());
+    }
+
+    @Override
+    public String toString() {
+        return "TutorProgrammaticArea{" +
+                "tutor=" + tutor +
+                ", programmaticArea=" + programmaticArea +
+                ", mapAsUser=" + mapAsUser +
+                '}';
     }
 }

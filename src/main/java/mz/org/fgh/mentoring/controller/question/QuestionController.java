@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.controller.question;
 
+import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.HttpResponse;
@@ -43,11 +44,6 @@ public class QuestionController extends BaseController {
 
     public QuestionController(QuestionService questionService) {
         this.questionService = questionService;
-    }
-
-    @Get("/{formCode}")
-    public List<Question> getByFormCode(@PathVariable String formCode) {
-        return questionService.getQuestionsByFormCode(formCode);
     }
 
     @Operation(summary = "Return a list off all Questions")
@@ -97,7 +93,7 @@ public class QuestionController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
     @Get("/{id}")
-    public QuestionDTO findProgramById(@PathVariable("id") Long id){
+    public QuestionDTO findQuestionById(@PathVariable("id") Long id){
         Question question = this.questionService.findById(id).get();
         return new QuestionDTO(question);
     }

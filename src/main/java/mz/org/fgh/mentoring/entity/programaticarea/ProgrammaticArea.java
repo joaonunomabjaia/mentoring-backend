@@ -19,9 +19,7 @@ import java.util.Set;
 @Table(name = "programmatic_areas")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class ProgrammaticArea extends BaseEntity {
 
     @Column(name = "CODE", nullable = false, length = 50)
@@ -35,15 +33,26 @@ public class ProgrammaticArea extends BaseEntity {
 
     @ToString.Exclude
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROGRAM_ID", nullable = false)
     private Program program;
 
     @Creator
+    public ProgrammaticArea (){}
     public ProgrammaticArea (ProgrammaticAreaDTO programmaticAreaDTO ){
         this.code=programmaticAreaDTO.getCode();
         this.name=programmaticAreaDTO.getName();
         this.description=programmaticAreaDTO.getDescription();
         this.program= new Program(programmaticAreaDTO.getProgramDTO());
+    }
+
+    @Override
+    public String toString() {
+        return "ProgrammaticArea{" +
+                "code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", program=" + program +
+                '}';
     }
 }

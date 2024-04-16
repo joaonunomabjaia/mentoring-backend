@@ -2,13 +2,9 @@ package mz.org.fgh.mentoring.controller.partner;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Put;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -17,7 +13,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
+import mz.org.fgh.mentoring.dto.programmaticarea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.service.partner.PartnerService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,20 +53,25 @@ public class PartnerController extends BaseController {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON
     )
-    public Partner create (@Body Partner partner) {
+    public Partner create (@Body Partner partner, Authentication authentication) {
 
-         Partner partnerResult = this.partnerService.createPartner(partner);
+         Partner partnerResult = this.partnerService.createPartner(partner, (Long) authentication.getAttributes().get("userInfo"));
 
         LOG.debug("Created tutor {}", partnerResult);
         return partnerResult;
     }
 
-    @Put(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON
-    )
-    public Partner updatePartner(@Body Partner partner){
+    @Patch( consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
+    public Partner updatePartner(@Body Partner partner, Authentication authentication){
+        return this.partnerService.updatePartner(partner, (Long) authentication.getAttributes().get("userInfo"));
+    }
 
-        return this.partnerService.updatePartner(partner);
+    @Operation(summary = "Get Partner from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Partner")
+    @Get("/{id}")
+    public PartnerDTO findTartnerById(@PathVariable("id") Long id){
+        Partner partner = this.partnerService.getById(id);
+        return  new PartnerDTO(partner);
     }
 }

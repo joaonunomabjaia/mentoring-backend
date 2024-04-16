@@ -51,8 +51,6 @@ public class ProfessionalCategoryService {
         professionalCategory.setUuid(UUID.randomUUID().toString());
         professionalCategory.setCreatedAt(DateUtils.getCurrentDate());
         professionalCategory.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        professionalCategory.setCode(professionalCategory.getCode());
-        professionalCategory.setDescription(professionalCategory.getDescription());
 
         return this.professionalCategoryRepository.save(professionalCategory);
     }
@@ -64,8 +62,6 @@ public class ProfessionalCategoryService {
         User user = userRepository.findById(userId).get();
         professionalCategory.setUpdatedBy(user.getUuid());
         professionalCategory.setUpdatedAt(DateUtils.getCurrentDate());
-        professionalCategory.setCode(professionalCategory.getCode());
-        professionalCategory.setDescription(professionalCategory.getDescription());
 
         return this.professionalCategoryRepository.update(professionalCategory);
     }
