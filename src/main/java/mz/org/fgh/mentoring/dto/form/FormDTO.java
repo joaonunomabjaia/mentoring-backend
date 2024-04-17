@@ -9,8 +9,8 @@ import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -18,7 +18,7 @@ import java.util.List;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class FormDTO extends BaseEntityDTO implements Serializable {
+public class FormDTO extends BaseEntityDTO {
 
     private String code;
 
@@ -50,21 +50,25 @@ public class FormDTO extends BaseEntityDTO implements Serializable {
         this.description = form.getDescription();
         this.createdAt = form.getCreatedAt();
         this.createdBy = form.getCreatedBy();
-        if(form.getPartner()!=null) {
-            this.partnerDTO = new PartnerDTO(form.getPartner());
-        }
-        if(form.getProgrammaticArea()!=null) {
-            this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
-        }
-        if(form.getFormQuestions()!=null && !form.getFormQuestions().isEmpty()) {
-            List<FormQuestion> formQuestionList = form.getFormQuestions();
-            for (FormQuestion formQuestion: formQuestionList) {
-                FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);
-                formQuestions.add(formQuestionDTO);
+        try {
+            if(form.getPartner()!=null) {
+                this.partnerDTO = new PartnerDTO(form.getPartner());
             }
+            if(form.getProgrammaticArea()!=null) {
+                this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
+            }
+            if(form.getFormQuestions()!=null && !form.getFormQuestions().isEmpty()) {
+                List<FormQuestion> formQuestionList = form.getFormQuestions();
+                for (FormQuestion formQuestion: formQuestionList) {
+                    FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);
+                    formQuestions.add(formQuestionDTO);
+                }
+            }
+            this.targetPatient = form.getTargetPatient();
+            this.targetFile = form.getTargetFile();
+        } catch (Exception e) {
+
         }
-        this.targetPatient = form.getTargetPatient();
-        this.targetFile = form.getTargetFile();
     }
 
     public Form toForm() {
@@ -78,6 +82,7 @@ public class FormDTO extends BaseEntityDTO implements Serializable {
         form.setTargetPatient(this.getTargetPatient());
         form.setCreatedAt(this.getCreatedAt());
         form.setCreatedBy(this.getCreatedBy());
+        form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getProgrammaticAreaDTO()!=null) {
             form.setProgrammaticArea(this.getProgrammaticAreaDTO().toProgrammaticArea());
         }
