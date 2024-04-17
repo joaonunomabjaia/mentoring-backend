@@ -18,6 +18,10 @@ micronaut:
     port: 8087
     cors:
       enabled: true
+      configurations:
+        ui:
+          allowed-origins:
+            - http://localhost:9000
 ---
 #tag::security[]
 micronaut:

@@ -1,9 +1,7 @@
 package mz.org.fgh.mentoring.repository.form;
 
 import io.micronaut.data.annotation.Query;
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -25,8 +23,8 @@ public interface FormQuestionRepository extends CrudRepository<FormQuestion, Lon
             "INNER JOIN FETCH fq.evaluationType et " +
             "INNER JOIN FETCH fq.responseType rt " +
             "INNER JOIN FETCH q.questionsCategory " +
-            "WHERE f.id = :formId AND fq.lifeCycleStatus = :lifeCycleStatus")
-    List<FormQuestion> fetchByForm(Long formId, LifeCycleStatus lifeCycleStatus);
+            "WHERE f.id = :formId")
+    List<FormQuestion> fetchByForm(Long formId);
 
     List<FormQuestion> fetchByTutor(final Tutor tutor, final LifeCycleStatus lifeCycleStatus);
 

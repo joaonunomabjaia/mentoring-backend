@@ -3,7 +3,13 @@ package mz.org.fgh.mentoring.controller.form;
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.Put;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -15,14 +21,12 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
-import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.service.form.FormService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -61,10 +65,12 @@ public class FormController extends BaseController {
     @Tag(name = "Form")
     public List<FormDTO> findBySelectedFilter(@Nullable @QueryValue("code") String code,
                                               @Nullable @QueryValue("name") String name,
+                                              @Nullable @QueryValue("program") String program,
                                               @Nullable @QueryValue("programmaticAreaCode") String programmaticAreaCode){
         return this.formService.findBySelectedFilter(code==null? StringUtils.EMPTY:code,
-                name==null? StringUtils.EMPTY:name,
-                programmaticAreaCode==null? StringUtils.EMPTY:programmaticAreaCode);
+                                                    name==null? StringUtils.EMPTY:name,
+                                                    programmaticAreaCode==null? StringUtils.EMPTY:programmaticAreaCode,
+                                                    program==null?StringUtils.EMPTY:program);
     }
 
     @Get("/programaticarea/{progrArea}")
@@ -109,6 +115,16 @@ public class FormController extends BaseController {
     public FormDTO saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication){
         FormDTO dto = this.formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
         return dto;
+    }
+
+
+    @Operation(summary = "Update the form LifeCicleStatus")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Post("/changeLifeCicleStatus")
+    @Tag(name = "Form")
+    public FormDTO changeLifeCicleStatus(@NonNull @Body FormDTO formDTO, Authentication authentication){
+        Form f = this.formService.updateLifeCycleStatus(formDTO.toForm(), (Long) authentication.getAttributes().get("userInfo"));
+        return new FormDTO(f);
     }
 
 }

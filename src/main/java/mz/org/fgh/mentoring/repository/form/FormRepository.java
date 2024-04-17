@@ -1,11 +1,8 @@
 package mz.org.fgh.mentoring.repository.form;
 
 import io.micronaut.data.annotation.Query;
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
-import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -18,7 +15,8 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     List<Form> findAll();
     Optional<Form> findById(@NotNull Long id);
 
-    Optional<Form> findByUuid(String uuid);
+    Optional<Form> findByUuid(@NotNull String uuid);
+
     Form findByCode(String code);
 
     @Query("select f FROM Answer a INNER JOIN a.form f INNER JOIN a.question q INNER JOIN FETCH f.programmaticArea WHERE q.uuid IN (:questionUuids) AND f.lifeCycleStatus = :lifeCycleStatus")
@@ -29,8 +27,8 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             "INNER JOIN FETCH pa.program p " +
             "INNER JOIN FETCH f.partner pt " +
             "where f.code like concat(concat('%',:code) ,'%') and f.name like concat(concat('%',:name),'%') " +
-            "and pa.code like concat(concat('%',:programmaticAreaCode) ,'%') and f.lifeCycleStatus = :lifeCycleStatus ")
-    List<Form> findBySelectedFilter(final String code, final String name, final String programmaticAreaCode, final LifeCycleStatus lifeCycleStatus);
+            "and pa.code like concat(concat('%',:programmaticAreaCode) ,'%') and p.uuid like concat(concat('%',:program) ,'%') ")
+    List<Form> findBySelectedFilter(final String code, final String name, final String programmaticAreaCode, String program);
 
     @Query("select f FROM Form f INNER JOIN FETCH f.programmaticArea pa INNER JOIN FETCH f.formType  where pa.uuid = :programmaticAreaUuid")
     List<Form> findFormByProgrammaticAreaUuid(final String programmaticAreaUuid);

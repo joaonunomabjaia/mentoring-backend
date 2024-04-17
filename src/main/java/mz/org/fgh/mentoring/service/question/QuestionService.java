@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.service.question;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -8,10 +7,10 @@ import mz.org.fgh.mentoring.entity.question.QuestionsCategory;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.question.QuestionsCategoryRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
-import java.math.BigInteger;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Singleton
@@ -47,11 +46,10 @@ public class QuestionService {
         }
         List<Long> ids = questionRepository.search(code, description, questionsCategory);
         List<Question> questions = questionRepository.getQuestionsByIds(ids, LifeCycleStatus.ACTIVE);
-        List<QuestionDTO> dtos = new ArrayList<>();
-        for (Question question : questions) {
-            QuestionDTO dto = new QuestionDTO(question);
-            dtos.add(dto);
+        try {
+            return Utilities.parseList(questions, QuestionDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
-        return dtos;
     }
 }
