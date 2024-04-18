@@ -17,6 +17,8 @@ dependencies {
     annotationProcessor("ch.qos.logback:logback-classic")
     annotationProcessor("io.micronaut.openapi:micronaut-openapi")
     implementation("io.micronaut:micronaut-http-client")
+    implementation "io.micronaut:micronaut-runtime"
+
     implementation("io.micronaut:micronaut-jackson-databind")
     implementation("io.micronaut.reactor:micronaut-reactor")
     implementation("jakarta.annotation:jakarta.annotation-api")
@@ -26,7 +28,13 @@ dependencies {
     implementation("io.micronaut.sql:micronaut-jdbc-hikari")
     implementation("io.micronaut.liquibase:micronaut-liquibase")
     runtimeOnly("org.mariadb.jdbc:mariadb-java-client")
-    implementation 'io.swagger.core.v3:swagger-annotations'
+    implementation "io.swagger.core.v3:swagger-annotations:2.1.11"
+    implementation "io.swagger.core.v3:swagger-models:2.1.11"
+    implementation "io.swagger.core.v3:swagger-integration:2.1.11"
+    implementation "io.swagger.core.v3:swagger-jaxrs2:2.1.11"
+    implementation "io.swagger.core.v3:swagger-core:2.1.11"
+    implementation "io.swagger.core.v3:swagger-annotations:2.1.11"
+    implementation "io.swagger.core.v3:swagger-models:2.1.11"
     runtimeOnly("org.yaml:snakeyaml")
 
     implementation("io.micronaut.security:micronaut-security-jwt")
@@ -38,16 +46,21 @@ dependencies {
 
 }
 
+task nativeImage(type: Exec, dependsOn: build) {
+    executable = 'native-image'
+    args('-jar', "${project.buildDir}/libs/${project.name}-${project.version}.jar")
+}
 
 application {
     mainClass.set("mz.org.fgh.Application")
 }
 java {
-    sourceCompatibility = JavaVersion.toVersion("11")
-    targetCompatibility = JavaVersion.toVersion("11")
+    sourceCompatibility = JavaVersion.toVersion("17")
+    targetCompatibility = JavaVersion.toVersion("17")
 }
 
 graalvmNative.toolchainDetection = false
+
 micronaut {
     runtime("netty")
     testRuntime("junit5")

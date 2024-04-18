@@ -27,4 +27,6 @@ public interface TutoredRepository extends CrudRepository<Tutored, Long> {
     List<Tutored> search( Long nuit, String name,User user, String phoneNumber);
 
     List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids);
+
+    Optional<Tutored> findByEmployeeNuitOrEmployeeEmailOrEmployeePhoneNumber(int nuit, String email, String phoneNumber);
 }
