@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.user;
 
+import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -14,7 +15,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Introspected
 public class UserDTO extends BaseEntityDTO {
@@ -28,6 +28,8 @@ public class UserDTO extends BaseEntityDTO {
     private EmployeeDTO employeeDTO;
 
     private List<UserRoleDTO> userRoleDTOS;
+    @Creator
+    public UserDTO() {}
 
     public UserDTO(User user) {
         super(user);

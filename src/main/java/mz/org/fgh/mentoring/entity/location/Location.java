@@ -22,7 +22,6 @@ import javax.persistence.Table;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@ToString
 public class Location extends BaseEntity {
     public static final String LOCATION_LEVEL_NATIONAL = "NATIONAL";
     public static final String LOCATION_LEVEL_PROVINCIAL = "PROVINCIAL";
@@ -57,8 +56,10 @@ public class Location extends BaseEntity {
         super(locationDTO);
         this.setEmployee(employee);
         this.setLocationLevel(locationDTO.getLocationLevel());
-        this.setDistrict(new District(locationDTO.getDistrictDTO()));
         this.setProvince(new Province(locationDTO.getProvinceDTO()));
+        if(locationDTO.getDistrictDTO()!=null)
+        this.setDistrict(new District(locationDTO.getDistrictDTO()));
+        if(locationDTO.getHealthFacilityDTO()!=null)
         this.setHealthFacility(new HealthFacility(locationDTO.getHealthFacilityDTO()));
     }
 
@@ -87,4 +88,14 @@ public class Location extends BaseEntity {
         return this.locationLevel.equals(LOCATION_LEVEL_DISTRITAL);
     }
 
+    @Override
+    public String toString() {
+        return "Location{" +
+                "employee=" + employee +
+                ", province=" + province +
+                ", district=" + district +
+                ", healthFacility=" + healthFacility +
+                ", locationLevel='" + locationLevel + '\'' +
+                '}';
+    }
 }
