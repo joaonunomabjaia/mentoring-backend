@@ -14,4 +14,4 @@ out/
 .classpath
 .factorypath
 bin/*
-
+*.class
