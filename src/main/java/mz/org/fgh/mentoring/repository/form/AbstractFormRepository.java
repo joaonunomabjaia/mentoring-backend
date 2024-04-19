@@ -3,8 +3,6 @@ package mz.org.fgh.mentoring.repository.form;
 import io.micronaut.data.annotation.Repository;
 import mz.org.fgh.mentoring.base.AbstaractBaseRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.entity.user.User;
 import org.hibernate.SessionFactory;
 
 import javax.persistence.Query;
@@ -25,6 +23,8 @@ public abstract class AbstractFormRepository extends AbstaractBaseRepository imp
     protected AbstractFormRepository(SessionFactory session) {
         this.session = session;
     }
+
+
 
     @Transactional
     @Override

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
 
@@ -17,11 +16,11 @@ public class BaseEntityDTO implements Serializable, RestAPIResponse {
 
     private String uuid;
 
-    private LifeCycleStatus lifeCycleStatus;
+    private String lifeCycleStatus;
 
     public BaseEntityDTO(BaseEntity baseEntity) {
         this.setId(baseEntity.getId());
         this.setUuid(baseEntity.getUuid());
-        this.setLifeCycleStatus(baseEntity.getLifeCycleStatus());
+        this.setLifeCycleStatus(baseEntity.getLifeCycleStatus().toString());
     }
 }

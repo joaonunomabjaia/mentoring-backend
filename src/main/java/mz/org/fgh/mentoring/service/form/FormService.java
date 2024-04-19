@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
@@ -75,11 +76,11 @@ public class FormService {
         return formDTOS;
     }
 
-    public List<FormDTO> findBySelectedFilter(final String code, String name, String programmaticAreaCode){
+    public List<FormDTO> findBySelectedFilter(final String code, String name, String programmaticAreaCode, String program){
         List<FormDTO> formDTOS = new ArrayList<>();
-        List<Form> forms = this.formRepository.findBySelectedFilter(code, name, programmaticAreaCode, LifeCycleStatus.ACTIVE);
+        List<Form> forms = this.formRepository.findBySelectedFilter(code, name, programmaticAreaCode, program);
         for(Form form : forms){
-            List<FormQuestion> formQuestions = formQuestionRepository.fetchByForm(form.getId(), LifeCycleStatus.ACTIVE);
+            List<FormQuestion> formQuestions = formQuestionRepository.fetchByForm(form.getId());
             form.setFormQuestions(formQuestions);
             formDTOS.add(new FormDTO(form));
         }
@@ -117,6 +118,19 @@ public class FormService {
             forms.add(new FormDTO(form));
         }
         return forms;
+    }
+
+    public Form updateLifeCycleStatus(Form form, Long userId) {
+        User user = this.userRepository.fetchByUserId(userId);
+        Optional<Form> f =  this.formRepository.findByUuid(form.getUuid());
+        if (f.isPresent()) {
+            f.get().setLifeCycleStatus(form.getLifeCycleStatus());
+            f.get().setUpdatedBy(user.getUuid());
+            f.get().setUpdatedAt(DateUtils.getCurrentDate());
+            this.formRepository.update(f.get());
+            return f.get();
+        }
+        return null;
     }
 
     public FormDTO saveOrUpdate(Long userId, FormDTO formDTO) {

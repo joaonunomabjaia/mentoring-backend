@@ -5,7 +5,6 @@ import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
-
 import java.util.List;
 
 public interface QuestionRepository extends CrudRepository<Question, Long> {

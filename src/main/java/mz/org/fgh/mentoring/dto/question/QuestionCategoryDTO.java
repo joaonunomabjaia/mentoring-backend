@@ -7,6 +7,7 @@ import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import java.io.Serializable;
 
 import io.micronaut.core.annotation.Creator;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 /**
  * @author Jose Julai Ritsure
@@ -30,7 +31,7 @@ public class QuestionCategoryDTO extends BaseEntityDTO implements Serializable {
         questionsCategory.setId(this.getId());
         questionsCategory.setUuid(this.getUuid());
         questionsCategory.setCategory(this.getCategory());
-        questionsCategory.setLifeCycleStatus(this.getLifeCycleStatus());
+        questionsCategory.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return questionsCategory;
     }
 }

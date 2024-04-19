@@ -11,9 +11,9 @@ import io.reactivex.Flowable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.repository.role.RoleAuthorityRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.reactivestreams.Publisher;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,11 +47,10 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
 
             if (possibleUser.isPresent()) {
 
-                UserDTO userDTO = new UserDTO(possibleUser.get());
 
                 String secret = (String) authenticationRequest.getSecret();
 
-                if (possibleUser.get().getPassword().equals(secret)) {
+                if (Utilities.MD5Crypt(possibleUser.get().getSalt()+":"+secret).equals(possibleUser.get().getPassword())) {
                     LOG.debug("User {} logged in...", identity);
                     Map<String, Object> userMap = new HashMap<>();
                     userMap.put("userInfo", possibleUser.get().getId());

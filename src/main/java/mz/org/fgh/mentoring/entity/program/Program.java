@@ -1,28 +1,16 @@
 package mz.org.fgh.mentoring.entity.program;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
-import mz.org.fgh.mentoring.entity.employee.Employee;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
-import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Jose Julai Ritsure

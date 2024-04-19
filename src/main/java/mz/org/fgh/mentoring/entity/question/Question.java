@@ -5,11 +5,16 @@ import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlTransient;
+import java.util.HashSet;
+import java.util.Set;
 @Schema(name = "Question", description = "A professional that provide mentoring to the tutored individuals")
 @Entity(name = "Question")
 @Table(name = "questions")

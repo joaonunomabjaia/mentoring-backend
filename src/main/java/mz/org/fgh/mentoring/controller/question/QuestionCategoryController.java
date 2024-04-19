@@ -28,7 +28,7 @@ public class QuestionCategoryController extends BaseController {
 
     @Operation(summary = "Return a list off all Question Category")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "QuestionCategory")
+    @Tag(name = "QuestionsCategory")
     @Get("/getAll")
     public List<QuestionCategoryDTO> getAllQuestionCategories() {
         return questionCategoryService.findAll();

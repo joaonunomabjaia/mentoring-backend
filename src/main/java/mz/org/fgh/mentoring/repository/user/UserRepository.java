@@ -3,8 +3,6 @@ package mz.org.fgh.mentoring.repository.user;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
-import mz.org.fgh.mentoring.dto.user.UserDTO;
-import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.user.User;
 
 import java.util.List;

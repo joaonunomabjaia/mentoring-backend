@@ -9,6 +9,8 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
+
 import java.io.Serializable;
 
 @Data
@@ -39,7 +41,7 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         question.setQuestion(this.getQuestion());
         question.setCode(this.getCode());
         question.setId(this.getId());
-        question.setLifeCycleStatus(this.getLifeCycleStatus());
+        question.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         QuestionCategory questionCategory = this.getQuestionCategoryDTO().toQuestionCategory();
         question.setQuestionCategory(questionCategory);
         return question;

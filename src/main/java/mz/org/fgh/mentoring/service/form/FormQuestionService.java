@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.service.form;
 
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -41,7 +40,7 @@ public class FormQuestionService {
     }
 
     public List<FormQuestionDTO> fetchByForm(final Long formId){
-        List<FormQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId , LifeCycleStatus.ACTIVE);
+        List<FormQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId);
         List<FormQuestionDTO> formQuestionDTOS = new ArrayList<>();
         for (FormQuestion formQuestion : formQuestions) {
             FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);

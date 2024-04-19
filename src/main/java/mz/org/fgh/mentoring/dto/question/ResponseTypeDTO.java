@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
 
@@ -29,7 +30,7 @@ public class ResponseTypeDTO extends BaseEntityDTO implements Serializable {
         responseType.setId(this.getId());
         responseType.setDescription(this.getDescription());
         responseType.setUuid(this.getUuid());
-        responseType.setLifeCycleStatus(this.getLifeCycleStatus());
+        responseType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return responseType;
     }
 }
