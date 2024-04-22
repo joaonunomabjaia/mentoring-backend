@@ -23,7 +23,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@ToString
 public class HealthFacility extends BaseEntity {
 
     @NotNull
@@ -40,5 +39,14 @@ public class HealthFacility extends BaseEntity {
     public HealthFacility(HealthFacilityDTO healthFacilityDTO) {
         super(healthFacilityDTO);
         this.setDistrict(new District(healthFacilityDTO.getDistrictDTO()));
+        this.setHealthFacility(healthFacilityDTO.getHealthFacility());
+    }
+
+    @Override
+    public String toString() {
+        return "HealthFacility{" +
+                "district=" + district +
+                ", healthFacility='" + healthFacility + '\'' +
+                '}';
     }
 }

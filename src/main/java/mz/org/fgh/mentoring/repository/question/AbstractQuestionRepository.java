@@ -2,7 +2,7 @@ package mz.org.fgh.mentoring.repository.question;
 
 import io.micronaut.data.annotation.Repository;
 import mz.org.fgh.mentoring.base.AbstaractBaseRepository;
-import mz.org.fgh.mentoring.entity.question.QuestionsCategory;
+import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import org.hibernate.SessionFactory;
 
 import javax.persistence.Query;
@@ -23,7 +23,7 @@ public abstract class AbstractQuestionRepository extends AbstaractBaseRepository
 
     @Transactional
     @Override
-    public List<Long> search(final String code, final String description, final QuestionsCategory questionsCategory) {
+    public List<Long> search(final String code, final String description, final QuestionCategory questionsCategory) {
 
         String sql = "SELECT DISTINCT(q.id) FROM questions q " +
                 " INNER JOIN question_categories qc ON q.QUESTION_CATEGORY_ID = qc.ID ";

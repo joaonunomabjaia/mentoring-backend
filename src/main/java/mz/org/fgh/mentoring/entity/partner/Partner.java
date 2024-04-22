@@ -31,4 +31,12 @@ public class Partner extends BaseEntity {
         this.setName(partnerDTO.getName());
         this.setDescription(partnerDTO.getDescription());
     }
+
+    @Override
+    public String toString() {
+        return "Partner{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
 }

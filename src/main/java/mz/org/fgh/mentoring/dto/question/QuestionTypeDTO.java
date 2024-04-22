@@ -9,14 +9,18 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
 
+import io.micronaut.core.annotation.Creator;
+
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class QuestionTypeDTO extends BaseEntityDTO implements Serializable {
 
     private String description;
 
     private  String code;
+
+    @Creator
+    public QuestionTypeDTO(){}
 
     public QuestionTypeDTO(QuestionType questionType) {
         super(questionType);

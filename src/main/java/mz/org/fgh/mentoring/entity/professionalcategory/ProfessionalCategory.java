@@ -20,7 +20,6 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class ProfessionalCategory extends BaseEntity {
 
     @NotEmpty
@@ -37,5 +36,13 @@ public class ProfessionalCategory extends BaseEntity {
         super(professionalCategoryDTO);
         this.setDescription(professionalCategoryDTO.getDescription());
         this.setCode(professionalCategoryDTO.getCode());
+    }
+
+    @Override
+    public String toString() {
+        return "ProfessionalCategory{" +
+                "description='" + description + '\'' +
+                ", code='" + code + '\'' +
+                '}';
     }
 }

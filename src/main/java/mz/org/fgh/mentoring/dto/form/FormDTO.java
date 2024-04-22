@@ -82,7 +82,6 @@ public class FormDTO extends BaseEntityDTO {
         form.setTargetPatient(this.getTargetPatient());
         form.setCreatedAt(this.getCreatedAt());
         form.setCreatedBy(this.getCreatedBy());
-        form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getProgrammaticAreaDTO()!=null) {
             form.setProgrammaticArea(this.getProgrammaticAreaDTO().toProgrammaticArea());
         }

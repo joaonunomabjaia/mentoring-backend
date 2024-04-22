@@ -3,7 +3,7 @@ package mz.org.fgh.mentoring.service.question;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionCategoryDTO;
-import mz.org.fgh.mentoring.entity.question.QuestionsCategory;
+import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import mz.org.fgh.mentoring.repository.question.QuestionsCategoryRepository;
 
 import java.util.ArrayList;
@@ -16,10 +16,10 @@ public class QuestionCategoryService {
     QuestionsCategoryRepository questionsCategoryRepository;
 
     public List<QuestionCategoryDTO> findAll(){
-        List<QuestionsCategory> questionsCategories = this.questionsCategoryRepository.findAll();
+        List<QuestionCategory> questionsCategories = this.questionsCategoryRepository.findAll();
         List<QuestionCategoryDTO> dtos = new ArrayList<>();
-        for (QuestionsCategory questionsCategory : questionsCategories) {
-            QuestionCategoryDTO dto = new QuestionCategoryDTO(questionsCategory);
+        for (QuestionCategory questionCategory : questionsCategories) {
+            QuestionCategoryDTO dto = new QuestionCategoryDTO(questionCategory);
             dtos.add(dto);
         }
         return dtos;

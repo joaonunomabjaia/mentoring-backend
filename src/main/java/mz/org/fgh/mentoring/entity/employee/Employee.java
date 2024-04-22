@@ -32,7 +32,6 @@ import java.util.Set;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class Employee extends BaseEntity {
 
     @NotEmpty
@@ -93,5 +92,20 @@ public class Employee extends BaseEntity {
             locations.add(location);
         }
         return locations;
+    }
+
+    @Override
+    public String toString() {
+        return "Employee{" +
+                "name='" + name + '\'' +
+                ", surname='" + surname + '\'' +
+                ", nuit=" + nuit +
+                ", professionalCategory=" + professionalCategory +
+                ", trainingYear=" + trainingYear +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                ", email='" + email + '\'' +
+                ", partner=" + partner +
+                ", locations=" + locations +
+                '}';
     }
 }

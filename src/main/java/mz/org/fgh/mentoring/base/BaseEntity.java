@@ -77,4 +77,17 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
         this.setUuid(baseEntityDTO.getUuid());
         if (Utilities.stringHasValue(baseEntityDTO.getLifeCycleStatus())) this.setLifeCycleStatus(LifeCycleStatus.valueOf(baseEntityDTO.getLifeCycleStatus()));
     }
+
+    @Override
+    public String toString() {
+        return "BaseEntity{" +
+                "id=" + id +
+                ", uuid='" + uuid + '\'' +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", updatedAt=" + updatedAt +
+                ", lifeCycleStatus=" + lifeCycleStatus +
+                '}';
+    }
 }
