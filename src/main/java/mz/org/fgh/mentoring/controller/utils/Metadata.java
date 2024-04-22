@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.controller.utils;
 
-import lombok.*;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.entity.career.Career;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
@@ -8,8 +7,6 @@ import mz.org.fgh.mentoring.entity.formtarget.FormTarget;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 

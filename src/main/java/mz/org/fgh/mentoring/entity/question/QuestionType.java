@@ -2,7 +2,9 @@ package mz.org.fgh.mentoring.entity.question;
 
 
 import io.micronaut.core.annotation.Creator;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.question.QuestionTypeDTO;
 
