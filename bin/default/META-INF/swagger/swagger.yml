@@ -1,0 +1,203 @@
+openapi: 3.0.1
+paths:
+  /questions/all:
+    get:
+      tags:
+      - Question
+      summary: Return a list off all Questions
+      operationId: getAll
+      responses:
+        "200":
+          content:
+            application/json: {}
+  /questions/getAll:
+    get:
+      tags:
+      - Question
+      summary: Return a list off all Questions
+      operationId: getAllQuestions
+      responses:
+        "200":
+          content:
+            application/json: {}
+  /questions/save:
+    post:
+      tags:
+      - Question
+      summary: Save Program to database
+      operationId: create
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionDTO'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json: {}
+  /questions/search:
+    get:
+      tags:
+      - Question
+      summary: "Return a list of Questions given the parameters code, description\
+        \ and category code"
+      operationId: search
+      parameters:
+      - name: code
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: description
+        in: query
+        schema:
+          type: string
+          nullable: true
+      - name: categoryId
+        in: query
+        schema:
+          type: integer
+          format: int64
+          nullable: true
+      responses:
+        "200":
+          content:
+            application/json: {}
+  /questions/update:
+    patch:
+      tags:
+      - Question
+      summary: Update Question to database
+      operationId: update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/QuestionDTO'
+        required: true
+      responses:
+        "200":
+          content:
+            application/json: {}
+  /questions/{formCode}:
+    get:
+      operationId: getByFormCode
+      parameters:
+      - name: formCode
+        in: path
+        required: true
+        schema:
+          type: string
+      responses:
+        "200":
+          description: getByFormCode 200 response
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Question'
+  /questions/{id}:
+    get:
+      tags:
+      - Question
+      summary: Get Question from database
+      operationId: findProgramById
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        "200":
+          content:
+            application/json: {}
+components:
+  schemas:
+    BaseEntity:
+      type: object
+      properties:
+        createdAt:
+          type: string
+          format: date-time
+        createdBy:
+          type: string
+        id:
+          type: integer
+          format: int64
+          nullable: true
+        lifeCycleStatus:
+          $ref: '#/components/schemas/LifeCycleStatus'
+        updatedAt:
+          type: string
+          format: date-time
+        updatedBy:
+          type: string
+        uuid:
+          type: string
+    BaseEntityDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int64
+        lifeCycleStatus:
+          $ref: '#/components/schemas/LifeCycleStatus'
+        uuid:
+          type: string
+    LifeCycleStatus:
+      type: string
+      enum:
+      - ACTIVE
+      - BLOCKED
+      - INACTIVE
+    Question:
+      required:
+      - code
+      - question
+      type: object
+      properties:
+        code:
+          minLength: 1
+          type: string
+        question:
+          minLength: 1
+          type: string
+        questionCategory:
+          nullable: true
+          allOf:
+          - $ref: '#/components/schemas/QuestionCategory'
+      description: A professional that provide mentoring to the tutored individuals
+      allOf:
+      - $ref: '#/components/schemas/BaseEntity'
+    QuestionCategory:
+      allOf:
+      - $ref: '#/components/schemas/BaseEntity'
+      - required:
+        - category
+        type: object
+        properties:
+          category:
+            minLength: 1
+            type: string
+    QuestionCategoryDTO:
+      allOf:
+      - $ref: '#/components/schemas/BaseEntityDTO'
+      - type: object
+        properties:
+          category:
+            type: string
+    QuestionDTO:
+      allOf:
+      - $ref: '#/components/schemas/BaseEntityDTO'
+      - type: object
+        properties:
+          code:
+            type: string
+          question:
+            type: string
+          questionCategory:
+            $ref: '#/components/schemas/QuestionCategoryDTO'

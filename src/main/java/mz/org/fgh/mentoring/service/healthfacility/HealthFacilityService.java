@@ -4,20 +4,30 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Location;
+import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
+import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
+import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.DateUtils;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class HealthFacilityService {
@@ -28,7 +38,8 @@ public class HealthFacilityService {
     private TutorRepository tutorRepository;
 
     private LocationRepository locationRepository;
-
+    @Inject
+    private UserRepository userRepository;
     public HealthFacilityService(HealthFacilityRepository healthFacilityRepository) {
         this.healthFacilityRepository = healthFacilityRepository;
     }
@@ -73,10 +84,8 @@ public class HealthFacilityService {
         return null;
     }
 
-    public HealthFacilityDTO findById(Long id){
-
-        HealthFacility healthFacility = this.healthFacilityRepository.findById(id).get();
-        return  new HealthFacilityDTO(healthFacility);
+    public HealthFacility findById(Long id){
+       return this.healthFacilityRepository.findById(id).get();
     }
 
     public List<HealthFacilityDTO> getAllOfMentor(String uuid, Long limit, Long offset) {
@@ -97,5 +106,24 @@ public class HealthFacilityService {
 
     public List<HealthFacility> getByDistricts(List<String> uuids) {
         return healthFacilityRepository.getAllOfDistrict(uuids);
+    }
+    @Transactional
+    public HealthFacility create(HealthFacility healthFacility, Long userId) {
+        User user = userRepository.findById(userId).get();
+        healthFacility.setCreatedBy(user.getUuid());
+        healthFacility.setUuid(UUID.randomUUID().toString());
+        healthFacility.setCreatedAt(DateUtils.getCurrentDate());
+        healthFacility.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+
+        return this.healthFacilityRepository.save(healthFacility);
+    }
+    @Transactional
+    public HealthFacility update(HealthFacility healthFacility, Long userId) {
+        HealthFacility healthFacilityDB = findById(healthFacility.getId());
+        User user = userRepository.findById(userId).get();
+        healthFacilityDB.setUpdatedBy(user.getUuid());
+        healthFacilityDB.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.healthFacilityRepository.update(healthFacilityDB);
     }
 }
