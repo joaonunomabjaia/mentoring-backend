@@ -23,10 +23,10 @@ public class CabinetService {
         return cabinetRepository.findAll();
     }
 
-    public List<CabinetDTO> findAllCabinets(long limit, long offset) {
+    public List<CabinetDTO> findAllCabinets(Long limit, Long offset) {
         List<Cabinet> cabinets = new ArrayList<>();
 
-        if(limit > 0){
+        if(limit!=null && offset!=null && limit > 0){
             cabinets = this.findCabinetWithLimit(limit, offset);
         }else {
             cabinets = cabinetRepository.findAll();

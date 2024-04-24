@@ -34,10 +34,10 @@ public class SettingService {
         this.tutorRepository = tutorRepository;
     }
 
-    public List<SettingDTO> findAll(long limit, long offset) {
+    public List<SettingDTO> findAll(Long limit, Long offset) {
         List<Setting> settings = new ArrayList<>();
 
-        if(limit > 0){
+        if(limit!=null && offset!=null && limit > 0){
             settings = this.settingsRepository.findSettingWithLimit(limit, offset);
         }else {
             settings = this.settingsRepository.findAll();

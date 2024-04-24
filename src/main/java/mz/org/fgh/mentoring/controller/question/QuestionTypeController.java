@@ -29,6 +29,7 @@ public class QuestionTypeController extends BaseController {
     public QuestionTypeController() {
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all Question Types")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "QuestionType")

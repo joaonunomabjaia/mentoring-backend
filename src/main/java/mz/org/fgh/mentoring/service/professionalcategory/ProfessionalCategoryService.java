@@ -13,6 +13,7 @@ import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -30,7 +31,13 @@ public class ProfessionalCategoryService {
 
     public List<ProfessionalCategoryDTO> getAll(Long limit, Long offset) {
         try {
-            return Utilities.parseList(this.professionalCategoryRepository.findAll(), ProfessionalCategoryDTO.class);
+            List<ProfessionalCategory> professionalCategories = new ArrayList<>();
+            if(limit!=null && offset!=null && limit>0) {
+                professionalCategories = professionalCategoryRepository.findProfessionalCategoriesWithLimit(limit, offset);
+            } else {
+                professionalCategories = professionalCategoryRepository.findAll();
+            }
+            return Utilities.parseList(professionalCategories, ProfessionalCategoryDTO.class);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

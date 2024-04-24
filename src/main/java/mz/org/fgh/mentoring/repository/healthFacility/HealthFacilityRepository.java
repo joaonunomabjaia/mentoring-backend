@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.repository.healthFacility;
 
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 
@@ -20,6 +21,8 @@ public interface HealthFacilityRepository extends CrudRepository<HealthFacility,
 
     Optional<HealthFacility> findByUuid(String uuid);
 
-
     List<HealthFacility> getAllOfDistrict(List<String> uuids);
+
+    @Query(value = "select * from health_facilities limit :limit offset :offset ", nativeQuery = true)
+    List<HealthFacility> findHealthFacilitiesWithLimit(Long limit, Long offset);
 }

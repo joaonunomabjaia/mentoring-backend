@@ -14,10 +14,17 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class RondaTypeDTO implements Serializable {
 
+    private Long id;
+
+    private String uuid;
+
     private String code;
 
     private String description;
+
     public RondaTypeDTO(RondaType rondaType) {
+        this.id = rondaType.getId();
+        this.uuid = rondaType.getUuid();
         this.code = rondaType.getCode();
         this.description = rondaType.getDescription();
     }

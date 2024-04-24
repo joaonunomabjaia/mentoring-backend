@@ -4,7 +4,9 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.career.CareerTypeDTO;
 import mz.org.fgh.mentoring.entity.career.CareerType;
 import mz.org.fgh.mentoring.repository.career.CareerTypeRepository;
+import mz.org.fgh.mentoring.util.Utilities;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,20 +20,17 @@ public class CareerTypeService {
         this.careerTypeRepository = careerTypeRepository;
     }
 
-    public List<CareerTypeDTO> findAllCareerTypes(long limit, long offset){
-
+    public List<CareerTypeDTO> findAllCareerTypes(Long limit, Long offset){
+        try {
         List<CareerType> careerTypes = new ArrayList<>();
-        if(limit > 0){
+        if(limit!=null && offset!=null && limit > 0){
            careerTypes = this.careerTypeRepository.findCareerTypeWithLimit(limit, offset);
         }else{
             careerTypes = this.careerTypeRepository.findAll();
         }
-
-        List<CareerTypeDTO> careerTypeDTOS = new ArrayList<>(0);
-        for (CareerType careerType: careerTypes) {
-            CareerTypeDTO careerTypeDTO = new CareerTypeDTO(careerType);
-            careerTypeDTOS.add(careerTypeDTO);
-        }
-        return careerTypeDTOS;
+        return  Utilities.parseList(careerTypes, CareerTypeDTO.class);
+         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+                      throw new RuntimeException(e);
+          }
     }
 }

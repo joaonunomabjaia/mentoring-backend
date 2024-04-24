@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
@@ -32,7 +33,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@Controller("healthfacility")
+@Controller(RESTAPIMapping.HEALTH_FACILITY)
 public class HealthFacilityController extends BaseController {
 
     public static final Logger LOG = LoggerFactory.getLogger(HealthFacilityController.class);
@@ -53,6 +54,7 @@ public class HealthFacilityController extends BaseController {
 
     @Operation(summary = "Return a list off all HealthFacilities")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Tag(name = "HealthFacilities")
     @Get("/getall")
     public List<HealthFacilityDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
@@ -63,7 +65,7 @@ public class HealthFacilityController extends BaseController {
     @Operation(summary = "Return a list off all HealthFacilities")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "HealthFacilities")
-    @Get("getByDistricts")
+    @Get("/getByDistricts")
     public List<HealthFacilityDTO> getByDistricts(@QueryValue("uuids") List<String> uuids) {
         List<HealthFacility> healthFacilities =  this.healthFacilityService.getByDistricts(uuids);
         if (Utilities.listHasElements((ArrayList<?>) healthFacilities)) {

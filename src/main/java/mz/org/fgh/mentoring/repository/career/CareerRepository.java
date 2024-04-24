@@ -22,6 +22,6 @@ public interface CareerRepository extends CrudRepository<Career, Long> {
     List<Career> findByCarrerTyp(CareerType c,  LifeCycleStatus lifeCycleStatus);
 
     @Query(value = "select * from carrers limit :lim offset :of ", nativeQuery = true)
-    List<Career> findCareerWithLimit(long lim, long of);
+    List<Career> findCareerWithLimit(Long lim, Long of);
 
 }

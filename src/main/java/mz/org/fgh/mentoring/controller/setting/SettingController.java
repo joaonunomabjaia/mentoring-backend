@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.controller.setting;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
@@ -30,8 +32,11 @@ public class SettingController extends BaseController {
 
     @Operation(summary = "Return a list off all Settings")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Get("/{limit}/{offset}")
-    public List<SettingDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+    @Tag(name = "Setting")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Get("/getall")
+    public List<SettingDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
+                                   @Nullable @QueryValue("offset") Long offset) {
         return settingService.findAll(limit, offset);
     }
 
