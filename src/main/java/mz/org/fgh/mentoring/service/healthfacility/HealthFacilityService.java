@@ -62,7 +62,13 @@ public class HealthFacilityService {
 
     public List<HealthFacilityDTO> getAll(Long limit, Long offset) {
         try {
-            return Utilities.parseList(this.healthFacilityRepository.findAll(), HealthFacilityDTO.class);
+            List<HealthFacility> healthFacilities = new ArrayList<>();
+            if(limit!=null && offset!=null && limit>0) {
+                healthFacilities = healthFacilityRepository.findHealthFacilitiesWithLimit(limit, offset);
+            } else {
+                healthFacilities = healthFacilityRepository.findAll();
+            }
+            return Utilities.parseList(healthFacilities, HealthFacilityDTO.class);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

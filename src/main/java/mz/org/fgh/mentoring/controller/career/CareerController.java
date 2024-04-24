@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.controller.career;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
@@ -16,7 +17,9 @@ import mz.org.fgh.mentoring.dto.career.CareerTypeDTO;
 import mz.org.fgh.mentoring.entity.career.Career;
 import mz.org.fgh.mentoring.service.career.CareerService;
 import mz.org.fgh.mentoring.service.career.CareerTypeService;
+import mz.org.fgh.mentoring.util.Utilities;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,29 +33,29 @@ public class CareerController extends BaseController {
 
     @Secured(SecurityRule.IS_ANONYMOUS)
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Get("/{limit}/{offset}")
-    public List<CareerDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
-
+    @Get("/getall")
+    public List<CareerDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
+                                  @Nullable @QueryValue("offset") Long offset) {
+        try{
         List<Career> careers = new ArrayList<>();
-
-        if(limit > 0){
+        if(limit!=null && offset!=null && limit > 0){
             careers = careerService.findCareerWithLimit(limit, offset);
         }else {
             careers = careerService.findAll();
         }
-        List<CareerDTO> careerDTOS = new ArrayList<>(careers.size());
-        for (Career career: careers) {
-            CareerDTO careerDTO = new CareerDTO(career);
-            careerDTOS.add(careerDTO);
-        }
-        return careerDTOS;
+        return Utilities.parseList(careers, CareerDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+              throw new RuntimeException(e);
+          }
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all Cabinets")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Cabinet")
-    @Get("/career-types/{limit}/{offset}")
-    public List<CareerTypeDTO> getCareerTypes(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+    @Get("/careertypes/getall")
+    public List<CareerTypeDTO> getCareerTypes(@Nullable @QueryValue("limit") Long limit ,
+                                              @Nullable @QueryValue("offset") Long offset) {
         return this.careerTypeService.findAllCareerTypes(limit, offset);
     }
 

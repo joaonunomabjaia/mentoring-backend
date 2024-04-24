@@ -39,10 +39,10 @@ public class PartnerController extends BaseController {
     @Operation(summary = "Return a list off all Partners")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Partner")
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Get("getall")
-    public List<PartnerDTO> getAll(@Nullable @QueryValue("limit") Long limit ,
-                                   @Nullable @QueryValue("offset") Long offset) {
-        return this.partnerService.getAll(limit, offset);
+    public List<PartnerDTO> getAll() {
+        return this.partnerService.getAll();
     }
 
     @Get

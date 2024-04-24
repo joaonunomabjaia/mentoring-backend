@@ -7,6 +7,7 @@ import mz.org.fgh.mentoring.repository.district.DistrictRepository;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Singleton
@@ -20,7 +21,13 @@ public class DistrictService {
 
     public List<DistrictDTO> getAll(Long limit, Long offset) {
         try {
-            return Utilities.parseList(this.districtRepository.findAll(), DistrictDTO.class);
+            List<District> districts = new ArrayList<>();
+            if(limit!=null && offset!=null && limit>0) {
+               districts = districtRepository.findDistrictsWithLimit(limit, offset);
+            } else {
+               districts = districtRepository.findAll();
+            }
+            return Utilities.parseList(districts, DistrictDTO.class);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
             throw new RuntimeException(e);
         }

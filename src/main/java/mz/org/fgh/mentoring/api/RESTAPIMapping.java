@@ -42,4 +42,13 @@ public class RESTAPIMapping {
 
     public final static String EVALUATION_TYPE ="evaluationTypes";
 
+    public final static String DISTRICT ="district";
+
+    public final static String PROVINCE ="province";
+
+    public final static String PROFESSIONAL_CATEGORIES ="professionalCategories";
+
+    public final static String HEALTH_FACILITY ="healthFacilities";
+
+    public final static String RONDA_TYPE = "rondaTypes";
 }

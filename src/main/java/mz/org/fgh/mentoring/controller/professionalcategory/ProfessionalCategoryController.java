@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
 import mz.org.fgh.mentoring.service.professionalcategory.ProfessionalCategoryService;
@@ -20,7 +21,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
-@Controller("professionalcategory")
+@Controller(RESTAPIMapping.PROFESSIONAL_CATEGORIES)
 public class ProfessionalCategoryController extends BaseController {
 
     public static final Logger LOG = LoggerFactory.getLogger(ProfessionalCategoryController.class);

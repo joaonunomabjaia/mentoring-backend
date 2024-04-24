@@ -1607,13 +1607,29 @@
     <changeSet id="Table-questions-dropColumns" author="ialuj" >
         <preConditions onFail="MARK_RAN">
             <and>
-                <columnExists tableName="questions" columnName="QUESTION_TYPE"/>
+                <!--<columnExists tableName="questions" columnName="QUESTION_TYPE"/>-->
                 <columnExists tableName="questions" columnName="QUESTION_TYPE_ID"/>
                 <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
             </and>
         </preConditions>
-        <dropColumn tableName="questions" columnName="QUESTION_TYPE" />
+        <!--<dropColumn tableName="questions" columnName="QUESTION_TYPE" />-->
         <dropColumn tableName="questions" columnName="QUESTION_TYPE_ID" />
         <dropColumn tableName="questions" columnName="RESPONSE_TYPE_ID" />
+    </changeSet>
+    <changeSet id="RONDA_TYPE_202404190855" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM ronda_type WHERE id IN (1, 2, 3);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO ronda_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '550d803c-2cc9-49ec-bff8-179ea7380d60', 'SESSAO_ZERO', 'Sessao Zero', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO ronda_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, '0cc00c93-4dc7-41a1-bef5-b1a431ef7eba', 'MENTORIA_INTERNA', 'Mentoria Interna', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO ronda_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (3, 'caf2a4ba-8dbf-493f-9f24-dec8949ae64b', 'MENTORIA_EXTERNA', 'Mentoria Externa', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
     </changeSet>
 </databaseChangeLog>

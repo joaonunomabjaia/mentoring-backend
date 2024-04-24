@@ -46,7 +46,7 @@ public class PartnerService {
         return this.partnerRepository.update(partner);
     }
 
-    public List<PartnerDTO> getAll(Long limit, Long offset) {
+    public List<PartnerDTO> getAll() {
         try {
             return Utilities.parseList(this.partnerRepository.findAll(), PartnerDTO.class);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {

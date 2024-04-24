@@ -58,7 +58,7 @@ public class TutoredController extends BaseController {
 
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Tutored")
-    @Get("getTutoreds")
+    @Get("/getTutoreds")
     public List<TutoredDTO> getTutoreds(@QueryValue("uuids") List<String> uuids) {
         List<Tutored> tutoreds = tutoredService.getTutoredsByHealthFacilityUuids(uuids);
         try {
