@@ -6,6 +6,7 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
@@ -121,7 +122,7 @@ public class FormController extends BaseController {
 
     @Operation(summary = "Update the form LifeCicleStatus")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Post("/changeLifeCicleStatus")
+    @Patch("/changeLifeCicleStatus")
     @Tag(name = "Form")
     public FormDTO changeLifeCicleStatus(@NonNull @Body FormDTO formDTO, Authentication authentication){
         Form f = this.formService.updateLifeCycleStatus(formDTO.toForm(), (Long) authentication.getAttributes().get("userInfo"));
