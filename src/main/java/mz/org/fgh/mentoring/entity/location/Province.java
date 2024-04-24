@@ -1,7 +1,10 @@
 package mz.org.fgh.mentoring.entity.location;
 
 import io.micronaut.core.annotation.Creator;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 

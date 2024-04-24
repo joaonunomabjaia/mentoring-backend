@@ -20,7 +20,6 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class Authority extends BaseEntity {
 
     @NotEmpty
@@ -35,4 +34,12 @@ public class Authority extends BaseEntity {
     @Column(name = "code", nullable = false)
     private  String code;
 
+    @Override
+    public String toString() {
+        return "Authority{" +
+                "module='" + module + '\'' +
+                ", description='" + description + '\'' +
+                ", code='" + code + '\'' +
+                '}';
+    }
 }

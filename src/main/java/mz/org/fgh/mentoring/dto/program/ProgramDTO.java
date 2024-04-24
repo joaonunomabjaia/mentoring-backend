@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.program;
 
+import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -13,12 +14,13 @@ import java.io.Serializable;
  */
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class ProgramDTO extends BaseEntityDTO implements Serializable {
     private Long id;
     private String name;
     private String description;
 
+    @Creator
+    public ProgramDTO(){}
     public  ProgramDTO(Program program) {
         super(program);
         this.id = program.getId();

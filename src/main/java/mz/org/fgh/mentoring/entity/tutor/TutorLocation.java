@@ -1,10 +1,12 @@
 package mz.org.fgh.mentoring.entity.tutor;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
+import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 

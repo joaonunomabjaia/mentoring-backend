@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -60,7 +61,7 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         formQuestion.setId(this.getId());
         formQuestion.setUuid(this.getUuid());
         formQuestion.setSequence(this.getSequence());
-        formQuestion.setLifeCycleStatus(this.getLifeCycleStatus());
+        formQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         formQuestion.setCreatedAt(this.getCreatedAt());
         formQuestion.setCreatedBy(this.getCreatedBy());
         if(this.getQuestionDTO()!=null) {

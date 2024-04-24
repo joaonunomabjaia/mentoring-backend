@@ -1,12 +1,12 @@
 package mz.org.fgh.mentoring.base;
 
-import io.micronaut.data.annotation.Where;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.Column;
 import javax.persistence.EnumType;
@@ -25,7 +25,6 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-@Where("@.lifeCycleStatus = 'ACTIVE'")
 public abstract class BaseEntity implements RestAPIResponse, Serializable {
     @Id
     @GeneratedValue(
@@ -76,6 +75,19 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
     public BaseEntity(BaseEntityDTO baseEntityDTO) {
         this.setId(baseEntityDTO.getId());
         this.setUuid(baseEntityDTO.getUuid());
-        this.setLifeCycleStatus(baseEntityDTO.getLifeCycleStatus());
+        if (Utilities.stringHasValue(baseEntityDTO.getLifeCycleStatus())) this.setLifeCycleStatus(LifeCycleStatus.valueOf(baseEntityDTO.getLifeCycleStatus()));
+    }
+
+    @Override
+    public String toString() {
+        return "BaseEntity{" +
+                "id=" + id +
+                ", uuid='" + uuid + '\'' +
+                ", createdBy='" + createdBy + '\'' +
+                ", createdAt=" + createdAt +
+                ", updatedBy='" + updatedBy + '\'' +
+                ", updatedAt=" + updatedAt +
+                ", lifeCycleStatus=" + lifeCycleStatus +
+                '}';
     }
 }

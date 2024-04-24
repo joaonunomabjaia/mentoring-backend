@@ -14,9 +14,14 @@ public class MentoringErrorResponseProcessor implements ErrorResponseProcessor<M
        MentoringAPIError mentoringAPIError;
 
         if (!errorContext.hasErrors()) {
-            mentoringAPIError = new MentoringAPIError(response.getStatus().getCode(), response.getStatus().name(), "Ocorreu um erro ao tentar executar a operação.");
+            mentoringAPIError = MentoringAPIError.builder().status(response.getStatus().getCode())
+                    .error(response.getStatus().name())
+                    .message("Não foi possivel terminar a operação por ocorrencia de um erro.").build();
+
         } else {
-            mentoringAPIError = new MentoringAPIError(response.getStatus().getCode(), response.getStatus().name(), errorContext.getErrors().get(0).getMessage());
+            mentoringAPIError = MentoringAPIError.builder().status(response.getStatus().getCode())
+                    .error(response.getStatus().name())
+                    .message(errorContext.getErrors().get(0).getMessage()).build();
 
         }
         return response.body(mentoringAPIError).contentType(MediaType.APPLICATION_JSON);

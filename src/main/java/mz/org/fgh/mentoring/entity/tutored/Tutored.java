@@ -1,20 +1,19 @@
 package mz.org.fgh.mentoring.entity.tutored;
 
-import com.sun.istack.NotNull;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
-import mz.org.fgh.mentoring.entity.career.Career;
 import mz.org.fgh.mentoring.entity.employee.Employee;
-import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.entity.user.UserIndividual;
 
-import javax.persistence.*;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotEmpty;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 
 @Schema(name = "Tutoreds", description = "A professional that provide mentoring to the tutored individuals")
 @Entity(name = "Tutoreds")

@@ -1,0 +1,1619 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-3.1.xsd">
+    <changeSet id="01" author="username">
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-tutors">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="TUTORS"/>
+        </preConditions>
+        <renameTable  newTableName="tutors"
+                      oldTableName="TUTORS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-partners">
+        <renameTable  newTableName="partners"
+                      oldTableName="PARTNERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-answers">
+        <renameTable  newTableName="answers"
+                      oldTableName="ANSWERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-cabinets">
+        <renameTable  newTableName="cabinets"
+                      oldTableName="CABINETS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-carrers">
+        <renameTable  newTableName="carrers"
+                      oldTableName="CARRERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-forms">
+        <renameTable  newTableName="forms"
+                      oldTableName="FORMS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-forms_questions">
+        <renameTable  newTableName="forms_questions"
+                      oldTableName="FORMS_QUESTIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-health_facilities">
+        <renameTable  newTableName="health_facilities"
+                      oldTableName="HEALTH_FACILITIES"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-indicators">
+        <renameTable  newTableName="indicators"
+                      oldTableName="INDICATORS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-cabinets">
+        <renameTable  newTableName="cabinets"
+                      oldTableName="CABINETS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-mentorships">
+        <renameTable  newTableName="mentorships"
+                      oldTableName="MENTORSHIPS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-partners">
+        <renameTable  newTableName="partners"
+                      oldTableName="PARTNERS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-programmatic_areas">
+        <renameTable  newTableName="programmatic_areas"
+                      oldTableName="PROGRAMMATIC_AREAS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-questions">
+        <renameTable  newTableName="questions"
+                      oldTableName="QUESTIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-question_categories">
+        <renameTable  newTableName="question_categories"
+                      oldTableName="QUESTION_CATEGORIES"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-sessions">
+        <renameTable  newTableName="sessions"
+                      oldTableName="SESSIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-tutor_locations">
+        <renameTable  newTableName="tutor_locations"
+                      oldTableName="TUTOR_LOCATIONS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-TUTOREDS">
+        <renameTable  newTableName="tutoreds"
+                      oldTableName="TUTOREDS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-DISTRICTS">
+        <renameTable  newTableName="districts"
+                      oldTableName="DISTRICTS"/>
+    </changeSet>
+    <changeSet  author="voloide"  id="renameTable-tutor_programmatic_area">
+        <renameTable  newTableName="tutor_programmatic_area"
+                      oldTableName="TUTOR_PROGRAMMATIC_AREA"/>
+    </changeSet>
+    <changeSet id="table_question_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="question_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="question_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_form_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="form_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="form_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_career_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="career_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="career_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="Data_insert_form_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="form_type"/>
+        </preConditions>
+        <sql>
+            INSERT INTO form_type
+            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, description, code)
+            VALUES  (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '77831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Mentoring Form', 'MENTORING'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '78831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Mentoring Custom Form', 'MENTORING_CUSTOM'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '79831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Indicator', 'INDICATORS');
+        </sql>
+    </changeSet>
+    <changeSet id="Data_insert_career_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="career_type"/>
+        </preConditions>
+        <sql>
+            INSERT INTO career_type
+            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, description, code)
+            VALUES  (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '80831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technical assistant', 'HEALTH_TECHNICAL_ASSISTANT'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '81831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Administrative assistant', 'ADMINISTRATIVE_ASSISTANT'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '82831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technician auxiliary', 'HEALTH_TECHNICIAN_AUXILIARY'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '83831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health_specialist', 'HEALTH_SPECIALIST'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '84831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Medical public health', 'MEDICAL_PUBLIC_HEALTH'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '85831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Medical generalist', 'MEDICAL_GENERALIST'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '86831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Medical hospital', 'MEDICAL_HOSPITAL'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '87831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technician', 'HEALTH_TECHNICIAN'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '88831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health technicial specialist', 'HEALTH_TECHNICIAL_SPECIALIST'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '89831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health associate degree_n1', 'HEALTH_ASSOCIATE_DEGREE_N1'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '90831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Health associate degree_n2', 'HEALTH_ASSOCIATE_DEGREE_N2'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '91831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Clinical Area', 'CLINICAL_AREA'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '92831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Monitoring and Evaluation', 'MONITORING_AND_EVALUATION'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '93831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Service Agent', 'SERVICE_AGENT');
+        </sql>
+    </changeSet>
+    <changeSet id="Data_insert_question_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="question_type"/>
+        </preConditions>
+        <sql>
+            INSERT INTO question_type
+            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, description, code)
+            VALUES  (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '94831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Text', 'TEXT'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '95831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Boolean', 'BOOLEAN'),
+                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '96831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Numeric', 'NUMERIC');
+        </sql>
+    </changeSet>
+    <changeSet author="voloide" id="Forms-addColumn-form_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="forms" columnName="FORM_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="forms">
+            <column name="FORM_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="Question-addColumn-question_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="questions">
+            <column name="QUESTION_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="Career-addColumn-career_type_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="carrers" columnName="CARRER_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="carrers">
+            <column name="CARRER_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="update_form_type_id" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM forms
+                WHERE FORM_TYPE_ID is not null
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            update forms SET FORM_TYPE_ID = (SELECT ID FROM form_type  where code = forms.FORM_TYPE) where FORM_TYPE_ID is null;
+        </sql>
+    </changeSet>
+    <changeSet id="update_carrer_type_id" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM carrers
+                WHERE CARRER_TYPE_ID is not null
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            update carrers SET CARRER_TYPE_ID = (SELECT ID FROM career_type  where code = carrers.CARRER_TYPE) where CARRER_TYPE_ID is null;
+        </sql>
+    </changeSet>
+    <changeSet id="update_question_type_id" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM questions
+                WHERE QUESTION_TYPE_ID is not null
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            update questions SET QUESTION_TYPE_ID = (SELECT ID FROM question_type  where code = questions.QUESTION_TYPE) where QUESTION_TYPE_ID is null;
+        </sql>
+    </changeSet>
+    <changeSet id="createTable-question_type_question_fk" author="voloide">
+        <comment>
+            Create question type foreign key on question table
+        </comment>
+        <addForeignKeyConstraint constraintName="question_type_question_fk"
+                                 baseTableName="questions" baseColumnNames="question_type_id"
+                                 referencedTableName="question_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="createTable-form_type_form_fk" author="voloide">
+        <comment>
+            Create form type foreign key on form table
+        </comment>
+        <addForeignKeyConstraint constraintName="form_type_form_fk"
+                                 baseTableName="forms" baseColumnNames="form_type_id"
+                                 referencedTableName="form_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="createTable-carrer_type_form_fk" author="voloide">
+        <addForeignKeyConstraint constraintName="carrer_type_carrer_fk"
+                                 baseTableName="carrers" baseColumnNames="carrer_type_id"
+                                 referencedTableName="career_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet author="voloide" id="202308071159">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="SETTINGS" columnName="SETTING_TYPE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="SETTINGS">
+            <column name="SETTING_TYPE"  type="varchar(100)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="202308071201">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="SETTINGS" columnName="ENABLED"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="SETTINGS">
+            <column name="ENABLED"  type="tinyint(1)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="202308071203">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="PARTNER_SETTINGS" columnName="ENABLED"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="PARTNER_SETTINGS">
+            <column name="ENABLED"  type="tinyint(1)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet  author="ialuj"  id="renameTable-settings">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="SETTINGS"/>
+        </preConditions>
+        <renameTable  newTableName="settings"
+                      oldTableName="SETTINGS"/>
+    </changeSet>
+    <changeSet  author="ialuj"  id="renameTable-partner_settings">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="PARTNER_SETTINGS"/>
+        </preConditions>
+        <renameTable  newTableName="partner_settings"
+                      oldTableName="PARTNER_SETTINGS"/>
+    </changeSet>
+    <changeSet id="table_users" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="users"/>
+            </not>
+        </preConditions>
+        <createTable tableName="users">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="username" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="password" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_provinces" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="provinces"/>
+            </not>
+        </preConditions>
+        <createTable tableName="provinces">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="designation" type="varchar(200)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet author="ialuj" id="Tutor-addColumn-user_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutors" columnName="USER_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutors">
+            <column name="USER_ID" type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="ialuj" id="Tutored-addColumn-user_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutoreds" columnName="USER_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutoreds">
+            <column name="USER_ID" type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Data_insert_provinces" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="provinces"/>
+        </preConditions>
+        <sql>
+            INSERT INTO provinces
+            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, designation)
+            VALUES
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 'e1b087f1-f370-40c4-9659-f90366d88c02', 'Cidade De Maputo'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 '3ae7c65d-7d02-48a1-b665-0ec8d54c6047', 'Maputo'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 '017d5405-53c2-4b24-8681-bc7a9b352e6f', 'Gaza'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 'c72514bb-a442-4521-86cf-f857d5acb9fb', 'Inhambane'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 'd380cf92-02e9-4dfd-a313-d3efece9674f', 'Sofala'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 'f0983388-2d01-4ea2-a19c-9614cf43f4a0', 'Manica'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 '0217f6d6-e565-46d4-9afe-f978743bf3a3', 'Tete'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 '4619cfed-3647-4d3f-bce3-99c6ced892f3', 'ZAMBEZIA'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 '1ec81c66-2ca9-44f7-89b6-1e52a166fb63', 'Nampula'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 '17d18763-0b2f-42d5-a1cd-76332bdbafe4', 'Cabo Delgado'),
+                (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null,
+                 '64886e9d-ee7c-486e-8083-8cef4601ec5c', 'Niassa');
+        </sql>
+    </changeSet>
+    <changeSet author="ialuj" id="District-addColumn-province_id">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="districts" columnName="PROVINCE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="districts">
+            <column name="PROVINCE_ID" type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Data_update_districts" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="districts"/>
+        </preConditions>
+        <sql>
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Cidade De Maputo') where
+                PROVINCE = 'Cidade De Maputo';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Maputo') where
+                PROVINCE = 'Maputo';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Gaza') where
+                PROVINCE = 'Gaza';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Inhambane')
+            where PROVINCE = 'Inhambane';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Sofala') where
+                PROVINCE = 'Sofala';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Manica') where
+                PROVINCE = 'Manica';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Tete') where
+                PROVINCE = 'Tete';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'ZAMBEZIA') where
+                PROVINCE = 'ZAMBEZIA';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Nampula') where
+                PROVINCE = 'Nampula';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Cabo Delgado')
+            where PROVINCE = 'Cabo Delgado';
+            update districts SET PROVINCE_ID = (SELECT DISTINCT(ID) FROM provinces where designation = 'Niassa') where
+                PROVINCE = 'Niassa';
+        </sql>
+    </changeSet>
+    <changeSet author="ialuj" id="District-dropColumn-province">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="districts" columnName="PROVINCE"/>
+        </preConditions>
+        <dropColumn tableName="districts" columnName="PROVINCE" />
+    </changeSet>
+    <changeSet id="TUTOR_TUTORED202309041154" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="TUTOR_TUTORED"/>
+        </preConditions>
+        <sql>
+            CREATE or replace view temp_TUTOR_TUTORED as select DISTINCT  t.id as TUTOR_ID, m.TUTORED_ID  from tutors t inner join mentorships m on m.TUTOR_ID = t.ID order by t.ID;
+        </sql>
+    </changeSet>
+    <changeSet id="TUTOR_TUTORED202309041155" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <rowCount expectedRows="0" tableName="TUTOR_TUTORED"/>
+        </preConditions>
+        <sql>
+            INSERT INTO TUTOR_TUTORED (CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, TUTOR_ID, TUTORED_ID)
+            SELECT NOW(), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', NULL, NULL, UUID(), TUTOR_ID, TUTORED_ID from temp_TUTOR_TUTORED ORDER BY TUTOR_ID, TUTORED_ID;
+        </sql>
+    </changeSet>
+    <changeSet id="TUTOR_TUTORED202309041156" author="voloide">
+        <sql>
+            drop view if exists temp_TUTOR_TUTORED;
+        </sql>
+    </changeSet>
+    <changeSet  id="TUTOR_TUTORED202309041157" author="voloide">
+        <renameTable  newTableName="tutor_tutored"
+                      oldTableName="TUTOR_TUTORED"/>
+    </changeSet>
+    <changeSet author="voloide" id="USERS202309041605">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="SALT"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="users">
+            <column name="SALT" type="varchar(500)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="USERS202309041606">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="ADMIN"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="users">
+            <column name="ADMIN" type="tinyint(1)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="USERS202309051605">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="USERTYPE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="users">
+            <column name="USERTYPE" type="varchar(50)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="REF_TOKEN202309291150" author="voloide">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="refresh_token"/>
+            </not>
+        </preConditions>
+        <createTable tableName="refresh_token">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="USER_NAME" type="varchar(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="REFRESH_TOKEN" type="varchar(250)">
+                <constraints nullable="true" unique="true"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="REVOKED" type="boolean">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_ronda_type" author="miguel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ronda_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ronda_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_rondas" author="miguel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="rondas"/>
+            </not>
+        </preConditions>
+        <createTable tableName="rondas">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DETE_BEGIN" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RONDA_TYPE_ID" type="bigint(20)">
+                <constraints foreignKeyName="fk_ronda_type_id" references="ronda_type(id)" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_ronda_mentor" author="miguel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ronda_mentor"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ronda_mentor">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RONDA_ID" type="bigint(20)">
+                <constraints foreignKeyName="fk_ronda_ronda_mentor_id" references="rondas(id)" />
+            </column>
+            <column name="MENTOR_ID" type="bigint(20)">
+                <constraints foreignKeyName="fk_mentor_ronda_mentor_id" references="tutors(id)" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_ronda_mentorandos" author="miguel">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ronda_mentorandos"/>
+            </not>
+        </preConditions>
+        <createTable tableName="ronda_mentorandos">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RONDA_ID" type="bigint(20)">
+                <constraints foreignKeyName="fk_ronda_ronda_mentorandos_id" references="rondas(id)" />
+            </column>
+            <column name="MENTOR_ID" type="bigint(20)">
+                <constraints foreignKeyName="fk_mentorandos_ronda_mentorandos_id" references="tutoreds(id)" />
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_professional_category" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="professional_category"/>
+            </not>
+        </preConditions>
+        <createTable tableName="professional_category">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="EMPLOYEE_20231228" author="voloide">
+        <preConditions onFail="HALT">
+            <not>
+                <tableExists tableName="employee"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="employee">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="NAME" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SURNAME" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="NUIT" type="bigint(9)" >
+                <constraints unique="true"/>
+            </column>
+            <column name="CATEGORY_ID" type="bigint(20)" >
+                <constraints nullable="true" />
+            </column>
+            <column name="TRAINING_YEAR" type="bigint(4)" >
+                <constraints nullable="true" />
+            </column>
+            <column name="PHONE_NUMBER" type="varchar(50)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="EMAIL" type="varchar(200)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="PARTNER_ID" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="employee_category_fk" author="voloide">
+        <comment>
+            Create employee professional category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="employee_category_fk"
+                                 baseTableName="employee" baseColumnNames="CATEGORY_ID"
+                                 referencedTableName="professional_category" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="employee_partner_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="employee_partner_fk"
+                                 baseTableName="employee" baseColumnNames="PARTNER_ID"
+                                 referencedTableName="partners" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="TUTORS202401051201" author="voloide">
+        <dropForeignKeyConstraint baseTableName="tutors" constraintName="FK_TUTORS_PARTNER_ID" />
+        <dropForeignKeyConstraint baseTableName="tutors" constraintName="FK_e1hyoncgd4kv7kin3t7k352dj" />
+    </changeSet>
+    <changeSet author="voloide" id="TUTORS202401051200">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutors" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutors">
+            <column name="EMPLOYEE_ID" type="bigint(20)"/>
+        </addColumn>
+        <dropColumn tableName="tutors" columnName="NAME" />
+        <dropColumn tableName="tutors" columnName="CODE" />
+        <dropColumn tableName="tutors" columnName="PHONE_NUMBER" />
+        <dropColumn tableName="tutors" columnName="SURNAME" />
+        <dropColumn tableName="tutors" columnName="CARRER_ID" />
+        <dropColumn tableName="tutors" columnName="EMAIL" />
+        <dropColumn tableName="tutors" columnName="IS_USER" />
+        <dropColumn tableName="tutors" columnName="PARTNER_ID" />
+        <dropColumn tableName="tutors" columnName="is_admin" />
+        <dropColumn tableName="tutors" columnName="USER_ID" />
+    </changeSet>
+    <changeSet id="tutor_employee_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="tutor_employee_fk"
+                                 baseTableName="tutors" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="TUTORRED202401051201" author="voloide">
+        <dropForeignKeyConstraint baseTableName="tutoreds" constraintName="FK_allb4qoaputbxbex26qhgt6g1" />
+    </changeSet>
+    <changeSet author="voloide" id="TUTORED202401051200">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutoreds" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="tutoreds">
+            <column name="EMPLOYEE_ID" type="bigint(20)"/>
+        </addColumn>
+        <dropColumn tableName="tutoreds" columnName="NAME" />
+        <dropColumn tableName="tutoreds" columnName="CODE" />
+        <dropColumn tableName="tutoreds" columnName="PHONE_NUMBER" />
+        <dropColumn tableName="tutoreds" columnName="SURNAME" />
+        <dropColumn tableName="tutoreds" columnName="CARRER_ID" />
+        <dropColumn tableName="tutoreds" columnName="EMAIL" />
+        <dropColumn tableName="tutoreds" columnName="USER_ID" />
+    </changeSet>
+    <changeSet id="tutored_employee_fk" author="voloide">
+        <comment>
+            Create employee partner category foreign key
+        </comment>
+        <addForeignKeyConstraint constraintName="tutored_employee_fk"
+                                 baseTableName="tutoreds" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet author="voloide" id="USER202401091200">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="users" columnName="USERTYPE"/>
+                <columnExists tableName="users" columnName="ADMIN"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="users" columnName="USERTYPE" />
+        <dropColumn tableName="users" columnName="ADMIN" />
+    </changeSet>
+    <changeSet id="ROLE_202401091037" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="role"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="role">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="level" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="authority_202401091039" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="authority"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="authority">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(300)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="module" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="role_authority_202401091040" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="role_authority"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="role_authority">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="role_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="authority_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="role_authority_role_fk"
+                                 baseTableName="role_authority" baseColumnNames="role_id"
+                                 referencedTableName="role" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="role_authority_authority_fk"
+                                 baseTableName="role_authority" baseColumnNames="authority_id"
+                                 referencedTableName="authority" referencedColumnNames="ID"/>
+    </changeSet>
+    <changeSet id="user_role_202401091050" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="user_role"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="user_role">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="role_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="user_id" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="user_role_role_fk"
+                                 baseTableName="user_role" baseColumnNames="role_id"
+                                 referencedTableName="role" referencedColumnNames="ID"/>
+        <addForeignKeyConstraint constraintName="user_role_user_fk"
+                                 baseTableName="user_role" baseColumnNames="user_id"
+                                 referencedTableName="users" referencedColumnNames="ID"/>
+    </changeSet>
+    <changeSet id="role_creation_20240109113100" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM role
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (100,'Administrador','NATIONAL_ADMINISTRATOR','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (101,'Administrador','PROVINCIAL_ADMINISTRATOR','Provincial',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (102,'Administrador','DISTRICT_ADMINISTRATOR','Distrital',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (103,'Mentor','NATIONAL_MENTOR','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (104,'Mentor','PROVINCIAL_MENTOR','Provincial',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (105,'Mentor','DISTRICT_MENTOR','Distrital',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (106,'Mentor','HEALTH_FACILITY_MENTOR','US',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (107,'Mentorando','MENTEE','US',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="authority_creation_202401091229" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM authority
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (100,'Registo de tabelas de competencias','CREATE_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (101,'Edicao de tabelas de competencias','EDIT_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (102,'Remover de tabelas de competencias','REMOVE_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (103,'Pesquisar de tabelas de competencias','SEARCH_COMPETENCE_TABLE','Gestao de tabelas de competencias',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (104,'Registo de mentores','CREATE_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (105,'Edicao de mentores','EDIT_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (106,'Remover de mentores','REMOVE_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (107,'Pesquisar de mentores','SEARCH_MENTOR','Gestao de mentores',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (108,'Registo de mentorandos','CREATE_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (109,'Edicao de mentorandos','EDIT_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (110,'Remover de mentorandos','REMOVE_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (111,'Pesquisar de mentorandos','SEARCH_MENTEE','Gestao de mentorandos',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (112,'Registo de recursos de EA','CREATE_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (113,'Edicao de recursos de EA','EDIT_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (114,'Remover de recursos de EA','REMOVE_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (115,'Pesquisar de recursos de EA','SEARCH_LEARNING_RESOURCE','Gestao de recursos de EA',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (116,'Registo de rondas','CREATE_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (117,'Edicao de rondas','EDIT_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (118,'Remover de rondas','REMOVE_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (119,'Pesquisar de rondas','SEARCH_RONDA','Gestao de rondas',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (120,'Relatorios','REPORTS','Relatorios',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO authority (ID,description,code,module,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (121,'Configuracoes','SYSTEM_CONFIGURATION','Configuracoes',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="root_role_20240109113100" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM role WHERE code = 'ROOT';
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO `role` (ID,description,code,`level`,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (500,'root','ROOT','Nacional',uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+            INSERT INTO role_authority (ID,role_id,authority_id,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            SELECT NULL,500,ID,uuid(),'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE' FROM authority;
+            INSERT IGNORE INTO users (id,uuid,username,password,CREATED_BY,CREATED_AT,UPDATED_BY,UPDATED_AT,LIFE_CYCLE_STATUS,SALT) VALUES
+                (4,'9225441d-4bfd-11ee-9e75-0242ac150002','admin','admin','admin','2023-09-05 17:04:54',NULL,NULL,'ACTIVE','379c69f2-4bca-11ee-9e75-0242ac150002');
+            INSERT INTO user_role (ID,role_id,user_id,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (1,500,4, uuid() ,'9225441d-4bfd-11ee-9e75-0242ac150002','2024-01-09 11:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet author="voloide" id="USER202401091400">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="users" columnName="EMPLOYEE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="users">
+            <column name="EMPLOYEE_ID" type="bigint(20)"> </column>
+        </addColumn>
+        <addForeignKeyConstraint constraintName="users_employee_fk"
+                                 baseTableName="users" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="LOCATION_202401181702" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="location"/>
+            </not>
+        </preConditions>
+        <comment></comment>
+        <createTable tableName="location">
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="EMPLOYEE_ID" type="bigint(20)" >
+                <constraints nullable="false" />
+            </column>
+            <column name="PROVINCE_ID" type="bigint(20)" >
+            </column>
+            <column name="DISTRICT_ID" type="bigint(20)" >
+            </column>
+            <column name="HEALTH_FACILITY_ID" type="bigint(20)" >
+            </column>
+            <column name="LOCATION_LEVEL" type="varchar(300)">
+                <constraints nullable="false" />
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+        <addForeignKeyConstraint constraintName="location_employee_fk"
+                                 baseTableName="location" baseColumnNames="EMPLOYEE_ID"
+                                 referencedTableName="employee" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_province_fk"
+                                 baseTableName="location" baseColumnNames="PROVINCE_ID"
+                                 referencedTableName="provinces" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_district_fk"
+                                 baseTableName="location" baseColumnNames="DISTRICT_ID"
+                                 referencedTableName="districts" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_health_facility_fk"
+                                 baseTableName="location" baseColumnNames="HEALTH_FACILITY_ID"
+                                 referencedTableName="health_facilities" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="location_created_by_fk"
+                                 baseTableName="location" baseColumnNames="CREATED_BY"
+                                 referencedTableName="users" referencedColumnNames="uuid"/>
+    </changeSet>
+    <changeSet author="voloide" id="ROLE202401190848">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="role" columnName="HIERARCHY_LEVEL"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="role">
+            <column name="HIERARCHY_LEVEL" type="bigint(2)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet author="voloide" id="ROLE202401190851">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="role" columnName="HIERARCHY_LEVEL"/>
+        </preConditions>
+        <sql>
+            UPDATE role SET HIERARCHY_LEVEL = 1 WHERE code in ('NATIONAL_ADMINISTRATOR', 'NATIONAL_MENTOR', 'ROOT');
+            UPDATE role SET HIERARCHY_LEVEL = 2 WHERE code in ('PROVINCIAL_ADMINISTRATOR', 'PROVINCIAL_MENTOR');
+            UPDATE role SET HIERARCHY_LEVEL = 3 WHERE code in ('DISTRICT_ADMINISTRATOR', 'DISTRICT_MENTOR');
+            UPDATE role SET HIERARCHY_LEVEL = 4 WHERE code in ('HEALTH_FACILITY_MENTOR', 'MENTEE');
+        </sql>
+    </changeSet>
+    <changeSet author="voloide" id="LOCATION202401191111">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM location WHERE id = 1;
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO location (ID,EMPLOYEE_ID,LOCATION_LEVEL,uuid,CREATED_BY,CREATED_AT,LIFE_CYCLE_STATUS)
+            VALUES (1,1,'NATIONAL','9225441d-4bfd-11ee-9e75-0242ac150023','9225441d-4bfd-11ee-9e75-0242ac150002','2023-09-05 17:04:54.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241201" author="ialuj">
+    <preConditions onFail="MARK_RAN">
+        <not>
+            <tableExists tableName="programs"/>
+        </not>
+    </preConditions>
+    <comment></comment>
+    <createTable tableName="programs">
+        <column name="ID" type="bigint(20)" autoIncrement="true">
+            <constraints primaryKey="true"/>
+        </column>
+        <column name="uuid" type="varchar(200)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="name" type="varchar(300)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="description" type="varchar(300)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="CREATED_BY" type="varchar(200)">
+            <constraints nullable="false"/>
+        </column>
+        <column name="CREATED_AT" type="datetime">
+            <constraints nullable="false"/>
+        </column>
+        <column name="UPDATED_BY" type="varchar(200)">
+            <constraints nullable="true"/>
+        </column>
+        <column name="UPDATED_AT" type="datetime">
+            <constraints nullable="true"/>
+        </column>
+        <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+            <constraints nullable="false"/>
+        </column>
+    </createTable>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241202" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM programs WHERE id IN (1, 2);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO programs (ID, uuid, name, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '91e6b886-9f0c-42f2-8ef7-8d07d4772618', 'Programa de HIV', 'Programa de HIV', '9225441d-4bfd-11ee-9e75-0242ac150002','2023-09-05 17:04:54.000','ACTIVE');
+            INSERT INTO programs (ID, uuid, name, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, 'a9f0f471-e518-478a-a9a2-cc3887f406a6', 'Programa de TB', 'Programa de TB', '9225441d-4bfd-11ee-9e75-0242ac150002','2023-09-05 17:04:54.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241203" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+              <columnExists tableName="programmatic_areas" columnName="PROGRAM_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="programmatic_areas">
+            <column name="PROGRAM_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241211" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="programmatic_areas" columnName="PROGRAM_ID"/>
+        </preConditions>
+        <sql>
+            UPDATE programmatic_areas SET PROGRAM_ID = 1 WHERE ID NOT IN (14);
+            UPDATE programmatic_areas SET PROGRAM_ID = 2 WHERE ID = 14;
+        </sql>
+    </changeSet>
+    <changeSet id="PROGRAM_202401241215" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="programmatic_areas" columnName="PROGRAM_ID"/>
+        </preConditions>
+        <addForeignKeyConstraint constraintName="program_fk"
+                                 baseTableName="programmatic_areas" baseColumnNames="PROGRAM_ID"
+                                 referencedTableName="programs" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-forms-dropConstraint-form_type_form_fk" author="ialuj">
+        <dropForeignKeyConstraint baseTableName="forms" constraintName="form_type_form_fk" />
+    </changeSet>
+    <changeSet id="Table-forms-dropColumn-form_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="forms" columnName="FORM_TYPE_ID"/>
+        </preConditions>
+        <dropColumn tableName="forms" columnName="FORM_TYPE_ID" />
+    </changeSet>
+    <changeSet id="table_response_type" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="response_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="response_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="RESPONSE_TYPE_202404030855" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM response_type WHERE id IN (1, 2);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO response_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '325d03c8-5aec-4a00-bcd7-f69d3c3dfa88', 'SIM/NAO/NA', 'SIM/NAO/NA', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO response_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, '8c108f8d-b454-4b82-a462-892088004ad3', 'TEXT', 'TEXT', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="Table-questions-addColumn-response_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="questions">
+            <column name="RESPONSE_TYPE_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-questions-Update-response_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+        </preConditions>
+        <sql>
+            UPDATE questions SET RESPONSE_TYPE_ID = 1;
+        </sql>
+    </changeSet>
+    <changeSet id="Table-questions-addFkConstraint-response_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+        </preConditions>
+        <addForeignKeyConstraint constraintName="response_type_id_fk"
+                                 baseTableName="questions" baseColumnNames="RESPONSE_TYPE_ID"
+                                 referencedTableName="response_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet author="voloide" id="202404111232_tutored-drop-colums">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="tutoreds" columnName="CARRER_ID"/>
+                <columnExists tableName="tutoreds" columnName="EMAIL"/>
+                <columnExists tableName="tutoreds" columnName="USER_ID"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="tutoreds" columnName="CARRER_ID"/>
+        <dropColumn tableName="tutoreds" columnName="EMAIL"/>
+        <dropColumn tableName="tutoreds" columnName="USER_ID"/>
+    </changeSet>
+    <changeSet author="ialuj" id="Form_Question-dropColumns-mandatory-applicable">
+        <preConditions onFail="MARK_RAN">
+            <and>
+            <columnExists tableName="forms_questions" columnName="MANDATORY"/>
+            <columnExists tableName="forms_questions" columnName="APPLICABLE"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="forms_questions" columnName="MANDATORY" />
+        <dropColumn tableName="forms_questions" columnName="APPLICABLE" />
+    </changeSet>
+    <changeSet id="table_evaluation_type" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="evaluation_type"/>
+            </not>
+        </preConditions>
+        <createTable tableName="evaluation_type">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="EVALUATION_TYPE_202404111400" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM evaluation_type WHERE id IN (1, 2, 3);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO evaluation_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '4ec6bfa7-9bc8-4e7f-9836-d67a476432f9', 'Consulta', 'Consulta', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO evaluation_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, 'd5a6fc46-b4bb-4eeb-8c82-921836fdc31d', 'Ficha', 'Ficha', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO evaluation_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (3, '5177e57b-9350-465c-ab57-b30a644022b5', 'Ambos', 'Ambos', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="Table-forms_questions-addColumns-response_type_id-evaluation_type_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <and>
+                    <columnExists tableName="forms_questions" columnName="EVALUATION_TYPE_ID"/>
+                    <columnExists tableName="forms_questions" columnName="RESPONSE_TYPE_ID"/>
+                </and>
+            </not>
+        </preConditions>
+        <addColumn tableName="forms_questions">
+            <column name="EVALUATION_TYPE_ID" type="bigint(20)"> </column>
+            <column name="RESPONSE_TYPE_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="FORMS_QUESTION_FK_UPDATE_202404111400" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="forms_questions" columnName="EVALUATION_TYPE_ID"/>
+                <columnExists tableName="forms_questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <sql>
+            UPDATE forms_questions SET EVALUATION_TYPE_ID = 1;
+            UPDATE forms_questions SET RESPONSE_TYPE_ID = 1;
+        </sql>
+    </changeSet>
+    <changeSet id="FORMS_QUESTION_FK_202404111400" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="forms_questions" columnName="EVALUATION_TYPE_ID"/>
+                <columnExists tableName="forms_questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <addForeignKeyConstraint constraintName="evaluation_type_fq_fk"
+                                 baseTableName="forms_questions" baseColumnNames="EVALUATION_TYPE_ID"
+                                 referencedTableName="evaluation_type" referencedColumnNames="id"/>
+        <addForeignKeyConstraint constraintName="response_type_fq_fk"
+                                 baseTableName="forms_questions" baseColumnNames="RESPONSE_TYPE_ID"
+                                 referencedTableName="response_type" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-questions-dropConstraint-question_type_fk-response_type_fk" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE_ID"/>
+                <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <dropForeignKeyConstraint baseTableName="questions" constraintName="response_type_id_fk" />
+        <dropForeignKeyConstraint baseTableName="questions" constraintName="question_type_question_fk" />
+    </changeSet>
+    <changeSet id="Table-questions-dropColumns" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <and>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE"/>
+                <columnExists tableName="questions" columnName="QUESTION_TYPE_ID"/>
+                <columnExists tableName="questions" columnName="RESPONSE_TYPE_ID"/>
+            </and>
+        </preConditions>
+        <dropColumn tableName="questions" columnName="QUESTION_TYPE" />
+        <dropColumn tableName="questions" columnName="QUESTION_TYPE_ID" />
+        <dropColumn tableName="questions" columnName="RESPONSE_TYPE_ID" />
+    </changeSet>
+</databaseChangeLog>
