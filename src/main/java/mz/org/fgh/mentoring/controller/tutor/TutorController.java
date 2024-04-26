@@ -61,7 +61,7 @@ public class TutorController extends BaseController {
     @Get("/{limit}/{offset}")
     public List<TutorDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
         LOG.debug("Searching tutors version 2");
-        List<Tutor> tutors = new ArrayList<>();
+        List<Tutor> tutors;
         List<TutorDTO> tutorDTOS = new ArrayList<>();
 
         if(limit > 0){
@@ -92,7 +92,7 @@ public class TutorController extends BaseController {
                                  @NonNull @QueryValue("userId") Long userId,
                                  @Nullable @QueryValue("phoneNumber") String phoneNumber) {
         LOG.debug("Searching tutors ....");
-        List<Tutor> tutors = new ArrayList<>();
+        List<Tutor> tutors;
         List<TutorDTO> tutorDTOS = new ArrayList<>();
 
         tutors =  tutorService.search(name, nuit, userId, phoneNumber);
@@ -113,7 +113,7 @@ public class TutorController extends BaseController {
     public List<TutorDTO> getAllV1() {
         LOG.debug("Searching tutors version 1");
 
-        List<Tutor> tutors = new ArrayList<>();
+        List<Tutor> tutors;
         List<TutorDTO> tutorDTOS = new ArrayList<>();
 
         tutors = tutorService.findAll();

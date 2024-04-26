@@ -3,11 +3,8 @@ package mz.org.fgh.mentoring.dto.programmaticarea;
 import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
-import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 
 import java.io.Serializable;

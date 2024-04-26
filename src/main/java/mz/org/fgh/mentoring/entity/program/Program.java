@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.entity.program;
 
-import com.sun.istack.NotNull;
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -9,8 +8,6 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

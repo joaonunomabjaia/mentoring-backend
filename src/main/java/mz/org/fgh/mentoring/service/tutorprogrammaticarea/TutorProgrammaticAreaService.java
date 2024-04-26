@@ -1,11 +1,7 @@
 package mz.org.fgh.mentoring.service.tutorprogrammaticarea;
 
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.program.Program;
-import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
@@ -15,7 +11,6 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
 @Singleton

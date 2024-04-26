@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.controller.tutorprogrammaticarea;
 
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
@@ -15,13 +14,7 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
-import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
-import mz.org.fgh.mentoring.entity.program.Program;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import org.slf4j.Logger;

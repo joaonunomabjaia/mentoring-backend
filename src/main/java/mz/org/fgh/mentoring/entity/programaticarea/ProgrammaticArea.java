@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.entity.programaticarea;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -9,20 +8,9 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.dto.location.LocationDTO;
-import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.employee.Employee;
-import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import mz.org.fgh.mentoring.entity.location.District;
-import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.entity.program.Program;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Schema(name = "ProgramaticArea", description = "A professional that provide mentoring to the tutored individuals")

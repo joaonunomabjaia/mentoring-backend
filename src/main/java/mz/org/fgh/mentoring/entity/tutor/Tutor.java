@@ -10,7 +10,6 @@ import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
-import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
 import javax.persistence.*;

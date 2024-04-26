@@ -1,7 +1,6 @@
 package mz.org.fgh.mentoring.controller.setting;
 
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;

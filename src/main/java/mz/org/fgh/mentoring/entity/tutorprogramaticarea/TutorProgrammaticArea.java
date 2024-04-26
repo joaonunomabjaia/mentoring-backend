@@ -1,24 +1,15 @@
 package mz.org.fgh.mentoring.entity.tutorprogramaticarea;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.entity.user.User;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.persistence.UniqueConstraint;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Schema(name = "TutorProgrammaticArea")
