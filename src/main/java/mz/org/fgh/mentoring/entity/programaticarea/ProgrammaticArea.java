@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.programaticarea;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,12 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.dto.location.LocationDTO;
+import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.employee.Employee;
+import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.location.District;
+import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.entity.program.Program;
 
 import javax.persistence.Column;
@@ -44,6 +51,7 @@ public class ProgrammaticArea extends BaseEntity {
     @Creator
     public ProgrammaticArea (){}
     public ProgrammaticArea (ProgrammaticAreaDTO programmaticAreaDTO ){
+        super(programmaticAreaDTO);
         this.code=programmaticAreaDTO.getCode();
         this.name=programmaticAreaDTO.getName();
         this.description=programmaticAreaDTO.getDescription();
@@ -58,5 +66,13 @@ public class ProgrammaticArea extends BaseEntity {
                 ", description='" + description + '\'' +
                 ", program=" + program +
                 '}';
+
     }
+    // public ProgrammaticArea(ProgrammaticAreaDTO programmaticAreaDTO, Program program) {
+    //     super(programmaticAreaDTO);
+    //     this.setProgram(program);
+    //     this.setCode(programmaticAreaDTO.getCode());
+    //     this.setName(programmaticAreaDTO.getName());
+    //     this.setDescription(programmaticAreaDTO.getDescription());
+    // }
 }

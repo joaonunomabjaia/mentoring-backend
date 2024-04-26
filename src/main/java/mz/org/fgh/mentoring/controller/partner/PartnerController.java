@@ -13,7 +13,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
-import mz.org.fgh.mentoring.dto.programmaticarea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.service.partner.PartnerService;

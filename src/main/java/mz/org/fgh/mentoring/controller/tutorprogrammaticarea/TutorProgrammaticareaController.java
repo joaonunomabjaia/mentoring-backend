@@ -17,9 +17,11 @@ import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.programmaticarea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import org.slf4j.Logger;
@@ -29,13 +31,26 @@ import java.util.List;
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.TUTOR_PROGRAMMATIC_AREAS)
 public class TutorProgrammaticareaController extends BaseController {
+
+    public TutorProgrammaticareaController() {
+    }
+
     public static final Logger LOG = LoggerFactory.getLogger(TutorProgrammaticareaController.class);
 
     @Inject
     private TutorProgrammaticAreaService tutorProgrammaticAreaService;
-    @Post(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    public TutorProgrammaticArea create(@Body TutorProgrammaticArea tutorProgrammaticArea, Authentication authentication){
-         return this.tutorProgrammaticAreaService.create(tutorProgrammaticArea, (Long) authentication.getAttributes().get("userInfo"));
+    @Operation(summary = "Save tutorprogrammaticarea to database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "TutorProgrammaticArea")
+    @Post("/save")
+    public HttpResponse<RestAPIResponse> create (@Body TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO, Authentication authentication) {
+        System.out.println(tutorProgrammaticAreaDTO);
+        TutorProgrammaticArea tutorProgrammaticArea = new TutorProgrammaticArea(tutorProgrammaticAreaDTO);
+        tutorProgrammaticArea = this.tutorProgrammaticAreaService.create(tutorProgrammaticArea, (Long) authentication.getAttributes().get("userInfo"));
+
+        LOG.info("Created tutorProgrammaticArea {}", tutorProgrammaticArea);
+
+        return HttpResponse.ok().body(new TutorProgrammaticAreaDTO(tutorProgrammaticArea));
     }
 
     @Patch(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)

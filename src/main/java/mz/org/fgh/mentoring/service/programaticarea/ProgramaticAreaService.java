@@ -94,4 +94,8 @@ public class ProgramaticAreaService {
 
         return programmaticAreas;
     }
+
+    public ProgrammaticArea getProgrammaticAreaById(Long id) {
+        return this.programaticAreaRepository.getById(id);
+    }
 }

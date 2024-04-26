@@ -2,8 +2,10 @@ package mz.org.fgh.mentoring.service.tutorprogrammaticarea;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.programmaticarea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
@@ -25,6 +27,12 @@ public class TutorProgrammaticAreaService {
         this.tutorProgrammaticAreaRepository = tutorProgrammaticAreaRepository;
         this.userRepository = userRepository;
     }
+    public List<TutorProgrammaticArea> fetchAllTutorProgrammaticAreas(Long tutorId){
+
+        List<TutorProgrammaticArea> tutorProgrammaticAreas = this.tutorProgrammaticAreaRepository.fetchAll(tutorId);
+
+        return tutorProgrammaticAreas;
+    }
     public TutorProgrammaticArea create(final TutorProgrammaticArea tutorProgrammaticArea, Long userId){
         User user = userRepository.findById(userId).get();
         tutorProgrammaticArea.setCreatedBy(user.getUuid());
@@ -44,7 +52,7 @@ public class TutorProgrammaticAreaService {
     }
 
     public List<TutorProgrammaticAreaDTO> findAllTutorProgrammaticAreas() {
-        List<TutorProgrammaticArea> tutList = this.tutorProgrammaticAreaRepository.findAll();
+        List<TutorProgrammaticArea> tutList = (List<TutorProgrammaticArea>) this.tutorProgrammaticAreaRepository.findAll();
         List<TutorProgrammaticAreaDTO> programs = new ArrayList<TutorProgrammaticAreaDTO>();
         for (TutorProgrammaticArea tut: tutList) {
             TutorProgrammaticAreaDTO tutDTO = new TutorProgrammaticAreaDTO(tut);

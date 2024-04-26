@@ -1,13 +1,16 @@
 package mz.org.fgh.mentoring.entity.tutorprogramaticarea;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.dto.programmaticarea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.entity.user.User;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -26,8 +29,8 @@ import javax.validation.constraints.NotNull;
 public class TutorProgrammaticArea extends BaseEntity {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "TUTOR_ID", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "tutor_id", nullable = false)
     private Tutor tutor;
 
     @NotNull

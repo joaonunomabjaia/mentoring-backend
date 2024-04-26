@@ -4,6 +4,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.List;
@@ -28,4 +29,7 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
 
     @Query("select p from ProgramaticArea p inner join fetch p.program where p.lifeCycleStatus =:lifeCycleStatus")
     public List<ProgrammaticArea> fetchAll(final LifeCycleStatus lifeCycleStatus);
+
+    @Query("SELECT p FROM ProgramaticArea p JOIN FETCH p.program WHERE p.id = :id")
+    ProgrammaticArea getById(Long id);
 }
