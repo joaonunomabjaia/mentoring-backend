@@ -45,7 +45,7 @@ public class ProgramaticAreaController extends BaseController {
        return this.programaticAreaService.findProgrammaticAreas(code, name);
     }
 
-    @Get("/tutor-progammatic-area/{tutorUuid}")
+//    @Get("/tutor-progammatic-area/{tutorUuid}")
 //    public List<ProgrammaticAreaDTO> findProgrammaticAreaByTutorProgrammaticAreaUuid(@PathVariable("tutorUuid") final String tutorUuid){
 //      return this.programaticAreaService.findProgrammaticAreaByTutorProgrammaticAreaUuid(tutorUuid);
 //    }
