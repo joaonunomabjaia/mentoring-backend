@@ -129,4 +129,12 @@ public class FormController extends BaseController {
         return new FormDTO(f);
     }
 
+    @Operation(summary = "Return a list of forms for the listed params")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Get("/getall")
+    @Tag(name = "Form")
+    public List<FormDTO> getFormsByPartner(@Nullable @QueryValue("partnerId") Long partnerId){
+        return this.formService.getFormsByPartnerId(partnerId);
+    }
+
 }

@@ -37,4 +37,11 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     List<Form> findFormWithLimit(long lim, long of);
 
     List<Form> search(final String code, final String name, final String programmaticArea);
+
+    @Query("select f from Form f " +
+            "INNER JOIN FETCH f.programmaticArea pa " +
+            "INNER JOIN FETCH pa.program p " +
+            "INNER JOIN FETCH f.partner pt " +
+            "where pt.id = :partnerId ")
+    List<Form> fetchByPartnerId(final Long partnerId);
 }

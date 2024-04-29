@@ -4,6 +4,8 @@ import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -12,13 +14,16 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.controller.tutor.TutorController;
-import mz.org.fgh.mentoring.dto.career.CareerTypeDTO;
+import mz.org.fgh.mentoring.dto.mentorship.DoorDTO;
+import mz.org.fgh.mentoring.dto.mentorship.IterationTypeDTO;
+import mz.org.fgh.mentoring.dto.mentorship.TimeOfDayDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionTypeDTO;
-import mz.org.fgh.mentoring.entity.career.CareerType;
 import mz.org.fgh.mentoring.entity.form.FormType;
-import mz.org.fgh.mentoring.entity.question.QuestionType;
 import mz.org.fgh.mentoring.service.career.CareerTypeService;
 import mz.org.fgh.mentoring.service.form.FormTypeService;
+import mz.org.fgh.mentoring.service.mentorship.DoorService;
+import mz.org.fgh.mentoring.service.mentorship.IterationTypeService;
+import mz.org.fgh.mentoring.service.mentorship.TimeOfDayService;
 import mz.org.fgh.mentoring.service.question.QuestionTypeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,6 +42,15 @@ public class ResourceUtilsController extends BaseController {
 
     @Inject
     private QuestionTypeService questionTypeService;
+
+    @Inject
+    private DoorService doorService;
+
+    @Inject
+    private IterationTypeService iterationTypeService;
+
+    @Inject
+    private TimeOfDayService timeOfDayService;
 
     public static final Logger LOG = LoggerFactory.getLogger(TutorController.class);
 
@@ -85,6 +99,36 @@ public class ResourceUtilsController extends BaseController {
     public List<FormType> findAllFormType(){
         LOG.debug("Searching FormType version 2");
         return this.formTypeService.findAll();
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Return a list off all doors")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Door")
+    @Get("/doors")
+    public List<DoorDTO> findAllDoors(){
+        LOG.debug("Searching Doors...");
+        return this.doorService.findAll();
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Return a list off all iterations types")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "IterationType")
+    @Get("/iterationTypes")
+    public List<IterationTypeDTO> findAllIterationsTypes(){
+        LOG.debug("Searching Iterations Types...");
+        return this.iterationTypeService.findAll();
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Return a list off all times of day")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "TimeOfDay")
+    @Get("/timesOfDay")
+    public List<TimeOfDayDTO> findAllTimesOfDay(){
+        LOG.debug("Searching Times of Day...");
+        return this.timeOfDayService.findAll();
     }
 
 }
