@@ -2,7 +2,6 @@ package mz.org.fgh.mentoring.repository.mentorship;
 
 import io.micronaut.data.annotation.Repository;
 import jakarta.inject.Inject;
-import mz.org.fgh.mentoring.entity.mentorship.IterationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -18,7 +17,6 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -219,7 +217,7 @@ public abstract class MentorshipRepositoryImpl implements MentorshipRepository{
     }
 
     @Override
-    public List<Mentorship> fetchBySelectedFilter(String code, String tutor, String tutored, String formName, String healthFacility, IterationType type, Integer iterationNumber, LifeCycleStatus lfStatus, Date performedStartDate, Date performedEndDate) {
+    public List<Mentorship> fetchBySelectedFilter(String code, String tutor, String tutored, String formName, String healthFacility, String iterationType, Integer iterationNumber, LifeCycleStatus lfStatus, Date performedStartDate, Date performedEndDate) {
         final CriteriaBuilder criteriaBuilder = this.entityManager.getCriteriaBuilder();
         final CriteriaQuery<Mentorship> createQuery = criteriaBuilder.createQuery(Mentorship.class);
         final Root<Mentorship> root = createQuery.from(Mentorship.class);
@@ -228,6 +226,7 @@ public abstract class MentorshipRepositoryImpl implements MentorshipRepository{
         root.fetch("tutored").fetch("career");
         root.fetch("form").fetch("programmaticArea");
         root.fetch("healthFacility").fetch("district");
+        root.fetch("iterationType");
         root.fetch("session", JoinType.LEFT);
         root.fetch("cabinet", JoinType.LEFT);
 
@@ -256,8 +255,9 @@ public abstract class MentorshipRepositoryImpl implements MentorshipRepository{
                     criteriaBuilder.like(root.get("healthFacility").get("healthFacility"), "%" + healthFacility + "%"));
         }
 
-        if(type != null) {
-            predicates.add(criteriaBuilder.equal(root.get("iterationType"), type));
+        if(iterationType != null) {
+            predicates.add(
+            criteriaBuilder.like(root.get("iterationType").get("iterationType"), "%" + iterationType + "%"));
         }
 
         if(iterationNumber != null) {

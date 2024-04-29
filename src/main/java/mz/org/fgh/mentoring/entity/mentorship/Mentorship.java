@@ -73,14 +73,18 @@ public class Mentorship extends BaseEntity {
     @JoinColumn(name = "CABINET_ID")
     private Cabinet cabinet;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "ITERATION_TYPE")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ITERATION_TYPE_ID", nullable = false)
     private IterationType iterationType;
 
     @Column(name = "ITERATION_NUMBER")
     private Integer iterationNumber;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "DOOR")
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DOOR_ID", nullable = false)
     private Door door;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "TIME_OF_DAY_ID", nullable = false)
+    private TimeOfDay timeOfDay;
 }

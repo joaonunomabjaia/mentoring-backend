@@ -28,24 +28,24 @@ public class ProgramaticAreaService {
         return this.programaticAreaRepository.update(programaticArea);
     }
 
-    public List<ProgrammaticAreaDTO> fetchProgrammaticAreasAll(final Long limit,final Long offset){
-        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
-        List<ProgrammaticArea> programmaticAreas = new ArrayList<>();
-
-        if(limit==null || offset==null) {
-            programmaticAreas  = this.programaticAreaRepository.findAll();
-        } else if(limit > 0){
-            programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaWithLimit(limit, offset);
-        }
-        else {
-            programmaticAreas  = this.programaticAreaRepository.findAll();
-        }
-
-        for(ProgrammaticArea programmaticArea : programmaticAreas){
-            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
-        }
-        return programmaticAreaDTOS;
-    }
+//    public List<ProgrammaticAreaDTO> fetchProgrammaticAreasAll(final Long limit,final Long offset){
+//        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
+//        List<ProgrammaticArea> programmaticAreas = new ArrayList<>();
+//
+//        if(limit==null || offset==null) {
+//            programmaticAreas  = this.programaticAreaRepository.findAll();
+//        } else if(limit > 0){
+//            programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaWithLimit(limit, offset);
+//        }
+//        else {
+//            programmaticAreas  = this.programaticAreaRepository.findAll();
+//        }
+//
+//        for(ProgrammaticArea programmaticArea : programmaticAreas){
+//            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
+//        }
+//        return programmaticAreaDTOS;
+//    }
 
     public List<ProgrammaticAreaDTO> findProgrammaticAreas(final String code, final String name){
         List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
@@ -56,18 +56,18 @@ public class ProgramaticAreaService {
         }
         return programmaticAreaDTOS;
     }
-    public List<ProgrammaticAreaDTO> findProgrammaticAreaByTutorProgrammaticAreaUuid(final String tutorUuid){
-
-        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
-
-        List<ProgrammaticArea> programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaByTutorProgrammaticAreaUuid(tutorUuid);
-
-        for (ProgrammaticArea programmaticArea : programmaticAreas){
-            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
-        }
-
-        return programmaticAreaDTOS;
-    }
+//    public List<ProgrammaticAreaDTO> findProgrammaticAreaByTutorProgrammaticAreaUuid(final String tutorUuid){
+//
+//        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
+//
+//        List<ProgrammaticArea> programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaByTutorProgrammaticAreaUuid(tutorUuid);
+//
+//        for (ProgrammaticArea programmaticArea : programmaticAreas){
+//            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
+//        }
+//
+//        return programmaticAreaDTOS;
+//    }
 
     public List<ProgrammaticAreaDTO> findProgrammaticAreasByProgram(final String program){
 
@@ -93,5 +93,9 @@ public class ProgramaticAreaService {
         }
 
         return programmaticAreas;
+    }
+
+    public ProgrammaticArea getProgrammaticAreaById(Long id) {
+        return this.programaticAreaRepository.getById(id);
     }
 }
