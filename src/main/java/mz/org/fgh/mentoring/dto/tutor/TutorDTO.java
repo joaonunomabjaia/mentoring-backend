@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
@@ -33,5 +34,12 @@ public class TutorDTO extends BaseEntityDTO {
             tutorProgrammaticAreaDTOList.add(new TutorProgrammaticAreaDTO(tutorProgrammaticArea));
         }
         return tutorProgrammaticAreaDTOList;
+    }
+
+    public Tutor toTutor() {
+        Tutor tutor = new Tutor();
+        tutor.setId(this.getId());
+        tutor.setUuid(this.getUuid());
+        return tutor;
     }
 }

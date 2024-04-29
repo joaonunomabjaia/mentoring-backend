@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.controller.tutorprogrammaticarea;
 
+import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
@@ -14,9 +15,12 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,6 +70,15 @@ public class TutorProgrammaticareaController extends BaseController {
     public TutorProgrammaticAreaDTO findTutorProgrammaticareaById(@PathVariable("id") Long id){
 
         TutorProgrammaticArea tutorProgrammaticArea = this.tutorProgrammaticAreaService.findById(id);
+        return new TutorProgrammaticAreaDTO(tutorProgrammaticArea);
+    }
+
+    @Operation(summary = "Update the tutorProgrammaticArea LifeCicleStatus")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Patch("/changeLifeCicleStatus")
+    @Tag(name = "TutorProgrammaticArea")
+    public TutorProgrammaticAreaDTO changeLifeCicleStatus(@NonNull @Body TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO, Authentication authentication){
+        TutorProgrammaticArea tutorProgrammaticArea = this.tutorProgrammaticAreaService.updateLifeCycleStatus(tutorProgrammaticAreaDTO.toTutorProgrammaticArea(LifeCycleStatus.valueOf(tutorProgrammaticAreaDTO.getLifeCycleStatus())), (Long) authentication.getAttributes().get("userInfo"));
         return new TutorProgrammaticAreaDTO(tutorProgrammaticArea);
     }
 }

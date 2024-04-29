@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.service.tutorprogrammaticarea;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
@@ -11,6 +12,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Singleton
@@ -57,5 +59,18 @@ public class TutorProgrammaticAreaService {
     }
     public TutorProgrammaticArea findById(final Long id){
         return this.tutorProgrammaticAreaRepository.findById(id).get();
+    }
+
+    public TutorProgrammaticArea updateLifeCycleStatus(TutorProgrammaticArea tutorProgrammaticArea, Long userId) {
+        User user = this.userRepository.fetchByUserId(userId);
+        Optional<TutorProgrammaticArea> tutorProgrammaticAreaRepositoryByUuid =  this.tutorProgrammaticAreaRepository.findByUuid(tutorProgrammaticArea.getUuid());
+        if (tutorProgrammaticAreaRepositoryByUuid.isPresent()) {
+            tutorProgrammaticAreaRepositoryByUuid.get().setLifeCycleStatus(tutorProgrammaticArea.getLifeCycleStatus());
+            tutorProgrammaticAreaRepositoryByUuid.get().setUpdatedBy(user.getUuid());
+            tutorProgrammaticAreaRepositoryByUuid.get().setUpdatedAt(DateUtils.getCurrentDate());
+            this.tutorProgrammaticAreaRepository.update(tutorProgrammaticAreaRepositoryByUuid.get());
+            return tutorProgrammaticAreaRepositoryByUuid.get();
+        }
+        return null;
     }
 }
