@@ -10,12 +10,7 @@ import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
 @Schema(name = "ProgramaticArea", description = "A professional that provide mentoring to the tutored individuals")
@@ -44,6 +39,7 @@ public class ProgrammaticArea extends BaseEntity {
     @Creator
     public ProgrammaticArea (){}
     public ProgrammaticArea (ProgrammaticAreaDTO programmaticAreaDTO ){
+        super(programmaticAreaDTO);
         this.code=programmaticAreaDTO.getCode();
         this.name=programmaticAreaDTO.getName();
         this.description=programmaticAreaDTO.getDescription();
@@ -58,5 +54,13 @@ public class ProgrammaticArea extends BaseEntity {
                 ", description='" + description + '\'' +
                 ", program=" + program +
                 '}';
+
     }
+    // public ProgrammaticArea(ProgrammaticAreaDTO programmaticAreaDTO, Program program) {
+    //     super(programmaticAreaDTO);
+    //     this.setProgram(program);
+    //     this.setCode(programmaticAreaDTO.getCode());
+    //     this.setName(programmaticAreaDTO.getName());
+    //     this.setDescription(programmaticAreaDTO.getDescription());
+    // }
 }

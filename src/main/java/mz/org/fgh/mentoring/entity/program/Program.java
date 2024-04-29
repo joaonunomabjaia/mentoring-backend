@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -32,9 +33,20 @@ public class Program extends BaseEntity {
 
     @Creator
     public Program(){}
+
     public Program(ProgramDTO programDTO) {
         super(programDTO);
-        this.setDescription(programDTO.getDescription());
         this.setName(programDTO.getName());
+        this.setDescription(programDTO.getDescription());
+//        this.setProgrammaticAreas(retriveProgramaticAreas(programDTO.getProgrammaticAreaDTOSet()));
     }
+
+    // private Set<ProgrammaticArea> retriveProgramaticAreas(Set<ProgrammaticAreaDTO> programmaticAreaDTOS) {
+    //     Set<ProgrammaticArea> programmaticAreaSet = new HashSet<>();
+    //     for (ProgrammaticAreaDTO programmaticAreaDTO : programmaticAreaDTOS) {
+    //         ProgrammaticArea programmaticArea = new ProgrammaticArea(programmaticAreaDTO, this);
+    //         programmaticAreaSet.add(programmaticArea);
+    //     }
+    //     return programmaticAreaSet;
+    // }
 }

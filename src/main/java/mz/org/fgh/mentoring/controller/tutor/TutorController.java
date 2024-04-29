@@ -23,7 +23,10 @@ import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
+import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
+import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,6 +43,12 @@ public class TutorController extends BaseController {
     @Inject
     private TutorService tutorService;
 
+    @Inject
+    private TutorProgrammaticAreaService tutorProgrammaticAreaService;
+
+    @Inject
+    private ProgramaticAreaService programmaticAreaService;
+
     public TutorController() {
     }
 
@@ -52,7 +61,7 @@ public class TutorController extends BaseController {
     @Get("/{limit}/{offset}")
     public List<TutorDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
         LOG.debug("Searching tutors version 2");
-        List<Tutor> tutors = new ArrayList<>();
+        List<Tutor> tutors;
         List<TutorDTO> tutorDTOS = new ArrayList<>();
 
         if(limit > 0){
@@ -83,13 +92,18 @@ public class TutorController extends BaseController {
                                  @NonNull @QueryValue("userId") Long userId,
                                  @Nullable @QueryValue("phoneNumber") String phoneNumber) {
         LOG.debug("Searching tutors ....");
-        List<Tutor> tutors = new ArrayList<>();
+        List<Tutor> tutors;
         List<TutorDTO> tutorDTOS = new ArrayList<>();
 
         tutors =  tutorService.search(name, nuit, userId, phoneNumber);
 
 
         for (Tutor tutor : tutors){
+            List<TutorProgrammaticArea> tutorProgrammaticAreas = tutorProgrammaticAreaService.fetchAllTutorProgrammaticAreas(tutor.getId());
+            tutor.setTutorProgrammaticAreas(tutorProgrammaticAreas);
+            for (TutorProgrammaticArea t: tutor.getTutorProgrammaticAreas()) {
+                t.setProgrammaticArea(programmaticAreaService.getProgrammaticAreaById(t.getProgrammaticArea().getId()));
+            }
             tutorDTOS.add(new TutorDTO(tutor));
         }
         return tutorDTOS;
@@ -99,7 +113,7 @@ public class TutorController extends BaseController {
     public List<TutorDTO> getAllV1() {
         LOG.debug("Searching tutors version 1");
 
-        List<Tutor> tutors = new ArrayList<>();
+        List<Tutor> tutors;
         List<TutorDTO> tutorDTOS = new ArrayList<>();
 
         tutors = tutorService.findAll();
@@ -132,7 +146,7 @@ public class TutorController extends BaseController {
     public HttpResponse<RestAPIResponse> create (@Body TutorDTO tutorDTO, Authentication authentication) {
 
         Tutor tutor = new Tutor(tutorDTO);
-       tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
+        tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
 
         LOG.info("Created mentor {}", tutor);
 
