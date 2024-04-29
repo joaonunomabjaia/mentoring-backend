@@ -4,6 +4,7 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
@@ -23,6 +24,10 @@ import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.error.EmailDuplicationException;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
+import mz.org.fgh.mentoring.error.NuitDuplicationException;
+import mz.org.fgh.mentoring.error.PhoneDuplicationException;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
@@ -125,18 +130,29 @@ public class TutorController extends BaseController {
         return new TutorDTO(tutor);
     }*/
 
-    @Operation(summary = "Save Mentor to database")
+    @Operation(summary = "Save Mentor to database and generate correspondent user")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentor")
     @Post("/save")
     public HttpResponse<RestAPIResponse> create (@Body TutorDTO tutorDTO, Authentication authentication) {
-
-        Tutor tutor = new Tutor(tutorDTO);
-       tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
-
-        LOG.info("Created mentor {}", tutor);
-
-        return HttpResponse.ok().body(new TutorDTO(tutor));
+        try {
+            Tutor tutor = new Tutor(tutorDTO);
+            tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
+            LOG.info("Created mentor {}", tutor);
+            return HttpResponse.ok().body(new TutorDTO(tutor));
+        } catch (NuitDuplicationException | EmailDuplicationException | PhoneDuplicationException e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
     }
 
 
