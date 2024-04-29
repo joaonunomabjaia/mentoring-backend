@@ -87,12 +87,6 @@ public class MentorshipService {
                                                   String formName, String healthFacility, String iterationType,
                                                   Integer iterationNumber, String lifeCycleStatus, Date performedStartDate,
                                                   Date performedEndDate) {
-
-        IterationType type = null;
-        if(iterationType != null) {
-            type = IterationType.valueOf(iterationType.toUpperCase());
-        }
-
         LifeCycleStatus lfStatus = null;
         if(lifeCycleStatus != null) {
             try {
@@ -102,6 +96,6 @@ public class MentorshipService {
             }
         }
 
-        return this.mentorshipRepository.fetchBySelectedFilter(code, tutor, tutored, formName, healthFacility, type, iterationNumber, lfStatus, performedStartDate, performedEndDate);
+        return this.mentorshipRepository.fetchBySelectedFilter(code, tutor, tutored, formName, healthFacility, iterationType, iterationNumber, lfStatus, performedStartDate, performedEndDate);
     }
 }

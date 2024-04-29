@@ -16,7 +16,6 @@ import mz.org.fgh.mentoring.dto.question.QuestionCategoryDTO;
 import mz.org.fgh.mentoring.service.question.QuestionCategoryService;
 import java.util.List;
 
-@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.QUESTION_CATEGORY)
 public class QuestionCategoryController extends BaseController {
 
@@ -26,6 +25,7 @@ public class QuestionCategoryController extends BaseController {
     public QuestionCategoryController() {
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all Question Category")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "QuestionsCategory")

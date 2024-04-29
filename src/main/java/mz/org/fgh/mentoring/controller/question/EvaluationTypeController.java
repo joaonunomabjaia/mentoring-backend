@@ -17,7 +17,6 @@ import mz.org.fgh.mentoring.service.question.EvaluationTypeService;
 
 import java.util.List;
 
-@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.EVALUATION_TYPE)
 public class EvaluationTypeController extends BaseController {
 
@@ -27,6 +26,7 @@ public class EvaluationTypeController extends BaseController {
     public EvaluationTypeController() {
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all Evaluation Types")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "EvaluationType")

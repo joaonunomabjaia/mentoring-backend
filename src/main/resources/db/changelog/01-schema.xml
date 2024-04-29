@@ -1632,4 +1632,230 @@
             VALUES (3, 'caf2a4ba-8dbf-493f-9f24-dec8949ae64b', 'MENTORIA_EXTERNA', 'Mentoria Externa', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
         </sql>
     </changeSet>
+    <changeSet id="table_iterations_types" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="iterations_types"/>
+            </not>
+        </preConditions>
+        <createTable tableName="iterations_types">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_doors" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="doors"/>
+            </not>
+        </preConditions>
+        <createTable tableName="doors">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="table_times_of_day" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="times_of_day"/>
+            </not>
+        </preConditions>
+        <createTable tableName="times_of_day">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="ITERATION_TYPE_202404280855" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM iterations_types WHERE id IN (1, 2);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO iterations_types (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, 'ebef5dd3-8aca-4b2d-9a79-280c069caeae', 'PATIENT', 'Patient', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO iterations_types (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, '89e9f20f-2c83-42de-a69c-fc01eafd7d4f', 'FILE', 'File', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="DOOR_202404280855" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM doors WHERE id IN (1, 2, 3, 4);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO doors (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, 'e27573cd-43d2-4a42-b6a8-d92f365acc14', 'P1', 'P1', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO doors (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, '9a95acb6-165e-4815-bcd5-03975a275a8b', 'P2', 'P2', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO doors (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (3, '9b2ba209-1e9c-4c68-bfaf-3cb36d4510a3', 'P3', 'P3', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO doors (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (4, '28911fe3-a46c-4189-b117-716ab20259a0', 'P4', 'P4', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="TIME_OF_DAY_202404280855" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM times_of_day WHERE id IN (1, 2);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO times_of_day (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, '4b49067a-e2c7-41c0-9d61-b99956d5a78a', 'AM', 'AM', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO times_of_day (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, 'f05bdf29-1d91-4164-aeea-9a1bb6cec9cd', 'PM', 'PM', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="Table-mentorships-dropColumn-interation_type" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="mentorships" columnName="ITERATION_TYPE"/>
+        </preConditions>
+        <dropColumn tableName="mentorships" columnName="ITERATION_TYPE" />
+    </changeSet>
+    <changeSet id="Table-mentorships-dropColumn-door" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="mentorships" columnName="DOOR"/>
+        </preConditions>
+        <dropColumn tableName="mentorships" columnName="DOOR" />
+    </changeSet>
+    <changeSet id="Table-mentorships-dropColumn-time_of_day" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="mentorships" columnName="TIME_OF_DAY"/>
+        </preConditions>
+        <dropColumn tableName="mentorships" columnName="TIME_OF_DAY" />
+    </changeSet>
+    <changeSet id="Table-mentorships-addColumn-interation_type" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="mentorships" columnName="ITERATION_TYPE_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="mentorships">
+            <column name="ITERATION_TYPE_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-mentorships-addColumn-door" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="mentorships" columnName="DOOR_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="mentorships">
+            <column name="DOOR_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-mentorships-addColumn-time_of_day" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="mentorships" columnName="TIME_OF_DAY_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="mentorships">
+            <column name="TIME_OF_DAY_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="createTable-mentorships_iteration_type_fk" author="ialuj">
+        <comment>
+            Create iteration type foreign key on mentorships table
+        </comment>
+        <addForeignKeyConstraint constraintName="mentorships_iteration_type_fk"
+                                 baseTableName="mentorships" baseColumnNames="iteration_type_id"
+                                 referencedTableName="iterations_types" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="createTable-mentorships_door_fk" author="ialuj">
+        <comment>
+            Create iteration type foreign key on mentorships table
+        </comment>
+        <addForeignKeyConstraint constraintName="mentorships_door_fk"
+                                 baseTableName="mentorships" baseColumnNames="door_id"
+                                 referencedTableName="doors" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="createTable-mentorships_time_of_day_fk" author="ialuj">
+        <comment>
+            Create iteration type foreign key on mentorships table
+        </comment>
+        <addForeignKeyConstraint constraintName="mentorships_time_of_day_fk"
+                                 baseTableName="mentorships" baseColumnNames="time_of_day_id"
+                                 referencedTableName="times_of_day" referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.repository.mentorship;
 
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.mentorship.IterationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
@@ -23,6 +22,6 @@ public interface MentorshipRepository extends CrudRepository<Mentorship, Long> {
 
     List<PerformedSession> getSelectedOfFilterPMQTRList(Date startDate, Date endDate);
 
-    List<Mentorship> fetchBySelectedFilter(String code, String tutor, String tutored, String formName, String healthFacility, IterationType type, Integer iterationNumber, LifeCycleStatus lfStatus, Date performedStartDate, Date performedEndDate);
+    List<Mentorship> fetchBySelectedFilter(String code, String tutor, String tutored, String formName, String healthFacility, String iterationType, Integer iterationNumber, LifeCycleStatus lfStatus, Date performedStartDate, Date performedEndDate);
 
 }

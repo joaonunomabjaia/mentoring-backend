@@ -183,4 +183,15 @@ public class FormService {
             updatedForm.setFormQuestions(listOfFormQuestions);
             return new FormDTO(updatedForm);
     }
+
+    public List<FormDTO> getFormsByPartnerId(final Long partnerId) {
+        List<FormDTO> formDTOS = new ArrayList<>();
+        List<Form> forms = this.formRepository.fetchByPartnerId(partnerId);
+        for(Form form : forms){
+            List<FormQuestion> formQuestions = formQuestionRepository.fetchByForm(form.getId());
+            form.setFormQuestions(formQuestions);
+            formDTOS.add(new FormDTO(form));
+        }
+        return formDTOS;
+    }
 }
