@@ -19,6 +19,6 @@ public class NuitDuplicationExceptionHandler implements ExceptionHandler<NuitDup
         return HttpResponse.badRequest(MentoringAPIError.builder()
                                                                 .status(HttpStatus.BAD_REQUEST.getCode())
                                                                 .error("NUIT_DUPLICADO")
-                                                                .message("O NUIT informado ja existe registado no sistema").build());
+                                                                .message(exception.getMessage()).build());
     }
 }
