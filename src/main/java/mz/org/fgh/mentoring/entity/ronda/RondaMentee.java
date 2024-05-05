@@ -17,7 +17,7 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @ToString
-public class RondaMentorandos extends BaseEntity {
+public class RondaMentee extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "RONDA_ID")

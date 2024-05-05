@@ -25,6 +25,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Schema(name = "Mentorship", description = "The outcome of the provided mentoring to the tutored individuals")
 @Entity(name = "mentorship")
@@ -41,13 +42,13 @@ public class Mentorship extends BaseEntity {
     private String code;
 
     @Column(name = "START_DATE", nullable = false)
-    private LocalDateTime startDate;
+    private Date startDate;
 
     @Column(name = "END_DATE", nullable = false)
-    private LocalDateTime endDate;
+    private Date endDate;
 
     @Column(name = "PERFORMED_DATE", nullable = false)
-    private LocalDate performedDate;
+    private Date performedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "TUTOR_ID", nullable = false)

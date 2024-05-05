@@ -28,4 +28,13 @@ public class RondaTypeDTO implements Serializable {
         this.code = rondaType.getCode();
         this.description = rondaType.getDescription();
     }
+
+    public RondaType getRondaType() {
+        RondaType rondaType = new RondaType();
+        rondaType.setId(this.getId());
+        rondaType.setUuid(this.getUuid());
+        rondaType.setCode(this.getCode());
+        rondaType.setDescription(this.getDescription());
+        return rondaType;
+    }
 }

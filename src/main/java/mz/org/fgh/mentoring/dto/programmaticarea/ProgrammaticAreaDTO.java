@@ -5,14 +5,14 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 
 import java.io.Serializable;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
-public class ProgrammaticAreaDTO extends BaseEntityDTO implements Serializable {
+public class ProgrammaticAreaDTO extends BaseEntityDTO {
 
     private Long id;
 
@@ -25,7 +25,7 @@ public class ProgrammaticAreaDTO extends BaseEntityDTO implements Serializable {
     private ProgramDTO program;   
 
     private ProgramDTO programDTO;
-    public ProgrammaticAreaDTO() {}
+
     public ProgrammaticAreaDTO(ProgrammaticArea programmaticArea) {
         super(programmaticArea);
         this.id = programmaticArea.getId();

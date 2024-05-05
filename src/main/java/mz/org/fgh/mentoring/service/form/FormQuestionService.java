@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -66,6 +67,16 @@ public class FormQuestionService {
         formQuestion.setUpdatedAt(new Date());
         formQuestion.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
         this.formQuestionRepository.update(formQuestion);
+    }
+
+    public List<FormQuestionDTO> fetchByFormsUuids(final List<String> formsUuids){
+        List<FormQuestion> formQuestions = this.formQuestionRepository.fetchByFormsUuids(formsUuids);
+        List<FormQuestionDTO> formQuestionDTOS = new ArrayList<>();
+        for (FormQuestion formQuestion : formQuestions) {
+            FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);
+            formQuestionDTOS.add(formQuestionDTO);
+        }
+        return formQuestionDTOS;
     }
 
 }

@@ -8,11 +8,15 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
+import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.service.mentorship.MentorshipService;
@@ -29,7 +33,8 @@ import java.util.List;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
 
-@Controller("mentorships")
+@Controller(RESTAPIMapping.MENTORSHIP)
+@Secured(SecurityRule.IS_AUTHENTICATED)
 public class MentorshipController {
 
     public static final Logger LOG = LoggerFactory.getLogger(MentorshipController.class);
@@ -201,5 +206,14 @@ public class MentorshipController {
     public List<PerformedSession> findPerformedSessionsNarrativeCOP20(@QueryValue("startDate") Date startDate,
                                                                       @QueryValue("endDate") Date endDate){
         return this.sessionService.findPerformedSessionsBySelectedFilterNarrativeCOP20(startDate, endDate);
+    }
+
+    @Operation(summary = "Return a list of all Mentorships")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Mentorship")
+    @Get("/getAllMentorshipSessionsOfMentor")
+    public List<MentorshipDTO> getAllMentorshipSessionsOfMentor(@QueryValue("mentorId") Long mentorId) {
+        List<MentorshipDTO> mentorships = this.mentorshipService.getAllMentorshipSessionsOfMentor(mentorId);
+        return mentorships;
     }
 }
