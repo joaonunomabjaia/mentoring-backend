@@ -13,7 +13,7 @@ import java.io.Serializable;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class DoorDTO extends BaseEntityDTO implements Serializable {
+public class DoorDTO extends BaseEntityDTO {
 
     private String description;
 

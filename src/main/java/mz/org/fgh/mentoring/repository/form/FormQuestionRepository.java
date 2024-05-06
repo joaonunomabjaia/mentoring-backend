@@ -30,4 +30,13 @@ public interface FormQuestionRepository extends CrudRepository<FormQuestion, Lon
 
     @Query("SELECT fq FROM FormQuestion fq INNER JOIN FETCH fq.form f INNER JOIN FETCH f.programmaticArea INNER JOIN FETCH fq.question q INNER JOIN FETCH q.questionsCategory WHERE f.code = :formCode AND fq.lifeCycleStatus = :lifeCycleStatus")
     List<FormQuestion> fetchByFormCode(String formCode, LifeCycleStatus lifeCycleStatus);
+
+    @Query("FROM FormQuestion fq " +
+            "INNER JOIN FETCH fq.form f " +
+            "INNER JOIN FETCH fq.question q " +
+            "INNER JOIN FETCH fq.evaluationType et " +
+            "INNER JOIN FETCH fq.responseType rt " +
+            "INNER JOIN FETCH q.questionCategory " +
+            "WHERE f.uuid IN (:formsUuids)")
+    List<FormQuestion> fetchByFormsUuids(List<String> formsUuids);
 }

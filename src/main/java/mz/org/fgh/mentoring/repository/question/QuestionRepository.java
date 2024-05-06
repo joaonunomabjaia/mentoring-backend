@@ -12,12 +12,12 @@ public interface QuestionRepository extends CrudRepository<Question, Long> {
     List<Question> findAll();
 
     @Query("FROM Question q " +
-            "INNER JOIN FETCH q.questionsCategory qc " +
+            "INNER JOIN FETCH q.questionCategory qc " +
             "WHERE q.lifeCycleStatus = :lifeCycleStatus")
     List<Question> getAllQuestions(LifeCycleStatus lifeCycleStatus);
 
     @Query("FROM Question q " +
-            "INNER JOIN FETCH q.questionsCategory qc " +
+            "INNER JOIN FETCH q.questionCategory qc " +
             "WHERE q.lifeCycleStatus = :lifeCycleStatus " )
     //" AND q.id IN (:ids) "
     List<Question> getQuestionsByIds(List<Long> ids, LifeCycleStatus lifeCycleStatus);

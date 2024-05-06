@@ -19,4 +19,15 @@ public class DistrictDTO extends BaseEntityDTO {
         this.setDescription(district.getDescription());
         if (district.getProvince() != null) this.setProvinceDTO(new ProvinceDTO(district.getProvince()));
     }
+
+    public District getDistrict() {
+        District district = new District();
+        district.setId(this.getId());
+        district.setUuid(this.getUuid());
+        district.setDescription(this.getDescription());
+        if(district.getProvince()!=null) {
+            district.setProvince(this.getDistrict().getProvince());
+        }
+        return district;
+    }
 }

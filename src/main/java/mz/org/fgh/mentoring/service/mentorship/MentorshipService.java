@@ -1,7 +1,9 @@
 package mz.org.fgh.mentoring.service.mentorship;
 
+import io.micronaut.http.annotation.QueryValue;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.entity.mentorship.IterationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.session.Session;
@@ -18,6 +20,7 @@ import mz.org.fgh.mentoring.util.PerformedSession;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -97,5 +100,15 @@ public class MentorshipService {
         }
 
         return this.mentorshipRepository.fetchBySelectedFilter(code, tutor, tutored, formName, healthFacility, iterationType, iterationNumber, lfStatus, performedStartDate, performedEndDate);
+    }
+
+    public List<MentorshipDTO> getAllMentorshipSessionsOfMentor(Long mentorId) {
+        List<Mentorship> mentorships = this.mentorshipRepository.getAllMentorshipSessionsOfMentor(mentorId, LifeCycleStatus.ACTIVE);
+        List<MentorshipDTO> dtos = new ArrayList<>();
+        for (Mentorship mentorship: mentorships) {
+            MentorshipDTO mentorshipDTO = new MentorshipDTO(mentorship);
+            dtos.add(mentorshipDTO);
+        }
+        return dtos;
     }
 }

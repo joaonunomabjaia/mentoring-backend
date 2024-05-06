@@ -37,4 +37,17 @@ public class RondaDTO implements Serializable {
         this.dateBegin = ronda.getDateBegin();
         this.rondaTypeDTO = new RondaTypeDTO(ronda.getRondaType());
     }
+
+    public Ronda getRonda() {
+        Ronda ronda = new Ronda();
+        ronda.setId(this.getId());
+        ronda.setUuid(this.getUuid());
+        ronda.setCode(this.getCode());
+        ronda.setDescription(this.getDescription());
+        ronda.setDateBegin(this.getDateBegin());
+        if(this.getRondaTypeDTO()!=null) {
+            ronda.setRondaType(this.getRondaTypeDTO().getRondaType());
+        }
+        return ronda;
+    }
 }
