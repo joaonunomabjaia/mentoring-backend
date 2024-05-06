@@ -1858,4 +1858,72 @@
                                  baseTableName="mentorships" baseColumnNames="time_of_day_id"
                                  referencedTableName="times_of_day" referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="table_session_status" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="session_status"/>
+            </not>
+        </preConditions>
+        <createTable tableName="session_status">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="description" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="Table-sessions-addColumn-session_status_id" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="sessions" columnName="SESSION_STATUS_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="sessions">
+            <column name="SESSION_STATUS_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="SESSION_STATUS_202405020855" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM session_status WHERE id IN (1, 2);
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            INSERT INTO session_status (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (1, 'e0dbc939-93be-41ff-b172-70ba76b156eb', 'INCOMPLETE', 'INCOMPLETE', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+            INSERT INTO session_status (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (2, '953a6a3c-a583-4b96-86ee-91bcab7d3106', 'COMPLETE', 'COMPLETE', '9225441d-4bfd-11ee-9e75-0242ac150002','2024-04-03 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
+    <changeSet id="Table-sessions-addColumn-session_status_fk" author="ialuj">
+        <comment>
+            Create iteration type foreign key on mentorships table
+        </comment>
+        <addForeignKeyConstraint constraintName="sessions_time_of_day_fk"
+                                 baseTableName="sessions" baseColumnNames="session_status_id"
+                                 referencedTableName="session_status" referencedColumnNames="id"/>
+    </changeSet>
 </databaseChangeLog>

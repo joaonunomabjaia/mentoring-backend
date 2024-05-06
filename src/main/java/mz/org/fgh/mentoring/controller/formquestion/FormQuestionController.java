@@ -89,4 +89,14 @@ public class FormQuestionController extends BaseController {
         LOG.debug("Removing a formQuestion {} ");
         this.formQuestionService.inactivate((Long) authentication.getAttributes().get("userInfo"), formId, formQuestionDTO);
     }
+
+    @Operation(summary = "Return a list of forms for the listed params")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Get("/getByFormsUuids")
+    @Tag(name = "FormQuestion")
+    public List<FormQuestionDTO> findFormQuestionByFormsUuids(@NonNull @QueryValue("formsUuids") List<String> formsUuids){
+        LOG.debug("Searching forms questions...");
+        List<FormQuestionDTO> dtos = this.formQuestionService.fetchByFormsUuids(formsUuids);
+        return dtos;
+    }
 }

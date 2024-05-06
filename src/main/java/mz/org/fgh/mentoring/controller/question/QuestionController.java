@@ -31,7 +31,6 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.QUESTION)
 public class QuestionController extends BaseController {
     public static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
@@ -42,6 +41,7 @@ public class QuestionController extends BaseController {
         this.questionService = questionService;
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all Questions")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
@@ -50,6 +50,7 @@ public class QuestionController extends BaseController {
         return questionService.getAllQuestions();
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list of Questions given the parameters code, description and category code")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
@@ -63,6 +64,7 @@ public class QuestionController extends BaseController {
         return questions;
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all Questions")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
@@ -71,6 +73,7 @@ public class QuestionController extends BaseController {
         return questionService.findAllQuestions();
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Save Program to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
@@ -85,6 +88,7 @@ public class QuestionController extends BaseController {
         return HttpResponse.ok().body(new QuestionDTO(question));
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Get Question from database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
@@ -94,6 +98,7 @@ public class QuestionController extends BaseController {
         return new QuestionDTO(question);
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Update Question to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")

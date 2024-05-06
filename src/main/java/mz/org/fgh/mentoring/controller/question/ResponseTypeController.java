@@ -19,7 +19,6 @@ import mz.org.fgh.mentoring.service.question.ResponseTypeService;
 
 import java.util.List;
 
-@Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.RESPONSE_TYPE)
 public class ResponseTypeController extends BaseController {
 
@@ -29,6 +28,7 @@ public class ResponseTypeController extends BaseController {
     public ResponseTypeController() {
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all Response Types")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "ResponseType")

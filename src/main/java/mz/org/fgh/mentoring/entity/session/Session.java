@@ -11,10 +11,7 @@ import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 @Entity
@@ -27,19 +24,18 @@ import java.util.List;
 public class Session extends BaseEntity {
     @NotNull
     @Column(name = "DATE_BEGIN", nullable = false)
-    private LocalDateTime dateBigin;
+    private Date dateBigin;
 
     @NotNull
     @Column(name = "DATE_END", nullable = false)
-    private LocalDateTime dateEnd;
+    private Date dateEnd;
 
     @NotNull
     @Column(name = "PERFORMED_DATE", nullable = false)
-    private LocalDate performedDate;
+    private Date performedDate;
 
-    @NotNull
-    @Column(name = "STATUS", nullable = false, length = 20)
-    @Enumerated(EnumType.STRING)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @Column(name = "SESSION_STATUS_ID", nullable = false, length = 20)
     private SessionStatus status;
 
     @Column(name = "REASON")

@@ -24,4 +24,15 @@ public class HealthFacilityDTO extends BaseEntityDTO {
         this.setHealthFacility(healthFacility.getHealthFacility());
         if (healthFacility.getDistrict() != null && healthFacility.getDistrict().getId() != null) this.setDistrictDTO(new DistrictDTO(healthFacility.getDistrict()));
     }
+
+    public HealthFacility getHealthFacilityObj() {
+        HealthFacility healthFacility = new HealthFacility();
+        healthFacility.setId(this.getId());
+        healthFacility.setUuid(this.getUuid());
+        healthFacility.setHealthFacility(this.getHealthFacility());
+        if(healthFacility.getDistrict()!=null) {
+            healthFacility.setDistrict(this.getDistrictDTO().getDistrict());
+        }
+        return healthFacility;
+    }
 }
