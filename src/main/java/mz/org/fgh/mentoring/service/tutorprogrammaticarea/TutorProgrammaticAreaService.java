@@ -1,9 +1,8 @@
 package mz.org.fgh.mentoring.service.tutorprogrammaticarea;
 
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.programmaticarea.TutorProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
@@ -25,6 +24,12 @@ public class TutorProgrammaticAreaService {
         this.tutorProgrammaticAreaRepository = tutorProgrammaticAreaRepository;
         this.userRepository = userRepository;
     }
+    public List<TutorProgrammaticArea> fetchAllTutorProgrammaticAreas(Long tutorId){
+
+        List<TutorProgrammaticArea> tutorProgrammaticAreas = this.tutorProgrammaticAreaRepository.fetchAll(tutorId);
+
+        return tutorProgrammaticAreas;
+    }
     public TutorProgrammaticArea create(final TutorProgrammaticArea tutorProgrammaticArea, Long userId){
         User user = userRepository.findById(userId).get();
         tutorProgrammaticArea.setCreatedBy(user.getUuid());
@@ -44,7 +49,7 @@ public class TutorProgrammaticAreaService {
     }
 
     public List<TutorProgrammaticAreaDTO> findAllTutorProgrammaticAreas() {
-        List<TutorProgrammaticArea> tutList = this.tutorProgrammaticAreaRepository.findAll();
+        List<TutorProgrammaticArea> tutList = (List<TutorProgrammaticArea>) this.tutorProgrammaticAreaRepository.findAll();
         List<TutorProgrammaticAreaDTO> programs = new ArrayList<TutorProgrammaticAreaDTO>();
         for (TutorProgrammaticArea tut: tutList) {
             TutorProgrammaticAreaDTO tutDTO = new TutorProgrammaticAreaDTO(tut);
@@ -54,5 +59,18 @@ public class TutorProgrammaticAreaService {
     }
     public TutorProgrammaticArea findById(final Long id){
         return this.tutorProgrammaticAreaRepository.findById(id).get();
+    }
+
+    public TutorProgrammaticArea updateLifeCycleStatus(TutorProgrammaticArea tutorProgrammaticArea, Long userId) {
+        User user = this.userRepository.fetchByUserId(userId);
+        Optional<TutorProgrammaticArea> tutorProgrammaticAreaRepositoryByUuid =  this.tutorProgrammaticAreaRepository.findByUuid(tutorProgrammaticArea.getUuid());
+        if (tutorProgrammaticAreaRepositoryByUuid.isPresent()) {
+            tutorProgrammaticAreaRepositoryByUuid.get().setLifeCycleStatus(tutorProgrammaticArea.getLifeCycleStatus());
+            tutorProgrammaticAreaRepositoryByUuid.get().setUpdatedBy(user.getUuid());
+            tutorProgrammaticAreaRepositoryByUuid.get().setUpdatedAt(DateUtils.getCurrentDate());
+            this.tutorProgrammaticAreaRepository.update(tutorProgrammaticAreaRepositoryByUuid.get());
+            return tutorProgrammaticAreaRepositoryByUuid.get();
+        }
+        return null;
     }
 }
