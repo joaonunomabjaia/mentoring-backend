@@ -25,6 +25,5 @@ public class BaseEntityDTO implements Serializable, RestAPIResponse {
         this.setId(baseEntity.getId());
         this.setUuid(baseEntity.getUuid());
         if(baseEntity.getLifeCycleStatus() != null) this.setLifeCycleStatus(baseEntity.getLifeCycleStatus().toString());
-        if(baseEntity.getSyncStatus() != null) this.setSyncStatus(baseEntity.getSyncStatus().toString());
     }
 }

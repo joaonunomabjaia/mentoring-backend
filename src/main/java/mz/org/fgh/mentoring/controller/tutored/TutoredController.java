@@ -25,15 +25,16 @@ import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.error.EmailDuplicationException;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
+import mz.org.fgh.mentoring.error.NuitDuplicationException;
+import mz.org.fgh.mentoring.error.PhoneDuplicationException;
 import mz.org.fgh.mentoring.service.tutored.TutoredService;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.PersistenceException;
 import java.lang.reflect.InvocationTargetException;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -123,38 +124,24 @@ public class TutoredController extends BaseController {
     @Tag(name = "Mentee")
     @Post("/save")
     public HttpResponse<RestAPIResponse> create (@Body TutoredDTO tutoredDTO, Authentication authentication) {
-
         try {
             Tutored tutored = new Tutored(tutoredDTO);
-
 
             this.tutoredService.create(tutored, (Long) authentication.getAttributes().get("userInfo"));
 
             return HttpResponse.ok().body(new TutoredDTO(tutored));
-        } catch (PersistenceException e) {
-            Throwable rootCause = e.getCause();
-            if (rootCause instanceof SQLException) {
-                SQLException constraintViolationEx = (SQLException) rootCause;
-
-                String errorMessage = constraintViolationEx.getMessage();
-                String constraintName = extractConstraintName(errorMessage);
-                if (constraintName != null) {
-                    LOGGER.error("Violated constraint name: " + constraintName);
-                } else {
-                    LOGGER.error("No violated constraint name available.");
-                }
-                LOGGER.error("Constraint violation error: " + errorMessage);
-                // Handle the ConstraintViolationException as needed
-            } else {
-                // Handle other types of exceptions or re-throw the original exception
-                e.printStackTrace();
-            }
-            LOGGER.info("Error on saving mentees: {}", e.getMessage());
-            return HttpResponse.badRequest(
-                                    MentoringAPIError.builder()
-                                                    .status(HttpStatus.BAD_REQUEST.getCode())
-                                                    .error(e.getLocalizedMessage())
-                                                    .message(e.getMessage()).build());
+        } catch (NuitDuplicationException | EmailDuplicationException | PhoneDuplicationException e) {
+            LOGGER.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        } catch (Exception e) {
+            LOGGER.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
         }
     }
 

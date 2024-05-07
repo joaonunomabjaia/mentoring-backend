@@ -1,7 +1,6 @@
 package mz.org.fgh.mentoring.dto.employee;
 
 import io.micronaut.core.annotation.Creator;
-import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
@@ -17,7 +16,6 @@ import java.util.TreeSet;
 
 @Data
 @AllArgsConstructor
-@Introspected
 public class EmployeeDTO extends BaseEntityDTO {
 
     private String name;
