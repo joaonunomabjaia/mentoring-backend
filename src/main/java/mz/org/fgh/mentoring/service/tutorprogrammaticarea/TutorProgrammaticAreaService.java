@@ -2,7 +2,6 @@ package mz.org.fgh.mentoring.service.tutorprogrammaticarea;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
@@ -26,7 +25,7 @@ public class TutorProgrammaticAreaService {
     }
     public List<TutorProgrammaticArea> fetchAllTutorProgrammaticAreas(Long tutorId){
 
-        List<TutorProgrammaticArea> tutorProgrammaticAreas = this.tutorProgrammaticAreaRepository.fetchAll(tutorId);
+        List<TutorProgrammaticArea> tutorProgrammaticAreas = this.tutorProgrammaticAreaRepository.getAllByTutorId(tutorId);
 
         return tutorProgrammaticAreas;
     }

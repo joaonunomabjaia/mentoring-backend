@@ -119,8 +119,6 @@ liquibase:
 # micronaut-data-jpa
 jpa:
   default:
-    packages-to-scan:
-      - "mz.org.fgh.mentoring.entity"
     properties:
       hibernate:
         show_sql: false

@@ -6,9 +6,9 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +27,8 @@ public class TutorDTO extends BaseEntityDTO {
     }
 
     private List<TutorProgrammaticAreaDTO> setTutorProgrammaticAreas(List<TutorProgrammaticArea> tutorProgrammaticAreas) {
+
+        if (!Utilities.listHasElements((ArrayList<?>) tutorProgrammaticAreas)) return null;
 
         List<TutorProgrammaticAreaDTO> tutorProgrammaticAreaDTOList = new ArrayList<>();
 

@@ -6,7 +6,6 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import mz.org.fgh.mentoring.util.SyncStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.Column;
@@ -26,7 +25,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @MappedSuperclass
-public abstract class BaseEntity implements RestAPIResponse, Serializable {
+public abstract class BaseEntity implements RestAPIResponse, Serializable, Comparable<BaseEntity> {
     @Id
     @GeneratedValue(
             strategy = GenerationType.IDENTITY
@@ -73,14 +72,11 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
     @Enumerated(EnumType.STRING)
     private LifeCycleStatus lifeCycleStatus;
 
-    @Enumerated(EnumType.STRING)
-    private SyncStatus syncStatus;
 
     public BaseEntity(BaseEntityDTO baseEntityDTO) {
         this.setId(baseEntityDTO.getId());
         this.setUuid(baseEntityDTO.getUuid());
         if (Utilities.stringHasValue(baseEntityDTO.getLifeCycleStatus())) this.setLifeCycleStatus(LifeCycleStatus.valueOf(baseEntityDTO.getLifeCycleStatus()));
-        if (Utilities.stringHasValue(baseEntityDTO.getSyncStatus())) this.setSyncStatus(SyncStatus.valueOf(baseEntityDTO.getSyncStatus()));
     }
 
     @Override
@@ -93,7 +89,11 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable {
                 ", updatedBy='" + updatedBy + '\'' +
                 ", updatedAt=" + updatedAt +
                 ", lifeCycleStatus=" + lifeCycleStatus +
-                ", syncStatus=" + syncStatus +
                 '}';
+    }
+
+    @Override
+    public int compareTo(BaseEntity o) {
+        return 0;
     }
 }

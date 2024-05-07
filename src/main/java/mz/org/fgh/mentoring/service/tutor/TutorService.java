@@ -6,6 +6,7 @@ import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
+import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
@@ -30,7 +31,8 @@ public class TutorService {
     private EmployeeRepository employeeRepository;
     @Inject
     private LocationRepository locationRepository;
-
+    @Inject
+    private TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository;
     @Inject
     private EmailService emailService;
 
@@ -119,7 +121,9 @@ public class TutorService {
     }
 
     public Tutor getTutorByEmployeeUuid(String uuid) {
-        return tutorRepository.findByEmployee(employeeRepository.findByUuid(uuid).get());
+        Tutor tutor = tutorRepository.findByEmployee(employeeRepository.findByUuid(uuid).get());
+        tutor.setTutorProgrammaticAreas(tutorProgrammaticAreaRepository.getAllByTutorId(tutor.getId()));
+        return tutor;
     }
 
     /*public Tutor findTutorByUserUuid(final String userUuid) {
