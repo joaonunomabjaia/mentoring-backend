@@ -126,6 +126,23 @@ public class TutorService {
         return tutor;
     }
 
+    @Transactional
+    public Tutor update(Tutor tutor, Long userId) {
+        Optional<Tutor> t = tutorRepository.findByUuid(tutor.getUuid());
+        tutor.setCreatedAt(t.get().getCreatedAt());
+        tutor.setCreatedBy(t.get().getCreatedBy());
+        tutor.setLifeCycleStatus(t.get().getLifeCycleStatus());
+        tutor.setId(t.get().getId());
+
+        User user = userRepository.findById(userId).get();
+        tutor.setUpdatedBy(user.getUuid());
+        tutor.setUpdatedAt(DateUtils.getCurrentDate());
+        employeeRepository.createOrUpdate(tutor.getEmployee(), user);
+        locationRepository.createOrUpdate(tutor.getEmployee().getLocations(), user);
+        this.tutorRepository.update(tutor);
+        return tutor;
+    }
+
     /*public Tutor findTutorByUserUuid(final String userUuid) {
         return this.tutorRepository.findTutorByUserUuid(userUuid);
     }*/

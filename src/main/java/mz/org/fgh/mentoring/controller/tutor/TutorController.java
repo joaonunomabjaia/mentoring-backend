@@ -9,6 +9,7 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.QueryValue;
@@ -25,11 +26,8 @@ import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
-import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
-import mz.org.fgh.mentoring.error.EmailDuplicationException;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
-import mz.org.fgh.mentoring.error.NuitDuplicationException;
-import mz.org.fgh.mentoring.error.PhoneDuplicationException;
+import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -154,12 +152,6 @@ public class TutorController extends BaseController {
             tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
             LOG.info("Created mentor {}", tutor);
             return HttpResponse.ok().body(new TutorDTO(tutor));
-        } catch (NuitDuplicationException | EmailDuplicationException | PhoneDuplicationException e) {
-            LOG.error(e.getMessage());
-            return HttpResponse.badRequest().body(MentoringAPIError.builder()
-                    .status(HttpStatus.BAD_REQUEST.getCode())
-                    .error(e.getLocalizedMessage())
-                    .message(e.getMessage()).build());
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return HttpResponse.badRequest().body(MentoringAPIError.builder()
@@ -169,5 +161,22 @@ public class TutorController extends BaseController {
         }
     }
 
-
+    @Operation(summary = "Update Mentor to database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Mentor")
+    @Patch("/update")
+    public HttpResponse<RestAPIResponse> update (@Body TutorDTO tutorDTO, Authentication authentication) {
+        try {
+            Tutor tutor = new Tutor(tutorDTO);
+            tutor = this.tutorService.update(tutor, (Long) authentication.getAttributes().get("userInfo"));
+            LOG.info("Updated mentor {}", tutor);
+            return HttpResponse.ok().body(new TutorDTO(tutor));
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
 }

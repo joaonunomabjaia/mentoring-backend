@@ -22,6 +22,10 @@ public abstract class EmployeeRepositoryImpl implements EmployeeRepository{
             Optional<Employee> possibleEmployee = findByUuid(employee.getUuid());
 
             if (possibleEmployee.isPresent()) {
+                employee.setCreatedBy(possibleEmployee.get().getCreatedBy());
+                employee.setCreatedAt(possibleEmployee.get().getCreatedAt());
+                employee.setLifeCycleStatus(possibleEmployee.get().getLifeCycleStatus());
+
                 employee.setId(possibleEmployee.get().getId());
                 employee.setUpdatedBy(user.getUuid());
                 employee.setUpdatedAt(DateUtils.getCurrentDate());

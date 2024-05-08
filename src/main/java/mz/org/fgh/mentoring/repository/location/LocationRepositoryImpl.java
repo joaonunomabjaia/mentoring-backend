@@ -18,6 +18,10 @@ public abstract class LocationRepositoryImpl implements LocationRepository{
         for (Location location : locations) {
             Optional<Location> l = findByUuid(location.getUuid());
             if (l.isPresent()) {
+                location.setCreatedAt(l.get().getCreatedAt());
+                location.setLifeCycleStatus(l.get().getLifeCycleStatus());
+                location.setCreatedBy(l.get().getCreatedBy());
+
                 location.setId(l.get().getId());
                 location.setUpdatedAt(DateUtils.getCurrentDate());
                 location.setUpdatedBy(user.getUuid());
