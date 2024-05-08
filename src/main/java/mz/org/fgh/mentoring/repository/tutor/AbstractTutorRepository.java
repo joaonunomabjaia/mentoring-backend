@@ -30,13 +30,13 @@ public abstract class AbstractTutorRepository extends AbstaractBaseRepository im
                      "where 1=1 ";
 
         if (name != null) {
-            sql += " AND e.name like % " + name + "% || e.surname like % " + name + "% ";
+            sql += " AND e.name like '%" + name + "%' || e.surname like '%" + name + "%' ";
         }
         if (nuit != null) {
-            sql += " AND e.nuit like % " + nuit + "% ";
+            sql += " AND e.nuit like '%" + nuit + "%' ";
         }
         if (phoneNumber != null) {
-            sql += " AND e.phoneNumber like % " + phoneNumber + "% ";
+            sql += " AND e.phoneNumber like '%" + phoneNumber + "%' ";
         }
         sql += addUserAuthCondition(user);
 

@@ -65,7 +65,7 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
             } else {
                 LOG.debug("No user {} found in the system...", identity);
             }
-            emitter.onError(new AuthenticationException(new AuthenticationFailed("Wrong username or password")));
+            emitter.onError(new AuthenticationException(new AuthenticationFailed("Utilizador ou senha inválida!")));
         }, BackpressureStrategy.ERROR);
     }
 
