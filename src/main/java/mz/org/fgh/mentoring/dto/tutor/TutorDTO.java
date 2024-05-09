@@ -28,7 +28,7 @@ public class TutorDTO extends BaseEntityDTO {
 
     private List<TutorProgrammaticAreaDTO> setTutorProgrammaticAreas(List<TutorProgrammaticArea> tutorProgrammaticAreas) {
 
-        if (!Utilities.listHasElements((ArrayList<?>) tutorProgrammaticAreas)) return null;
+        if (!Utilities.listHasElements(tutorProgrammaticAreas)) return null;
 
         List<TutorProgrammaticAreaDTO> tutorProgrammaticAreaDTOList = new ArrayList<>();
 
