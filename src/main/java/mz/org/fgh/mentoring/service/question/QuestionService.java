@@ -4,20 +4,19 @@ import io.micronaut.core.annotation.Creator;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
-import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.question.QuestionsCategoryRepository;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
-import java.util.ArrayList;
 import javax.transaction.Transactional;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -60,11 +59,10 @@ public class QuestionService {
 
     public  List<QuestionDTO> search(final String code, final String description, final Long categoryId) {
         QuestionCategory questionCategory = null;
-        if(categoryId!=null) {
+        if(categoryId != null && categoryId > 0) {
             questionCategory = questionCategoryRepository.findById(categoryId).get();
         }
-        List<Long> ids = questionRepository.search(code, description, questionCategory);
-        List<Question> questions = questionRepository.getQuestionsByIds(ids, LifeCycleStatus.ACTIVE);
+        List<Question> questions = questionRepository.search(code, description, questionCategory);
         List<QuestionDTO> dtos = new ArrayList<>();
         for (Question question : questions) {
             QuestionDTO dto = new QuestionDTO(question);

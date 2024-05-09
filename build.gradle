@@ -10,6 +10,17 @@ repositories {
     mavenCentral()
 }
 
+jar {
+    manifest {
+        attributes 'Main-Class': 'mz.org.fgh.Application'
+    }
+}
+
+shadowJar {
+    mergeServiceFiles()
+}
+
+
 dependencies {
     annotationProcessor("org.projectlombok:lombok")
     annotationProcessor("io.micronaut.security:micronaut-security-annotations")
