@@ -49,7 +49,7 @@ public class Utilities {
         return false;
     }
 
-    public static boolean listHasElements(ArrayList<?> list){
+    public static boolean listHasElements(List<?> list){
         return list != null && !list.isEmpty() && list.size() > 0;
     }
 
