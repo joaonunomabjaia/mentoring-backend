@@ -1,15 +1,14 @@
 package mz.org.fgh.mentoring.dto.programmaticarea;
 
+import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 @Introspected
 public class ProgrammaticAreaDTO extends BaseEntityDTO {
@@ -25,6 +24,11 @@ public class ProgrammaticAreaDTO extends BaseEntityDTO {
     private ProgramDTO program;
 
     private ProgramDTO programDTO;
+
+    @Creator
+    public ProgrammaticAreaDTO() {
+        super();
+    }
 
     public ProgrammaticAreaDTO(ProgrammaticArea programmaticArea) {
         super(programmaticArea);

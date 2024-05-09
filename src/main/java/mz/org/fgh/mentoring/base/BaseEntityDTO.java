@@ -1,15 +1,13 @@
 package mz.org.fgh.mentoring.base;
 
+import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
-import mz.org.fgh.mentoring.util.SyncStatus;
 
 import java.io.Serializable;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class BaseEntityDTO implements Serializable, RestAPIResponse {
 
@@ -20,6 +18,10 @@ public class BaseEntityDTO implements Serializable, RestAPIResponse {
     private String lifeCycleStatus;
 
     private String syncStatus;
+
+    @Creator
+    public BaseEntityDTO() {
+    }
 
     public BaseEntityDTO(BaseEntity baseEntity) {
         this.setId(baseEntity.getId());

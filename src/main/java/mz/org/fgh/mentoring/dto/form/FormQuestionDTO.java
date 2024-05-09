@@ -1,9 +1,9 @@
 package mz.org.fgh.mentoring.dto.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
@@ -18,7 +18,6 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
 public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
@@ -39,6 +38,11 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
     private Date createdAt;
 
     private String createdBy;
+
+    @Creator
+    public FormQuestionDTO() {
+        super();
+    }
 
     public FormQuestionDTO(FormQuestion formQuestion) {
         super(formQuestion);

@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.io.Serializable;
 
@@ -30,7 +31,7 @@ public class EvaluationTypeDTO extends BaseEntityDTO implements Serializable {
         evaluationType.setId(this.getId());
         evaluationType.setDescription(this.getDescription());
         evaluationType.setUuid(this.getUuid());
-        evaluationType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) evaluationType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return evaluationType;
     }
 }
