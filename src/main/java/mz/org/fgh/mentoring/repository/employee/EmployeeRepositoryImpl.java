@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.error.NuitDuplicationException;
 import mz.org.fgh.mentoring.error.PhoneDuplicationException;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.hibernate.exception.ConstraintViolationException;
 
 import javax.persistence.PersistenceException;
@@ -19,6 +20,9 @@ public abstract class EmployeeRepositoryImpl implements EmployeeRepository{
 
     public Employee createOrUpdate(Employee employee, User user) throws NuitDuplicationException, EmailDuplicationException, PhoneDuplicationException {
         try {
+            if(!Utilities.stringHasValue(employee.getUuid())) {
+                return createEmployee(employee, user);
+            }
             Optional<Employee> possibleEmployee = findByUuid(employee.getUuid());
 
             if (possibleEmployee.isPresent()) {
@@ -31,11 +35,7 @@ public abstract class EmployeeRepositoryImpl implements EmployeeRepository{
                 employee.setUpdatedAt(DateUtils.getCurrentDate());
                 return update(employee);
             } else {
-                employee.setCreatedBy(user.getUuid());
-                employee.setUuid(UUID.randomUUID().toString());
-                employee.setCreatedAt(DateUtils.getCurrentDate());
-                employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-                return save(employee);
+                return createEmployee(employee, user);
             }
         } catch (PersistenceException e) {
             if (e.getCause() instanceof ConstraintViolationException) {
@@ -72,5 +72,13 @@ public abstract class EmployeeRepositoryImpl implements EmployeeRepository{
             throw new RuntimeException(e);
         }
         return null;
+    }
+
+    private Employee createEmployee(Employee employee, User user) {
+        employee.setCreatedBy(user.getUuid());
+        employee.setUuid(UUID.randomUUID().toString());
+        employee.setCreatedAt(DateUtils.getCurrentDate());
+        employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        return save(employee);
     }
 }

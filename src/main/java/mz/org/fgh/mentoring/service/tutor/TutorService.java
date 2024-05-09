@@ -36,9 +36,10 @@ public class TutorService {
     @Inject
     private EmailService emailService;
 
-    public TutorService(TutorRepository tutorRepository, UserRepository userRepository) {
+    public TutorService(TutorRepository tutorRepository, UserRepository userRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository) {
         this.tutorRepository = tutorRepository;
         this.userRepository = userRepository;
+        this.tutorProgrammaticAreaRepository = tutorProgrammaticAreaRepository;
     }
 
     public List<Tutor> findAll() {
@@ -58,6 +59,11 @@ public class TutorService {
            employeeRepository.createOrUpdate(tutor.getEmployee(), user);
            locationRepository.createOrUpdate(tutor.getEmployee().getLocations(), user);
            this.tutorRepository.save(tutor);
+           if(!tutor.getTutorProgrammaticAreas().isEmpty()){
+               tutor.getTutorProgrammaticAreas().forEach(it -> {
+                   tutorProgrammaticAreaRepository.createOrUpdate(it, user, tutor);
+               });
+           }
            generateMentorUser(tutor, user);
            return tutor;
    }
