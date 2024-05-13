@@ -36,14 +36,13 @@ public class TutorProgrammaticArea extends BaseEntity {
     public TutorProgrammaticArea(){}
     public TutorProgrammaticArea(TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO){
         super();
-        this.tutor =new Tutor(tutorProgrammaticAreaDTO.getTutorDTO());
+        if (tutorProgrammaticAreaDTO.getTutorDTO() != null) this.tutor =new Tutor(tutorProgrammaticAreaDTO.getTutorDTO());
         this.programmaticArea = new ProgrammaticArea(tutorProgrammaticAreaDTO.getProgrammaticAreaDTO());
     }
 
     @Override
     public String toString() {
         return "TutorProgrammaticArea{" +
-                "tutor=" + tutor +
                 ", programmaticArea=" + programmaticArea +
                 ", mapAsUser=" + mapAsUser +
                 '}';

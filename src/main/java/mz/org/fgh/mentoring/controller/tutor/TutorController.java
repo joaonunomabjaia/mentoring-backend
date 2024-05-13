@@ -151,7 +151,7 @@ public class TutorController extends BaseController {
             Tutor tutor = new Tutor(tutorDTO);
             tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
             LOG.info("Created mentor {}", tutor);
-            return HttpResponse.ok().body(new TutorDTO(tutor));
+            return HttpResponse.created(new TutorDTO(tutor));
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return HttpResponse.badRequest().body(MentoringAPIError.builder()

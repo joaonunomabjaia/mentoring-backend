@@ -1,10 +1,11 @@
 package mz.org.fgh.mentoring.service.tutored;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
-import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.location.LocationRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
@@ -14,7 +15,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Optional;
 
 @Singleton
 public class TutoredService {
@@ -22,6 +23,8 @@ public class TutoredService {
     private final EmployeeService employeeService;
     private final TutoredRepository tutoredRepository;
     private final UserRepository userRepository;
+    @Inject
+    private LocationRepository locationRepository;
 
 
 
@@ -94,28 +97,21 @@ public class TutoredService {
     public TutoredDTO updateTutored(TutoredDTO tutoredDTO, Long userId){
         User user = this.userRepository.findById(userId).get();
         Tutored tutored = new Tutored(tutoredDTO);
+        Optional<Tutored> t = tutoredRepository.findByUuid(tutored.getUuid());
+        if(t.isPresent()){
+            tutored.setCreatedAt(t.get().getCreatedAt());
+            tutored.setCreatedBy(t.get().getCreatedBy());
+            tutored.setLifeCycleStatus(t.get().getLifeCycleStatus());
+            tutored.setId(t.get().getId());
+        }
 
-        tutored.getEmployee().setUpdatedAt(DateUtils.getCurrentDate());
-        tutored.getEmployee().setUpdatedBy(user.getUuid());
-
-        this.updateLocations(tutored.getEmployee().getLocations(), user);
-
-        this.employeeService.createOrUpdate(tutored.getEmployee(), user);
+        employeeService.createOrUpdate(tutored.getEmployee(), user);
 
         tutored.setUpdatedAt(DateUtils.getCurrentDate());
         tutored.setUpdatedBy(user.getUuid());
         this.tutoredRepository.update(tutored);
 
         return tutoredDTO;
-    }
-
-    private void updateLocations(Set<Location> locationList, User user){
-
-        for(Location location : locationList){
-
-            location.setUpdatedBy(user.getUuid());
-            location.setUpdatedAt(DateUtils.getCurrentDate());
-        }
     }
 
     public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {

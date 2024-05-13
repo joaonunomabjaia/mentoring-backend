@@ -2,8 +2,14 @@ package mz.org.fgh.mentoring.controller.tutorprogrammaticarea;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -15,10 +21,10 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import org.slf4j.Logger;
@@ -35,19 +41,29 @@ public class TutorProgrammaticareaController extends BaseController {
     public static final Logger LOG = LoggerFactory.getLogger(TutorProgrammaticareaController.class);
 
     @Inject
+    private TutorRepository tutorRepository;
+    @Inject
     private TutorProgrammaticAreaService tutorProgrammaticAreaService;
     @Operation(summary = "Save tutorprogrammaticarea to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "TutorProgrammaticArea")
     @Post("/save")
     public HttpResponse<RestAPIResponse> create (@Body TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO, Authentication authentication) {
-        System.out.println(tutorProgrammaticAreaDTO);
-        TutorProgrammaticArea tutorProgrammaticArea = new TutorProgrammaticArea(tutorProgrammaticAreaDTO);
-        tutorProgrammaticArea = this.tutorProgrammaticAreaService.create(tutorProgrammaticArea, (Long) authentication.getAttributes().get("userInfo"));
+        try {
+            TutorProgrammaticArea tutorProgrammaticArea = new TutorProgrammaticArea(tutorProgrammaticAreaDTO);
+            tutorProgrammaticArea.setTutor(tutorRepository.findById(tutorProgrammaticAreaDTO.getMentorId()).get());
+            tutorProgrammaticArea = this.tutorProgrammaticAreaService.create(tutorProgrammaticArea, (Long) authentication.getAttributes().get("userInfo"));
 
-        LOG.info("Created tutorProgrammaticArea {}", tutorProgrammaticArea);
+            LOG.info("Created tutorProgrammaticArea {}", tutorProgrammaticArea);
 
-        return HttpResponse.ok().body(new TutorProgrammaticAreaDTO(tutorProgrammaticArea));
+            return HttpResponse.created(new TutorProgrammaticAreaDTO(tutorProgrammaticArea));
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
     }
 
     @Patch(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)

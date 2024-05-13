@@ -5,7 +5,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.authority.Authority;
 
@@ -23,7 +22,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class RoleAuthority extends BaseEntity {
 
     @NotNull
@@ -35,4 +33,11 @@ public class RoleAuthority extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "authority_id", nullable = false)
     private Authority authority;
+
+    @Override
+    public String toString() {
+        return "RoleAuthority{" +
+                "authority=" + authority +
+                '}';
+    }
 }

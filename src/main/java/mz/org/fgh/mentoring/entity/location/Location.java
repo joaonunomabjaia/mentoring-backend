@@ -4,7 +4,6 @@ import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.location.LocationDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
@@ -91,7 +90,6 @@ public class Location extends BaseEntity {
     @Override
     public String toString() {
         return "Location{" +
-                "employee=" + employee +
                 ", province=" + province +
                 ", district=" + district +
                 ", healthFacility=" + healthFacility +
