@@ -18,6 +18,7 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
     private String uuid;
     private ProgrammaticAreaDTO programmaticAreaDTO;
     private TutorDTO tutorDTO;
+    private Long mentorId;
     private Date createdAt;
     private String createdBy;
 

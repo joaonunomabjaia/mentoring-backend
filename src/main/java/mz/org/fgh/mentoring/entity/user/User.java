@@ -6,7 +6,6 @@ import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
@@ -50,13 +49,11 @@ public class User extends BaseEntity {
     @Column(name = "SALT", nullable = false, length = 500)
     private String salt;
 
-    @ToString.Exclude
     @NotNull
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EMPLOYEE_ID")
     private Employee employee;
 
-    @ToString.Exclude
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<UserRole> userRoles = new ArrayList<>();

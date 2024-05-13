@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 
@@ -22,7 +21,6 @@ import javax.persistence.Table;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class Program extends BaseEntity {
 
     @Column(name = "NAME", nullable = false, length = 50)
@@ -41,7 +39,14 @@ public class Program extends BaseEntity {
 //        this.setProgrammaticAreas(retriveProgramaticAreas(programDTO.getProgrammaticAreaDTOSet()));
     }
 
-    // private Set<ProgrammaticArea> retriveProgramaticAreas(Set<ProgrammaticAreaDTO> programmaticAreaDTOS) {
+    @Override
+    public String toString() {
+        return "Program{" +
+                "name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                '}';
+    }
+// private Set<ProgrammaticArea> retriveProgramaticAreas(Set<ProgrammaticAreaDTO> programmaticAreaDTOS) {
     //     Set<ProgrammaticArea> programmaticAreaSet = new HashSet<>();
     //     for (ProgrammaticAreaDTO programmaticAreaDTO : programmaticAreaDTOS) {
     //         ProgrammaticArea programmaticArea = new ProgrammaticArea(programmaticAreaDTO, this);

@@ -6,13 +6,17 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,15 +27,12 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class Tutor extends BaseEntity {
 
-    @ToString.Exclude
     @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EMPLOYEE_ID")
     private Employee employee;
 
-    @ToString.Exclude
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "tutor")
     private List<TutorProgrammaticArea> tutorProgrammaticAreas = new ArrayList<>();
@@ -43,4 +44,11 @@ public class Tutor extends BaseEntity {
         this.setEmployee(new Employee(tutorDTO.getEmployeeDTO()));
     }
 
+    @Override
+    public String toString() {
+        return "Tutor{" +
+                "employee=" + employee +
+                ", tutorProgrammaticAreas=" + tutorProgrammaticAreas +
+                '}';
+    }
 }

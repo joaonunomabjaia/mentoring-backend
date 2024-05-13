@@ -1,12 +1,10 @@
 package mz.org.fgh.mentoring.entity.role;
 
-import io.micronaut.data.annotation.Where;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.user.User;
 
@@ -24,8 +22,6 @@ import javax.validation.constraints.NotNull;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
-@Where("@.lifeCycleStatus = 'ACTIVE'")
 public class UserRole  extends BaseEntity {
 
     @NotNull
@@ -38,5 +34,10 @@ public class UserRole  extends BaseEntity {
     @JoinColumn(name = "role_id", nullable = false)
     private Role role;
 
-
+    @Override
+    public String toString() {
+        return "UserRole{" +
+                "role=" + role +
+                '}';
+    }
 }

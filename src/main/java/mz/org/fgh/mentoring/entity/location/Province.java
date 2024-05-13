@@ -4,7 +4,6 @@ import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 
@@ -18,7 +17,6 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@ToString
 public class Province extends BaseEntity {
 
     @NotEmpty
@@ -30,5 +28,12 @@ public class Province extends BaseEntity {
     public Province(ProvinceDTO provinceDTO) {
         super(provinceDTO);
         this.setDesignation(provinceDTO.getDesignation());
+    }
+
+    @Override
+    public String toString() {
+        return "Province{" +
+                "designation='" + designation + '\'' +
+                '}';
     }
 }

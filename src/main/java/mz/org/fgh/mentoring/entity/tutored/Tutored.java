@@ -1,10 +1,10 @@
 package mz.org.fgh.mentoring.entity.tutored;
 
+import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
@@ -21,7 +21,6 @@ import javax.persistence.Table;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class Tutored extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -29,6 +28,7 @@ public class Tutored extends BaseEntity {
     private Employee employee;
 
 
+    @Creator
     public Tutored() {
 
     }
@@ -36,5 +36,12 @@ public class Tutored extends BaseEntity {
     public Tutored(TutoredDTO tutoredDTO) {
         super(tutoredDTO);
         this.setEmployee(new Employee(tutoredDTO.getEmployeeDTO()));
+    }
+
+    @Override
+    public String toString() {
+        return "Tutored{" +
+                "employee=" + employee +
+                '}';
     }
 }
