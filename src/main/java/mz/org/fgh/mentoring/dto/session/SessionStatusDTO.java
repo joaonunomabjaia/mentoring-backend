@@ -12,6 +12,10 @@ public class SessionStatusDTO extends BaseEntityDTO {
     private String description;
     public SessionStatusDTO(SessionStatus sessionStatus) {
         super(sessionStatus);
+        this.setId(sessionStatus.getId());
+        this.setUuid(sessionStatus.getUuid());
+        this.setCode(sessionStatus.getCode());
+        this.setDescription(sessionStatus.getDescription());
     }
 
     public String getCode() {

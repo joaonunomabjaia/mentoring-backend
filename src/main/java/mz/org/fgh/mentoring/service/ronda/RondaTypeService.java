@@ -1,9 +1,7 @@
 package mz.org.fgh.mentoring.service.ronda;
 
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaType;
-import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaTypeRepository;
 
 import java.util.List;

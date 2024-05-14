@@ -55,6 +55,9 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         if(formQuestion.getEvaluationType()!=null) {
             this.evaluationTypeDTO = new EvaluationTypeDTO(formQuestion.getEvaluationType());
         }
+        if(formQuestion.getForm()!=null) {
+            this.formDTO = new FormDTO(formQuestion.getForm());
+        }
         this.sequence = formQuestion.getSequence();
         this.createdAt = formQuestion.getCreatedAt();
         this.createdBy = formQuestion.getCreatedBy();
