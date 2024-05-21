@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * @author Jose Julai Ritsure
  */
-@Secured(SecurityRule.IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller(RESTAPIMapping.PROGRAM)
 public class ProgramController extends BaseController {
     private ProgramService programService;

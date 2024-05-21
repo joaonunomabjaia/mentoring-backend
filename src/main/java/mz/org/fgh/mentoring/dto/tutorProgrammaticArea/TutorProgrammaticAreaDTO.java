@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.dto.tutorProgrammaticArea;
 import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
@@ -13,14 +14,14 @@ import java.util.Date;
 
 @Data
 @AllArgsConstructor
+@ToString
 public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
-    private Long id;
-    private String uuid;
+
     private ProgrammaticAreaDTO programmaticAreaDTO;
+
     private TutorDTO tutorDTO;
+
     private Long mentorId;
-    private Date createdAt;
-    private String createdBy;
 
     @Creator
     public TutorProgrammaticAreaDTO() {
@@ -29,24 +30,22 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
 
     public TutorProgrammaticAreaDTO(TutorProgrammaticArea tutorProgrammaticArea) {
         super(tutorProgrammaticArea);
-        this.id = tutorProgrammaticArea.getId();
-        this.uuid = tutorProgrammaticArea.getUuid();
-        this.programmaticAreaDTO = new ProgrammaticAreaDTO(tutorProgrammaticArea.getProgrammaticArea());
+        if(tutorProgrammaticArea.getProgrammaticArea()!=null) {
+            this.programmaticAreaDTO = new ProgrammaticAreaDTO(tutorProgrammaticArea.getProgrammaticArea());
+        }
+        /*if(tutorProgrammaticArea.getTutor()!=null) {
+            this.tutorDTO = new TutorDTO(tutorProgrammaticArea.getTutor());
+        }*/
     }
 
-    public TutorProgrammaticArea toTutorProgrammaticArea(LifeCycleStatus lifeCycleStatus) {
+    public TutorProgrammaticArea toTutorProgrammaticArea() {
             TutorProgrammaticArea tutorProgrammaticArea = new TutorProgrammaticArea();
-            tutorProgrammaticArea.setId(this.getId());
-            tutorProgrammaticArea.setUuid(this.getUuid());
-            tutorProgrammaticArea.setCreatedAt(this.getCreatedAt());
-            tutorProgrammaticArea.setCreatedBy(this.getCreatedBy());
-            tutorProgrammaticArea.setLifeCycleStatus(lifeCycleStatus);
             if(this.getProgrammaticAreaDTO()!=null) {
                 tutorProgrammaticArea.setProgrammaticArea(this.getProgrammaticAreaDTO().toProgrammaticArea());
             }
-            if(this.getTutorDTO()!=null) {
+            /*if(this.getTutorDTO()!=null) {
                 tutorProgrammaticArea.setTutor(this.getTutorDTO().toTutor());
-            }
+            }*/
             return tutorProgrammaticArea;
         }
 
