@@ -2,6 +2,8 @@ package mz.org.fgh.mentoring.controller.form;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
@@ -20,10 +22,11 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
+import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
-import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.form.FormService;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -114,9 +117,17 @@ public class FormController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Post("/saveOrUpdate")
     @Tag(name = "Form")
-    public FormDTO saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication){
-        FormDTO dto = this.formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
-        return dto;
+    public HttpResponse<RestAPIResponse> saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication){
+        try {
+            FormDTO dto = this.formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
+            return HttpResponse.created(dto);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
     }
 
 

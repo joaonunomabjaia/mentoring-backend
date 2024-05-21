@@ -132,7 +132,7 @@ public class TutoredController extends BaseController {
 
             this.tutoredService.create(tutored, (Long) authentication.getAttributes().get("userInfo"));
 
-            return HttpResponse.ok().body(new TutoredDTO(tutored));
+            return HttpResponse.created(new TutoredDTO(tutored));
         } catch (Exception e) {
             LOGGER.error(e.getMessage());
             return HttpResponse.badRequest().body(MentoringAPIError.builder()

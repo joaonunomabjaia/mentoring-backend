@@ -10,6 +10,7 @@ import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -86,7 +87,7 @@ public class FormDTO extends BaseEntityDTO {
         form.setTargetPatient(this.getTargetPatient());
         form.setCreatedAt(this.getCreatedAt());
         form.setCreatedBy(this.getCreatedBy());
-        form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getProgrammaticAreaDTO()!=null) {
             form.setProgrammaticArea(this.getProgrammaticAreaDTO().toProgrammaticArea());
         }
