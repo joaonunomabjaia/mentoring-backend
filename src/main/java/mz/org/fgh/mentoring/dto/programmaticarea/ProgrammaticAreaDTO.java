@@ -23,8 +23,6 @@ public class ProgrammaticAreaDTO extends BaseEntityDTO {
 
     private ProgramDTO program;
 
-    private ProgramDTO programDTO;
-
     @Creator
     public ProgrammaticAreaDTO() {
         super();
@@ -59,7 +57,6 @@ public class ProgrammaticAreaDTO extends BaseEntityDTO {
                 ", description='" + description + '\'' +
                 ", name='" + name + '\'' +
                 ", program=" + program +
-                ", programDTO=" + programDTO +
                 '}';
     }
 }

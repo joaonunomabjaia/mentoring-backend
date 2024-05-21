@@ -19,6 +19,7 @@ import javax.validation.constraints.NotNull;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@ToString
 public class ProgrammaticArea extends BaseEntity {
 
     @Column(name = "CODE", nullable = false, length = 50)
@@ -43,7 +44,7 @@ public class ProgrammaticArea extends BaseEntity {
         this.code=programmaticAreaDTO.getCode();
         this.name=programmaticAreaDTO.getName();
         this.description=programmaticAreaDTO.getDescription();
-        this.program= new Program(programmaticAreaDTO.getProgramDTO());
+        this.program= new Program(programmaticAreaDTO.getProgram());
     }
 
     @Override
