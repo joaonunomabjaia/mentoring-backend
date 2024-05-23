@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.form;
 
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -12,7 +13,6 @@ import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -69,14 +69,11 @@ public class FormQuestionService {
         this.formQuestionRepository.update(formQuestion);
     }
 
-    public List<FormQuestionDTO> fetchByFormsUuids(final List<String> formsUuids){
-        List<FormQuestion> formQuestions = this.formQuestionRepository.fetchByFormsUuids(formsUuids);
-        List<FormQuestionDTO> formQuestionDTOS = new ArrayList<>();
-        for (FormQuestion formQuestion : formQuestions) {
-            FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);
-            formQuestionDTOS.add(formQuestionDTO);
-        }
-        return formQuestionDTOS;
+    public List<FormQuestion> fetchByFormsUuids(final List<String> formsUuids, Long offset, Long limit){
+        if (offset > 0) offset = offset/limit;
+
+        Pageable pageable = Pageable.from(Math.toIntExact(offset), Math.toIntExact(limit));
+        return formQuestionRepository.findByFormsUuids(formsUuids, pageable);
     }
 
 }

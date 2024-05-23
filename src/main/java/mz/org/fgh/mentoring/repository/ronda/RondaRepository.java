@@ -4,7 +4,6 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -30,4 +29,12 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
             "INNER JOIN FETCH pa.rondaType rt " +
             "where rm.id =: mentorId AND rm.lifeCycleStatus = :lifeCycleStatus AND r.lifeCycleStatus = :lifeCycleStatus ")
     List<Ronda> getAllRondasOfMentor(Long mentorId, LifeCycleStatus lifeCycleStatus);
+
+    @Query("select DISTINCT(r) from RondaMentor rm " +
+            "INNER JOIN FETCH rm.ronda r " +
+            "INNER JOIN FETCH rm.mentor m " +
+            "INNER JOIN FETCH r.rondaType rt " +
+            "where m.uuid =: mentorUuid")
+    List<Ronda> getAllOfMentor(String mentorUuid);
+
 }

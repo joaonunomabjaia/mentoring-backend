@@ -7,8 +7,8 @@ micronaut:
       gmail:
         host: smtp.gmail.com
         port: 587
-        username: noreply@fgh.org.mz
-        password: ubae xnih ivqn peuj
+        username: noreply@csaude.org.mz
+        password: szcn fouw trqz dihh
         tls: true
   router:
     static-resources:
@@ -36,7 +36,8 @@ micronaut:
       configurations:
         mycors:
           allowed-origins:
-            - "http://localhost:9000"   # Add your allowed origins here
+            - "http://localhost:9000"
+            - "http://10.10.2.75" # Add your allowed origins here
           allowed-methods:
             - GET
             - POST

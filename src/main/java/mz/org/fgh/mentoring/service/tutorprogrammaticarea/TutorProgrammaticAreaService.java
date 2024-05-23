@@ -1,10 +1,13 @@
 package mz.org.fgh.mentoring.service.tutorprogrammaticarea;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -19,6 +22,9 @@ public class TutorProgrammaticAreaService {
 
     private final TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository;
     private final UserRepository userRepository;
+    @Inject
+    private TutorRepository tutorRepository;
+
     public TutorProgrammaticAreaService(TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository, UserRepository userRepository) {
         this.tutorProgrammaticAreaRepository = tutorProgrammaticAreaRepository;
         this.userRepository = userRepository;
@@ -71,5 +77,10 @@ public class TutorProgrammaticAreaService {
             return tutorProgrammaticAreaRepositoryByUuid.get();
         }
         return null;
+    }
+
+    public List<TutorProgrammaticArea> getByTutorUuidd(String tutorUuid) {
+        Optional<Tutor> t = tutorRepository.findByUuid(tutorUuid);
+        return this.tutorProgrammaticAreaRepository.getAllByTutorId(t.get().getId());
     }
 }

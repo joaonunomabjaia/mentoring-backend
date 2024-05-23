@@ -36,7 +36,7 @@ public class ProgrammaticAreaDTO extends BaseEntityDTO {
         this.name = programmaticArea.getName();
 
         if (programmaticArea.getProgram()!= null) {
-            if (programmaticArea.getProgram().getName() != null) this.setProgram(new ProgramDTO(programmaticArea.getProgram()));
+            this.setProgram(new ProgramDTO(programmaticArea.getProgram()));
         }
     }
 

@@ -133,4 +133,12 @@ public class RondaController extends BaseController {
         return HttpResponse.ok().body(dto);
     }
 
+    @Operation(summary = "Return a list off all Rounds of a given mentor")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Get("/getAllOfMentor")
+    public List<RondaDTO> getAllOfMentor(@QueryValue("mentorId") String mentorUuid) {
+        return listAsDtos(this.rondaService.getAllOfMentor(mentorUuid), RondaDTO.class);
+    }
+
 }

@@ -6,7 +6,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
@@ -28,7 +27,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class Tutor extends BaseEntity {
 
     @OneToOne(fetch = FetchType.EAGER)
@@ -50,7 +48,6 @@ public class Tutor extends BaseEntity {
     public String toString() {
         return "Tutor{" +
                 "employee=" + employee +
-                ", tutorProgrammaticAreas=" + tutorProgrammaticAreas +
                 '}';
     }
 }
