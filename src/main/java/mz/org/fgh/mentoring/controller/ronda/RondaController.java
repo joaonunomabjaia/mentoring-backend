@@ -137,7 +137,7 @@ public class RondaController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
     @Get("/getAllOfMentor")
-    public List<RondaDTO> getAllOfMentor(@QueryValue("mentorId") String mentorUuid) {
+    public List<RondaDTO> getAllOfMentor(@QueryValue("mentorUuid") String mentorUuid) {
         return listAsDtos(this.rondaService.getAllOfMentor(mentorUuid), RondaDTO.class);
     }
 

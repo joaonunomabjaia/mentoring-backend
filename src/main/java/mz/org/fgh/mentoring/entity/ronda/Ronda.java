@@ -7,10 +7,16 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import java.time.LocalDateTime;
-import java.util.Date;
+import java.util.List;
 
 @Entity(name = "Ronda")
 @Table(name = "rondas")
@@ -37,4 +43,6 @@ public class Ronda extends BaseEntity {
     private RondaType rondaType;
 
 
+    @OneToMany(mappedBy = "ronda")
+    private List<RondaMentor> rondaMentors;
 }

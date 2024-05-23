@@ -30,11 +30,11 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
             "where rm.id =: mentorId AND rm.lifeCycleStatus = :lifeCycleStatus AND r.lifeCycleStatus = :lifeCycleStatus ")
     List<Ronda> getAllRondasOfMentor(Long mentorId, LifeCycleStatus lifeCycleStatus);
 
-    @Query("select DISTINCT(r) from RondaMentor rm " +
-            "INNER JOIN FETCH rm.ronda r " +
+    @Query("select DISTINCT(r) from Ronda r " +
+            "INNER JOIN FETCH r.rondaMentors rm " +
             "INNER JOIN FETCH rm.mentor m " +
             "INNER JOIN FETCH r.rondaType rt " +
-            "where m.uuid =: mentorUuid")
+            "where m.uuid =:mentorUuid")
     List<Ronda> getAllOfMentor(String mentorUuid);
 
 }
