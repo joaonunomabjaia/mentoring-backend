@@ -64,4 +64,8 @@ public class RondaService {
         RondaDTO dto = new RondaDTO(createdRonda);
         return dto;
     }
+
+    public List<Ronda> getAllOfMentor(String mentorUuid) {
+        return this.rondaRepository.getAllOfMentor(mentorUuid);
+    }
 }

@@ -27,9 +27,11 @@ import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.TUTOR_PROGRAMMATIC_AREAS)
@@ -77,6 +79,18 @@ public class TutorProgrammaticareaController extends BaseController {
     @Get("/all")
     public List<TutorProgrammaticAreaDTO> getAll() {
         return tutorProgrammaticAreaService.findAllTutorProgrammaticAreas();
+    }
+
+    @Operation(summary = "Return a list off all TutorProgrammaticarea of a given Mentor")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "TutorProgrammaticarea")
+    @Get("/getByTutorUuidd/{tutorUuid}")
+    public List<TutorProgrammaticAreaDTO> getByTutorUuidd(@PathVariable("tutorUuid") String tutorUuid) {
+        try {
+            return Utilities.parseList(tutorProgrammaticAreaService.getByTutorUuidd(tutorUuid), TutorProgrammaticAreaDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Operation(summary = "Get TutorProgrammaticarea from database")

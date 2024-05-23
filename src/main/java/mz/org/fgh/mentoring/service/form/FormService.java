@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -33,6 +34,9 @@ public class FormService {
     private FormQuestionRepository formQuestionRepository;
     @Inject
     private ProgramaticAreaRepository programaticAreaRepository;
+
+    @Inject
+    private TutorRepository tutorRepository;
 
     public FormService(UserRepository userRepository, FormRepository formRepository, FormQuestionRepository formQuestionRepository) {
         this.userRepository = userRepository;
@@ -196,5 +200,11 @@ public class FormService {
             formDTOS.add(new FormDTO(form));
         }
         return formDTOS;
+    }
+
+    public List<Form> getByTutorUuid(String tutorUuid) {
+        List<Form> forms = formRepository.getAllOfTutor(tutorRepository.findByUuid(tutorUuid).get());
+        forms.forEach(form -> form.setFormQuestions(formQuestionRepository.fetchByForm(form.getId())));
+        return forms;
     }
 }

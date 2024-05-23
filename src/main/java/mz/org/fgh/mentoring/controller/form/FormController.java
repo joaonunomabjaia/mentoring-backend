@@ -28,10 +28,13 @@ import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.form.FormService;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -83,6 +86,23 @@ public class FormController extends BaseController {
 
         return this.formService.findFormByProgrammaticAreaUuid(progrArea);
     }
+
+    @Get("/getByTutorUuidd/{tutorUuid}")
+    public List<FormDTO> getByTutorUuidd(@PathVariable("tutorUuid") String tutorUuid){
+
+        List<Form> forms = this.formService.getByTutorUuid(tutorUuid);
+        if (Utilities.listHasElements(forms)) {
+            try {
+                return Utilities.parseList(forms, FormDTO.class);
+            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
+                     InvocationTargetException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        else return new ArrayList<>();
+    }
+
+
 
     @Post(
             consumes = MediaType.APPLICATION_JSON,

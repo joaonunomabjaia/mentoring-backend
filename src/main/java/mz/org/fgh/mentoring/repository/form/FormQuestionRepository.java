@@ -1,7 +1,8 @@
 package mz.org.fgh.mentoring.repository.form;
 
 import io.micronaut.data.annotation.Query;
-import io.micronaut.data.repository.CrudRepository;
+import io.micronaut.data.model.Pageable;
+import io.micronaut.data.repository.PageableRepository;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 
-public interface FormQuestionRepository extends CrudRepository<FormQuestion, Long> {
+public interface FormQuestionRepository extends PageableRepository<FormQuestion, Long> {
 
     List<FormQuestion> findAll();
 
@@ -38,5 +39,14 @@ public interface FormQuestionRepository extends CrudRepository<FormQuestion, Lon
             "INNER JOIN FETCH fq.responseType rt " +
             "INNER JOIN FETCH q.questionCategory " +
             "WHERE f.uuid IN (:formsUuids)")
-    List<FormQuestion> fetchByFormsUuids(List<String> formsUuids);
+    List<FormQuestion> fetchByFormsUuids(List<String> formsUuids, Integer offset, Integer limit);
+
+    @Query("FROM FormQuestion fq " +
+            "INNER JOIN FETCH fq.form f " +
+            "INNER JOIN FETCH fq.question q " +
+            "INNER JOIN FETCH fq.evaluationType et " +
+            "INNER JOIN FETCH fq.responseType rt " +
+            "INNER JOIN FETCH q.questionCategory " +
+            "WHERE f.uuid IN (:formsUuids)")
+    List<FormQuestion> findByFormsUuids(List<String> formsUuids, Pageable pageable);
 }
