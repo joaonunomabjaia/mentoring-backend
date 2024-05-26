@@ -54,5 +54,6 @@ public class RESTAPIMapping {
 
     public final static String MENTORSHIP = "mentorships";
 
+    public final static String RESOURCE = "resources";
     public final static String SESSION_STATUS = "sessionStatuses";
 }
