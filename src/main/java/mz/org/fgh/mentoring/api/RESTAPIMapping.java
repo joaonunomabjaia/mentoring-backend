@@ -30,6 +30,7 @@ public class RESTAPIMapping {
     public final static String TUTORED_CONTROLLER = "tutored";
 
     public final static String USER_CONTROLLER = "user";
+    public final static String ROLES_CONTROLLER = "roles";
 
     public final static String RONDA = "ronda";
     public final static String PROGRAM ="programs";
