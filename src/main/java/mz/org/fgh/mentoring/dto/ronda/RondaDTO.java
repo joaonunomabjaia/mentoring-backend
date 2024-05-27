@@ -3,22 +3,15 @@ package mz.org.fgh.mentoring.dto.ronda;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
+import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 
-import javax.persistence.Column;
-import javax.validation.constraints.NotEmpty;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class RondaDTO implements Serializable {
+public class RondaDTO extends BaseEntityDTO {
 
-    private Long id;
-
-    private String uuid;
 
     private String code;
 
@@ -29,9 +22,11 @@ public class RondaDTO implements Serializable {
     @JsonProperty(value = "rondaTypeDTO")
     private RondaTypeDTO rondaTypeDTO;
 
+    public RondaDTO() {
+    }
+
     public RondaDTO(Ronda ronda) {
-        this.id = ronda.getId();
-        this.uuid = ronda.getUuid();
+        super(ronda);
         this.code = ronda.getCode();
         this.description = ronda.getDescription();
         this.dateBegin = ronda.getDateBegin();

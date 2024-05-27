@@ -8,8 +8,13 @@ import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 
-import javax.persistence.*;
-import java.time.LocalDate;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
+import java.util.Date;
 
 @Entity(name = "RondaMentor")
 @Table(name = "ronda_mentor")
@@ -28,8 +33,9 @@ public class RondaMentor extends BaseEntity {
       @JoinColumn(name = "MENTOR_ID")
       private Tutor mentor;
 
-      @Column(name = "STATE")
-      private Boolean state;
+      @Column(name = "START_DATE")
+      private Date startDate;
 
-      private LocalDate dateBegin;
+      @Column(name = "END_DATE")
+      private Date endDate;
 }

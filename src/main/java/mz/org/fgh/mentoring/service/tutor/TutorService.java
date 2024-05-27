@@ -83,7 +83,7 @@ public class TutorService {
             user.setCreatedBy(creator.getUuid());
             user.setCreatedAt(DateUtils.getCurrentDate());
             userRepository.save(user);
-            //sendmailToUser(user, password);
+            sendmailToUser(user, password);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

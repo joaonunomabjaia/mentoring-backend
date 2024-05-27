@@ -1923,7 +1923,53 @@
             Create iteration type foreign key on mentorships table
         </comment>
         <addForeignKeyConstraint constraintName="sessions_time_of_day_fk"
-                                 baseTableName="sessions" baseColumnNames="session_status_id"
-                                 referencedTableName="session_status" referencedColumnNames="id"/>
+         baseTableName="sessions" baseColumnNames="session_status_id"
+         referencedTableName="session_status" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="table_resources" author="joao">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="resources"/>
+            </not>
+        </preConditions>
+        <createTable tableName="resources">
+            <column name="id" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
+            </column>
+            <column name="resource" type="json">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uuid" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="datetime">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+            <column name="UPDATED_AT" type="datetime">
+                <constraints nullable="true"/>
+            </column>
+            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="RONDA_MENTOR_202405231206" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="ronda_mentor" columnName="START_DATE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="ronda_mentor">
+            <column name="START_DATE" type="datetime"> </column>
+        </addColumn>
+        <addColumn tableName="ronda_mentor">
+            <column name="END_DATE" type="datetime"> </column>
+        </addColumn>
     </changeSet>
 </databaseChangeLog>
