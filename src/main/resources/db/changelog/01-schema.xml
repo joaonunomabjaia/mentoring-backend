@@ -1959,4 +1959,19 @@
             </column>
         </createTable>
     </changeSet>
+    <changeSet id="alter_settings_table" author="Joao">
+        <sql>
+            ALTER TABLE settings MODIFY COLUMN SETTING_VALUE VARCHAR(255);
+        </sql>
+    </changeSet>
+    <changeSet id="insert_settings_row" author="Joao">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="settings"/>
+        </preConditions>
+        <sql>
+            INSERT INTO settings (CREATED_BY, LIFE_CYCLE_STATUS, `UUID`, DESIGNATION, SETTING_VALUE, DESCRIPTION)
+            VALUES ('49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', 'e3f9d947-b2ef-4f5c-b9d1-7b09a44dvdb8', 'ResourcesDirectory', 'D:\\\\resources', 'Directory for the resources');
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>

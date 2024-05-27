@@ -9,6 +9,7 @@ import mz.org.fgh.mentoring.dto.resource.ResourceDTO;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
+import java.io.File;
 
 /**
  * @author Joao Nuno Mabjaia
