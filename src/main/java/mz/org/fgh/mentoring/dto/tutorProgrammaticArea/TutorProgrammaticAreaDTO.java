@@ -8,9 +8,6 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
-
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
@@ -33,9 +30,6 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
         if(tutorProgrammaticArea.getProgrammaticArea()!=null) {
             this.programmaticAreaDTO = new ProgrammaticAreaDTO(tutorProgrammaticArea.getProgrammaticArea());
         }
-        /*if(tutorProgrammaticArea.getTutor()!=null) {
-            this.tutorDTO = new TutorDTO(tutorProgrammaticArea.getTutor());
-        }*/
     }
 
     public TutorProgrammaticArea toTutorProgrammaticArea() {

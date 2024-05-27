@@ -13,6 +13,7 @@
     <logger name="mz.org.fgh" level="DEBUG" />
     <logger name="io.micronaut.data.query" level="DEBUG" />
     <logger name="org.hibernate.SQL" level="DEBUG" />
+    <logger name="io.micronaut.data" level="DEBUG"/>
 
     <root level="info">
         <appender-ref ref="STDOUT"/>

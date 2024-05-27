@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.form;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
@@ -11,6 +12,7 @@ import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -19,7 +21,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,6 +32,11 @@ public class FormService {
     private UserRepository userRepository;
 
     private FormQuestionRepository formQuestionRepository;
+    @Inject
+    private ProgramaticAreaRepository programaticAreaRepository;
+
+    @Inject
+    private TutorRepository tutorRepository;
 
     public FormService(UserRepository userRepository, FormRepository formRepository, FormQuestionRepository formQuestionRepository) {
         this.userRepository = userRepository;
@@ -140,25 +146,26 @@ public class FormService {
         form.setDescription(form.getName());
         form.setPartner(partner);
         List<FormQuestionDTO> formQuestions = formDTO.getFormQuestions();
-        Date currDate = new Date();
+
 
         if(StringUtils.isEmpty(formDTO.getUuid())) {
             form.setUuid(Utilities.generateUUID());
             form.setCreatedBy(user.getUuid());
-            form.setCreatedAt(currDate);
+            form.setCreatedAt(DateUtils.getCurrentDate());
             form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
             Form newForm = this.formRepository.save(form);
             List<FormQuestion> newFormQuestions = new ArrayList<>();
             for (FormQuestionDTO dto : formQuestions) {
                 FormQuestion formQuestion = dto.toFormQuestion();
                 formQuestion.setCreatedBy(user.getUuid());
-                formQuestion.setCreatedAt(currDate);
+                formQuestion.setCreatedAt(DateUtils.getCurrentDate());
                 formQuestion.setForm(newForm);
                 formQuestion.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
                 FormQuestion newFQ = this.formQuestionRepository.save(formQuestion);
                 newFormQuestions.add(newFQ);
             }
             newForm.setFormQuestions(newFormQuestions);
+            newForm.setProgrammaticArea(programaticAreaRepository.findById(newForm.getProgrammaticArea().getId()).get());
             return new FormDTO(newForm);
         }
 
@@ -167,7 +174,7 @@ public class FormService {
             if(dto.getId()==null) {
                 FormQuestion formQuestion = dto.toFormQuestion();
                 formQuestion.setCreatedBy(user.getUuid());
-                formQuestion.setCreatedAt(currDate);
+                formQuestion.setCreatedAt(DateUtils.getCurrentDate());
                 formQuestion.setForm(form);
                 formQuestion.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
                 FormQuestion newFQ = this.formQuestionRepository.save(formQuestion);
@@ -177,7 +184,7 @@ public class FormService {
             }
         }
             form.setUpdatedBy(user.getUuid());
-            form.setUpdatedAt(currDate);
+            form.setUpdatedAt(DateUtils.getCurrentDate());
             form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
             Form updatedForm = this.formRepository.update(form);
             updatedForm.setFormQuestions(listOfFormQuestions);
@@ -193,5 +200,11 @@ public class FormService {
             formDTOS.add(new FormDTO(form));
         }
         return formDTOS;
+    }
+
+    public List<Form> getByTutorUuid(String tutorUuid) {
+        List<Form> forms = formRepository.getAllOfTutor(tutorRepository.findByUuid(tutorUuid).get());
+        forms.forEach(form -> form.setFormQuestions(formQuestionRepository.fetchByForm(form.getId())));
+        return forms;
     }
 }

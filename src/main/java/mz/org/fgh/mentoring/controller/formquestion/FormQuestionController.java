@@ -1,10 +1,14 @@
 package mz.org.fgh.mentoring.controller.formquestion;
 
 import io.micronaut.core.annotation.NonNull;
-import io.micronaut.core.annotation.Nullable;
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -94,9 +98,8 @@ public class FormQuestionController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Get("/getByFormsUuids")
     @Tag(name = "FormQuestion")
-    public List<FormQuestionDTO> findFormQuestionByFormsUuids(@NonNull @QueryValue("formsUuids") List<String> formsUuids){
-        LOG.debug("Searching forms questions...");
-        List<FormQuestionDTO> dtos = this.formQuestionService.fetchByFormsUuids(formsUuids);
-        return dtos;
+    public List<FormQuestionDTO> findFormQuestionByFormsUuids(@NonNull @QueryValue("formsUuids") List<String> formsUuids, @QueryValue("offset") Long offset, @QueryValue("limit") Long limit){
+        return listAsDtos(this.formQuestionService.fetchByFormsUuids(formsUuids, offset, limit), FormQuestionDTO. class);
     }
+
 }

@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.repository.form;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -44,4 +45,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             "INNER JOIN FETCH f.partner pt " +
             "where pt.id = :partnerId ")
     List<Form> fetchByPartnerId(final Long partnerId);
+
+
+    List<Form> getAllOfTutor(final Tutor tutor);
 }

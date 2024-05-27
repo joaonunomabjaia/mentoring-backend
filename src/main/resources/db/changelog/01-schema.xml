@@ -1974,4 +1974,17 @@
         </sql>
     </changeSet>
 
+    <changeSet id="RONDA_MENTOR_202405231206" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="ronda_mentor" columnName="START_DATE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="ronda_mentor">
+            <column name="START_DATE" type="datetime"> </column>
+        </addColumn>
+        <addColumn tableName="ronda_mentor">
+            <column name="END_DATE" type="datetime"> </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
