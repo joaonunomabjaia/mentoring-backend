@@ -1,10 +1,10 @@
 package mz.org.fgh.mentoring.controller.resource;
 
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
+import io.micronaut.http.multipart.CompletedFileUpload;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -12,21 +12,28 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.NonNull;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.resource.ResourceDTO;
-import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.earesource.Resource;
-import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
+import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.repository.resource.ResourceRepository;
+import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -40,12 +47,14 @@ import java.util.UUID;
 public class ResourceController extends BaseController {
 
     private ResourceRepository resourceRepository;
+    private SettingsRepository settingsRepository;
     private final UserRepository userRepository;
     public static final Logger LOG = LoggerFactory.getLogger(ResourceController.class);
 
-    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository) {
+    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, SettingsRepository settingsRepository) {
         this.resourceRepository = resourceRepository;
         this.userRepository = userRepository;
+        this.settingsRepository = settingsRepository;
     }
 
     @Operation(summary = "Return a list off all Resources")
@@ -57,7 +66,7 @@ public class ResourceController extends BaseController {
         List<Resource> resources = resourceRepository.findAll();
         List<ResourceDTO> resourceDTOS = new ArrayList<>();
         for (Resource resource: resources) {
-            ResourceDTO resourceDTO = new ResourceDTO(resource);
+            ResourceDTO resourceDTO = new ResourceDTO(resource, null);
             resourceDTOS.add(resourceDTO);
         }
         return resourceDTOS;
@@ -78,7 +87,7 @@ public class ResourceController extends BaseController {
             Resource resourceResp = this.resourceRepository.save(resource);
 
             LOG.info("Created resource {}", resourceResp);
-            return HttpResponse.ok().body(new ResourceDTO(resourceResp));
+            return HttpResponse.ok().body(new ResourceDTO(resourceResp, null));
         } catch (Exception e) {
             LOG.error(e.getMessage());
             return HttpResponse.badRequest().body(MentoringAPIError.builder()
@@ -90,9 +99,9 @@ public class ResourceController extends BaseController {
 
     @Operation(summary = "Update the Resources JSON")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Patch("/updateresourcetree")
+    @Patch("/updateresourcetreewithoutfile")
     @Tag(name = "Resource")
-    public HttpResponse<RestAPIResponse> updateResourceTree(@NonNull @Body ResourceDTO resourceDTO, Authentication authentication){
+    public HttpResponse<RestAPIResponse> updateResourceTreeWithoutFile(@NonNull @Body ResourceDTO resourceDTO, Authentication authentication){
         try {
             Resource resource = new Resource(resourceDTO);
             User user = this.userRepository.fetchByUserId((Long) authentication.getAttributes().get("userInfo"));
@@ -104,7 +113,7 @@ public class ResourceController extends BaseController {
                 Resource resourceResp = this.resourceRepository.update(resourceRepositoryByUuid.get());
 
                 LOG.info("Updated resource {}", resourceResp);
-                return HttpResponse.ok().body(new ResourceDTO(resourceRepositoryByUuid.get()));
+                return HttpResponse.ok().body(new ResourceDTO(resourceRepositoryByUuid.get(), null));
             }
             return null;
         } catch (Exception e) {
@@ -113,6 +122,105 @@ public class ResourceController extends BaseController {
                     .status(HttpStatus.BAD_REQUEST.getCode())
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Update the Resources JSON")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+//    @Patch("/updateresourcetree")
+    @Patch(value = "/updateresourcetree", consumes = MediaType.MULTIPART_FORM_DATA)
+    @Tag(name = "Resource")
+    public HttpResponse<RestAPIResponse> updateResourceTree(@Part("id") Long id,
+                                                            @Part("uuid") String uuid,
+                                                            @Part("resource") String resource,
+                                                            @Part("file") CompletedFileUpload file,
+                                                            Authentication authentication) {
+        try {
+            ResourceDTO resourceDTO = new ResourceDTO();
+            resourceDTO.setId(id);
+            resourceDTO.setUuid(uuid);
+            resourceDTO.setResource(resource);
+            resourceDTO.setFile(file);
+
+            LOG.info("resourceDTO.getFile() {}", resourceDTO.getFile());
+            Resource resourceEntity = new Resource(resourceDTO);
+            User user = this.userRepository.fetchByUserId((Long) authentication.getAttributes().get("userInfo"));
+            Optional<Resource> resourceRepositoryByUuid = this.resourceRepository.findByUuid(resourceEntity.getUuid());
+
+            if (resourceRepositoryByUuid.isPresent()) {
+                Resource existingResource = resourceRepositoryByUuid.get();
+                existingResource.setResource(resourceEntity.getResource());
+                existingResource.setUpdatedBy(user.getUuid());
+                existingResource.setUpdatedAt(DateUtils.getCurrentDate());
+
+                try {
+                    if (file != null && file.getFilename() != null) {
+                        Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
+                        Path path = Paths.get(pathFromSettings.get().getValue(), file.getFilename());
+                        Files.createDirectories(path.getParent());
+                        Files.write(path, file.getBytes());
+                        LOG.info("Recurso gravado.");
+                    }
+                } catch (IOException e) {
+                    LOG.error("Falha ao gravar recurso: {}", e.getMessage());
+                    return HttpResponse.serverError().body(MentoringAPIError.builder()
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                            .error(e.getLocalizedMessage())
+                            .message("Falha ao gravar recurso no servidor").build());
+                }
+
+                Resource resourceResp = this.resourceRepository.update(existingResource);
+
+                LOG.info("Actualizado {}", resourceResp);
+                return HttpResponse.ok().body(new ResourceDTO(existingResource, null));
+            } else {
+                return HttpResponse.notFound().body(MentoringAPIError.builder()
+                        .status(HttpStatus.NOT_FOUND.getCode())
+                        .error("Recurso nao encontado")
+                        .message("Recurso com uuid especificado nao encontrado").build());
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Carregar arquivo do diretório")
+    @ApiResponse(responseCode = "200", description = "Arquivo encontrado e retornado")
+    @ApiResponse(responseCode = "404", description = "Arquivo não encontrado")
+    @Tag(name = "Resource")
+    @Get("/load")
+    public HttpResponse<?> loadFile(@QueryValue String fileName) {
+        try {
+            Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
+            if (pathFromSettings.isPresent()) {
+                Path filePath = Paths.get(pathFromSettings.get().getValue(), fileName);
+                File file = filePath.toFile();
+                if (file.exists()) {
+                    byte[] fileContent = Files.readAllBytes(filePath);
+                    return HttpResponse.ok(fileContent).contentType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+                } else {
+                    return HttpResponse.notFound().body(MentoringAPIError.builder()
+                            .status(HttpStatus.NOT_FOUND.getCode())
+                            .error("Arquivo não encontrado")
+                            .message("O arquivo especificado não foi encontrado no diretório.").build());
+                }
+            } else {
+                return HttpResponse.serverError().body(MentoringAPIError.builder()
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                        .error("Configuração não encontrada")
+                        .message("As configurações do diretório de recursos não foram encontradas.").build());
+            }
+        } catch (Exception e) {
+            LOG.error("Erro ao carregar arquivo: {}", e.getMessage());
+            return HttpResponse.serverError().body(MentoringAPIError.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                    .error("Erro interno do servidor")
+                    .message("Ocorreu um erro ao tentar carregar o arquivo.").build());
         }
     }
 }
