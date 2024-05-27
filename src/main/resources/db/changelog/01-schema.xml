@@ -1987,4 +1987,33 @@
             <column name="END_DATE" type="datetime"> </column>
         </addColumn>
     </changeSet>
+    <changeSet id="insert_if_resource_table_is_empty" author="Joao">
+        <preConditions onFail="MARK_RAN">
+                <tableIsEmpty tableName="resources"/>
+        </preConditions>
+        <sql>
+            INSERT INTO resources (resource, `uuid`, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES ('[
+            {
+                "label": "HIV",
+                "clickable": 0,
+                "children": [
+                    {
+                        "label": "Adicionar Categoria",
+                        "clickable": 1,
+                        "icon": "add",
+                        "program": "HIV",
+                        "type": "categ"
+                    }
+                ]
+            },
+            {
+                "label": "Adicionar Programa",
+                "icon": "add",
+                "clickable": 1,
+                "type": "program"
+            }
+        ]', 'e882ef9d-aa4e-49ed-8b69-5bf6a3f1a4a7', '49dcfc96e18644d1ae9e82dbb7e873a1', NOW(), 'ACTIVE');
+        </sql>
+    </changeSet>
 </databaseChangeLog>

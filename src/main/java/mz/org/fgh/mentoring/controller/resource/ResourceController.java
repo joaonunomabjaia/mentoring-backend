@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.NonNull;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
@@ -28,6 +29,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -97,6 +99,34 @@ public class ResourceController extends BaseController {
 
     @Operation(summary = "Update the Resources JSON")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Patch("/updateresourcetreewithoutfile")
+    @Tag(name = "Resource")
+    public HttpResponse<RestAPIResponse> updateResourceTreeWithoutFile(@NonNull @Body ResourceDTO resourceDTO, Authentication authentication){
+        try {
+            Resource resource = new Resource(resourceDTO);
+            User user = this.userRepository.fetchByUserId((Long) authentication.getAttributes().get("userInfo"));
+            Optional<Resource> resourceRepositoryByUuid =  this.resourceRepository.findByUuid(resource.getUuid());
+            if (resourceRepositoryByUuid.isPresent()) {
+                resourceRepositoryByUuid.get().setResource(resource.getResource());
+                resourceRepositoryByUuid.get().setUpdatedBy(user.getUuid());
+                resourceRepositoryByUuid.get().setUpdatedAt(DateUtils.getCurrentDate());
+                Resource resourceResp = this.resourceRepository.update(resourceRepositoryByUuid.get());
+
+                LOG.info("Updated resource {}", resourceResp);
+                return HttpResponse.ok().body(new ResourceDTO(resourceRepositoryByUuid.get(), null));
+            }
+            return null;
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Update the Resources JSON")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
 //    @Patch("/updateresourcetree")
     @Patch(value = "/updateresourcetree", consumes = MediaType.MULTIPART_FORM_DATA)
     @Tag(name = "Resource")
@@ -155,6 +185,42 @@ public class ResourceController extends BaseController {
                     .status(HttpStatus.BAD_REQUEST.getCode())
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Carregar arquivo do diretório")
+    @ApiResponse(responseCode = "200", description = "Arquivo encontrado e retornado")
+    @ApiResponse(responseCode = "404", description = "Arquivo não encontrado")
+    @Tag(name = "Resource")
+    @Get("/load")
+    public HttpResponse<?> loadFile(@QueryValue String fileName) {
+        try {
+            Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
+            if (pathFromSettings.isPresent()) {
+                Path filePath = Paths.get(pathFromSettings.get().getValue(), fileName);
+                File file = filePath.toFile();
+                if (file.exists()) {
+                    byte[] fileContent = Files.readAllBytes(filePath);
+                    return HttpResponse.ok(fileContent).contentType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
+                            .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+                } else {
+                    return HttpResponse.notFound().body(MentoringAPIError.builder()
+                            .status(HttpStatus.NOT_FOUND.getCode())
+                            .error("Arquivo não encontrado")
+                            .message("O arquivo especificado não foi encontrado no diretório.").build());
+                }
+            } else {
+                return HttpResponse.serverError().body(MentoringAPIError.builder()
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                        .error("Configuração não encontrada")
+                        .message("As configurações do diretório de recursos não foram encontradas.").build());
+            }
+        } catch (Exception e) {
+            LOG.error("Erro ao carregar arquivo: {}", e.getMessage());
+            return HttpResponse.serverError().body(MentoringAPIError.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                    .error("Erro interno do servidor")
+                    .message("Ocorreu um erro ao tentar carregar o arquivo.").build());
         }
     }
 }
