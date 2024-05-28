@@ -24,4 +24,6 @@ public interface SettingsRepository extends CrudRepository<Setting, Long> {
 
     @Query(value = "select * from settings limit :lim offset :of ", nativeQuery = true)
     List<Setting> findSettingWithLimit(long lim, long of);
+
+    Optional<Setting> findByDesignation(@NotNull String designation);
 }
