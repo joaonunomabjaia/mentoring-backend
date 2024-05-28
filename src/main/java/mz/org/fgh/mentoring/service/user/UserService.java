@@ -13,8 +13,10 @@ import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategory
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.transaction.Transactional;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -68,11 +70,18 @@ public class UserService {
     @Transactional
     public User create(User user, Long userId) {
         User authUser = userRepository.findById(userId).get();
+        String password = Utilities.generateRandomPassword(6);
 
         user.setCreatedBy(authUser.getUuid());
         user.setUuid(UUID.randomUUID().toString());
         user.setCreatedAt(DateUtils.getCurrentDate());
         user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        user.setSalt(UUID.randomUUID().toString());
+        try {
+            user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
 
         Employee userEmployee = user.getEmployee();
         userEmployee.setCreatedBy(authUser.getUuid());
@@ -82,7 +91,7 @@ public class UserService {
         userEmployee.setProfessionalCategory(professionalCategoryRepository.findByUuid(userEmployee.getProfessionalCategory().getUuid()));
         userEmployee.setPartner(partnerRepository.findByUuid(userEmployee.getPartner().getUuid()));
 
-        Employee employee = employeeRepository.save(userEmployee);
+        Employee employee = employeeRepository.createOrUpdate(userEmployee,authUser);
         user.setEmployee(employee);
 
         return this.userRepository.save(user);
@@ -95,8 +104,11 @@ public class UserService {
         userDB.setUpdatedBy(authUser.getUuid());
         userDB.setUpdatedAt(DateUtils.getCurrentDate());
         userDB.setEmployee(new Employee(userDTO.getEmployeeDTO()));
-        userDB.setPassword(userDTO.getPassword());
-        userDB.setSalt(userDTO.getSalt());
+        try {
+            userDB.setPassword(Utilities.MD5Crypt(userDB.getSalt()+":"+userDTO.getPassword()));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         userDB.setUsername(userDTO.getUsername());
 
         Employee employeeDB = employeeRepository.findById(userDTO.getEmployeeDTO().getId()).get();
