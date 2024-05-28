@@ -127,7 +127,6 @@ public class ResourceController extends BaseController {
 
     @Operation(summary = "Update the Resources JSON")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-//    @Patch("/updateresourcetree")
     @Patch(value = "/updateresourcetree", consumes = MediaType.MULTIPART_FORM_DATA)
     @Tag(name = "Resource")
     public HttpResponse<RestAPIResponse> updateResourceTree(@Part("id") Long id,
@@ -188,39 +187,39 @@ public class ResourceController extends BaseController {
         }
     }
 
-    @Operation(summary = "Carregar arquivo do diretório")
-    @ApiResponse(responseCode = "200", description = "Arquivo encontrado e retornado")
-    @ApiResponse(responseCode = "404", description = "Arquivo não encontrado")
-    @Tag(name = "Resource")
+    @Operation(summary = "Get Resource from server")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @Get("/load")
+    @Tag(name = "Resource")
     public HttpResponse<?> loadFile(@QueryValue String fileName) {
         try {
             Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
             if (pathFromSettings.isPresent()) {
                 Path filePath = Paths.get(pathFromSettings.get().getValue(), fileName);
-                File file = filePath.toFile();
-                if (file.exists()) {
-                    byte[] fileContent = Files.readAllBytes(filePath);
-                    return HttpResponse.ok(fileContent).contentType(MediaType.APPLICATION_OCTET_STREAM_TYPE)
-                            .header("Content-Disposition", "attachment; filename=\"" + fileName + "\"");
+                if (Files.exists(filePath)) {
+                    byte[] fileBytes = Files.readAllBytes(filePath);
+                    return HttpResponse.ok()
+                            .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                            .contentLength(fileBytes.length)
+                            .body(fileBytes);
                 } else {
                     return HttpResponse.notFound().body(MentoringAPIError.builder()
                             .status(HttpStatus.NOT_FOUND.getCode())
                             .error("Arquivo não encontrado")
-                            .message("O arquivo especificado não foi encontrado no diretório.").build());
+                            .message("Arquivo com o nome especificado não encontrado").build());
                 }
             } else {
                 return HttpResponse.serverError().body(MentoringAPIError.builder()
                         .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
                         .error("Configuração não encontrada")
-                        .message("As configurações do diretório de recursos não foram encontradas.").build());
+                        .message("Directório de recursos não configurado").build());
             }
         } catch (Exception e) {
-            LOG.error("Erro ao carregar arquivo: {}", e.getMessage());
+            LOG.error("Erro ao buscar arquivo de recurso: {}", e.getMessage());
             return HttpResponse.serverError().body(MentoringAPIError.builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
-                    .error("Erro interno do servidor")
-                    .message("Ocorreu um erro ao tentar carregar o arquivo.").build());
+                    .error(e.getLocalizedMessage())
+                    .message("Erro ao buscar arquivo de recurso").build());
         }
     }
 }
