@@ -11,6 +11,7 @@ import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -26,6 +27,8 @@ import java.util.UUID;
 public class UserService {
 
     private final UserRepository userRepository;
+    @Inject
+    private EmployeeService employeeService;
 
     @Inject
     private EmployeeRepository employeeRepository;
@@ -91,7 +94,7 @@ public class UserService {
         userEmployee.setProfessionalCategory(professionalCategoryRepository.findByUuid(userEmployee.getProfessionalCategory().getUuid()));
         userEmployee.setPartner(partnerRepository.findByUuid(userEmployee.getPartner().getUuid()));
 
-        Employee employee = employeeRepository.createOrUpdate(userEmployee,authUser);
+        Employee employee = employeeService.createOrUpdate(userEmployee,authUser);
         user.setEmployee(employee);
 
         return this.userRepository.save(user);
