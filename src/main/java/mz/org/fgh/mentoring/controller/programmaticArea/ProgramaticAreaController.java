@@ -8,6 +8,7 @@ import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -57,9 +58,9 @@ public class ProgramaticAreaController extends BaseController {
 
     @Post(  consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON)
-    public ProgrammaticArea create(@Body ProgrammaticArea programaticArea){
+    public ProgrammaticArea create(@Body ProgrammaticArea programaticArea, Authentication authentication){
 
-        return this.programaticAreaService.createProgrammaticArea(programaticArea);
+        return this.programaticAreaService.createProgrammaticArea(programaticArea, (Long) authentication.getAttributes().get("userInfo"));
     }
 
     @Put(   consumes = MediaType.APPLICATION_JSON,

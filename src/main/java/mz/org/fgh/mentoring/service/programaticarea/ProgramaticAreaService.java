@@ -1,25 +1,39 @@
 package mz.org.fgh.mentoring.service.programaticarea;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
+import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 @Singleton
 public class ProgramaticAreaService {
 
     private ProgramaticAreaRepository programaticAreaRepository;
 
+    @Inject
+    private UserRepository userRepository;
+
     public ProgramaticAreaService(ProgramaticAreaRepository programaticAreaRepository) {
         this.programaticAreaRepository = programaticAreaRepository;
     }
 
-    public ProgrammaticArea createProgrammaticArea(final ProgrammaticArea programaticArea){
+    public ProgrammaticArea createProgrammaticArea(final ProgrammaticArea programaticArea, Long userId){
 
+         User user = userRepository.findById(userId).get();
+         programaticArea.setCreatedBy(user.getUuid());
+         programaticArea.setUuid(UUID.randomUUID().toString());
+         programaticArea.setCreatedAt(DateUtils.getCurrentDate());
+         programaticArea.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+   
         return this.programaticAreaRepository.save(programaticArea);
     }
 
