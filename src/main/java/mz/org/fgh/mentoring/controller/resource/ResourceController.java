@@ -187,7 +187,7 @@ public class ResourceController extends BaseController {
         }
     }
 
-    @Operation(summary = "Get Resource from server")
+    @Operation(summary = "Obter recurso do servidor")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @Get("/load")
     @Tag(name = "Resource")
@@ -212,7 +212,7 @@ public class ResourceController extends BaseController {
                 return HttpResponse.serverError().body(MentoringAPIError.builder()
                         .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
                         .error("Configuração não encontrada")
-                        .message("Directório de recursos não configurado").build());
+                        .message("Diretório de recursos não configurado").build());
             }
         } catch (Exception e) {
             LOG.error("Erro ao buscar arquivo de recurso: {}", e.getMessage());
@@ -222,4 +222,6 @@ public class ResourceController extends BaseController {
                     .message("Erro ao buscar arquivo de recurso").build());
         }
     }
+
+
 }
