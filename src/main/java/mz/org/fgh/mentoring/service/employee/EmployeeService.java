@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.service.employee;
 
+import java.util.Set;
+
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
@@ -56,17 +58,33 @@ public class EmployeeService {
         return new EmployeeDTO(employee);
     }
 
-    public void createOrUpdate(Employee employee, User user) {
+    public Employee createOrUpdate(Employee employee, User user) {
         employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()));
         employee.setPartner(partnerRepository.findByUuid(employee.getPartner().getUuid()));
+        Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
 
-        for (Location location : employee.getLocations()) {
-            location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
-            location.setDistrict(districtRepository.findByUuid(location.getDistrict().getUuid()));
-            location.setHealthFacility(healthFacilityRepository.findByUuid(location.getHealthFacility().getUuid()).get());
+        Set<Location>locations =  employee.getLocations();
+
+        for (Location location : locations) {
+            location.setEmployee(createdEmployee);
+            if(location.getProvince()!=null)
+            {
+                location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
+            }
+            if(location.getDistrict() !=null)
+            {
+                location.setDistrict(districtRepository.findByUuid(location.getDistrict().getUuid()));
+            }
+            if(location.getHealthFacility() !=null)
+            {
+                location.setHealthFacility(healthFacilityRepository.findByUuid(location.getHealthFacility().getUuid()).get());
+            }
+
+            locations.add(location);
         }
+      
+        locationRepository.createOrUpdate(locations, user);
 
-        employeeRepository.createOrUpdate(employee, user);
-        locationRepository.createOrUpdate(employee.getLocations(), user);
+        return createdEmployee;
     }
 }
