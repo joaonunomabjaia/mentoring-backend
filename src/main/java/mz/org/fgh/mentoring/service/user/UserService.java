@@ -67,8 +67,8 @@ public class UserService {
         }
         return users;
     }
-    public Optional<User> findById(final Long id){
-        return this.userRepository.findById(id);
+    public User findById(final Long id){
+        return this.userRepository.findById(id).get();
     }
     @Transactional
     public User create(User user, Long userId) {
@@ -129,5 +129,15 @@ public class UserService {
         employeeRepository.update(employeeDB);
 
         return this.userRepository.update(userDB);
+    }
+
+    @Transactional
+    public User delete(User user, Long userId) {
+        User authUser = userRepository.findById(userId).get();
+        user.setLifeCycleStatus(LifeCycleStatus.DELETED);
+        user.setUpdatedBy(authUser.getUuid());
+        user.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.userRepository.update(user);
     }
 }

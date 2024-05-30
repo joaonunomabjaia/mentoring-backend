@@ -3,7 +3,6 @@ package mz.org.fgh.mentoring.service.professionalcategory;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
-import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
@@ -67,6 +66,16 @@ public class ProfessionalCategoryService {
     @Transactional
     public ProfessionalCategory update(ProfessionalCategory professionalCategory, Long userId) {
         User user = userRepository.findById(userId).get();
+        professionalCategory.setUpdatedBy(user.getUuid());
+        professionalCategory.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.professionalCategoryRepository.update(professionalCategory);
+    }
+
+    @Transactional
+    public ProfessionalCategory delete(ProfessionalCategory professionalCategory, Long userId) {
+        User user = userRepository.findById(userId).get();
+        professionalCategory.setLifeCycleStatus(LifeCycleStatus.DELETED);
         professionalCategory.setUpdatedBy(user.getUuid());
         professionalCategory.setUpdatedAt(DateUtils.getCurrentDate());
 

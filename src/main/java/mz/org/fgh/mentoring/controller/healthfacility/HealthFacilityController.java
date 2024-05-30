@@ -16,13 +16,8 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
-import mz.org.fgh.mentoring.dto.program.ProgramDTO;
-import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.location.District;
-import mz.org.fgh.mentoring.entity.program.Program;
-import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import mz.org.fgh.mentoring.service.healthfacility.HealthFacilityService;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
@@ -132,5 +127,18 @@ public class HealthFacilityController extends BaseController {
         LOG.info("Updated healthFacility {}", healthFacility);
 
         return HttpResponse.ok().body(healthFacility);
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Get HealthFacility from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "HealthFacility")
+    @Patch("/{id}")
+    public HealthFacilityDTO deleteHealthFacility(@PathVariable("id") Long id, Authentication authentication){
+
+        HealthFacility healthFacility = this.healthFacilityService.findById(id);        
+        healthFacility = this.healthFacilityService.delete(healthFacility, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new HealthFacilityDTO(healthFacility);
     }
 }

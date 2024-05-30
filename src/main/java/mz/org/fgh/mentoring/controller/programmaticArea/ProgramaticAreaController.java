@@ -4,6 +4,8 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.QueryValue;
@@ -77,4 +79,18 @@ public class ProgramaticAreaController extends BaseController {
     public List<ProgrammaticAreaDTO> getProgrammaticAreasByProgram( @QueryValue("program") String program){
         return this.programaticAreaService.findProgrammaticAreasByProgram(program);
     }
+
+        @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Get ProgrammaticArea from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "ProgrammaticArea")
+    @Patch("/{id}")
+    public ProgrammaticAreaDTO deleteProgrammaticArea(@PathVariable("id") Long id, Authentication authentication){
+
+        ProgrammaticArea programmaticArea = this.programaticAreaService.getProgrammaticAreaById(id);        
+        programmaticArea = this.programaticAreaService.delete(programmaticArea, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new ProgrammaticAreaDTO(programmaticArea);
+    }
+
 }

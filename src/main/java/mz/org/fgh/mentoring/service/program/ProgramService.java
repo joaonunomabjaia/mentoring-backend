@@ -62,4 +62,14 @@ public class ProgramService {
 
         return this.programRepository.update(program);
     }
+
+    @Transactional
+    public Program delete(Program program, Long userId) {
+        User user = userRepository.findById(userId).get();
+        program.setLifeCycleStatus(LifeCycleStatus.DELETED);
+        program.setUpdatedBy(user.getUuid());
+        program.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.programRepository.update(program);
+    }
 }

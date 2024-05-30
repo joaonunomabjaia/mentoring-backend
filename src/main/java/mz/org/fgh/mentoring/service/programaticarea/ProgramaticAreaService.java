@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import javax.transaction.Transactional;
+
 @Singleton
 public class ProgramaticAreaService {
 
@@ -111,5 +113,15 @@ public class ProgramaticAreaService {
 
     public ProgrammaticArea getProgrammaticAreaById(Long id) {
         return this.programaticAreaRepository.getById(id);
+    }
+
+    @Transactional
+    public ProgrammaticArea delete(ProgrammaticArea programmaticArea, Long userId) {
+        User user = userRepository.findById(userId).get();
+        programmaticArea.setLifeCycleStatus(LifeCycleStatus.DELETED);
+        programmaticArea.setUpdatedBy(user.getUuid());
+        programmaticArea.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.programaticAreaRepository.update(programmaticArea);
     }
 }

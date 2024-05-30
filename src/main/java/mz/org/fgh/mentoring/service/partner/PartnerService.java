@@ -3,7 +3,6 @@ package mz.org.fgh.mentoring.service.partner;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
@@ -13,6 +12,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
@@ -76,5 +76,15 @@ public class PartnerService {
     public Partner getById(Long id){
        return this.partnerRepository.findById(id).get();
 
+    }
+
+    @Transactional
+    public Partner delete(Partner partner, Long userId) {
+        User user = userRepository.findById(userId).get();
+        partner.setLifeCycleStatus(LifeCycleStatus.DELETED);
+        partner.setUpdatedBy(user.getUuid());
+        partner.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.partnerRepository.update(partner);
     }
 }

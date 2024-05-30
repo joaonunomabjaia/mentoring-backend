@@ -15,9 +15,7 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.controller.program.ProgramController;
-import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
-import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.service.user.UserService;
 import org.slf4j.Logger;
@@ -51,7 +49,7 @@ public class UserController extends BaseController {
     @Get("/{id}")
     public UserDTO findUserById(@PathVariable("id") Long id){
 
-        User user = this.userService.findById(id).get();
+        User user = this.userService.findById(id);
         return new UserDTO(user);
     }
     @Operation(summary = "Save User to database")
@@ -73,11 +71,23 @@ public class UserController extends BaseController {
     @Tag(name = "User")
     @Patch("/update")
     public HttpResponse<RestAPIResponse> update (@Body UserDTO userDTO, Authentication authentication) {
-        User userDB = this.userService.findById(userDTO.getId()).get();
+        User userDB = this.userService.findById(userDTO.getId());
         User user = this.userService.update(userDTO, userDB, (Long) authentication.getAttributes().get("userInfo"));
 
         LOG.info("Created User {}", user);
 
         return HttpResponse.ok().body(new UserDTO(user));
+    }
+
+    @Operation(summary = "Delete User from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Patch("/{id}")
+    public UserDTO deleteUser(@PathVariable("id") Long id, Authentication authentication){
+
+        User user = this.userService.findById(id);        
+        user = this.userService.delete(user, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new UserDTO(user);
     }
 }

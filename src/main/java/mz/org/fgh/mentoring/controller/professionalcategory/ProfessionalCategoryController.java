@@ -1,5 +1,10 @@
 package mz.org.fgh.mentoring.controller.professionalcategory;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
@@ -23,10 +28,6 @@ import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.service.professionalcategory.ProfessionalCategoryService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.PROFESSIONAL_CATEGORIES)
@@ -89,4 +90,18 @@ public class ProfessionalCategoryController extends BaseController {
 
         return HttpResponse.ok().body(new ProfessionalCategoryDTO(professionalCategory));
     }
+
+    @Operation(summary = "Delete ProfessionalCategory from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "ProfessionalCategory")
+    @Patch("/{id}")
+    public ProfessionalCategoryDTO deleteProfessionalCategory(@PathVariable("id") Long id, Authentication authentication){
+
+        ProfessionalCategory professionalCategory = this.professionalCategoryService.findById(id).get();        
+        professionalCategory = this.professionalCategoryService.delete(professionalCategory, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new ProfessionalCategoryDTO(professionalCategory);
+    }
+
+
 }

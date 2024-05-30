@@ -105,4 +105,14 @@ public class QuestionService {
 
         return this.questionRepository.update(question);
     }
+
+    @Transactional
+    public Question delete(Question question, Long userId) {
+        User user = userRepository.findById(userId).get();
+        question.setLifeCycleStatus(LifeCycleStatus.DELETED);
+        question.setUpdatedBy(user.getUuid());
+        question.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.questionRepository.update(question);
+    }
 }
