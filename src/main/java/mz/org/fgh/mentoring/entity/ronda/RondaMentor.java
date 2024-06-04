@@ -33,7 +33,7 @@ public class RondaMentor extends BaseEntity {
       @JoinColumn(name = "MENTOR_ID")
       private Tutor mentor;
 
-      @Column(name = "START_DATE")
+      @Column(name = "START_DATE", nullable = false)
       private Date startDate;
 
       @Column(name = "END_DATE")

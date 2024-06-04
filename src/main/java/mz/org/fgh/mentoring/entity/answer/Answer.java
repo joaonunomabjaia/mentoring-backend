@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.indicator.Indicator;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -25,7 +26,7 @@ public abstract class Answer extends BaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FORM_ID", nullable = false)
-   private Form form;
+    private Form form;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MENTORSHIP_ID")
@@ -38,10 +39,15 @@ public abstract class Answer extends BaseEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FORM_QUESTION_ID", nullable = false)
+    private FormQuestion formQuestion;
+
+    @NotNull
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "INDICATOR_ID")
     private Indicator indicator;
 
-    public abstract void setValue(String value);
-    public abstract String getValue();
+    @Column(name = "ANSWER", nullable = false)
+    private String answer;
 
 }

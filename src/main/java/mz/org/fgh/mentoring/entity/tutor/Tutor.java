@@ -48,6 +48,7 @@ public class Tutor extends BaseEntity {
     public String toString() {
         return "Tutor{" +
                 "employee=" + employee +
+                ", tutorProgrammaticAreas=" + tutorProgrammaticAreas +
                 '}';
     }
 }

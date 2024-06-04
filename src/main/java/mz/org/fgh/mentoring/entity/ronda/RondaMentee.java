@@ -9,6 +9,7 @@ import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 
 import javax.persistence.*;
+import java.util.Date;
 
 @Entity(name = "RondaMentorandos")
 @Table(name = "ronda_mentorandos")
@@ -27,8 +28,10 @@ public class RondaMentee extends BaseEntity {
     @JoinColumn(name = "MENTORES_ID")
     private Tutored tutored;
 
-    @Column(name = "STATE")
-    private String result;
+    @Column(name = "START_DATE", nullable = false)
+    private Date startDate;
 
+    @Column(name = "END_DATE")
+    private Date endDate;
 
 }
