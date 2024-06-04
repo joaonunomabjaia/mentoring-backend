@@ -6,6 +6,8 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.session.Session;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -42,7 +44,13 @@ public class Ronda extends BaseEntity {
     @JoinColumn(name = "RONDA_TYPE_ID")
     private RondaType rondaType;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "HEALTH_FACILITY_ID")
+    private HealthFacility healthFacility;
 
-    @OneToMany(mappedBy = "ronda")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ronda")
+    private List<RondaMentee> rondaMentees;
+
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ronda")
     private List<RondaMentor> rondaMentors;
 }
