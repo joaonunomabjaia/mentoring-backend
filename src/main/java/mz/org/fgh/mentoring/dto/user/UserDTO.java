@@ -4,7 +4,6 @@ import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.dto.role.UserRoleDTO;
@@ -23,11 +22,14 @@ public class UserDTO extends BaseEntityDTO {
 
     private String password;
 
+    private boolean newPasswordRequired;
+
     private String salt;
 
     private EmployeeDTO employeeDTO;
 
     private List<UserRoleDTO> userRoleDTOS;
+    
     @Creator
     public UserDTO() {}
 
@@ -37,6 +39,7 @@ public class UserDTO extends BaseEntityDTO {
         this.setUserRoleDTOS(setUserRoles(user.getUserRoles()));
         this.setUsername(user.getUsername());
         this.setPassword(user.getPassword());
+        this.setNewPasswordRequired(user.isNewPasswordRequired());
         this.setSalt(user.getSalt());
     }
 

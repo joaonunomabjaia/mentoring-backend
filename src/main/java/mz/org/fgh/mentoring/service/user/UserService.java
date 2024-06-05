@@ -82,6 +82,7 @@ public class UserService {
         user.setSalt(UUID.randomUUID().toString());
         try {
             user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
+            user.setNewPasswordRequired(true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -107,11 +108,6 @@ public class UserService {
         userDB.setUpdatedBy(authUser.getUuid());
         userDB.setUpdatedAt(DateUtils.getCurrentDate());
         userDB.setEmployee(new Employee(userDTO.getEmployeeDTO()));
-        try {
-            userDB.setPassword(Utilities.MD5Crypt(userDB.getSalt()+":"+userDTO.getPassword()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         userDB.setUsername(userDTO.getUsername());
 
         Employee employeeDB = employeeRepository.findById(userDTO.getEmployeeDTO().getId()).get();
@@ -139,5 +135,22 @@ public class UserService {
         user.setUpdatedAt(DateUtils.getCurrentDate());
 
         return this.userRepository.update(user);
+    }
+
+    @Transactional
+    public User resetPassword(UserDTO userDTO, User userDB,Long userId) {
+        User authUser = userRepository.findById(userId).get();
+
+        userDB.setUpdatedBy(authUser.getUuid());
+        userDB.setUpdatedAt(DateUtils.getCurrentDate());
+        try {
+            userDB.setPassword(Utilities.MD5Crypt(userDB.getSalt()+":"+userDTO.getPassword()));
+            userDB.setNewPasswordRequired(userDTO.isNewPasswordRequired());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        userDB.setUsername(userDTO.getUsername());
+
+        return this.userRepository.update(userDB);
     }
 }

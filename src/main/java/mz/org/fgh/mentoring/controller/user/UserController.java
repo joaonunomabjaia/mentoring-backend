@@ -90,4 +90,17 @@ public class UserController extends BaseController {
 
         return new UserDTO(user);
     }
+
+    @Operation(summary = "User Password Reset to database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Patch("/password-reset")
+    public HttpResponse<RestAPIResponse> resetPassword (@Body UserDTO userDTO, Authentication authentication) {
+        User userDB = this.userService.findById(userDTO.getId());
+        User user = this.userService.resetPassword(userDTO, userDB, (Long) authentication.getAttributes().get("userInfo"));
+
+        LOG.info("Created User {}", user);
+
+        return HttpResponse.ok().body(new UserDTO(user));
+    }
 }

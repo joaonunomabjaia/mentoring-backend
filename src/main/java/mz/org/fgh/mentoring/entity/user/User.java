@@ -46,6 +46,10 @@ public class User extends BaseEntity {
     private String password;
 
     @NotEmpty
+    @Column(name = "NEW_PASSWORD_REQUIRED", nullable = false, length = 500)
+    private boolean newPasswordRequired;
+
+    @NotEmpty
     @Column(name = "SALT", nullable = false, length = 500)
     private String salt;
 
@@ -57,12 +61,15 @@ public class User extends BaseEntity {
     @JsonIgnore
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "user")
     private List<UserRole> userRoles = new ArrayList<>();
+
     @Creator
     public User() {}
+    
     public User(UserDTO userDTO) {
         super(userDTO);
         this.username = userDTO.getUsername();
         this.password = userDTO.getPassword();
+        this.newPasswordRequired = userDTO.isNewPasswordRequired();
         this.salt = userDTO.getSalt();
         this.employee = new Employee(userDTO.getEmployeeDTO());
     }
@@ -129,6 +136,7 @@ public class User extends BaseEntity {
         return "User{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
+                ", newPasswordRequired='" + newPasswordRequired + '\'' +
                 ", salt='" + salt + '\'' +
                 ", employee=" + employee +
                 ", userRoles=" + userRoles +
