@@ -1,7 +1,21 @@
 package mz.org.fgh.mentoring.entity.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotEmpty;
+
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
+
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -14,18 +28,6 @@ import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.entity.role.UserRole;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotEmpty;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * @author Jose Julai Ritsure
@@ -46,8 +48,8 @@ public class User extends BaseEntity {
     private String password;
 
     @NotEmpty
-    @Column(name = "NEW_PASSWORD_REQUIRED", nullable = false, length = 500)
-    private boolean newPasswordRequired;
+    @Column(name = "SHOULD_RESET_PASSWORD", nullable = false, length = 500)
+    private boolean shouldResetPassword;
 
     @NotEmpty
     @Column(name = "SALT", nullable = false, length = 500)
@@ -69,7 +71,7 @@ public class User extends BaseEntity {
         super(userDTO);
         this.username = userDTO.getUsername();
         this.password = userDTO.getPassword();
-        this.newPasswordRequired = userDTO.isNewPasswordRequired();
+        this.shouldResetPassword = userDTO.isShouldResetPassword();
         this.salt = userDTO.getSalt();
         this.employee = new Employee(userDTO.getEmployeeDTO());
     }
@@ -136,7 +138,7 @@ public class User extends BaseEntity {
         return "User{" +
                 "username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", newPasswordRequired='" + newPasswordRequired + '\'' +
+                ", shouldResetPassword='" + shouldResetPassword + '\'' +
                 ", salt='" + salt + '\'' +
                 ", employee=" + employee +
                 ", userRoles=" + userRoles +

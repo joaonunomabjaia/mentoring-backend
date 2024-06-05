@@ -82,7 +82,7 @@ public class UserService {
         user.setSalt(UUID.randomUUID().toString());
         try {
             user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
-            user.setNewPasswordRequired(true);
+            user.setShouldResetPassword(true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -145,7 +145,7 @@ public class UserService {
         userDB.setUpdatedAt(DateUtils.getCurrentDate());
         try {
             userDB.setPassword(Utilities.MD5Crypt(userDB.getSalt()+":"+userDTO.getPassword()));
-            userDB.setNewPasswordRequired(userDTO.isNewPasswordRequired());
+            userDB.setShouldResetPassword(userDTO.isShouldResetPassword());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
