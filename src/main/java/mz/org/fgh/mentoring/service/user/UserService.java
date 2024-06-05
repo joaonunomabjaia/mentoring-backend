@@ -107,6 +107,7 @@ public class UserService {
 
         userDB.setUpdatedBy(authUser.getUuid());
         userDB.setUpdatedAt(DateUtils.getCurrentDate());
+        userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
         userDB.setEmployee(new Employee(userDTO.getEmployeeDTO()));
         userDB.setUsername(userDTO.getUsername());
 
