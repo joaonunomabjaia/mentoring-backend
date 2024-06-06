@@ -65,11 +65,11 @@ public class ProgramaticAreaController extends BaseController {
         return this.programaticAreaService.createProgrammaticArea(programaticArea, (Long) authentication.getAttributes().get("userInfo"));
     }
 
-    @Put(   consumes = MediaType.APPLICATION_JSON,
+    @Patch(   consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON)
-    public ProgrammaticArea update(@Body ProgrammaticArea programaticArea){
+    public ProgrammaticArea update(@Body ProgrammaticArea programaticArea, Authentication authentication){
 
-        return this.programaticAreaService.updateProgrammaticArea(programaticArea);
+        return this.programaticAreaService.updateProgrammaticArea(programaticArea, (Long) authentication.getAttributes().get("userInfo"));
     }
 
     @Operation(summary = "Return a list of programmatic areas by Program")

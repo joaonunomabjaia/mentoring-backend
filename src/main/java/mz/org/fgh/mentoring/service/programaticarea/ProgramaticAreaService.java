@@ -39,9 +39,19 @@ public class ProgramaticAreaService {
         return this.programaticAreaRepository.save(programaticArea);
     }
 
-    public ProgrammaticArea updateProgrammaticArea(final ProgrammaticArea programaticArea){
+    public ProgrammaticArea updateProgrammaticArea(final ProgrammaticArea programaticArea, Long userId){
+     
+        ProgrammaticArea programmaticAreaDB = this.getProgrammaticAreaById(programaticArea.getId());     
+        User user = userRepository.findById(userId).get();
+       
+        programmaticAreaDB.setUpdatedBy(user.getUuid());
+        programmaticAreaDB.setUpdatedAt(DateUtils.getCurrentDate());
+        programmaticAreaDB.setCode(programaticArea.getCode());
+        programmaticAreaDB.setDescription(programaticArea.getDescription());
+        programmaticAreaDB.setName(programaticArea.getName());
+        programmaticAreaDB.setProgram(programaticArea.getProgram());
 
-        return this.programaticAreaRepository.update(programaticArea);
+        return this.programaticAreaRepository.update(programmaticAreaDB);
     }
 
 //    public List<ProgrammaticAreaDTO> fetchProgrammaticAreasAll(final Long limit,final Long offset){
