@@ -1,10 +1,23 @@
 package mz.org.fgh.mentoring.controller.healthfacility;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -20,12 +33,6 @@ import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.service.healthfacility.HealthFacilityService;
 import mz.org.fgh.mentoring.util.Utilities;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.HEALTH_FACILITY)
@@ -120,8 +127,12 @@ public class HealthFacilityController extends BaseController {
     public HttpResponse<RestAPIResponse> update (@Body HealthFacilityDTO healthFacilityDTO, Authentication authentication) {
 
         HealthFacility healthFacility = this.healthFacilityService.findById(healthFacilityDTO.getId());
-        healthFacility.setHealthFacility(healthFacilityDTO.getHealthFacility());
-        healthFacility.setDistrict(new District(healthFacilityDTO.getDistrictDTO()));
+        if(healthFacilityDTO.getHealthFacility()!= ""){
+            healthFacility.setHealthFacility(healthFacilityDTO.getHealthFacility());
+        }
+        if(healthFacilityDTO.getDistrictDTO()!=null){
+            healthFacility.setDistrict(new District(healthFacilityDTO.getDistrictDTO()));
+        }
         this.healthFacilityService.update(healthFacility, (Long) authentication.getAttributes().get("userInfo"));
 
         LOG.info("Updated healthFacility {}", healthFacility);
