@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.util.Utilities;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -19,14 +20,14 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 public class RondaDTO extends BaseEntityDTO {
 
-    private String code;
-
     private String description;
 
-    private LocalDateTime dateBegin;
+    private Date startDate;
+
+    private Date endDate;
 
     @JsonProperty(value = "rondaTypeDTO")
-    private RondaTypeDTO rondaTypeDTO;
+    private RondaTypeDTO rondaType;
 
     private HealthFacilityDTO healthFacility;
 
@@ -39,10 +40,14 @@ public class RondaDTO extends BaseEntityDTO {
 
     public RondaDTO(Ronda ronda) {
         super(ronda);
-        this.code = ronda.getCode();
-        this.description = ronda.getDescription();
-        this.dateBegin = ronda.getDateBegin();
-        this.rondaTypeDTO = new RondaTypeDTO(ronda.getRondaType());
+        this.setDescription(ronda.getDescription());
+        this.setStartDate(ronda.getStartDate());
+        if(ronda.getEndDate()!=null) {
+            this.setEndDate(ronda.getEndDate());
+        }
+        if(ronda.getRondaType()!=null) {
+            this.setRondaType(new RondaTypeDTO(ronda.getRondaType()));
+        }
         this.setHealthFacility(new HealthFacilityDTO(ronda.getHealthFacility()));
         if (Utilities.listHasElements(ronda.getRondaMentees())) {
             List<RondaMenteeDTO> rondaMenteeDTOS = ronda.getRondaMentees().stream()
@@ -62,11 +67,16 @@ public class RondaDTO extends BaseEntityDTO {
         Ronda ronda = new Ronda();
         ronda.setId(this.getId());
         ronda.setUuid(this.getUuid());
-        ronda.setCode(this.getCode());
         ronda.setDescription(this.getDescription());
-        ronda.setDateBegin(this.getDateBegin());
-        if(this.getRondaTypeDTO()!=null) {
-            ronda.setRondaType(this.getRondaTypeDTO().getRondaType());
+        ronda.setStartDate(this.getStartDate());
+        ronda.setEndDate(this.getEndDate());
+        ronda.setCreatedAt(this.getCreatedAt());
+        ronda.setUpdatedAt(this.getUpdatedAt());
+        if(this.getHealthFacility()!=null) {
+            ronda.setHealthFacility(this.getHealthFacility().getHealthFacilityObj());
+        }
+        if(this.getRondaType()!=null) {
+            ronda.setRondaType(this.getRondaType().getRondaType());
         }
         if(Utilities.listHasElements(this.getRondaMentors())) {
             List<RondaMentor> rondaMentors = new ArrayList<>();

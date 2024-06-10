@@ -4,12 +4,23 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaMenteeDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaMentorDTO;
+import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
+import mz.org.fgh.mentoring.entity.ronda.RondaType;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaMenteeRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaMentorRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
+import mz.org.fgh.mentoring.repository.ronda.RondaTypeRepository;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
+import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
+import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -23,11 +34,24 @@ public class RondaService {
     private final RondaRepository rondaRepository;
     private final RondaMentorRepository rondaMentorRepository;
     private final RondaMenteeRepository rondaMenteeRepository;
+    private final UserRepository userRepository;
+    private final TutoredRepository tutoredRepository;
+    private final TutorRepository tutorRepository;
+    private final HealthFacilityRepository healthFacilityRepository;
+    private final RondaTypeRepository rondaTypeRepository;
 
-    public RondaService(RondaRepository rondaRepository, RondaMentorRepository rondaMentorRepository, RondaMenteeRepository rondaMenteeRepository) {
+    public RondaService(RondaRepository rondaRepository, RondaMentorRepository rondaMentorRepository,
+                        RondaMenteeRepository rondaMenteeRepository, UserRepository userRepository,
+                        TutoredRepository tutoredRepository, TutorRepository tutorRepository,
+                        HealthFacilityRepository healthFacilityRepository, RondaTypeRepository rondaTypeRepository) {
         this.rondaRepository = rondaRepository;
         this.rondaMentorRepository = rondaMentorRepository;
         this.rondaMenteeRepository = rondaMenteeRepository;
+        this.userRepository = userRepository;
+        this.tutoredRepository = tutoredRepository;
+        this.tutorRepository = tutorRepository;
+        this.healthFacilityRepository = healthFacilityRepository;
+        this.rondaTypeRepository = rondaTypeRepository;
     }
 
     public List<Ronda> findAll(){
@@ -46,7 +70,11 @@ public class RondaService {
         return this.rondaRepository.findRondaWithLimit(limit, offset);
     }
 
-    public Ronda createRonda(final Ronda ronda){
+    public Ronda createRonda(final Ronda ronda, Long userId){
+        User user = userRepository.findById(userId).get();
+        ronda.setCreatedBy(user.getUuid());
+        ronda.setCreatedAt(DateUtils.getCurrentDate());
+        ronda.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         return this.rondaRepository.save(ronda);
     }
 
@@ -60,23 +88,36 @@ public class RondaService {
         return rondas;
     }
 
-    public List<RondaDTO> createRondas(List<RondaDTO> rondaDTOS) {
+    public List<RondaDTO> createRondas(List<RondaDTO> rondaDTOS, Long userId) {
         List<RondaDTO> rondas = new ArrayList<>();
         for (RondaDTO rondaDTO: rondaDTOS) {
-            RondaDTO dto = this.createRonda(rondaDTO);
+            RondaDTO dto = this.createRonda(rondaDTO, userId);
             rondas.add(dto);
         }
       return rondas;
     }
 
-    public RondaDTO createRonda(RondaDTO rondaDTO) {
+    public RondaDTO createRonda(RondaDTO rondaDTO, Long userId) {
         Ronda ronda = rondaDTO.getRonda();
+        User user = userRepository.findById(userId).get();
+        HealthFacility healthFacility = healthFacilityRepository.findByUuid(ronda.getHealthFacility().getUuid()).get();
+        Tutor mentor = tutorRepository.findByUuid(ronda.getRondaMentors().get(0).getMentor().getUuid()).get();
+        RondaType rondaType = rondaTypeRepository.findByUuid(ronda.getRondaType().getUuid()).get();
+        ronda.setCreatedBy(user.getUuid());
+        ronda.setCreatedAt(DateUtils.getCurrentDate());
+        ronda.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        ronda.setHealthFacility(healthFacility);
+        ronda.setRondaType(rondaType);
         Ronda createdRonda = this.rondaRepository.save(ronda);
         if(Utilities.listHasElements(rondaDTO.getRondaMentors())) {
             List<RondaMentor> rondaMentors = ronda.getRondaMentors();
             List<RondaMentor> savedRondaMentors = new ArrayList<>();
             for (RondaMentor rondaMentor: rondaMentors) {
                 rondaMentor.setRonda(createdRonda);
+                rondaMentor.setMentor(mentor);
+                rondaMentor.setCreatedBy(user.getUuid());
+                rondaMentor.setCreatedAt(DateUtils.getCurrentDate());
+                rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
                 RondaMentor saveRondaMentor = this.rondaMentorRepository.save(rondaMentor);
                 savedRondaMentors.add(saveRondaMentor);
             }
@@ -87,6 +128,11 @@ public class RondaService {
             List<RondaMentee> savedRondaMentees = new ArrayList<>();
             for (RondaMentee rondaMentee: rondaMentees) {
                 rondaMentee.setRonda(createdRonda);
+                Tutored mentee = tutoredRepository.findByUuid(rondaMentee.getTutored().getUuid()).get();
+                rondaMentee.setTutored(mentee);
+                rondaMentee.setCreatedBy(user.getUuid());
+                rondaMentee.setCreatedAt(DateUtils.getCurrentDate());
+                rondaMentee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
                 RondaMentee savedRondaMentee = this.rondaMenteeRepository.save(rondaMentee);
                 savedRondaMentees.add(savedRondaMentee);
             }
@@ -97,6 +143,15 @@ public class RondaService {
     }
 
     public List<Ronda> getAllOfMentor(String mentorUuid) {
-        return this.rondaRepository.getAllOfMentor(mentorUuid);
+        List<Ronda> rondas = this.rondaRepository.getAllOfMentor(mentorUuid);
+        for (Ronda ronda: rondas) {
+           List<RondaMentee> rondaMentees =  rondaMenteeRepository.findByRonda(ronda.getId(), LifeCycleStatus.ACTIVE);
+           ronda.setRondaMentees(rondaMentees);
+
+           List<RondaMentor> rondaMentors = rondaMentorRepository.findByRonda(ronda.getId(), LifeCycleStatus.ACTIVE);
+           ronda.setRondaMentors(rondaMentors);
+        }
+
+        return rondas;
     }
 }
