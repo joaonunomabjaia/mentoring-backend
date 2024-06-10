@@ -18,7 +18,6 @@ import javax.validation.constraints.NotNull;
 @Table(name = "TUTOR_PROGRAMMATIC_AREA", uniqueConstraints = @UniqueConstraint(columnNames = { "TUTOR_ID", "PROGRAMMATIC_AREA_ID"}))
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class TutorProgrammaticArea extends BaseEntity {
 
     @NotNull

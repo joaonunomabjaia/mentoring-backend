@@ -14,7 +14,7 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
     @Override
     List<ProgrammaticArea> findAll();
 
-    @Query("select p from ProgramaticArea p where p.code like concat(concat('%', :code) ,'%')  and p.name like concat(concat('%', :name),'%') and p.lifeCycleStatus =:lifeCycleStatus")
+    @Query("select p from ProgrammaticArea p where p.code like concat(concat('%', :code) ,'%')  and p.name like concat(concat('%', :name),'%') and p.lifeCycleStatus =:lifeCycleStatus")
     List<ProgrammaticArea> findBySelectedFilter(final String code, final String name, final LifeCycleStatus lifeCycleStatus);
 
 //    @Query("select p from ProgramaticArea p inner join fetch p.tutorProgrammaticAreas tpa inner join fetch tpa.tutor t where t.uuid =:tutorUuid")
@@ -23,12 +23,12 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
     @Query(value = "select * from programmatic_areas limit :lim offset :of ", nativeQuery = true)
     List<ProgrammaticArea> findProgrammaticAreaWithLimit(long lim, long of);
 
-    @Query("select pa from ProgramaticArea pa inner join fetch pa.program p where p.description =:program")
+    @Query("select pa from ProgrammaticArea pa inner join fetch pa.program p where p.description =:program")
     List<ProgrammaticArea> findProgrammaticAreasByProgram(final String program);
 
-    @Query("select p from ProgramaticArea p inner join fetch p.program where p.lifeCycleStatus =:lifeCycleStatus")
+    @Query("select p from ProgrammaticArea p inner join fetch p.program where p.lifeCycleStatus =:lifeCycleStatus")
     List<ProgrammaticArea> fetchAll(final LifeCycleStatus lifeCycleStatus);
 
-    @Query("SELECT p FROM ProgramaticArea p JOIN FETCH p.program WHERE p.id = :id")
+    @Query("SELECT p FROM ProgrammaticArea p JOIN FETCH p.program WHERE p.id = :id")
     ProgrammaticArea getById(Long id);
 }
