@@ -75,6 +75,7 @@ public class UserService {
         User authUser = userRepository.findById(userId).get();
         String password = Utilities.generateRandomPassword(6);
 
+        user.setId(null);
         user.setCreatedBy(authUser.getUuid());
         user.setUuid(UUID.randomUUID().toString());
         user.setCreatedAt(DateUtils.getCurrentDate());
