@@ -17,7 +17,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 
 @Schema(name = "Tutoreds", description = "A professional that provide mentoring to the tutored individuals")
-@Entity(name = "Tutoreds")
+@Entity(name = "Tutored")
 @Table(name = "tutoreds")
 @Data
 @AllArgsConstructor

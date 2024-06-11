@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.repository.session;
 
+import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -8,6 +9,7 @@ import mz.org.fgh.mentoring.util.SubmitedSessions;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 
 public interface SessionRepository extends CrudRepository<Session, Long> {
@@ -39,4 +41,13 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
     List<PerformedSession> findMatchingSelectedFilterIndicators(Date startDate, Date endDate);
 
     List<PerformedSession> findPerformedSessionsMatchingSelectedFilterIndicatorsList(Date startDate, Date endDate);
+
+    @Query("SELECT s FROM Session s " +
+            "JOIN s.ronda r " +
+            "JOIN r.rondaType rt " +
+            "JOIN r.rondaMentees rm " +
+            "JOIN rm.tutored td " +
+            "WHERE rt.code = 'SESSAO_ZERO' " +
+            "AND td.id = :tutoredId ")
+    Optional<Session> getTutoredZeroSession(Long tutoredId);
 }

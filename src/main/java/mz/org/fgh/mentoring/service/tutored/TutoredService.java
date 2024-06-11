@@ -7,6 +7,7 @@ import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
+import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
@@ -25,6 +26,8 @@ public class TutoredService {
     private final EmployeeService employeeService;
     private final TutoredRepository tutoredRepository;
     private final UserRepository userRepository;
+    @Inject
+    private SessionRepository sessionRepository;
     @Inject
     private LocationRepository locationRepository;
 
@@ -130,8 +133,7 @@ public class TutoredService {
     }
 
     private boolean checkZeroEvaluation(Tutored tutored) {
-
-        return false;
+        return this.sessionRepository.getTutoredZeroSession(tutored.getId()).isPresent();
     }
 
     /*public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {

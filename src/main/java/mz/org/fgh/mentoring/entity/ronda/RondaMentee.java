@@ -12,7 +12,7 @@ import javax.persistence.*;
 import java.util.Date;
 
 @Entity(name = "RondaMentorandos")
-@Table(name = "ronda_mentorandos")
+@Table(name = "ronda_mentee")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
@@ -25,7 +25,7 @@ public class RondaMentee extends BaseEntity {
     private Ronda ronda;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "MENTORES_ID")
+    @JoinColumn(name = "MENTEE_ID")
     private Tutored tutored;
 
     @Column(name = "START_DATE", nullable = false)

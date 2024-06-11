@@ -31,11 +31,11 @@ public interface TutoredRepository extends CrudRepository<Tutored, Long> {
 
     Optional<Tutored> findByEmployeeNuitOrEmployeeEmailOrEmployeePhoneNumber(int nuit, String email, String phoneNumber);
 
-    @Query("FROM Tutored t " +
+    @Query("SELECT t FROM Tutored t " +
             "join t.employee e " +
             "join e.locations l " +
             "join l.district d " +
-            "join d.healthFacilities hf " +
+            "join l.healthFacility hf " +
             "where l.lifeCycleStatus = 'ACTIVE' " +
             "and hf.lifeCycleStatus = 'ACTIVE' " +
             "and hf.uuid IN (:uuids)")

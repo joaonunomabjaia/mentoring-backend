@@ -1,11 +1,11 @@
 package mz.org.fgh.mentoring.dto.session;
 
-import java.util.Date;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.session.Session;
+
+import java.util.Date;
 
 @Data
 @NoArgsConstructor
@@ -64,8 +64,8 @@ public class SessionDTO extends BaseEntityDTO {
         Session session = new Session();
         session.setId(this.getId());
         session.setUuid(this.getUuid());
-        session.setDateBegin(this.getStartDate());
-        session.setDateEnd(this.getEndDate());
+        session.setStartDate(this.getStartDate());
+        session.setEndDate(this.getEndDate());
         session.setPerformedDate(this.getPerformedDate());
         if(this.getSessionStatus()!=null) {
             session.setStatus(this.getSessionStatus().getSessionStatus());
