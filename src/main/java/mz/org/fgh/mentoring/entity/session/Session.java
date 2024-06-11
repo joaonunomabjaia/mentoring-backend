@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
@@ -24,7 +25,7 @@ import java.util.List;
 public class Session extends BaseEntity {
     @NotNull
     @Column(name = "DATE_BEGIN", nullable = false)
-    private Date dateBigin;
+    private Date dateBegin;
 
     @NotNull
     @Column(name = "DATE_END", nullable = false)
@@ -37,6 +38,10 @@ public class Session extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SESSION_STATUS_ID", nullable = false)
     private SessionStatus status;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "RONDA_ID", nullable = false)
+    private Ronda ronda;
 
     @Column(name = "REASON")
     private String reason;

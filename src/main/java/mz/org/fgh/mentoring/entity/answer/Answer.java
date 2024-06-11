@@ -6,6 +6,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.form.Form;
+
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.Question;
 
@@ -23,7 +24,7 @@ public class Answer extends BaseEntity {
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FORM_ID", nullable = false)
-   private Form form;
+    private Form form;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "MENTORSHIP_ID")

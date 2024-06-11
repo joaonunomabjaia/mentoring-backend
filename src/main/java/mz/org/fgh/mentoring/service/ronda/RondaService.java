@@ -2,9 +2,16 @@ package mz.org.fgh.mentoring.service.ronda;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
+import mz.org.fgh.mentoring.dto.ronda.RondaMenteeDTO;
+import mz.org.fgh.mentoring.dto.ronda.RondaMentorDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
+import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
+import mz.org.fgh.mentoring.repository.ronda.RondaMenteeRepository;
+import mz.org.fgh.mentoring.repository.ronda.RondaMentorRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,9 +21,13 @@ import java.util.Optional;
 public class RondaService {
 
     private final RondaRepository rondaRepository;
+    private final RondaMentorRepository rondaMentorRepository;
+    private final RondaMenteeRepository rondaMenteeRepository;
 
-    public RondaService(RondaRepository rondaRepository) {
+    public RondaService(RondaRepository rondaRepository, RondaMentorRepository rondaMentorRepository, RondaMenteeRepository rondaMenteeRepository) {
         this.rondaRepository = rondaRepository;
+        this.rondaMentorRepository = rondaMentorRepository;
+        this.rondaMenteeRepository = rondaMenteeRepository;
     }
 
     public List<Ronda> findAll(){
@@ -61,6 +72,26 @@ public class RondaService {
     public RondaDTO createRonda(RondaDTO rondaDTO) {
         Ronda ronda = rondaDTO.getRonda();
         Ronda createdRonda = this.rondaRepository.save(ronda);
+        if(Utilities.listHasElements(rondaDTO.getRondaMentors())) {
+            List<RondaMentor> rondaMentors = ronda.getRondaMentors();
+            List<RondaMentor> savedRondaMentors = new ArrayList<>();
+            for (RondaMentor rondaMentor: rondaMentors) {
+                rondaMentor.setRonda(createdRonda);
+                RondaMentor saveRondaMentor = this.rondaMentorRepository.save(rondaMentor);
+                savedRondaMentors.add(saveRondaMentor);
+            }
+            createdRonda.setRondaMentors(savedRondaMentors);
+        }
+        if(Utilities.listHasElements(rondaDTO.getRondaMentees())) {
+            List<RondaMentee> rondaMentees = ronda.getRondaMentees();
+            List<RondaMentee> savedRondaMentees = new ArrayList<>();
+            for (RondaMentee rondaMentee: rondaMentees) {
+                rondaMentee.setRonda(createdRonda);
+                RondaMentee savedRondaMentee = this.rondaMenteeRepository.save(rondaMentee);
+                savedRondaMentees.add(savedRondaMentee);
+            }
+            createdRonda.setRondaMentees(savedRondaMentees);
+        }
         RondaDTO dto = new RondaDTO(createdRonda);
         return dto;
     }

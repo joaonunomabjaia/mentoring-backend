@@ -1987,6 +1987,10 @@
             <column name="END_DATE" type="datetime"> </column>
         </addColumn>
     </changeSet>
+    <changeSet  author="ialuj"  id="renameTable-ronda_mentorandos">
+        <renameTable  newTableName="ronda_mentee"
+                      oldTableName="ronda_mentorandos"/>
+    </changeSet>
     <changeSet id="insert_if_resource_table_is_empty" author="Joao">
         <preConditions onFail="MARK_RAN">
                 <tableIsEmpty tableName="resources"/>
@@ -2016,4 +2020,81 @@
         ]', 'e882ef9d-aa4e-49ed-8b69-5bf6a3f1a4a7', '49dcfc96e18644d1ae9e82dbb7e873a1', NOW(), 'ACTIVE');
         </sql>
     </changeSet>
+    <changeSet id="RONDA_MENTEE_202405231206" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="ronda_mentee" columnName="START_DATE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="ronda_mentee">
+            <column name="START_DATE" type="datetime"> </column>
+        </addColumn>
+        <addColumn tableName="ronda_mentee">
+            <column name="END_DATE" type="datetime"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="RONDA_202406041206" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="rondas" columnName="HEALTH_FACILITY_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="rondas">
+            <column name="HEALTH_FACILITY_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="SESSION_202406041206" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="sessions" columnName="RONDA_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="sessions">
+            <column name="RONDA_ID" type="bigint(20)"> </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-rondas-addColumn-ronda_health_facility_fk" author="ialuj">
+        <comment>
+            Create iteration type foreign key on mentorships table
+        </comment>
+        <addForeignKeyConstraint constraintName="ronda_health_facility_fk"
+                                 baseTableName="rondas" baseColumnNames="HEALTH_FACILITY_ID"
+                                 referencedTableName="health_facilities" referencedColumnNames="id"/>
+    </changeSet>
+    <!--<changeSet id="Table-sessions-addColumn-session_ronda_fk" author="ialuj">
+        <comment>
+            Create iteration type foreign key on mentorships table
+        </comment>
+        <addForeignKeyConstraint constraintName="session_ronda_fk"
+                                 baseTableName="sessions" baseColumnNames="ronda_id"
+                                 referencedTableName="ronda" referencedColumnNames="id"/>
+    </changeSet>-->
+    <!--<changeSet id="Table-answers-addColumn-form_question_id" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="answers" columnName="FORM_QUESTION_ID"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="answers">
+            <column name="FORM_QUESTION_ID"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-answers-addColumn-answers_form_question_fk" author="ialuj">
+        <comment>
+            Create iteration type foreign key on answers table
+        </comment>
+        <addForeignKeyConstraint constraintName="answers_form_question_fk"
+                                 baseTableName="answers" baseColumnNames="form_question_id"
+                                 referencedTableName="answers" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-answers-addColumn-answer" author="ialuj" >
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="answers" columnName="ANSWER"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="answers">
+            <column name="ANSWER"  type="bigint(20)"/>
+        </addColumn>
+    </changeSet>-->
 </databaseChangeLog>
