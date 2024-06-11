@@ -23,7 +23,9 @@ public class RondaMenteeDTO extends BaseEntityDTO {
     public RondaMenteeDTO(RondaMentee rondaMentee) {
         super(rondaMentee);
         this.setMentee(new TutoredDTO(rondaMentee.getTutored()));
-        this.setRonda(new RondaDTO(rondaMentee.getRonda()));
+        this.setStartDate(rondaMentee.getStartDate());
+        this.setEndDate(rondaMentee.getEndDate());
+        //this.setRonda(new RondaDTO(rondaMentee.getRonda()));
     }
 
     public Date getStartDate() {
@@ -65,7 +67,7 @@ public class RondaMenteeDTO extends BaseEntityDTO {
         rondaMentee.setCreatedAt(this.getCreatedAt());
         rondaMentee.setUpdatedAt(this.getUpdatedAt());
         if(this.getMentee()!=null) {
-            rondaMentee.setTutored(this.getRondaMentee().getTutored());
+            rondaMentee.setTutored(this.getMentee().getMentee());
         }
         if(this.getRonda()!=null) {
             rondaMentee.setRonda(this.getRonda().getRonda());

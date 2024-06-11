@@ -1,9 +1,11 @@
 package mz.org.fgh.mentoring.controller.ronda;
 
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -14,7 +16,9 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
+import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.ronda.RondaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,12 +92,12 @@ public class RondaController extends BaseController {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON
     )
-    public HttpResponse<RestAPIResponse> create (@Body Ronda ronda) {
+    public HttpResponse<RestAPIResponse> create (@Body Ronda ronda, Authentication authentication) {
 
 
         LOG.debug("Created tutor {}", ronda);
 
-        this.rondaService.createRonda(ronda);
+        this.rondaService.createRonda(ronda, (Long) authentication.getAttributes().get("userInfo"));
 
         return HttpResponse.ok().body(ronda);
     }
@@ -114,8 +118,8 @@ public class RondaController extends BaseController {
             consumes = MediaType.APPLICATION_JSON,
             produces = MediaType.APPLICATION_JSON
     )
-    public List<RondaDTO> postRondas(@Body List<RondaDTO> rondaDTOS) {
-        List<RondaDTO> dtos = this.rondaService.createRondas(rondaDTOS);
+    public List<RondaDTO> postRondas(@Body List<RondaDTO> rondaDTOS, Authentication authentication) {
+        List<RondaDTO> dtos = this.rondaService.createRondas(rondaDTOS, (Long) authentication.getAttributes().get("userInfo"));
         return dtos;
     }
 
@@ -124,13 +128,21 @@ public class RondaController extends BaseController {
     @Tag(name = "Ronda")
     @Post(
             consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON
+            produces = MediaType.APPLICATION_JSON,
+            value = "/save"
     )
-    public HttpResponse<RondaDTO> postRonda (@Body RondaDTO rondaDTO) {
+    public HttpResponse<RestAPIResponse> postRonda (@Body RondaDTO rondaDTO, Authentication authentication) {
+        try {
+        RondaDTO dto = this.rondaService.createRonda(rondaDTO, (Long) authentication.getAttributes().get("userInfo"));
 
-        RondaDTO dto = this.rondaService.createRonda(rondaDTO);
-
-        return HttpResponse.ok().body(dto);
+        return HttpResponse.created(dto);
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
     }
 
     @Operation(summary = "Return a list off all Rounds of a given mentor")
