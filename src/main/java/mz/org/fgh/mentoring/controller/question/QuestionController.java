@@ -1,36 +1,34 @@
 package mz.org.fgh.mentoring.controller.question;
 
-import io.micronaut.core.annotation.Creator;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.MediaType;
 import io.micronaut.http.HttpResponse;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.QueryValue;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import mz.org.fgh.mentoring.api.RestAPIResponse;
-import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
+import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
-import mz.org.fgh.mentoring.entity.question.QuestionType;
 import mz.org.fgh.mentoring.service.question.QuestionService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.ArrayList;
-import java.util.List;
 @Controller(RESTAPIMapping.QUESTION)
 public class QuestionController extends BaseController {
     public static final Logger LOG = LoggerFactory.getLogger(QuestionController.class);
@@ -74,7 +72,7 @@ public class QuestionController extends BaseController {
     }
 
     @Secured(SecurityRule.IS_ANONYMOUS)
-    @Operation(summary = "Save Program to database")
+    @Operation(summary = "Save Question to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
     @Post("/save")
@@ -115,5 +113,17 @@ public class QuestionController extends BaseController {
         return HttpResponse.ok().body(new QuestionDTO(question));
     }
 
- 
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Get Question from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Patch("/{id}")
+    public QuestionDTO deleteQuestion(@PathVariable("id") Long id, Authentication authentication){
+
+        Question question = this.questionService.findById(id).get();        
+        question = this.questionService.delete(question, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new QuestionDTO(question);
+    }
+
 }

@@ -1969,8 +1969,8 @@
             <tableExists tableName="settings"/>
         </preConditions>
         <sql>
-            INSERT INTO settings (CREATED_BY, LIFE_CYCLE_STATUS, `UUID`, DESIGNATION, SETTING_VALUE, DESCRIPTION)
-            VALUES ('49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', 'e3f9d947-b2ef-4f5c-b9d1-7b09a44dvdb8', 'ResourcesDirectory', 'D:\\\\resources', 'Directory for the resources');
+            INSERT INTO settings (CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS, `UUID`, DESIGNATION, SETTING_VALUE, DESCRIPTION)
+            VALUES ('49dcfc96e18644d1ae9e82dbb7e873a1', '2024-04-03 09:00:00.000', 'ACTIVE', 'e3f9d947-b2ef-4f5c-b9d1-7b09a44dvdb8', 'ResourcesDirectory', 'D:\\\\resources', 'Directory for the resources');
         </sql>
     </changeSet>
 
@@ -2060,6 +2060,31 @@
         <addForeignKeyConstraint constraintName="ronda_health_facility_fk"
                                  baseTableName="rondas" baseColumnNames="HEALTH_FACILITY_ID"
                                  referencedTableName="health_facilities" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-rondas-dropColumn-code" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="rondas" columnName="code"/>
+        </preConditions>
+        <dropColumn tableName="rondas" columnName="code" />
+    </changeSet>
+    <changeSet id="Table-rondas-dropColumn-date_begin" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="rondas" columnName="DETE_BEGIN"/>
+        </preConditions>
+        <dropColumn tableName="rondas" columnName="DETE_BEGIN" />
+    </changeSet>
+    <changeSet id="able-rondas-addColumns-start_date_end_date" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="rondas" columnName="START_DATE"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="rondas">
+            <column name="START_DATE" type="datetime"> </column>
+        </addColumn>
+        <addColumn tableName="rondas">
+            <column name="END_DATE" type="datetime"> </column>
+        </addColumn>
     </changeSet>
     <changeSet id="rename_ronda_mentee_mentor_column" author="voloide">
         <preConditions onFail="MARK_RAN">

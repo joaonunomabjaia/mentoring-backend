@@ -4,11 +4,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Location;
-import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
-import mz.org.fgh.mentoring.entity.program.Program;
-import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
@@ -131,5 +127,15 @@ public class HealthFacilityService {
         healthFacilityDB.setUpdatedAt(DateUtils.getCurrentDate());
 
         return this.healthFacilityRepository.update(healthFacilityDB);
+    }
+
+    @Transactional
+    public HealthFacility delete(HealthFacility healthFacility, Long userId) {
+        User user = userRepository.findById(userId).get();
+        healthFacility.setLifeCycleStatus(LifeCycleStatus.DELETED);
+        healthFacility.setUpdatedBy(user.getUuid());
+        healthFacility.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.healthFacilityRepository.update(healthFacility);
     }
 }

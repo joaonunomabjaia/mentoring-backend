@@ -4,5 +4,6 @@ public enum LifeCycleStatus {
 
     ACTIVE,
     INACTIVE,
-    BLOCKED;
+    BLOCKED,
+    DELETED;
 }

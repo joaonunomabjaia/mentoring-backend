@@ -1,18 +1,17 @@
 package mz.org.fgh.mentoring.dto.user;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import io.micronaut.core.annotation.Creator;
 import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.dto.role.UserRoleDTO;
 import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.user.User;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @AllArgsConstructor
@@ -23,11 +22,14 @@ public class UserDTO extends BaseEntityDTO {
 
     private String password;
 
+    private boolean shouldResetPassword;
+
     private String salt;
 
     private EmployeeDTO employeeDTO;
 
     private List<UserRoleDTO> userRoleDTOS;
+    
     @Creator
     public UserDTO() {}
 
@@ -37,6 +39,7 @@ public class UserDTO extends BaseEntityDTO {
         this.setUserRoleDTOS(setUserRoles(user.getUserRoles()));
         this.setUsername(user.getUsername());
         this.setPassword(user.getPassword());
+        this.setShouldResetPassword(user.isShouldResetPassword());
         this.setSalt(user.getSalt());
     }
 

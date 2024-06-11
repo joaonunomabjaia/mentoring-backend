@@ -71,4 +71,16 @@ public class PartnerController extends BaseController {
         Partner partner = this.partnerService.getById(id);
         return  new PartnerDTO(partner);
     }
+
+    @Operation(summary = "Delete Partner from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Partner")
+    @Patch("/{id}")
+    public PartnerDTO deleteProgram(@PathVariable("id") Long id, Authentication authentication){
+
+        Partner partner = this.partnerService.findPartnerById(id);        
+        partner = this.partnerService.delete(partner, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new PartnerDTO(partner);
+    }
 }

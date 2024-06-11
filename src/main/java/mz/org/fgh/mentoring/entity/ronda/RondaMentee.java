@@ -11,7 +11,7 @@ import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import javax.persistence.*;
 import java.util.Date;
 
-@Entity(name = "RondaMentorandos")
+@Entity(name = "RondaMentee")
 @Table(name = "ronda_mentee")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)

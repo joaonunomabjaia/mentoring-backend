@@ -10,7 +10,6 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
 public interface RondaRepository extends CrudRepository<Ronda, Long> {
 
     @Override
@@ -30,11 +29,6 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
             "where rm.id =: mentorId AND rm.lifeCycleStatus = :lifeCycleStatus AND r.lifeCycleStatus = :lifeCycleStatus ")
     List<Ronda> getAllRondasOfMentor(Long mentorId, LifeCycleStatus lifeCycleStatus);
 
-    @Query("select DISTINCT(r) from Ronda r " +
-            "INNER JOIN FETCH r.rondaMentors rm " +
-            "INNER JOIN FETCH rm.mentor m " +
-            "INNER JOIN FETCH r.rondaType rt " +
-            "where m.uuid =:mentorUuid")
     List<Ronda> getAllOfMentor(String mentorUuid);
 
 }
