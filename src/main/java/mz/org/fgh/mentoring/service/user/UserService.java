@@ -67,14 +67,15 @@ public class UserService {
         }
         return users;
     }
-    public Optional<User> findById(final Long id){
-        return this.userRepository.findById(id);
+    public User findById(final Long id){
+        return this.userRepository.findById(id).get();
     }
     @Transactional
     public User create(User user, Long userId) {
         User authUser = userRepository.findById(userId).get();
         String password = Utilities.generateRandomPassword(6);
 
+        user.setId(null);
         user.setCreatedBy(authUser.getUuid());
         user.setUuid(UUID.randomUUID().toString());
         user.setCreatedAt(DateUtils.getCurrentDate());
@@ -82,6 +83,7 @@ public class UserService {
         user.setSalt(UUID.randomUUID().toString());
         try {
             user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
+            user.setShouldResetPassword(true);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -106,12 +108,8 @@ public class UserService {
 
         userDB.setUpdatedBy(authUser.getUuid());
         userDB.setUpdatedAt(DateUtils.getCurrentDate());
+        userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
         userDB.setEmployee(new Employee(userDTO.getEmployeeDTO()));
-        try {
-            userDB.setPassword(Utilities.MD5Crypt(userDB.getSalt()+":"+userDTO.getPassword()));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
         userDB.setUsername(userDTO.getUsername());
 
         Employee employeeDB = employeeRepository.findById(userDTO.getEmployeeDTO().getId()).get();
@@ -127,6 +125,33 @@ public class UserService {
         employeeDB.setTrainingYear(userDTO.getEmployeeDTO().getTrainingYear());
 
         employeeRepository.update(employeeDB);
+
+        return this.userRepository.update(userDB);
+    }
+
+    @Transactional
+    public User delete(User user, Long userId) {
+        User authUser = userRepository.findById(userId).get();
+        user.setLifeCycleStatus(LifeCycleStatus.DELETED);
+        user.setUpdatedBy(authUser.getUuid());
+        user.setUpdatedAt(DateUtils.getCurrentDate());
+
+        return this.userRepository.update(user);
+    }
+
+    @Transactional
+    public User resetPassword(UserDTO userDTO, User userDB,Long userId) {
+        User authUser = userRepository.findById(userId).get();
+
+        userDB.setUpdatedBy(authUser.getUuid());
+        userDB.setUpdatedAt(DateUtils.getCurrentDate());
+        try {
+            userDB.setPassword(Utilities.MD5Crypt(userDB.getSalt()+":"+userDTO.getPassword()));
+            userDB.setShouldResetPassword(userDTO.isShouldResetPassword());
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+        userDB.setUsername(userDTO.getUsername());
 
         return this.userRepository.update(userDB);
     }

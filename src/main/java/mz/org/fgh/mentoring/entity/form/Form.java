@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
@@ -22,7 +23,6 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Form extends BaseEntity {
 
     @NotEmpty
@@ -62,4 +62,17 @@ public class Form extends BaseEntity {
     @JoinColumn(name = "PARTNER_ID")
     private Partner partner;
 
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form")
+    private List<Answer> answers;
+
+    @Override
+    public String toString() {
+        return "Form [code=" + code + ", name=" + name + ", description=" + description + ", programmaticArea="
+                + programmaticArea + ", targetPatient=" + targetPatient + ", targetFile=" + targetFile + ", partner="
+                + partner + "]";
+    }
+
+    
 }
