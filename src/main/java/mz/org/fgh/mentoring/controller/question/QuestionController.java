@@ -10,6 +10,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
@@ -125,5 +126,20 @@ public class QuestionController extends BaseController {
 
         return new QuestionDTO(question);
     }
+
+    
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Get Question from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Delete("/{id}")
+    public QuestionDTO destroyQuestion(@PathVariable("id") Long id, Authentication authentication){
+
+        Question question = this.questionService.findById(id).get();        
+        this.questionService.destroy(question);       
+
+        return new QuestionDTO(question);
+    }
+
 
 }

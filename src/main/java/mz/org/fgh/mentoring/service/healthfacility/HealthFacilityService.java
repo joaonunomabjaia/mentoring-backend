@@ -1,5 +1,16 @@
 package mz.org.fgh.mentoring.service.healthfacility;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.transaction.Transactional;
+import javax.validation.constraints.NotNull;
+
+import org.apache.commons.lang3.StringUtils;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
@@ -12,18 +23,10 @@ import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.ronda.RondaService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
-import org.apache.commons.lang3.StringUtils;
-
-import javax.transaction.Transactional;
-import javax.validation.constraints.NotNull;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Singleton
 public class HealthFacilityService {
@@ -36,6 +39,10 @@ public class HealthFacilityService {
     private LocationRepository locationRepository;
     @Inject
     private UserRepository userRepository;
+
+    @Inject
+    private RondaService rondaService;
+
     public HealthFacilityService(HealthFacilityRepository healthFacilityRepository) {
         this.healthFacilityRepository = healthFacilityRepository;
     }
@@ -135,7 +142,15 @@ public class HealthFacilityService {
         healthFacility.setLifeCycleStatus(LifeCycleStatus.DELETED);
         healthFacility.setUpdatedBy(user.getUuid());
         healthFacility.setUpdatedAt(DateUtils.getCurrentDate());
-
+        
         return this.healthFacilityRepository.update(healthFacility);
+    }
+
+    @Transactional
+    public void destroy(HealthFacility healthFacility) {
+        boolean hasRondas = rondaService.doesHealthFacilityHaveRondas(healthFacility);
+        if(!hasRondas){
+            this.healthFacilityRepository.delete(healthFacility);
+        }
     }
 }

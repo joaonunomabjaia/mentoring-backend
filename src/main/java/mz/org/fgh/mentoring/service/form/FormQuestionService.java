@@ -1,12 +1,16 @@
 package mz.org.fgh.mentoring.service.form;
 
 import io.micronaut.data.model.Pageable;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
+import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
@@ -25,6 +29,9 @@ public class FormQuestionService {
     private UserRepository userRepository;
 
     FormRepository formRepository;
+
+    @Inject
+    private AnswerRepository answerRepository;
 
     public FormQuestionService(FormQuestionRepository formQuestionRepository, UserRepository userRepository, FormRepository formRepository) {
         this.formQuestionRepository = formQuestionRepository;
@@ -76,4 +83,8 @@ public class FormQuestionService {
         return formQuestionRepository.findByFormsUuids(formsUuids, pageable);
     }
 
+    public boolean doesQuestionHaveFormQuestions(Question question) {
+        List<Answer> answers = this.answerRepository.getByQuestionId(question.getId());
+        return !answers.isEmpty();
+    }
 }

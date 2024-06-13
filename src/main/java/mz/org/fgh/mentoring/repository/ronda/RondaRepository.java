@@ -1,7 +1,6 @@
 package mz.org.fgh.mentoring.repository.ronda;
 
 import io.micronaut.data.annotation.Query;
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -31,4 +30,10 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
 
     List<Ronda> getAllOfMentor(String mentorUuid);
 
+    @Query("select r from Ronda r where r.createdBy = :userUuid")
+    List<Ronda> getByUserUuid(String userUuid);
+
+    @Query("select r from Ronda r join fetch r.healthFacility hf where hf.id = :healthFacilityId")
+    List<Ronda> getByHealthFacilityId(Long healthFacilityId);
+    
 }

@@ -1,12 +1,15 @@
 package mz.org.fgh.mentoring.service.partner;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
+import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -24,6 +27,10 @@ public class PartnerService {
 
     private final PartnerRepository partnerRepository;
     private final UserRepository userRepository;
+
+    @Inject
+    private EmployeeService employeeService;
+
     public PartnerService(PartnerRepository partnerRepository, UserRepository userRepository){
         this.partnerRepository = partnerRepository;
         this.userRepository = userRepository;
@@ -86,5 +93,14 @@ public class PartnerService {
         partner.setUpdatedAt(DateUtils.getCurrentDate());
 
         return this.partnerRepository.update(partner);
+    }
+
+    @Transactional
+    public void destroy(Partner partner) {
+        List<Employee> partners = employeeService.findEmployeebyProfessionalCategory(partner.getId());
+     
+        if(partners.isEmpty()) {
+            partnerRepository.delete(partner);
+        }
     }
 }

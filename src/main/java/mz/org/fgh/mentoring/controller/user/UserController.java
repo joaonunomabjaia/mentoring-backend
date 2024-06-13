@@ -103,4 +103,17 @@ public class UserController extends BaseController {
 
         return HttpResponse.ok().body(new UserDTO(user));
     }
+
+    @Operation(summary = "Destroy User from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Delete("/{id}")
+    public UserDTO destroyUser(@PathVariable("id") Long id, Authentication authentication){
+
+        User user = this.userService.findById(id);        
+        this.userService.destroy(user);       
+
+        return new UserDTO(user);
+    }
+
 }

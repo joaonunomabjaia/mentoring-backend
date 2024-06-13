@@ -1,12 +1,14 @@
 package mz.org.fgh.mentoring.service.program;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
+import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.program.ProgramRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -23,6 +25,8 @@ import java.util.UUID;
 public class ProgramService {
     private final ProgramRepository programRepository;
     private final UserRepository userRepository;
+    @Inject
+    private  ProgramaticAreaService programaticAreaService;
     public ProgramService(ProgramRepository programRepository, UserRepository userRepository) {
         this.programRepository = programRepository;
         this.userRepository = userRepository;
@@ -71,5 +75,13 @@ public class ProgramService {
         program.setUpdatedAt(DateUtils.getCurrentDate());
 
         return this.programRepository.update(program);
+    }
+
+    @Transactional
+    public void destroy(Program program) {
+        List<ProgrammaticAreaDTO> pas = programaticAreaService.findProgrammaticAreasByProgramId(program.getId());
+        if(pas.isEmpty()) {
+            programRepository.delete(program);
+        }
     }
 }

@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.service.role;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.role.Role;
+import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.dto.role.RoleDTO;
 import mz.org.fgh.mentoring.repository.role.RoleRepository;
 import java.util.ArrayList;
@@ -24,5 +25,10 @@ public class RoleService {
             roles.add(roleDTO);
         }
         return roles;
+    }
+
+    public boolean doesUserHaveRoles(User user) {
+        List<Role> roles = this.roleRepository.getByUserUuid(user.getUuid());
+        return !roles.isEmpty();
     }
 }
