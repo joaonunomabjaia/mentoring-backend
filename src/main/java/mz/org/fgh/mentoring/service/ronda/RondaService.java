@@ -2,8 +2,6 @@ package mz.org.fgh.mentoring.service.ronda;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
-import mz.org.fgh.mentoring.dto.ronda.RondaMenteeDTO;
-import mz.org.fgh.mentoring.dto.ronda.RondaMentorDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
@@ -24,6 +22,7 @@ import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -97,6 +96,7 @@ public class RondaService {
       return rondas;
     }
 
+    @Transactional
     public RondaDTO createRonda(RondaDTO rondaDTO, Long userId) {
         Ronda ronda = rondaDTO.getRonda();
         User user = userRepository.findById(userId).get();
@@ -138,8 +138,7 @@ public class RondaService {
             }
             createdRonda.setRondaMentees(savedRondaMentees);
         }
-        RondaDTO dto = new RondaDTO(createdRonda);
-        return dto;
+        return new RondaDTO(createdRonda);
     }
 
     public List<Ronda> getAllOfMentor(String mentorUuid) {
