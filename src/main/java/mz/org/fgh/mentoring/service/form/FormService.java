@@ -110,6 +110,18 @@ public class FormService {
 
         return formDTOS;
     }
+    public List<FormDTO> findFormByProgrammaticAreaId(Long programaticAreaId){
+
+        List<FormDTO> formDTOS = new ArrayList<>();
+
+        List<Form> forms = this.formRepository.findFormByProgrammaticAreaId(programaticAreaId);
+
+        for(Form form : forms){
+            formDTOS.add(new FormDTO(form));
+        }
+
+        return formDTOS;
+    }
     public Form create(Form form){
         return this.formRepository.save(form);
     }

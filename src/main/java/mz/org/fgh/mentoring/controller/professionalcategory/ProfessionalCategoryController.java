@@ -10,6 +10,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
@@ -103,5 +104,16 @@ public class ProfessionalCategoryController extends BaseController {
         return new ProfessionalCategoryDTO(professionalCategory);
     }
 
+    @Operation(summary = "Destroy ProfessionalCategory from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "ProfessionalCategory")
+    @Delete("/{id}")
+    public ProfessionalCategoryDTO destroyProfessionalCategory(@PathVariable("id") Long id, Authentication authentication){
+
+        ProfessionalCategory professionalCategory = this.professionalCategoryService.findById(id).get();        
+        this.professionalCategoryService.destroy(professionalCategory);       
+
+        return new ProfessionalCategoryDTO(professionalCategory);
+    }
 
 }

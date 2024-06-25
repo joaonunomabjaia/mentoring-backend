@@ -1,7 +1,18 @@
 package mz.org.fgh.mentoring.controller.partner;
 
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -14,10 +25,6 @@ import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.service.partner.PartnerService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.PARTNER)
@@ -81,6 +88,18 @@ public class PartnerController extends BaseController {
         Partner partner = this.partnerService.findPartnerById(id);        
         partner = this.partnerService.delete(partner, (Long) authentication.getAttributes().get("userInfo"));       
 
+        return new PartnerDTO(partner);
+    }
+
+    @Operation(summary = "Destroy Partner from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Partner")
+    @Delete("/{id}")
+    public PartnerDTO destroyProgram(@PathVariable("id") Long id, Authentication authentication){
+
+        Partner partner = this.partnerService.findPartnerById(id);        
+        this.partnerService.destroy(partner);  
+        
         return new PartnerDTO(partner);
     }
 }

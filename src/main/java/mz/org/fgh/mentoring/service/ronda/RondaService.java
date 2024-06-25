@@ -1,9 +1,11 @@
 package mz.org.fgh.mentoring.service.ronda;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
-import mz.org.fgh.mentoring.dto.ronda.RondaMenteeDTO;
-import mz.org.fgh.mentoring.dto.ronda.RondaMentorDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
@@ -23,10 +25,6 @@ import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
 
 @Singleton
 public class RondaService {
@@ -153,5 +151,15 @@ public class RondaService {
         }
 
         return rondas;
+    }
+
+    public boolean doesUserHaveRondas(User user) {
+        List<Ronda> rondas = this.rondaRepository.getByUserUuid(user.getUuid());
+        return !rondas.isEmpty();
+    }
+
+    public boolean doesHealthFacilityHaveRondas(HealthFacility healthFacility) {
+        List<Ronda> rondas = this.rondaRepository.getByHealthFacilityId(healthFacility.getId());
+        return !rondas.isEmpty();
     }
 }

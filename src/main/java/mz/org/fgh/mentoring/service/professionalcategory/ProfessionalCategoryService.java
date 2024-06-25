@@ -1,11 +1,14 @@
 package mz.org.fgh.mentoring.service.professionalcategory;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
+import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -22,6 +25,9 @@ public class ProfessionalCategoryService {
 
     private final ProfessionalCategoryRepository professionalCategoryRepository;
     private final UserRepository userRepository;
+
+    @Inject
+    private EmployeeService employeeService;
 
     public ProfessionalCategoryService(ProfessionalCategoryRepository professionalCategoryRepository, UserRepository userRepository) {
         this.professionalCategoryRepository = professionalCategoryRepository;
@@ -80,5 +86,14 @@ public class ProfessionalCategoryService {
         professionalCategory.setUpdatedAt(DateUtils.getCurrentDate());
 
         return this.professionalCategoryRepository.update(professionalCategory);
+    }
+
+    @Transactional
+    public void destroy(ProfessionalCategory professionalCategory) {
+        List<Employee> professionalCategories = employeeService.findEmployeebyProfessionalCategory(professionalCategory.getId());
+     
+        if(professionalCategories.isEmpty()) {
+            professionalCategoryRepository.delete(professionalCategory);
+        }
     }
 }

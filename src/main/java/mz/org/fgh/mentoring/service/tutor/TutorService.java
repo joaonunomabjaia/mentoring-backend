@@ -2,7 +2,9 @@ package mz.org.fgh.mentoring.service.tutor;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
@@ -15,6 +17,7 @@ import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailService;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -152,4 +155,15 @@ public class TutorService {
     /*public Tutor findTutorByUserUuid(final String userUuid) {
         return this.tutorRepository.findTutorByUserUuid(userUuid);
     }*/
+
+    public List<TutorProgrammaticAreaDTO> findTutorByProgrammaticAreaId(Long programmaticAreaUuid) {
+        List<TutorProgrammaticAreaDTO> formDTOS = new ArrayList<>();
+        List<TutorProgrammaticArea> tutors = tutorProgrammaticAreaRepository.findByProgrammaticAreaId(programmaticAreaUuid);
+
+        for(TutorProgrammaticArea form : tutors){
+            formDTOS.add(new TutorProgrammaticAreaDTO(form));
+        }
+
+        return formDTOS;
+    }
 }

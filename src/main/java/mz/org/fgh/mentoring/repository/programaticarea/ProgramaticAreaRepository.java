@@ -23,8 +23,8 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
     @Query(value = "select * from programmatic_areas limit :lim offset :of ", nativeQuery = true)
     List<ProgrammaticArea> findProgrammaticAreaWithLimit(long lim, long of);
 
-    @Query("select pa from ProgrammaticArea pa inner join fetch pa.program p where p.description =:program")
-    List<ProgrammaticArea> findProgrammaticAreasByProgram(final String program);
+    @Query("select pa from ProgrammaticArea pa inner join fetch pa.program p where p.id =:programId")
+    List<ProgrammaticArea> findProgrammaticAreasByProgramId(final Long programId);
 
     @Query("select p from ProgrammaticArea p inner join fetch p.program where p.lifeCycleStatus =:lifeCycleStatus")
     List<ProgrammaticArea> fetchAll(final LifeCycleStatus lifeCycleStatus);

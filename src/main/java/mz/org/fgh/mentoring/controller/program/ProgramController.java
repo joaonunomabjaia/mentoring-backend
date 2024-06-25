@@ -9,6 +9,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
@@ -97,6 +98,18 @@ public class ProgramController extends BaseController {
 
         Program program = this.programService.findById(id).get();        
         program = this.programService.delete(program, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new ProgramDTO(program);
+    }
+
+    @Operation(summary = "Destroy Program from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Program")
+    @Delete("/{id}")
+    public ProgramDTO destroyProgram(@PathVariable("id") Long id, Authentication authentication){
+
+        Program program = this.programService.findById(id).get();        
+        this.programService.destroy(program);       
 
         return new ProgramDTO(program);
     }
