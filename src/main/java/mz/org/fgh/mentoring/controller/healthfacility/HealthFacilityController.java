@@ -13,6 +13,7 @@ import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
@@ -149,6 +150,19 @@ public class HealthFacilityController extends BaseController {
 
         HealthFacility healthFacility = this.healthFacilityService.findById(id);        
         healthFacility = this.healthFacilityService.delete(healthFacility, (Long) authentication.getAttributes().get("userInfo"));       
+
+        return new HealthFacilityDTO(healthFacility);
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Destroy HealthFacility from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "HealthFacility")
+    @Delete("/{id}")
+    public HealthFacilityDTO destroyHealthFacility(@PathVariable("id") Long id, Authentication authentication){
+
+        HealthFacility healthFacility = this.healthFacilityService.findById(id);        
+        this.healthFacilityService.destroy(healthFacility);       
 
         return new HealthFacilityDTO(healthFacility);
     }

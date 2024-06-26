@@ -1,10 +1,8 @@
 package mz.org.fgh.mentoring.service.mentorship;
 
-import io.micronaut.http.annotation.QueryValue;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
-import mz.org.fgh.mentoring.entity.mentorship.IterationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;

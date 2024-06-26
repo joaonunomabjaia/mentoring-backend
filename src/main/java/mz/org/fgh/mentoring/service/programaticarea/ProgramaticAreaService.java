@@ -2,11 +2,20 @@ package mz.org.fgh.mentoring.service.programaticarea;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
+import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.form.FormService;
+import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -24,6 +33,17 @@ public class ProgramaticAreaService {
     @Inject
     private UserRepository userRepository;
 
+    @Inject
+    private FormService formService;
+
+    @Inject
+    private FormRepository formRepository;
+
+    @Inject
+    private TutorService tutorService;
+
+    @Inject
+    private TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository;
     public ProgramaticAreaService(ProgramaticAreaRepository programaticAreaRepository) {
         this.programaticAreaRepository = programaticAreaRepository;
     }
@@ -95,11 +115,11 @@ public class ProgramaticAreaService {
 //        return programmaticAreaDTOS;
 //    }
 
-    public List<ProgrammaticAreaDTO> findProgrammaticAreasByProgram(final String program){
+    public List<ProgrammaticAreaDTO> findProgrammaticAreasByProgramId(final Long programId){
 
         List<ProgrammaticAreaDTO> programmaticAreas = new ArrayList<>();
 
-        List<ProgrammaticArea> programmaticAreaList = this.programaticAreaRepository.findProgrammaticAreasByProgram(program);
+        List<ProgrammaticArea> programmaticAreaList = this.programaticAreaRepository.findProgrammaticAreasByProgramId(programId);
 
         for (ProgrammaticArea programmaticArea : programmaticAreaList){
             programmaticAreas.add(new ProgrammaticAreaDTO(programmaticArea));
@@ -133,5 +153,14 @@ public class ProgramaticAreaService {
         programmaticArea.setUpdatedAt(DateUtils.getCurrentDate());
 
         return this.programaticAreaRepository.update(programmaticArea);
+    }
+
+    @Transactional
+    public void destroy(ProgrammaticArea programmaticArea) {
+        List<Form> forms = formRepository.findFormByProgrammaticAreaId(programmaticArea.getId());
+        List<TutorProgrammaticArea> tutorProgrammaticAreas = tutorProgrammaticAreaRepository.findByProgrammaticAreaId(programmaticArea.getId());
+        if(forms.isEmpty() && tutorProgrammaticAreas.isEmpty()) {
+            programaticAreaRepository.delete(programmaticArea);
+        }
     }
 }

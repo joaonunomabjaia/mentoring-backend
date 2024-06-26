@@ -19,4 +19,7 @@ public interface AnswerRepository extends CrudRepository<Answer, Long> {
 
     @Query("FROM Answer a INNER JOIN FETCH a.question q INNER JOIN FETCH a.mentorship m WHERE m.uuid = :mentorshipUuid AND a.lifeCycleStatus = :lifeCycleStatus")
     List<Answer> fetchByMentorishipUuid(final String mentorshipUuid, final LifeCycleStatus lifeCycleStatus);
+
+    @Query("Select a FROM Answer a join fetch a.question q WHERE q.id = :questionId")
+    List<Answer> getByQuestionId(Long questionId);
 }

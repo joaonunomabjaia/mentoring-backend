@@ -1,27 +1,29 @@
 package mz.org.fgh.mentoring.service.user;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+import javax.transaction.Transactional;
+
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
+import mz.org.fgh.mentoring.service.role.RoleService;
+import mz.org.fgh.mentoring.service.ronda.RondaService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
-
-import javax.transaction.Transactional;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 @Singleton
 public class UserService {
@@ -38,6 +40,12 @@ public class UserService {
 
     @Inject
     private  PartnerRepository partnerRepository;
+
+    @Inject
+    private RondaService rondaService;
+
+    @Inject
+    private RoleService roleService;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -154,5 +162,14 @@ public class UserService {
         userDB.setUsername(userDTO.getUsername());
 
         return this.userRepository.update(userDB);
+    }
+
+    @Transactional
+    public void destroy(User user) {
+        boolean hasRondas = this.rondaService.doesUserHaveRondas(user);
+        boolean hasRoles = this.roleService.doesUserHaveRoles(user);
+        if(!hasRondas && !hasRoles){
+            this.userRepository.delete(user);
+        }
     }
 }

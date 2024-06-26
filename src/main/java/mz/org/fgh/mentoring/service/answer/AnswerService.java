@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.service.answer;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.answer.Answer;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -32,4 +33,11 @@ public class AnswerService {
     public Answer create(Answer answer){
        return this.answerRepository.save(answer);
     }
+
+    public boolean doesQuestionHaveAnswers(Question question) {
+        List<Answer> rondas = this.answerRepository.getByQuestionId(question.getId());
+        return !rondas.isEmpty();
+    }
+
+
 }

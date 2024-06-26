@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.employee;
 
+import java.util.List;
 import java.util.Set;
 
 import jakarta.inject.Singleton;
@@ -86,5 +87,9 @@ public class EmployeeService {
         locationRepository.createOrUpdate(locations, user);
 
         return createdEmployee;
+    }
+
+    public List<Employee> findEmployeebyProfessionalCategory(Long professionalCategory){
+       return employeeRepository.findByProfessionalCategory(professionalCategory);
     }
 }

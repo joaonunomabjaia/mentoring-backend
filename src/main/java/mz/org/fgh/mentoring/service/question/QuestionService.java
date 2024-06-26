@@ -10,6 +10,8 @@ import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.question.QuestionsCategoryRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.answer.AnswerService;
+import mz.org.fgh.mentoring.service.form.FormQuestionService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -29,6 +31,12 @@ public class QuestionService {
     private QuestionsCategoryRepository questionCategoryRepository;
     @Inject
     private UserRepository userRepository;
+
+    @Inject
+    private AnswerService answerService;
+
+    @Inject
+    private FormQuestionService formQuestionService ;
     @Creator
     public QuestionService(){}
 
@@ -114,5 +122,14 @@ public class QuestionService {
         question.setUpdatedAt(DateUtils.getCurrentDate());
 
         return this.questionRepository.update(question);
+    }
+
+    @Transactional
+    public void destroy(Question question) {
+        boolean hasAnswers = answerService.doesQuestionHaveAnswers(question);
+        boolean hasFormQuestions = formQuestionService.doesQuestionHaveFormQuestions(question);
+        if(!hasAnswers && !hasFormQuestions){
+            this.questionRepository.delete(question);
+        }
     }
 }

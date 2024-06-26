@@ -1,7 +1,6 @@
 package mz.org.fgh.mentoring.repository.programaticarea;
 
 import io.micronaut.data.annotation.Query;
-import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
@@ -22,4 +21,7 @@ public interface TutorProgrammaticAreaRepository extends CrudRepository<TutorPro
 
     @Query("select t from TutorProgrammaticArea t join fetch t.tutor join fetch t.programmaticArea where t.tutor.id = :tutorId")
     public List<TutorProgrammaticArea> getAllByTutorId(final Long tutorId);
+
+    @Query(value = "select t from TutorProgrammaticArea t join fetch t.programmaticArea pa where pa.id = :programmaticAreaId ")
+    List<TutorProgrammaticArea>findByProgrammaticAreaId(Long programmaticAreaId);
 }
