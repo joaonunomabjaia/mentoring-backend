@@ -13,8 +13,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Repository
 public abstract class AbstractTutoredRepository extends AbstaractBaseRepository implements TutoredRepository {
@@ -60,27 +60,31 @@ public abstract class AbstractTutoredRepository extends AbstaractBaseRepository 
 
     @Override
     public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {
+        Session sess = null;
+        List<Tutored> tutoreds = new ArrayList<>();
+        try {
+            sess = this.session.openSession();
+            // HQL/JPQL query to directly fetch Tutored entities
+            String hql = "select distinct t FROM Tutored t " +
+                        "join t.employee e " +
+                        "join e.locations l " +
+                        "join l.district d " +
+                        "join d.healthFacilities hf " +
+                        "where l.lifeCycleStatus = 'ACTIVE' " +
+                        "and hf.lifeCycleStatus = 'ACTIVE' " +
+                        "and hf.uuid in :uuids";
 
-        Session sess = this.session.openSession();
+            Query query = sess.createQuery(hql, Tutored.class);
+            query.setParameter("uuids", uuids);
 
-        String sql = "select DISTINCT(t.ID) " +
-                "from tutoreds t inner join employee e on t.EMPLOYEE_ID  = e.ID  " +
-                "               inner join location l on l.EMPLOYEE_ID = e.ID  " +
-                "               inner join districts d on d.ID = l.DISTRICT_ID  " +
-                "               INNER  join health_facilities hf on hf.DISTRICT_ID = d.ID  " +
-                "where l.LIFE_CYCLE_STATUS = 'ACTIVE' and hf.LIFE_CYCLE_STATUS = 'ACTIVE' AND hf.UUID  in ("+String.join(",", uuids.stream().map(n -> ("'" + n + "'")).collect(Collectors.toList()))+")";
-
-        Query qw = sess.createSQLQuery(sql);
-
-        List<Long> ids = qw.getResultList();
-
-        CriteriaBuilder builder = session.getCriteriaBuilder();
-        CriteriaQuery<Tutored> criteria = builder.createQuery(Tutored.class);
-        Root<Tutored> root = criteria.from(Tutored.class);
-        criteria.select(root).where(root.get("id").in(ids));
-        Query q = sess.createQuery(criteria);
-        List<Tutored> tutoreds =  q.getResultList();
-        sess.close();
+            tutoreds = query.getResultList();
+        } catch (Exception e) {
+            e.printStackTrace(); // Logging the exception is better practice
+        } finally {
+            if (sess != null) {
+                sess.close();
+            }
+        }
         return tutoreds;
     }
 }

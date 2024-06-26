@@ -2086,6 +2086,28 @@
             <column name="END_DATE" type="datetime"> </column>
         </addColumn>
     </changeSet>
+    <changeSet id="rename_ronda_mentee_mentor_column" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="ronda_mentee" columnName="MENTOR_ID"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE ronda_mentee CHANGE MENTOR_ID MENTEE_ID bigint(20) DEFAULT NULL NULL;
+        </sql>
+    </changeSet>
+    <changeSet id="should_reset_password_column" author="francisco">
+        <preConditions onFail="MARK_RAN">
+            <not>
+            <columnExists tableName="users" columnName="should_reset_password"/>
+            </not>
+        </preConditions>
+        <comment>
+            Creating should_reset_password colunm to user table
+        </comment>
+        <addColumn tableName="users" >
+            <column name="should_reset_password" type="boolean" defaultValue="0" />
+        </addColumn>
+    </changeSet>
+
     <!--<changeSet id="Table-sessions-addColumn-session_ronda_fk" author="ialuj">
         <comment>
             Create iteration type foreign key on mentorships table

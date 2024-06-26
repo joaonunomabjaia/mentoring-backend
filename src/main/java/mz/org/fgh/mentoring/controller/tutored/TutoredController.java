@@ -63,8 +63,8 @@ public class TutoredController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Tutored")
     @Get("/getTutoreds")
-    public List<TutoredDTO> getTutoreds(@QueryValue("uuids") List<String> uuids) {
-        List<Tutored> tutoreds = tutoredService.getTutoredsByHealthFacilityUuids(uuids);
+    public List<TutoredDTO> getTutoreds(@QueryValue("uuids") List<String> uuids, @QueryValue("offset") Long offset, @QueryValue("limit") Long limit) {
+        List<Tutored> tutoreds = tutoredService.getTutoredsByHealthFacilityUuids(uuids, offset, limit);
         try {
             return Utilities.parseList(tutoreds, TutoredDTO.class);
         } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
@@ -142,13 +142,4 @@ public class TutoredController extends BaseController {
         }
     }
 
-    private String extractConstraintName(String errorMessage) {
-        String[] parts = errorMessage.split(" ");
-        for (int i = 0; i < parts.length; i++) {
-            if (parts[i].startsWith("constraint")) {
-                return parts[i];
-            }
-        }
-        return null;
-    }
 }

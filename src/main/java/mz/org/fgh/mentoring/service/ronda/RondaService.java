@@ -26,6 +26,11 @@ import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
 @Singleton
 public class RondaService {
 
@@ -95,6 +100,7 @@ public class RondaService {
       return rondas;
     }
 
+    @Transactional
     public RondaDTO createRonda(RondaDTO rondaDTO, Long userId) {
         Ronda ronda = rondaDTO.getRonda();
         User user = userRepository.findById(userId).get();
@@ -136,21 +142,11 @@ public class RondaService {
             }
             createdRonda.setRondaMentees(savedRondaMentees);
         }
-        RondaDTO dto = new RondaDTO(createdRonda);
-        return dto;
+        return new RondaDTO(createdRonda);
     }
 
     public List<Ronda> getAllOfMentor(String mentorUuid) {
-        List<Ronda> rondas = this.rondaRepository.getAllOfMentor(mentorUuid);
-        for (Ronda ronda: rondas) {
-           List<RondaMentee> rondaMentees =  rondaMenteeRepository.findByRonda(ronda.getId(), LifeCycleStatus.ACTIVE);
-           ronda.setRondaMentees(rondaMentees);
-
-           List<RondaMentor> rondaMentors = rondaMentorRepository.findByRonda(ronda.getId(), LifeCycleStatus.ACTIVE);
-           ronda.setRondaMentors(rondaMentors);
-        }
-
-        return rondas;
+        return this.rondaRepository.getAllOfMentor(mentorUuid);
     }
 
     public boolean doesUserHaveRondas(User user) {

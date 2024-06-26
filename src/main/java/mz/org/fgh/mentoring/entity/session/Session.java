@@ -24,12 +24,12 @@ import java.util.List;
 @ToString
 public class Session extends BaseEntity {
     @NotNull
-    @Column(name = "DATE_BEGIN", nullable = false)
-    private Date dateBegin;
+    @Column(name = "START_DATE", nullable = false)
+    private Date startDate;
 
     @NotNull
-    @Column(name = "DATE_END", nullable = false)
-    private Date dateEnd;
+    @Column(name = "END_DATE", nullable = false)
+    private Date endDate;
 
     @NotNull
     @Column(name = "PERFORMED_DATE", nullable = false)

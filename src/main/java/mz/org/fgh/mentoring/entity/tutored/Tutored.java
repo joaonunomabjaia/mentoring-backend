@@ -14,9 +14,10 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 @Schema(name = "Tutoreds", description = "A professional that provide mentoring to the tutored individuals")
-@Entity(name = "Tutoreds")
+@Entity(name = "Tutored")
 @Table(name = "tutoreds")
 @Data
 @AllArgsConstructor
@@ -26,6 +27,9 @@ public class Tutored extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EMPLOYEE_ID")
     private Employee employee;
+
+    @Transient
+    private boolean zeroEvaluationDone;
 
 
     @Creator

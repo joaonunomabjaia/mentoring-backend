@@ -56,7 +56,7 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
                     userMap.put("userInfo", possibleUser.get().getId());
                     userMap.put("useruuid", possibleUser.get().getUuid());
 
-                    emitter.onNext(AuthenticationResponse.success((String) identity, getAutorities(possibleUser.get()), userMap));
+                    emitter.onNext(AuthenticationResponse.success(identity, getAutorities(possibleUser.get()), userMap));
                     emitter.onComplete();
                     return;
                 } else {

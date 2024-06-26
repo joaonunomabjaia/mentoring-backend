@@ -4,11 +4,15 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.util.Date;
 
 @Entity(name = "RondaMentee")
@@ -17,7 +21,6 @@ import java.util.Date;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class RondaMentee extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -25,7 +28,7 @@ public class RondaMentee extends BaseEntity {
     private Ronda ronda;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "MENTOR_ID")
+    @JoinColumn(name = "MENTEE_ID")
     private Tutored tutored;
 
     @Column(name = "START_DATE", nullable = false)
@@ -34,4 +37,12 @@ public class RondaMentee extends BaseEntity {
     @Column(name = "END_DATE")
     private Date endDate;
 
+    @Override
+    public String toString() {
+        return "RondaMentee{" +
+                ", tutored=" + tutored +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
 }

@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.repository.tutored;
 
 import io.micronaut.data.annotation.Query;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
@@ -29,4 +30,14 @@ public interface TutoredRepository extends CrudRepository<Tutored, Long> {
     List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids);
 
     Optional<Tutored> findByEmployeeNuitOrEmployeeEmailOrEmployeePhoneNumber(int nuit, String email, String phoneNumber);
+
+    @Query("SELECT t FROM Tutored t " +
+            "join t.employee e " +
+            "join e.locations l " +
+            "join l.district d " +
+            "join l.healthFacility hf " +
+            "where l.lifeCycleStatus = 'ACTIVE' " +
+            "and hf.lifeCycleStatus = 'ACTIVE' " +
+            "and hf.uuid IN (:uuids)")
+    List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids, Pageable pageable);
 }
