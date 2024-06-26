@@ -142,15 +142,6 @@ public class RondaService {
     }
 
     public List<Ronda> getAllOfMentor(String mentorUuid) {
-        List<Ronda> rondas = this.rondaRepository.getAllOfMentor(mentorUuid);
-        for (Ronda ronda: rondas) {
-           List<RondaMentee> rondaMentees =  rondaMenteeRepository.findByRonda(ronda.getId(), LifeCycleStatus.ACTIVE);
-           ronda.setRondaMentees(rondaMentees);
-
-           List<RondaMentor> rondaMentors = rondaMentorRepository.findByRonda(ronda.getId(), LifeCycleStatus.ACTIVE);
-           ronda.setRondaMentors(rondaMentors);
-        }
-
-        return rondas;
+        return this.rondaRepository.getAllOfMentor(mentorUuid);
     }
 }

@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 
@@ -22,7 +21,6 @@ import java.util.Date;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class RondaMentor extends BaseEntity {
 
       @ManyToOne(fetch = FetchType.EAGER)
@@ -38,4 +36,13 @@ public class RondaMentor extends BaseEntity {
 
       @Column(name = "END_DATE")
       private Date endDate;
+
+      @Override
+      public String toString() {
+            return "RondaMentor{" +
+                    ", mentor=" + mentor +
+                    ", startDate=" + startDate +
+                    ", endDate=" + endDate +
+                    '}';
+      }
 }

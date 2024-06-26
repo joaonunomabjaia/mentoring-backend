@@ -4,7 +4,6 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 
@@ -25,7 +24,6 @@ import java.util.List;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@ToString
 public class Ronda extends BaseEntity {
 
     @NotEmpty
@@ -51,4 +49,17 @@ public class Ronda extends BaseEntity {
 
     @Column(name = "END_DATE")
     private Date endDate;
+
+    @Override
+    public String toString() {
+        return "Ronda{" +
+                "description='" + description + '\'' +
+                ", rondaType=" + rondaType +
+                ", healthFacility=" + healthFacility +
+                ", rondaMentees=" + rondaMentees +
+                ", rondaMentors=" + rondaMentors +
+                ", startDate=" + startDate +
+                ", endDate=" + endDate +
+                '}';
+    }
 }

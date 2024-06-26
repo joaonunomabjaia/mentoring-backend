@@ -24,8 +24,11 @@ public class TutorDTO extends BaseEntityDTO {
         super(tutor);
         this.setEmployeeDTO(new EmployeeDTO(tutor.getEmployee()));
         List<TutorProgrammaticArea> tutorProgrammaticAreaDTOList = tutor.getTutorProgrammaticAreas();
-        if(Utilities.listHasElements(tutorProgrammaticAreaDTOList)) {
-            this.setTutorProgrammaticAreaDTOS(setTutorProgrammaticAreas(tutor.getTutorProgrammaticAreas()));
+        try {
+            if(Utilities.listHasElements(tutorProgrammaticAreaDTOList)) {
+                this.setTutorProgrammaticAreaDTOS(setTutorProgrammaticAreas(tutor.getTutorProgrammaticAreas()));
+            }
+        } catch (Exception e) {
         }
     }
 
