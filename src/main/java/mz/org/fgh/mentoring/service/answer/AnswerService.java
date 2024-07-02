@@ -27,7 +27,7 @@ public class AnswerService {
 
     public List<Answer> fetchByMentorishipUuid(final String mentorshipUuid ){
 
-        return this.answerRepository.fetchByMentorishipUuid(mentorshipUuid, LifeCycleStatus.ACTIVE);
+        return this.answerRepository.fetchByMentorshipUuid(mentorshipUuid, LifeCycleStatus.ACTIVE);
     }
 
     public Answer create(Answer answer){

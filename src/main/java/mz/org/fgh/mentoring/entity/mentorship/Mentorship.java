@@ -8,24 +8,24 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.List;
 
 @Schema(name = "Mentorship", description = "The outcome of the provided mentoring to the tutored individuals")
 @Entity(name = "mentorship")
@@ -63,10 +63,6 @@ public class Mentorship extends BaseEntity {
     private Form form;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "HEALTH_FACILITY_ID", nullable = false)
-    private HealthFacility healthFacility;
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "SESSION_ID")
     private Session session;
 
@@ -76,7 +72,7 @@ public class Mentorship extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ITERATION_TYPE_ID", nullable = false)
-    private IterationType iterationType;
+    private EvaluationType evaluationType;
 
     @Column(name = "ITERATION_NUMBER")
     private Integer iterationNumber;
@@ -85,7 +81,6 @@ public class Mentorship extends BaseEntity {
     @JoinColumn(name = "DOOR_ID", nullable = false)
     private Door door;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "TIME_OF_DAY_ID", nullable = false)
-    private TimeOfDay timeOfDay;
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "mentorship")
+    private List<Answer> answers;
 }

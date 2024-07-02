@@ -49,4 +49,6 @@ public interface FormQuestionRepository extends PageableRepository<FormQuestion,
             "INNER JOIN FETCH q.questionCategory " +
             "WHERE f.uuid IN (:formsUuids)")
     List<FormQuestion> findByFormsUuids(List<String> formsUuids, Pageable pageable);
+
+    Optional<FormQuestion> findByUuid(String uuid);
 }

@@ -1,18 +1,20 @@
 package mz.org.fgh.mentoring.entity.answer;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.entity.form.Form;
-
+import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.Question;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 
+@Schema(name = "Answer", description = "The outcome provided during a mentoring session")
 @Entity(name = "Answer")
 @Table(name = "answers")
 @Data
@@ -34,5 +36,12 @@ public class Answer extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "QUESTION_ID", nullable = false)
     private Question question;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FORM_QUESTION_ID")
+    private FormQuestion formQuestion;
+
+    @Column(name = "VALUE", nullable = false)
+    private String value;
 
 }
