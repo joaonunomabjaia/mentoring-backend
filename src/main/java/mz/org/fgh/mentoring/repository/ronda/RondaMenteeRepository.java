@@ -27,4 +27,8 @@ public interface RondaMenteeRepository extends CrudRepository<RondaMentee, Long>
             "where r.id = :rondaId AND rm.lifeCycleStatus = :lifeCycleStatus ")
     List<RondaMentee> findByRonda(Long rondaId, LifeCycleStatus lifeCycleStatus);
 
+    @Query("select rm from RondaMentee rm " +
+            "where rm.ronda.id = :rondaId")
+    List<RondaMentee> findByRonda(Long rondaId);
+
 }

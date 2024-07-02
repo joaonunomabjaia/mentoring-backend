@@ -40,6 +40,7 @@ public class RondaMentor extends BaseEntity {
       @Override
       public String toString() {
             return "RondaMentor{" +
+                    "ronda=" + ronda +
                     ", mentor=" + mentor +
                     ", startDate=" + startDate +
                     ", endDate=" + endDate +
