@@ -2174,8 +2174,6 @@
         <preConditions onFail="MARK_RAN">
             <not>
                 <and>
-                    <columnExists tableName="sessions" columnName="demonstration"/>
-                    <columnExists tableName="sessions" columnName="demonstration_details"/>
                     <columnExists tableName="sessions" columnName="strong_points"/>
                     <columnExists tableName="sessions" columnName="points_to_improve"/>
                     <columnExists tableName="sessions" columnName="work_plan"/>
@@ -2184,18 +2182,8 @@
             </not>
         </preConditions>
         <comment>
-            Creating should_reset_password colunm to user table
+            Adding new columns to table sessions
         </comment>
-        <addColumn tableName="sessions" >
-            <column name="DEMONSTRATION" type="boolean">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
-        <addColumn tableName="sessions" >
-            <column name="DEMONSTRATION_DETAILS" type="varchar(200)">
-                <constraints nullable="true"/>
-            </column>
-        </addColumn>
         <addColumn tableName="sessions" >
             <column name="STRONG_POINTS" type="varchar(200)">
                 <constraints nullable="true"/>
@@ -2252,5 +2240,28 @@
         <addForeignKeyConstraint constraintName="session_form_id_fk"
                                  baseTableName="sessions" baseColumnNames="mentee_id"
                                  referencedTableName="forms" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-mentorship_add_columns" author="ialuj">
+    <preConditions onFail="MARK_RAN">
+        <not>
+            <and>
+                <columnExists tableName="mentorships" columnName="demonstration"/>
+                <columnExists tableName="mentorships" columnName="demonstration_details"/>
+            </and>
+        </not>
+    </preConditions>
+    <comment>
+        Creating demonstration and demonstration_details columns to table mentorships
+    </comment>
+    <addColumn tableName="mentorships" >
+        <column name="DEMONSTRATION" type="boolean">
+            <constraints nullable="true"/>
+        </column>
+    </addColumn>
+    <addColumn tableName="mentorships" >
+        <column name="DEMONSTRATION_DETAILS" type="varchar(200)">
+            <constraints nullable="true"/>
+        </column>
+    </addColumn>
     </changeSet>
 </databaseChangeLog>

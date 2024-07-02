@@ -56,12 +56,6 @@ public class Session extends BaseEntity {
     @JoinColumn(name = "FORM_ID", nullable = false)
     private Form form;
 
-    @Column(name = "DEMONSTRATION")
-    private boolean demonstration;
-
-    @Column(name = "DEMONSTRATION_DETAILS")
-    private String demonstrationDetails;
-
     @Column(name = "STRONG_POINTS")
     private String strongPoints;
 
@@ -85,8 +79,6 @@ public class Session extends BaseEntity {
         this.setStartDate(sessionDTO.getStartDate());
         this.setEndDate(sessionDTO.getEndDate());
         this.setPerformedDate(sessionDTO.getPerformedDate());
-        this.setDemonstration(sessionDTO.isDemonstration());
-        this.setDemonstrationDetails(sessionDTO.getDemonstrationDetails());
         this.setPointsToImprove(sessionDTO.getPointsToImprove());
         this.setStrongPoints(sessionDTO.getStrongPoints());
         this.setObservations(sessionDTO.getObservations());

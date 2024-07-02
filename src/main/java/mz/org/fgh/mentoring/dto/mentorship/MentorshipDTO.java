@@ -33,10 +33,15 @@ public class MentorshipDTO extends BaseEntityDTO {
     private DoorDTO door;
     private EvaluationTypeDTO evaluationType;
     private List<AnswerDTO> answers;
+    private boolean demonstration;
+    private String demonstrationDetails;
     public MentorshipDTO(Mentorship mentorship) {
         super(mentorship);
-        this.setCode(mentorship.getCode());
+        this.setStartDate(mentorship.getStartDate());
+        this.setEndDate(mentorship.getEndDate());
         this.setIterationNumber(mentorship.getIterationNumber());
+        this.setDemonstration(mentorship.isDemonstration());
+        this.setDemonstrationDetails(mentorship.getDemonstrationDetails());
         if(mentorship.getTutor()!=null) {
             this.setMentor(new TutorDTO(mentorship.getTutor()));
         }
@@ -59,13 +64,11 @@ public class MentorshipDTO extends BaseEntityDTO {
             this.setEvaluationType(new EvaluationTypeDTO(mentorship.getEvaluationType()));
         }
         if(mentorship.getAnswers()!=null) {
-            List<Answer> answers = mentorship.getAnswers();
             List<AnswerDTO> answerDTOS = new ArrayList<>();
-            for (Answer answer: answers) {
-                AnswerDTO answerDTO = new AnswerDTO(answer);
-                answerDTOS.add(answerDTO);
+            for (Answer answer: mentorship.getAnswers()) {
+                answerDTOS.add(new AnswerDTO(answer));
+                this.setAnswers(answerDTOS);
             }
-            this.setAnswers(answerDTOS);
         }
     }
 
@@ -157,36 +160,31 @@ public class MentorshipDTO extends BaseEntityDTO {
         this.evaluationType = evaluationType;
     }
 
-    public Mentorship getMentorship() {
-        Mentorship mentorship = new Mentorship();
-        mentorship.setId(this.getId());
-        mentorship.setUuid(this.getUuid());
-        mentorship.setCode(this.getCode());
-        mentorship.setStartDate(this.getStartDate());
-        mentorship.setEndDate(this.getEndDate());
-        mentorship.setIterationNumber(this.getIterationNumber());
+    public boolean isDemonstration() {
+        return demonstration;
+    }
 
-        if(this.getMentor()!=null) {
-            mentorship.setTutor(this.getMentor().getTutor());
-        }
-        if(this.getMentee()!=null) {
-            mentorship.setTutored(this.getMentee().getMentee());
-        }
-        if(this.getSession()!=null) {
-            mentorship.setSession(this.getSession().getSession());
-        }
-        if(this.getForm()!=null) {
-            mentorship.setForm(this.getForm().toForm());
-        }
-        if(this.getCabinet()!=null) {
-            mentorship.setCabinet(this.getCabinet().getCabinet());
-        }
-        if(this.getDoor()!=null) {
-            mentorship.setDoor(this.getDoor().toDoor());
-        }
-        if(this.getEvaluationType()!=null) {
-            mentorship.setEvaluationType(this.getEvaluationType().toEvaluationType());
-        }
-        return mentorship;
+    public void setDemonstration(boolean demonstration) {
+        this.demonstration = demonstration;
+    }
+
+    public String getDemonstrationDetails() {
+        return demonstrationDetails;
+    }
+
+    public void setDemonstrationDetails(String demonstrationDetails) {
+        this.demonstrationDetails = demonstrationDetails;
+    }
+
+    public List<AnswerDTO> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<AnswerDTO> answers) {
+        this.answers = answers;
+    }
+
+    public Mentorship getMentorship() {
+        return new Mentorship(this);
     }
 }

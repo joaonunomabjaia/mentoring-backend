@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
+import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -24,6 +26,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -33,7 +36,6 @@ import java.util.List;
 @Setter
 @Getter
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class Mentorship extends BaseEntity {
@@ -81,6 +83,53 @@ public class Mentorship extends BaseEntity {
     @JoinColumn(name = "DOOR_ID", nullable = false)
     private Door door;
 
+    @Column(name = "DEMONSTRATION")
+    private boolean demonstration;
+
+    @Column(name = "DEMONSTRATION_DETAILS")
+    private String demonstrationDetails;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mentorship")
     private List<Answer> answers;
+
+    public Mentorship() {
+    }
+
+    public Mentorship(MentorshipDTO mentorshipDTO) {
+        super(mentorshipDTO);
+        this.setStartDate(this.getStartDate());
+        this.setEndDate(this.getEndDate());
+        this.setIterationNumber(this.getIterationNumber());
+        this.setDemonstration(mentorshipDTO.isDemonstration());
+        this.setDemonstrationDetails(mentorshipDTO.getDemonstrationDetails());
+
+        if(mentorshipDTO.getMentor()!=null) {
+            this.setTutor(new Tutor(mentorshipDTO.getMentor()));
+        }
+        if(mentorshipDTO.getMentee()!=null) {
+            this.setTutored(new Tutored(mentorshipDTO.getMentee()));
+        }
+        if(mentorshipDTO.getSession()!=null) {
+            this.setSession(new Session(mentorshipDTO.getSession()));
+        }
+        if(mentorshipDTO.getForm()!=null) {
+            this.setForm(new Form(mentorshipDTO.getForm()));
+        }
+        if(mentorshipDTO.getCabinet()!=null) {
+            this.setCabinet(new Cabinet(mentorshipDTO.getCabinet()));
+        }
+        if(mentorshipDTO.getDoor()!=null) {
+            this.setDoor(new Door(mentorshipDTO.getDoor()));
+        }
+        if(mentorshipDTO.getEvaluationType()!=null) {
+            this.setEvaluationType(new EvaluationType(mentorshipDTO.getEvaluationType()));
+        }
+        if(mentorshipDTO.getAnswers()!=null) {
+            List<Answer> answerList = new ArrayList<>();
+            for (AnswerDTO answerDTO: mentorshipDTO.getAnswers()) {
+                answerList.add(new Answer(answerDTO));
+                this.setAnswers(answerList);
+            }
+        }
+    }
 }

@@ -21,8 +21,6 @@ public class SessionDTO extends BaseEntityDTO {
     private String reason;
     private FormDTO form;
     private TutoredDTO mentee;
-    private boolean demonstration;
-    private String demonstrationDetails;
     private String strongPoints;
     private String pointsToImprove;
     private String workPlan;
@@ -32,8 +30,6 @@ public class SessionDTO extends BaseEntityDTO {
         this.setStartDate(session.getStartDate());
         this.setEndDate(session.getEndDate());
         this.setPerformedDate(session.getPerformedDate());
-        this.setDemonstration(session.isDemonstration());
-        this.setDemonstrationDetails(session.getDemonstrationDetails());
         this.setPointsToImprove(session.getPointsToImprove());
         this.setStrongPoints(session.getStrongPoints());
         this.setObservations(session.getObservations());
@@ -113,22 +109,6 @@ public class SessionDTO extends BaseEntityDTO {
 
     public void setMentee(TutoredDTO mentee) {
         this.mentee = mentee;
-    }
-
-    public boolean isDemonstration() {
-        return demonstration;
-    }
-
-    public void setDemonstration(boolean demonstration) {
-        this.demonstration = demonstration;
-    }
-
-    public String getDemonstrationDetails() {
-        return demonstrationDetails;
-    }
-
-    public void setDemonstrationDetails(String demonstrationDetails) {
-        this.demonstrationDetails = demonstrationDetails;
     }
 
     public String getStrongPoints() {

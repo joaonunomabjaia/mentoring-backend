@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
@@ -20,7 +21,6 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class Answer extends BaseEntity {
 
     @NotNull
@@ -43,5 +43,21 @@ public class Answer extends BaseEntity {
 
     @Column(name = "VALUE", nullable = false)
     private String value;
+
+    public Answer() {
+    }
+    public Answer(AnswerDTO answerDTO) {
+        super(answerDTO);
+        this.setValue(answerDTO.getValue());
+        if(answerDTO.getForm()!=null) {
+            this.setForm(new Form(answerDTO.getForm()));
+        }
+        if(answerDTO.getQuestion()!=null) {
+            this.setQuestion(new Question(answerDTO.getQuestion()));
+        }
+        if(answerDTO.getMentorship()!=null) {
+            this.setMentorship(new Mentorship(answerDTO.getMentorship()));
+        }
+    }
 
 }
