@@ -1,9 +1,5 @@
 package mz.org.fgh.mentoring.service.ronda;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.*;
-
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
@@ -28,7 +24,10 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -106,7 +105,7 @@ public class RondaService {
     }
 
     @Transactional
-    public List<Ronda> search(@Nullable Long provinceId,@Nullable Long districtId,@Nullable Long healthFacilityId,@Nullable Long mentorId,@Nullable String startDate,@Nullable String endDate) {
+    public List<Ronda> search(@Nullable Long provinceId, @Nullable Long districtId, @Nullable Long healthFacilityId, @Nullable Long mentorId, @Nullable String startDate, @Nullable String endDate) {
         Date start = convertToDate(startDate);
         Date end = convertToDate(endDate);
         List<Ronda> rondas = rondaRepository.search(provinceId, districtId, healthFacilityId, mentorId, start, end);
@@ -144,6 +143,8 @@ public class RondaService {
         HealthFacility healthFacility = healthFacilityRepository.findByUuid(ronda.getHealthFacility().getUuid()).get();
         Tutor mentor = tutorRepository.findByUuid(ronda.getRondaMentors().get(0).getMentor().getUuid()).get();
         RondaType rondaType = rondaTypeRepository.findByUuid(ronda.getRondaType().getUuid()).get();
+        if (isOnActiveRonda(mentor)) throw new RuntimeException("O mentor encontra-se em uma ronda activa, não é possível criar nova.");
+
         ronda.setCreatedBy(user.getUuid());
         ronda.setCreatedAt(DateUtils.getCurrentDate());
         ronda.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
@@ -182,6 +183,15 @@ public class RondaService {
         return new RondaDTO(createdRonda);
     }
 
+    private boolean isOnActiveRonda(Tutor mentor) {
+        List<Ronda> rondas = getAllOfMentor(mentor.getUuid());
+        if (!Utilities.listHasElements(rondas)) { return false;}
+        for (Ronda ronda: rondas) {
+            if (!ronda.isComplete()) return false;
+        }
+        return true;
+    }
+
     public List<Ronda> getAllOfMentor(String mentorUuid) {
         return this.rondaRepository.getAllOfMentor(mentorUuid);
     }
@@ -207,7 +217,7 @@ public class RondaService {
         rondaMentor.setCreatedBy(user.getUuid());
         rondaMentor.setStartDate(new Date());
         rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        rondaMentor.setUuid(UUID.randomUUID().toString());
+        rondaMentor.setUuid(Utilities.generateUUID().toString());
         rondaMentor.setRonda(ronda);
 
         ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));

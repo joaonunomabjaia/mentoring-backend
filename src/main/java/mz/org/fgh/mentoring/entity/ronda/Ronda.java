@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.ronda;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -12,8 +13,13 @@ import org.hibernate.annotations.FetchMode;
 
 import mz.org.fgh.mentoring.util.Utilities;
 
-
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
@@ -90,4 +96,8 @@ public class Ronda extends BaseEntity {
                 '}';
     }
 
+    @JsonIgnore
+    public boolean isComplete() {
+        return this.endDate != null;
+    }
 }
