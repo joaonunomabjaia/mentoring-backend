@@ -1,16 +1,21 @@
 package mz.org.fgh.mentoring.dto.mentorship;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
+import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.dto.location.CabinetDTO;
+import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.session.SessionDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
+import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 
 @Data
@@ -20,20 +25,23 @@ public class MentorshipDTO extends BaseEntityDTO {
     private Integer iterationNumber;
     private Date startDate;
     private Date endDate;
-    private HealthFacilityDTO healthFacility;
     private TutorDTO mentor;
     private TutoredDTO mentee;
     private SessionDTO session;
     private FormDTO form;
     private CabinetDTO cabinet;
     private DoorDTO door;
-    private IterationTypeDTO iterationType;
-    private TimeOfDayDTO timeOfDay;
+    private EvaluationTypeDTO evaluationType;
+    private List<AnswerDTO> answers;
+    private boolean demonstration;
+    private String demonstrationDetails;
     public MentorshipDTO(Mentorship mentorship) {
         super(mentorship);
-        if(mentorship.getHealthFacility()!=null) {
-            this.setHealthFacility(new HealthFacilityDTO(mentorship.getHealthFacility()));
-        }
+        this.setStartDate(mentorship.getStartDate());
+        this.setEndDate(mentorship.getEndDate());
+        this.setIterationNumber(mentorship.getIterationNumber());
+        this.setDemonstration(mentorship.isDemonstration());
+        this.setDemonstrationDetails(mentorship.getDemonstrationDetails());
         if(mentorship.getTutor()!=null) {
             this.setMentor(new TutorDTO(mentorship.getTutor()));
         }
@@ -52,11 +60,15 @@ public class MentorshipDTO extends BaseEntityDTO {
         if(mentorship.getDoor()!=null) {
             this.setDoor(new DoorDTO(mentorship.getDoor()));
         }
-        if(mentorship.getIterationType()!=null) {
-            this.setIterationType(new IterationTypeDTO(mentorship.getIterationType()));
+        if(mentorship.getEvaluationType()!=null) {
+            this.setEvaluationType(new EvaluationTypeDTO(mentorship.getEvaluationType()));
         }
-        if(mentorship.getTimeOfDay()!=null) {
-            this.setTimeOfDay(new TimeOfDayDTO(mentorship.getTimeOfDay()));
+        if(mentorship.getAnswers()!=null) {
+            List<AnswerDTO> answerDTOS = new ArrayList<>();
+            for (Answer answer: mentorship.getAnswers()) {
+                answerDTOS.add(new AnswerDTO(answer));
+                this.setAnswers(answerDTOS);
+            }
         }
     }
 
@@ -90,14 +102,6 @@ public class MentorshipDTO extends BaseEntityDTO {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
-    }
-
-    public HealthFacilityDTO getHealthFacility() {
-        return healthFacility;
-    }
-
-    public void setHealthFacility(HealthFacilityDTO healthFacility) {
-        this.healthFacility = healthFacility;
     }
 
     public TutorDTO getMentor() {
@@ -148,58 +152,39 @@ public class MentorshipDTO extends BaseEntityDTO {
         this.door = door;
     }
 
-    public IterationTypeDTO getIterationType() {
-        return iterationType;
+    public EvaluationTypeDTO getEvaluationType() {
+        return evaluationType;
     }
 
-    public void setIterationType(IterationTypeDTO iterationType) {
-        this.iterationType = iterationType;
+    public void setEvaluationType(EvaluationTypeDTO evaluationType) {
+        this.evaluationType = evaluationType;
     }
 
-    public TimeOfDayDTO getTimeOfDay() {
-        return timeOfDay;
+    public boolean isDemonstration() {
+        return demonstration;
     }
 
-    public void setTimeOfDay(TimeOfDayDTO timeOfDay) {
-        this.timeOfDay = timeOfDay;
+    public void setDemonstration(boolean demonstration) {
+        this.demonstration = demonstration;
+    }
+
+    public String getDemonstrationDetails() {
+        return demonstrationDetails;
+    }
+
+    public void setDemonstrationDetails(String demonstrationDetails) {
+        this.demonstrationDetails = demonstrationDetails;
+    }
+
+    public List<AnswerDTO> getAnswers() {
+        return answers;
+    }
+
+    public void setAnswers(List<AnswerDTO> answers) {
+        this.answers = answers;
     }
 
     public Mentorship getMentorship() {
-        Mentorship mentorship = new Mentorship();
-        mentorship.setId(this.getId());
-        mentorship.setUuid(this.getUuid());
-        mentorship.setCode(this.getCode());
-        mentorship.setStartDate(this.getStartDate());
-        mentorship.setEndDate(this.getEndDate());
-        mentorship.setIterationNumber(this.getIterationNumber());
-
-        if(this.getHealthFacility()!=null) {
-            mentorship.setHealthFacility(this.getHealthFacility().getHealthFacilityObj());
-        }
-        if(this.getMentor()!=null) {
-            mentorship.setTutor(this.getMentor().getTutor());
-        }
-        if(this.getMentee()!=null) {
-            mentorship.setTutored(this.getMentee().getMentee());
-        }
-        if(this.getSession()!=null) {
-            mentorship.setSession(this.getSession().getSession());
-        }
-        if(this.getForm()!=null) {
-            mentorship.setForm(this.getForm().toForm());
-        }
-        if(this.getCabinet()!=null) {
-            mentorship.setCabinet(this.getCabinet().getCabinet());
-        }
-        if(this.getDoor()!=null) {
-            mentorship.setDoor(this.getDoor().toDoor());
-        }
-        if(this.getIterationType()!=null) {
-            mentorship.setIterationType(this.getIterationType().toIterationType());
-        }
-        if(this.getTimeOfDay()!=null) {
-            mentorship.setTimeOfDay(this.getTimeOfDay().toTimeOfDay());
-        }
-        return mentorship;
+        return new Mentorship(this);
     }
 }

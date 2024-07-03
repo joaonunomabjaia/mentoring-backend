@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.ronda.RondaMentorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 
 import javax.persistence.Column;
@@ -20,7 +21,6 @@ import java.util.Date;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class RondaMentor extends BaseEntity {
 
       @ManyToOne(fetch = FetchType.EAGER)
@@ -36,10 +36,23 @@ public class RondaMentor extends BaseEntity {
 
       @Column(name = "END_DATE")
       private Date endDate;
+      public RondaMentor() {
+      }
+
+      public RondaMentor(RondaMentorDTO rondaMentorDTO) {
+            super(rondaMentorDTO);
+            this.setStartDate(rondaMentorDTO.getStartDate());
+            this.setEndDate(rondaMentorDTO.getEndDate());
+            this.setMentor(new Tutor(rondaMentorDTO.getMentor()));
+            this.setRonda(new Ronda());
+            this.getRonda().setUuid(rondaMentorDTO.getRonda().getUuid());
+      }
+
 
       @Override
       public String toString() {
             return "RondaMentor{" +
+                    "ronda=" + ronda +
                     ", mentor=" + mentor +
                     ", startDate=" + startDate +
                     ", endDate=" + endDate +

@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
@@ -22,7 +23,6 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class Form extends BaseEntity {
 
     @NotEmpty
@@ -66,6 +66,20 @@ public class Form extends BaseEntity {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "form")
     private List<Answer> answers;
+
+    public Form() {
+    }
+
+    public Form(FormDTO formDTO) {
+        super(formDTO);
+        this.setCode(formDTO.getCode());
+        this.setDescription(formDTO.getDescription());
+        this.setName(formDTO.getName());
+        this.setTargetFile(formDTO.getTargetFile());
+        this.setTargetPatient(formDTO.getTargetPatient());
+        if (formDTO.getPartnerDTO() != null) this.setPartner(new Partner(formDTO.getPartnerDTO()));
+        if (formDTO.getProgrammaticAreaDTO() != null) this.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
+    }
 
     @Override
     public String toString() {
