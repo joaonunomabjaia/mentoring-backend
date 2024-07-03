@@ -1,9 +1,5 @@
 package mz.org.fgh.mentoring.service.ronda;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
@@ -107,6 +103,8 @@ public class RondaService {
         HealthFacility healthFacility = healthFacilityRepository.findByUuid(ronda.getHealthFacility().getUuid()).get();
         Tutor mentor = tutorRepository.findByUuid(ronda.getRondaMentors().get(0).getMentor().getUuid()).get();
         RondaType rondaType = rondaTypeRepository.findByUuid(ronda.getRondaType().getUuid()).get();
+        if (isOnActiveRonda(mentor)) throw new RuntimeException("O mentor encontra-se em uma ronda activa, não é possível criar nova.");
+
         ronda.setCreatedBy(user.getUuid());
         ronda.setCreatedAt(DateUtils.getCurrentDate());
         ronda.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
@@ -143,6 +141,15 @@ public class RondaService {
             createdRonda.setRondaMentees(savedRondaMentees);
         }
         return new RondaDTO(createdRonda);
+    }
+
+    private boolean isOnActiveRonda(Tutor mentor) {
+        List<Ronda> rondas = getAllOfMentor(mentor.getUuid());
+        if (!Utilities.listHasElements(rondas)) { return false;}
+        for (Ronda ronda: rondas) {
+            if (!ronda.isComplete()) return false;
+        }
+        return true;
     }
 
     public List<Ronda> getAllOfMentor(String mentorUuid) {

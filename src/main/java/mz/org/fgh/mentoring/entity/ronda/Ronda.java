@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.ronda;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -61,5 +62,10 @@ public class Ronda extends BaseEntity {
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';
+    }
+
+    @JsonIgnore
+    public boolean isComplete() {
+        return this.endDate != null;
     }
 }
