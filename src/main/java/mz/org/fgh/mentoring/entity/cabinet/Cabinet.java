@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.location.CabinetDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,10 +17,16 @@ import javax.validation.constraints.NotNull;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class Cabinet extends BaseEntity {
 
     @NotNull
     @Column(name = "NAME", nullable = false, length = 50)
     private String name;
+    public Cabinet() {
+    }
+
+    public Cabinet(CabinetDTO dto) {
+        super(dto);
+        this.setName(dto.getName());
+    }
 }

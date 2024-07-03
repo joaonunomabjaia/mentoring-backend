@@ -6,6 +6,7 @@ import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import java.util.List;
+import java.util.Optional;
 
 public interface QuestionRepository extends CrudRepository<Question, Long> {
     @Override
@@ -23,5 +24,7 @@ public interface QuestionRepository extends CrudRepository<Question, Long> {
     List<Question> getQuestionsByIds(List<Long> ids, LifeCycleStatus lifeCycleStatus);
 
     List<Question> search(final String code, final String question, final QuestionCategory questionsCategory);
+
+    Optional<Question> findByUuid(String uuid);
 
 }

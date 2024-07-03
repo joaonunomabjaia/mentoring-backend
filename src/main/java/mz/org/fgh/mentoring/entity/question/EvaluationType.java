@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,6 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class EvaluationType extends BaseEntity {
 
     @NotEmpty
@@ -29,4 +29,14 @@ public class EvaluationType extends BaseEntity {
     @NotEmpty
     @Column(name = "code", nullable = false)
     private  String code;
+
+    public EvaluationType() {
+
+    }
+
+    public EvaluationType(EvaluationTypeDTO evaluationTypeDTO) {
+        super(evaluationTypeDTO);
+        this.setCode(evaluationTypeDTO.getCode());
+        this.setDescription(evaluationTypeDTO.getDescription());
+    }
 }

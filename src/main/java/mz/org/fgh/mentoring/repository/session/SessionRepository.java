@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.session;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.PerformedSession;
@@ -50,4 +51,16 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
             "WHERE rt.code = 'SESSAO_ZERO' " +
             "AND td.id = :tutoredId ")
     Optional<Session> getTutoredZeroSession(Long tutoredId);
+
+    @Query("SELECT s FROM Session s " +
+            "JOIN s.ronda r " +
+            "JOIN s.mentorships m " +
+            "JOIN m.tutor t " +
+            "JOIN m.tutored td " +
+            "JOIN m.form f " +
+            "JOIN m.cabinet c " +
+            "JOIN m.evaluationType et " +
+            "JOIN m.door d " +
+            "WHERE r.id = :rondaId ")
+    Optional<Session> findByRonda(Long rondaId);
 }

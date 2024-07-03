@@ -42,6 +42,7 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
     @Query("select r from Ronda r join fetch r.healthFacility hf where hf.id = :healthFacilityId")
     List<Ronda> getByHealthFacilityId(Long healthFacilityId);
 
+
     @Query("select r from Ronda r " +
             "INNER JOIN FETCH r.rondaMentees rme " +
             "INNER JOIN FETCH rme.tutored t " +
@@ -85,4 +86,8 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
 //            @Nullable Date startDate,
 //            @Nullable Date endDate
 //    );
+
+    @Query("select r from Ronda r where r.uuid IN (:rondasUuids)")
+    List<Ronda> findRondasByUuids(List<String> rondasUuids);
+
 }

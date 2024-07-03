@@ -2144,4 +2144,124 @@
             <column name="ANSWER"  type="bigint(20)"/>
         </addColumn>
     </changeSet>-->
+    <changeSet id="able-mentorships-dropFk-mentorships_time_of_day_fk_21062024" author="ialuj">
+        <dropForeignKeyConstraint baseTableName="mentorships" constraintName="mentorships_time_of_day_fk" />
+    </changeSet>
+    <changeSet id="Table-mentorships-dropColumn-time_of_day_21062024" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="mentorships" columnName="TIME_OF_DAY_ID"/>
+        </preConditions>
+        <dropColumn tableName="mentorships" columnName="TIME_OF_DAY_ID" />
+    </changeSet>
+    <changeSet id="able-mentorships-dropFk-mentorships_health_facility_fk_21062024" author="ialuj">
+        <dropForeignKeyConstraint baseTableName="mentorships" constraintName="FK_bvd7qvkjc8oy675bf6yv6jud3" />
+    </changeSet>
+    <changeSet id="Table-mentorships-dropColumn-health_facility_21062024" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="mentorships" columnName="HEALTH_FACILITY_ID"/>
+        </preConditions>
+        <dropColumn tableName="mentorships" columnName="HEALTH_FACILITY_ID" />
+    </changeSet>
+    <changeSet id="Table-answers_form_question_id_change_column_default_null" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="answers" columnName="FORM_QUESTION_ID"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE answers ALTER COLUMN FORM_QUESTION_ID DROP DEFAULT;
+        </sql>
+    </changeSet>
+    <changeSet id="Table-sessions_add_columns" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <and>
+                    <columnExists tableName="sessions" columnName="strong_points"/>
+                    <columnExists tableName="sessions" columnName="points_to_improve"/>
+                    <columnExists tableName="sessions" columnName="work_plan"/>
+                    <columnExists tableName="sessions" columnName="observations"/>
+                </and>
+            </not>
+        </preConditions>
+        <comment>
+            Adding new columns to table sessions
+        </comment>
+        <addColumn tableName="sessions" >
+            <column name="STRONG_POINTS" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="sessions" >
+            <column name="POINTS_TO_IMPROVE" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="sessions" >
+            <column name="WORK_PLAN" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+        <addColumn tableName="sessions" >
+            <column name="OBSERVATIONS" type="varchar(200)">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-sessions_add_column_mentee_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="sessions" columnName="mentee_id"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="sessions" >
+            <column name="MENTEE_ID" type="bigint(20)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-sessions_add_column_form_id" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="sessions" columnName="form_id"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="sessions" >
+            <column name="FORM_ID" type="bigint(20)" />
+        </addColumn>
+    </changeSet>
+    <changeSet id="Table-sessions-session_mentee_id_fk" author="ialuj">
+        <comment>
+            Create question type foreign key on question table
+        </comment>
+        <addForeignKeyConstraint constraintName="session_mentee_id_fk"
+                                 baseTableName="sessions" baseColumnNames="mentee_id"
+                                 referencedTableName="tutoreds" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-sessions-session_form_id_fk" author="ialuj">
+        <comment>
+            Create question type foreign key on question table
+        </comment>
+        <addForeignKeyConstraint constraintName="session_form_id_fk"
+                                 baseTableName="sessions" baseColumnNames="mentee_id"
+                                 referencedTableName="forms" referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="Table-mentorship_add_columns" author="ialuj">
+    <preConditions onFail="MARK_RAN">
+        <not>
+            <and>
+                <columnExists tableName="mentorships" columnName="demonstration"/>
+                <columnExists tableName="mentorships" columnName="demonstration_details"/>
+            </and>
+        </not>
+    </preConditions>
+    <comment>
+        Creating demonstration and demonstration_details columns to table mentorships
+    </comment>
+    <addColumn tableName="mentorships" >
+        <column name="DEMONSTRATION" type="boolean">
+            <constraints nullable="true"/>
+        </column>
+    </addColumn>
+    <addColumn tableName="mentorships" >
+        <column name="DEMONSTRATION_DETAILS" type="varchar(200)">
+            <constraints nullable="true"/>
+        </column>
+    </addColumn>
+    </changeSet>
 </databaseChangeLog>
