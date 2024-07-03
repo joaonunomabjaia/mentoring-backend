@@ -11,14 +11,19 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import io.micronaut.core.annotation.Nullable;
+
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
-import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
+import mz.org.fgh.mentoring.repository.ronda.RondaMenteeRepository;
+import mz.org.fgh.mentoring.repository.ronda.RondaMentorRepository;
+import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.ronda.RondaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,28 +38,36 @@ public class RondaController extends BaseController {
     @Inject
     private RondaService rondaService;
 
+    @Inject
+    private RondaMenteeRepository rondaMenteeRepository;
+
+    @Inject
+    private RondaMentorRepository rondaMentorRepository;
+
+    @Inject
+    private UserRepository userRepository;
+
     public static final Logger LOG = LoggerFactory.getLogger(RondaController.class);
     public RondaController() {
     }
 
-    @Get("/{limit}/{offset}")
-    public List<RondaDTO> getAll(@PathVariable("limit") long limit , @PathVariable("offset") long offset) {
+    @Operation(summary = "Return a list off all Round")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Get("getall")
+    public List<RondaDTO> getAll() {
         LOG.debug("Searching Ronda version 2");
 
         List<Ronda> rondas = new ArrayList<>();
         List<RondaDTO> rondaDTOs = new ArrayList<>();
 
-        if(limit > 0){
-
-            rondas = this.rondaService.findRondaWithLimit(limit,offset);
-        } else {
-
-            rondas = this.rondaService.findAll();
-        }
+        rondas = this.rondaService.findAll();
 
         for(Ronda ronda : rondas){
-
-            rondaDTOs.add(new RondaDTO());
+            ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+            ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
+            rondaDTOs.add(new RondaDTO(ronda));
         }
         return rondaDTOs;
     }
@@ -73,6 +86,47 @@ public class RondaController extends BaseController {
         }
         return rondaDTOS;
     }
+
+    @Operation(summary = "Search Rondas with filters")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Get("/search")
+    public List<RondaDTO> search(@QueryValue("province") Long provinceId,
+                                 @Nullable @QueryValue("district") Long districtId,
+                                 @Nullable @QueryValue("healthFacility") Long healthFacilityId,
+                                 @Nullable @QueryValue("mentor") Long mentorId,
+                                 @Nullable @QueryValue("startDate") String startDate,
+                                 @Nullable @QueryValue("endDate") String endDate) {
+        LOG.debug("Searching rondas with filters...");
+
+        List<Ronda> rondas = rondaService.search(provinceId, districtId, healthFacilityId, mentorId, startDate, endDate);
+
+        List<RondaDTO> rondaDTOS = new ArrayList<>();
+
+        for (Ronda ronda : rondas) {
+            ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
+            ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+            rondaDTOS.add(new RondaDTO(ronda));
+        }
+        return rondaDTOS;
+    }
+
+    @Operation(summary = "Change mentor of a Ronda")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Post("/changeMentor/{rondaId}/{newMentorId}")
+    public HttpResponse<RondaDTO> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
+    {
+        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).get();
+        try {
+            RondaDTO updatedRonda = rondaService.changeMentor(rondaId, newMentorId, user);
+            return HttpResponse.ok(updatedRonda);
+        } catch (Exception e) {
+            // Handle any exceptions or errors
+            return HttpResponse.serverError();
+        }
+    }
+
 
     @Get("/{id}")
     public RondaDTO findRondaById(@PathVariable("id") Long id){

@@ -1,9 +1,10 @@
 package mz.org.fgh.mentoring.service.ronda;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
@@ -61,6 +62,10 @@ public class RondaService {
         return this.rondaRepository.findAll();
     }
 
+    public List<Ronda> findAllRondaWithAll(){
+        return this.rondaRepository.findAllRondaWithAll();
+    }
+
     public Optional<Ronda> findById(final Long id){
         return this.rondaRepository.findById(id);
     }
@@ -99,6 +104,38 @@ public class RondaService {
         }
       return rondas;
     }
+
+    @Transactional
+    public List<Ronda> search(@Nullable Long provinceId,@Nullable Long districtId,@Nullable Long healthFacilityId,@Nullable Long mentorId,@Nullable String startDate,@Nullable String endDate) {
+        Date start = convertToDate(startDate);
+        Date end = convertToDate(endDate);
+        List<Ronda> rondas = rondaRepository.search(provinceId, districtId, healthFacilityId, mentorId, start, end);
+        for (Ronda ronda: rondas){
+            ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
+            ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+        }
+        return rondas;
+    }
+
+    @Transactional
+    public List<Ronda> search(@Nullable Long provinceId,@Nullable Long districtId,@Nullable Long healthFacilityId,@Nullable Long mentorId,@Nullable Date startDate,@Nullable Date endDate) {
+        return rondaRepository.search(provinceId, districtId, healthFacilityId, mentorId, startDate, endDate);
+    }
+
+
+    public static Date convertToDate(String dateStr) {
+        if (dateStr == null) {
+            return null;
+        }
+        try {
+            SimpleDateFormat formatter = new SimpleDateFormat("dd-MM-yyyy");
+            return formatter.parse(dateStr);
+        } catch (ParseException e) {
+            return null;  // Se houver erro na formatação, retorna null
+        }
+    }
+
+
 
     @Transactional
     public RondaDTO createRonda(RondaDTO rondaDTO, Long userId) {
@@ -157,5 +194,34 @@ public class RondaService {
     public boolean doesHealthFacilityHaveRondas(HealthFacility healthFacility) {
         List<Ronda> rondas = this.rondaRepository.getByHealthFacilityId(healthFacility.getId());
         return !rondas.isEmpty();
+    }
+
+    public RondaDTO changeMentor(Long rondaId, Long newMentorId, User user) {
+        Ronda ronda = rondaRepository.findById(rondaId).get();
+        Tutor mentor = tutorRepository.findById(newMentorId).get();
+
+        RondaMentor rondaMentor = new RondaMentor();
+
+        rondaMentor.setCreatedAt(new Date());
+        rondaMentor.setMentor(mentor);
+        rondaMentor.setCreatedBy(user.getUuid());
+        rondaMentor.setStartDate(new Date());
+        rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        rondaMentor.setUuid(UUID.randomUUID().toString());
+        rondaMentor.setRonda(ronda);
+
+        ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
+        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+
+        for(RondaMentor rondaMentor1: ronda.getRondaMentors()){
+            if(rondaMentor1.getEndDate() == null) {
+                rondaMentor1.setEndDate(new Date());
+                rondaMentorRepository.update(rondaMentor1);
+            }
+        }
+
+        rondaMentorRepository.save(rondaMentor);
+
+        return new RondaDTO(ronda);
     }
 }

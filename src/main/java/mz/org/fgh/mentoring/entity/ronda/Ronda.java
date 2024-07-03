@@ -7,15 +7,13 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 import mz.org.fgh.mentoring.util.Utilities;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.Date;
 import java.util.List;
@@ -40,10 +38,10 @@ public class Ronda extends BaseEntity {
     @JoinColumn(name = "HEALTH_FACILITY_ID")
     private HealthFacility healthFacility;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ronda")
+    @OneToMany(mappedBy="ronda", fetch = FetchType.LAZY)
     private List<RondaMentee> rondaMentees;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "ronda")
+    @OneToMany(mappedBy="ronda", fetch = FetchType.LAZY)
     private List<RondaMentor> rondaMentors;
 
     @Column(name = "START_DATE", nullable = false)
@@ -91,4 +89,5 @@ public class Ronda extends BaseEntity {
                 ", endDate=" + endDate +
                 '}';
     }
+
 }
