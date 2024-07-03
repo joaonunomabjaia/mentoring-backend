@@ -4,6 +4,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.session.SessionStatusDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -32,6 +33,12 @@ public class SessionStatus extends BaseEntity {
     private String code;
 
     public SessionStatus() {
+    }
+
+    public SessionStatus(SessionStatusDTO sessionStatusDTO) {
+        super(sessionStatusDTO);
+        this.setDescription(sessionStatusDTO.getDescription());
+        this.setCode(sessionStatusDTO.getCode());
     }
 
     public SessionStatus(String description, String code) {
