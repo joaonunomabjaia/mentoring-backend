@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.ronda;
 
+import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
@@ -23,7 +24,10 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.transaction.Transactional;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -101,7 +105,7 @@ public class RondaService {
     }
 
     @Transactional
-    public List<Ronda> search(@Nullable Long provinceId,@Nullable Long districtId,@Nullable Long healthFacilityId,@Nullable Long mentorId,@Nullable String startDate,@Nullable String endDate) {
+    public List<Ronda> search(@Nullable Long provinceId, @Nullable Long districtId, @Nullable Long healthFacilityId, @Nullable Long mentorId, @Nullable String startDate, @Nullable String endDate) {
         Date start = convertToDate(startDate);
         Date end = convertToDate(endDate);
         List<Ronda> rondas = rondaRepository.search(provinceId, districtId, healthFacilityId, mentorId, start, end);
@@ -213,7 +217,7 @@ public class RondaService {
         rondaMentor.setCreatedBy(user.getUuid());
         rondaMentor.setStartDate(new Date());
         rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        rondaMentor.setUuid(UUID.randomUUID().toString());
+        rondaMentor.setUuid(Utilities.generateUUID().toString());
         rondaMentor.setRonda(ronda);
 
         ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
