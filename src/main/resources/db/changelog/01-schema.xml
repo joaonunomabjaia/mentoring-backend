@@ -126,42 +126,6 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="table_form_type" author="voloide">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <tableExists tableName="form_type"/>
-            </not>
-        </preConditions>
-        <createTable tableName="form_type">
-            <column name="id" type="bigint(20)" autoIncrement="true">
-                <constraints primaryKey="true"/>
-            </column>
-            <column name="description" type="varchar(200)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="code" type="varchar(200)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="uuid" type="varchar(200)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="CREATED_BY" type="varchar(200)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="CREATED_AT" type="datetime">
-                <constraints nullable="false"/>
-            </column>
-            <column name="UPDATED_BY" type="varchar(200)">
-                <constraints nullable="true"/>
-            </column>
-            <column name="UPDATED_AT" type="datetime">
-                <constraints nullable="true"/>
-            </column>
-            <column name="LIFE_CYCLE_STATUS" type="varchar(200)">
-                <constraints nullable="false"/>
-            </column>
-        </createTable>
-    </changeSet>
     <changeSet id="table_career_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -198,18 +162,6 @@
             </column>
         </createTable>
     </changeSet>
-    <changeSet id="Data_insert_form_type" author="voloide">
-        <preConditions onFail="MARK_RAN">
-            <rowCount expectedRows="0" tableName="form_type"/>
-        </preConditions>
-        <sql>
-            INSERT INTO form_type
-            (ID,CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT, UPDATED_BY, UUID, description, code)
-            VALUES  (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '77831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Mentoring Form', 'MENTORING'),
-                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '78831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Mentoring Custom Form', 'MENTORING_CUSTOM'),
-                    (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '79831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Indicator', 'INDICATORS');
-        </sql>
-    </changeSet>
     <changeSet id="Data_insert_career_type" author="voloide">
         <preConditions onFail="MARK_RAN">
             <rowCount expectedRows="0" tableName="career_type"/>
@@ -245,16 +197,6 @@
                     (null,(SELECT NOW()), '49dcfc96e18644d1ae9e82dbb7e873a1', 'ACTIVE', null, null, '96831bb5-19e6-4dfd-9c83-c4870d0d1c4b', 'Numeric', 'NUMERIC');
         </sql>
     </changeSet>
-    <changeSet author="voloide" id="Forms-addColumn-form_type_id">
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="forms" columnName="FORM_TYPE_ID"/>
-            </not>
-        </preConditions>
-        <addColumn tableName="forms">
-            <column name="FORM_TYPE_ID"  type="bigint(20)"/>
-        </addColumn>
-    </changeSet>
     <changeSet author="voloide" id="Question-addColumn-question_type_id">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -274,18 +216,6 @@
         <addColumn tableName="carrers">
             <column name="CARRER_TYPE_ID"  type="bigint(20)"/>
         </addColumn>
-    </changeSet>
-    <changeSet id="update_form_type_id" author="voloide">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">
-                SELECT COUNT(*)
-                FROM forms
-                WHERE FORM_TYPE_ID is not null
-            </sqlCheck>
-        </preConditions>
-        <sql>
-            update forms SET FORM_TYPE_ID = (SELECT ID FROM form_type  where code = forms.FORM_TYPE) where FORM_TYPE_ID is null;
-        </sql>
     </changeSet>
     <changeSet id="update_carrer_type_id" author="voloide">
         <preConditions onFail="MARK_RAN">
@@ -318,14 +248,6 @@
         <addForeignKeyConstraint constraintName="question_type_question_fk"
                                  baseTableName="questions" baseColumnNames="question_type_id"
                                  referencedTableName="question_type" referencedColumnNames="id"/>
-    </changeSet>
-    <changeSet id="createTable-form_type_form_fk" author="voloide">
-        <comment>
-            Create form type foreign key on form table
-        </comment>
-        <addForeignKeyConstraint constraintName="form_type_form_fk"
-                                 baseTableName="forms" baseColumnNames="form_type_id"
-                                 referencedTableName="form_type" referencedColumnNames="id"/>
     </changeSet>
     <changeSet id="createTable-carrer_type_form_fk" author="voloide">
         <addForeignKeyConstraint constraintName="carrer_type_carrer_fk"
@@ -1395,15 +1317,6 @@
                                  baseTableName="programmatic_areas" baseColumnNames="PROGRAM_ID"
                                  referencedTableName="programs" referencedColumnNames="id"/>
     </changeSet>
-    <changeSet id="Table-forms-dropConstraint-form_type_form_fk" author="ialuj">
-        <dropForeignKeyConstraint baseTableName="forms" constraintName="form_type_form_fk" />
-    </changeSet>
-    <changeSet id="Table-forms-dropColumn-form_type_id" author="ialuj">
-        <preConditions onFail="MARK_RAN">
-            <columnExists tableName="forms" columnName="FORM_TYPE_ID"/>
-        </preConditions>
-        <dropColumn tableName="forms" columnName="FORM_TYPE_ID" />
-    </changeSet>
     <changeSet id="table_response_type" author="ialuj">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -2238,7 +2151,7 @@
             Create question type foreign key on question table
         </comment>
         <addForeignKeyConstraint constraintName="session_form_id_fk"
-                                 baseTableName="sessions" baseColumnNames="mentee_id"
+                                 baseTableName="sessions" baseColumnNames="form_id"
                                  referencedTableName="forms" referencedColumnNames="id"/>
     </changeSet>
     <changeSet id="Table-mentorship_add_columns" author="ialuj">
@@ -2263,5 +2176,37 @@
             <constraints nullable="true"/>
         </column>
     </addColumn>
+    </changeSet>
+    <changeSet id="Table-mentorships-dropColumn-code" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="mentorships" columnName="CODE"/>
+        </preConditions>
+        <dropColumn tableName="mentorships" columnName="CODE" />
+    </changeSet>
+    <changeSet id="Table-answers-dropForeignKey-FK_INDICATOR_ID" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="answers" columnName="INDICATOR_ID"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE answers DROP FOREIGN KEY FK_INDICATOR_ID;
+        </sql>
+    </changeSet>
+    <changeSet id="Table-answers-dropColumn-INDICATOR_ID" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="answers" columnName="INDICATOR_ID"/>
+        </preConditions>
+        <dropColumn tableName="answers" columnName="INDICATOR_ID" />
+    </changeSet>
+    <changeSet id="Table-answers-dropColumn-TYPE" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="answers" columnName="TYPE"/>
+        </preConditions>
+        <dropColumn tableName="answers" columnName="TYPE" />
+    </changeSet>
+    <changeSet id="Table-answers-dropColumn-NUMERIC_VALUE" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="answers" columnName="NUMERIC_VALUE"/>
+        </preConditions>
+        <dropColumn tableName="answers" columnName="NUMERIC_VALUE" />
     </changeSet>
 </databaseChangeLog>

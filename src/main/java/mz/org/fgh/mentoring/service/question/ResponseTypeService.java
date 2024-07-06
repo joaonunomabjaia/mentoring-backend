@@ -2,7 +2,7 @@ package mz.org.fgh.mentoring.service.question;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.question.ResponseTypeDTO;
+import mz.org.fgh.mentoring.dto.form.ResponseTypeDTO;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.repository.question.ResponseTypeRepository;
 

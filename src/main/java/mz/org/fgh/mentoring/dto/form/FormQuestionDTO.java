@@ -7,7 +7,7 @@ import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
-import mz.org.fgh.mentoring.dto.question.ResponseTypeDTO;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -15,29 +15,24 @@ import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
-import java.util.Date;
 
 @Data
 @AllArgsConstructor
 public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
     @JsonProperty(value = "form")
-    private FormDTO formDTO;
+    private FormDTO form;
 
     @JsonProperty(value = "question")
-    private QuestionDTO questionDTO;
+    private QuestionDTO question;
 
     @JsonProperty(value = "evaluationType")
-    private EvaluationTypeDTO evaluationTypeDTO;
+    private EvaluationTypeDTO evaluationType;
 
     @JsonProperty(value = "responseType")
-    private ResponseTypeDTO responseTypeDTO;
+    private ResponseTypeDTO responseType;
 
     private Integer sequence;
-
-    private Date createdAt;
-
-    private String createdBy;
 
     @Creator
     public FormQuestionDTO() {
@@ -46,42 +41,40 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
     public FormQuestionDTO(FormQuestion formQuestion) {
         super(formQuestion);
+        this.setSequence(formQuestion.getSequence());
         if(formQuestion.getQuestion()!=null) {
-            this.questionDTO = new QuestionDTO(formQuestion.getQuestion());
-        }
-        if(formQuestion.getResponseType()!=null) {
-            this.responseTypeDTO = new ResponseTypeDTO(formQuestion.getResponseType());
+            this.setQuestion(new QuestionDTO(formQuestion.getQuestion()));
         }
         if(formQuestion.getEvaluationType()!=null) {
-            this.evaluationTypeDTO = new EvaluationTypeDTO(formQuestion.getEvaluationType());
+            this.setEvaluationType(new EvaluationTypeDTO(formQuestion.getEvaluationType()));
+        }
+        if(formQuestion.getResponseType()!=null) {
+            this.setResponseType(new ResponseTypeDTO(formQuestion.getResponseType()));
         }
         if(formQuestion.getForm()!=null) {
-            this.formDTO = new FormDTO(formQuestion.getForm());
+            this.setForm(new FormDTO(formQuestion.getForm()));
         }
-        this.sequence = formQuestion.getSequence();
-        this.createdAt = formQuestion.getCreatedAt();
-        this.createdBy = formQuestion.getCreatedBy();
     }
 
-    public FormQuestion toFormQuestion() {
+    public FormQuestion getFormQuestion() {
         FormQuestion formQuestion = new FormQuestion();
-        formQuestion.setId(this.getId());
         formQuestion.setUuid(this.getUuid());
-        formQuestion.setSequence(this.getSequence());
-        formQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        formQuestion.setId(this.getId());
         formQuestion.setCreatedAt(this.getCreatedAt());
-        formQuestion.setCreatedBy(this.getCreatedBy());
-        if(this.getQuestionDTO()!=null) {
-            Question question = this.getQuestionDTO().toQuestion();
-            formQuestion.setQuestion(question);
+        formQuestion.setUpdatedAt(this.getUpdatedAt());
+        formQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        formQuestion.setSequence(formQuestion.getSequence());
+        if(this.getQuestion()!=null) {
+            formQuestion.setQuestion(new Question(this.getQuestion()));
         }
-        if(this.getEvaluationTypeDTO()!=null) {
-            EvaluationType evaluationType = this.getEvaluationTypeDTO().toEvaluationType();
-            formQuestion.setEvaluationType(evaluationType);
+        if(this.getEvaluationType()!=null) {
+            formQuestion.setEvaluationType(new EvaluationType(this.getEvaluationType()));
         }
-        if(this.getResponseTypeDTO()!=null) {
-            ResponseType responseType = this.getResponseTypeDTO().toResponseType();
-            formQuestion.setResponseType(responseType);
+        if(this.getResponseType()!=null) {
+            formQuestion.setResponseType(new ResponseType(this.getResponseType()));
+        }
+        if(this.getForm()!=null) {
+            formQuestion.setForm(new Form(this.getForm()));
         }
         return formQuestion;
     }

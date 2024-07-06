@@ -46,7 +46,7 @@ public class Tutor extends BaseEntity {
     public Tutor() {}
     public Tutor(TutorDTO tutorDTO) {
         super(tutorDTO);
-        this.setEmployee(new Employee(tutorDTO.getEmployeeDTO()));
+        if(tutorDTO.getEmployeeDTO()!=null) this.setEmployee(new Employee(tutorDTO.getEmployeeDTO()));
     }
 
     @Override

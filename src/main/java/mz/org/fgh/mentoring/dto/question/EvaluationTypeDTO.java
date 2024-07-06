@@ -21,17 +21,8 @@ public class EvaluationTypeDTO extends BaseEntityDTO implements Serializable {
 
     public EvaluationTypeDTO(EvaluationType evaluationType) {
         super(evaluationType);
-        this.description = evaluationType.getDescription();
-        this.code = evaluationType.getCode();
+        this.setDescription(evaluationType.getDescription());
+        this.setCode(evaluationType.getCode());
     }
 
-    public EvaluationType toEvaluationType() {
-        EvaluationType evaluationType = new EvaluationType();
-        evaluationType.setCode(this.getCode());
-        evaluationType.setId(this.getId());
-        evaluationType.setDescription(this.getDescription());
-        evaluationType.setUuid(this.getUuid());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) evaluationType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        return evaluationType;
-    }
 }

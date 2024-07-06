@@ -68,7 +68,7 @@ public class FormQuestionService {
     public void inactivate(Long userId, Long formId, FormQuestionDTO formQuestionDTO) {
         User user = this.userRepository.findById(userId).get();
         Form form = this.formRepository.findById(formId).get();
-        FormQuestion formQuestion = formQuestionDTO.toFormQuestion();
+        FormQuestion formQuestion = formQuestionDTO.getFormQuestion();
         formQuestion.setForm(form);
         formQuestion.setUpdatedBy(user.getUuid());
         formQuestion.setUpdatedAt(new Date());

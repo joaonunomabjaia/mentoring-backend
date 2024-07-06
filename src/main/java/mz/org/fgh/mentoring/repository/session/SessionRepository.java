@@ -16,7 +16,7 @@ import java.util.Optional;
 public interface SessionRepository extends CrudRepository<Session, Long> {
     List<SubmitedSessions> findNumberOfSessionsPerDistrict(LifeCycleStatus active);
 
-    Session findByUuid(String uuid);
+    Optional<Session> findByUuid(String uuid);
     List<SubmitedSessions> findNumberOfSessionsPerDistrict(String tutoruuid, LifeCycleStatus active);
 
     List<PerformedSession> findMacthingSelectedFilter(String district, String healthFacility, String programmaticArea, String form, String tutor, String cabinet, Date startDate, Date endDate, LifeCycleStatus lifeCycleStatus);

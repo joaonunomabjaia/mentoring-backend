@@ -24,17 +24,7 @@ public class QuestionTypeDTO extends BaseEntityDTO implements Serializable {
 
     public QuestionTypeDTO(QuestionType questionType) {
         super(questionType);
-        this.description = questionType.getDescription();
-        this.code = questionType.getCode();
-    }
-
-    public QuestionType toQuestionType() {
-        QuestionType questionType = new QuestionType();
-        questionType.setCode(this.getCode());
-        questionType.setId(this.getId());
-        questionType.setDescription(this.getDescription());
-        questionType.setUuid(this.getUuid());
-        questionType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        return questionType;
+        this.setCode(questionType.getCode());
+        this.setDescription(questionType.getDescription());
     }
 }

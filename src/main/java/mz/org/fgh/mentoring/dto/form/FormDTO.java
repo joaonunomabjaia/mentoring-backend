@@ -9,6 +9,8 @@ import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
+import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -78,19 +80,18 @@ public class FormDTO extends BaseEntityDTO {
 
     public Form toForm() {
         Form form = new Form();
-        form.setId(this.getId());
         form.setUuid(this.getUuid());
-        form.setCode(this.getCode());
-        form.setName(this.getName());
+        form.setId(this.getId());
+        form.setCreatedAt(this.getCreatedAt());
+        form.setUpdatedAt(this.getUpdatedAt());
+        form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         form.setDescription(this.getDescription());
+        form.setName(this.getName());
+        form.setCode(this.getCode());
         form.setTargetFile(this.getTargetFile());
         form.setTargetPatient(this.getTargetPatient());
-        form.setCreatedAt(this.getCreatedAt());
-        form.setCreatedBy(this.getCreatedBy());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        if(this.getProgrammaticAreaDTO()!=null) {
-            form.setProgrammaticArea(this.getProgrammaticAreaDTO().toProgrammaticArea());
-        }
+        if(this.getPartnerDTO()!=null) form.setPartner(new Partner(this.getPartnerDTO()));
+        if(this.getProgrammaticAreaDTO()!=null) form.setProgrammaticArea(new ProgrammaticArea(this.getProgrammaticAreaDTO()));
         return form;
     }
 }

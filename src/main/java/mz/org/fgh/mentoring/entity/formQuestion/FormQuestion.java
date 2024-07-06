@@ -8,6 +8,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -22,7 +23,6 @@ import java.util.Comparator;
 @Table(name = "forms_questions")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class FormQuestion extends BaseEntity {
@@ -55,4 +55,55 @@ public class FormQuestion extends BaseEntity {
     @Column( name ="SEQUENCE" )
     private Integer sequence;
 
+    public FormQuestion() {
+    }
+
+    public FormQuestion(FormQuestionDTO formQuestionDTO) {
+        super(formQuestionDTO);
+        this.setSequence(formQuestionDTO.getSequence());
+        if(formQuestionDTO.getQuestion()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestion()));
+        if(formQuestionDTO.getEvaluationType()!=null) this.setEvaluationType(new EvaluationType(formQuestionDTO.getEvaluationType()));
+        if(formQuestionDTO.getResponseType()!=null) this.setResponseType(new ResponseType(formQuestionDTO.getResponseType()));
+        if(formQuestionDTO.getForm()!=null) this.setForm(new Form(formQuestionDTO.getForm()));
+    }
+
+    public @NotNull Question getQuestion() {
+        return question;
+    }
+
+    public void setQuestion(@NotNull Question question) {
+        this.question = question;
+    }
+
+    public @NotNull Form getForm() {
+        return form;
+    }
+
+    public void setForm(@NotNull Form form) {
+        this.form = form;
+    }
+
+    public @NotNull ResponseType getResponseType() {
+        return responseType;
+    }
+
+    public void setResponseType(@NotNull ResponseType responseType) {
+        this.responseType = responseType;
+    }
+
+    public @NotNull EvaluationType getEvaluationType() {
+        return evaluationType;
+    }
+
+    public void setEvaluationType(@NotNull EvaluationType evaluationType) {
+        this.evaluationType = evaluationType;
+    }
+
+    public Integer getSequence() {
+        return sequence;
+    }
+
+    public void setSequence(Integer sequence) {
+        this.sequence = sequence;
+    }
 }

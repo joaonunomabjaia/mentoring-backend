@@ -76,9 +76,9 @@ public class Employee extends BaseEntity {
         super(employeeDTO);
         this.setName(employeeDTO.getName());
         this.setSurname(employeeDTO.getSurname());
-        this.setLocations(retriveLocations(employeeDTO.getLocationDTOSet()));
-        this.setPartner(new Partner(employeeDTO.getPartnerDTO()));
-        this.setProfessionalCategory(new ProfessionalCategory(employeeDTO.getProfessionalCategoryDTO()));
+        if(employeeDTO.getLocationDTOSet()!=null) this.setLocations(retriveLocations(employeeDTO.getLocationDTOSet()));
+        if(employeeDTO.getPartnerDTO()!=null) this.setPartner(new Partner(employeeDTO.getPartnerDTO()));
+        if(employeeDTO.getProfessionalCategoryDTO()!=null) this.setProfessionalCategory(new ProfessionalCategory(employeeDTO.getProfessionalCategoryDTO()));
         this.setEmail(employeeDTO.getEmail());
         this.setNuit(employeeDTO.getNuit());
         this.setTrainingYear(employeeDTO.getTrainingYear());

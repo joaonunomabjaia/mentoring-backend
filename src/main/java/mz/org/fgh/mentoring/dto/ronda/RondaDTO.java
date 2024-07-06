@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import java.time.LocalDateTime;
@@ -42,6 +43,7 @@ public class RondaDTO extends BaseEntityDTO {
         super(ronda);
         this.setDescription(ronda.getDescription());
         this.setStartDate(ronda.getStartDate());
+        this.setEndDate(ronda.getEndDate());
         if(ronda.getEndDate()!=null) {
             this.setEndDate(ronda.getEndDate());
         }
@@ -72,6 +74,7 @@ public class RondaDTO extends BaseEntityDTO {
         ronda.setEndDate(this.getEndDate());
         ronda.setCreatedAt(this.getCreatedAt());
         ronda.setUpdatedAt(this.getUpdatedAt());
+        ronda.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getHealthFacility()!=null) {
             ronda.setHealthFacility(this.getHealthFacility().getHealthFacilityObj());
         }

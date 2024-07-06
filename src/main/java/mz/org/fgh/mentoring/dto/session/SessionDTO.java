@@ -8,7 +8,12 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
+import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.session.Session;
+import mz.org.fgh.mentoring.entity.session.SessionStatus;
+import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 @Data
 @NoArgsConstructor
@@ -144,6 +149,30 @@ public class SessionDTO extends BaseEntityDTO {
     }
 
     public Session getSession() {
-        return new Session(this);
+        Session session = new Session();
+        session.setId(this.getId());
+        session.setUpdatedAt(this.getUpdatedAt());
+        session.setUuid(this.getUuid());
+        session.setCreatedAt(this.getCreatedAt());
+        session.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        session.setStartDate(this.getStartDate());
+        session.setEndDate(this.getEndDate());
+        session.setPerformedDate(this.getPerformedDate());
+        session.setPointsToImprove(this.getPointsToImprove());
+        session.setStrongPoints(this.getStrongPoints());
+        session.setObservations(this.getObservations());
+        if(this.getSessionStatus()!=null) {
+            session.setStatus(new SessionStatus(this.getSessionStatus()));
+        }
+        if(session.getForm()!=null) {
+            session.setForm(new Form(this.getForm()));
+        }
+        if(session.getRonda()!=null) {
+            session.setRonda(new Ronda(this.getRonda()));
+        }
+        if(session.getMentee()!=null) {
+            session.setMentee(new Tutored(this.getMentee()));
+        }
+        return session;
     }
 }

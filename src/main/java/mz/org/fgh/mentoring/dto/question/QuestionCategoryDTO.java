@@ -23,15 +23,6 @@ public class QuestionCategoryDTO extends BaseEntityDTO implements Serializable {
 
     public QuestionCategoryDTO(QuestionCategory questionCategory) {
         super(questionCategory);
-        this.category = questionCategory.getCategory();
-    }
-
-    public QuestionCategory toQuestionCategory() {
-        QuestionCategory questionsCategory = new QuestionCategory();
-        questionsCategory.setId(this.getId());
-        questionsCategory.setUuid(this.getUuid());
-        questionsCategory.setCategory(this.getCategory());
-        questionsCategory.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        return questionsCategory;
+        this.setCategory(questionCategory.getCategory());
     }
 }
