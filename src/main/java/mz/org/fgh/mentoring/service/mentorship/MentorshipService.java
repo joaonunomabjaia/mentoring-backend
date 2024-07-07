@@ -8,7 +8,6 @@ import mz.org.fgh.mentoring.dto.session.SessionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.mentorship.Door;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
@@ -126,7 +125,11 @@ public class MentorshipService {
 
                 Optional<Session> optionalSession = sessionRepository.findByUuid(sessionDTO.getUuid());
                 Session session =  optionalSession.isPresent() ? optionalSession.get() : null;
-                if(session==null) {
+
+                Optional<Mentorship> optMentorship = mentorshipRepository.findByUuid(mentorshipDTO.getUuid());
+                Mentorship existingMentorship = optMentorship.isPresent() ? optMentorship.get() : null;
+
+                if(session==null && existingMentorship==null) {
                     try {
 
                         Optional<Form> optForm = formRepository.findByUuid(mentorshipDTO.getForm().getUuid());
@@ -137,20 +140,18 @@ public class MentorshipService {
 
                         User user = userRepository.findById(userId).get();
 
-                        if (session == null) {
-                            session = sessionDTO.getSession();
-                            Optional<SessionStatus> optSessionStatus = sessionStatusRepository.findByUuid(session.getStatus().getUuid());
-                            SessionStatus sessionStatus = optSessionStatus.get();
-                            session.setStatus(sessionStatus);
-                            session.setForm(form);
-                            session.setMentee(tutored);
-                            Optional<Ronda> optionalRonda = rondaRepository.findByUuid(sessionDTO.getRonda().getUuid());
-                            Ronda ronda = optionalRonda.get();
-                            session.setRonda(ronda);
-                            session.setCreatedBy(user.getUuid());
-                            session.setCreatedAt(DateUtils.getCurrentDate());
-                            sessionRepository.save(session);
-                        }
+                        session = sessionDTO.getSession();
+                        Optional<SessionStatus> optSessionStatus = sessionStatusRepository.findByUuid(session.getStatus().getUuid());
+                        SessionStatus sessionStatus = optSessionStatus.get();
+                        session.setStatus(sessionStatus);
+                        session.setForm(form);
+                        session.setMentee(tutored);
+                        Optional<Ronda> optionalRonda = rondaRepository.findByUuid(sessionDTO.getRonda().getUuid());
+                        Ronda ronda = optionalRonda.get();
+                        session.setRonda(ronda);
+                        session.setCreatedBy(user.getUuid());
+                        session.setCreatedAt(DateUtils.getCurrentDate());
+                        sessionRepository.save(session);
 
                         Mentorship mentorship = mentorshipDTO.getMentorship();
                         mentorship.setSession(session);

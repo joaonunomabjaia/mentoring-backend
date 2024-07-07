@@ -29,7 +29,7 @@ public class FormQuestion extends BaseEntity {
 
     @ToString.Exclude
     @NotNull
-    @ManyToOne( fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.EAGER)
     @JoinColumn( name = "FORM_ID", nullable = false )
     private Form form;
 
@@ -42,7 +42,7 @@ public class FormQuestion extends BaseEntity {
 
     @ToString.Exclude
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "RESPONSE_TYPE_ID")
     private ResponseType responseType;
 
