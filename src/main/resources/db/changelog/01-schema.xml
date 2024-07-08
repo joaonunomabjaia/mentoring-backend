@@ -2209,4 +2209,20 @@
         </preConditions>
         <dropColumn tableName="answers" columnName="NUMERIC_VALUE" />
     </changeSet>
+    <changeSet id="add_mentor_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="rondas" columnName="mentor_type"/>
+            </not>
+        </preConditions>
+        <!-- Add mentor_type column -->
+        <addColumn tableName="rondas">
+            <column name="mentor_type" type="VARCHAR(255)"/>
+        </addColumn>
+
+        <!-- Update existing data to have the value "Interno" -->
+        <update tableName="rondas">
+            <column name="mentor_type" value="Interno"/>
+        </update>
+    </changeSet>
 </databaseChangeLog>

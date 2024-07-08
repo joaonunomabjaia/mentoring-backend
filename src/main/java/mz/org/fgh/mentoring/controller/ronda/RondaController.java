@@ -1,9 +1,17 @@
 package mz.org.fgh.mentoring.controller.ronda;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.*;
+import io.micronaut.http.annotation.Body;
+import io.micronaut.http.annotation.Controller;
+import io.micronaut.http.annotation.Delete;
+import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.PathVariable;
+import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -11,8 +19,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.micronaut.core.annotation.Nullable;
-
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
@@ -207,4 +213,51 @@ public class RondaController extends BaseController {
         return listAsDtos(this.rondaService.getAllOfMentor(mentorUuid), RondaDTO.class);
     }
 
+    @Operation(summary = "update Ronda")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Patch(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            value = "/update"
+    )
+    public HttpResponse<RestAPIResponse> patchRonda (@Body RondaDTO rondaDTO, Authentication authentication) {
+        try {
+            Ronda ronda = new Ronda(rondaDTO);
+
+
+            Ronda r = this.rondaService.update(ronda, (Long) authentication.getAttributes().get("userInfo"));
+
+            return HttpResponse.created(new RondaDTO(r));
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+
+    @Operation(summary = "delete Ronda")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Delete(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            value = "/delete"
+    )
+    public HttpResponse<RestAPIResponse> delete (@QueryValue("uuid") String uuid) {
+        try {
+            this.rondaService.delete(uuid);
+
+            return HttpResponse.ok();
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
 }

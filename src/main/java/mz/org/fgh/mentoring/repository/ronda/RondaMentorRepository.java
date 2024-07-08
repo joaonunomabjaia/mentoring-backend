@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.repository.ronda;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
 
 import javax.validation.constraints.NotNull;
@@ -23,4 +24,6 @@ public interface RondaMentorRepository extends CrudRepository<RondaMentor, Long>
     @Query("select rm from RondaMentor rm " +
             "where rm.ronda.id = :rondaId")
     List<RondaMentor> findByRonda(Long rondaId);
+
+    void deleteByRonda(Ronda ronda);
 }
