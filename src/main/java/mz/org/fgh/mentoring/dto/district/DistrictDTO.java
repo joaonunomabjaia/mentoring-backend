@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @NoArgsConstructor
@@ -28,7 +29,7 @@ public class DistrictDTO extends BaseEntityDTO {
         district.setId(this.getId());
         district.setCreatedAt(this.getCreatedAt());
         district.setUpdatedAt(this.getUpdatedAt());
-        district.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) district.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         district.setDescription(this.getDescription());
         if(this.getProvinceDTO()!=null) district.setProvince(new Province(this.getProvinceDTO()));
         return district;

@@ -19,6 +19,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -151,10 +152,12 @@ public class FormService {
         return null;
     }
 
+    @Transactional
     public FormDTO saveOrUpdate(Long userId, FormDTO formDTO) {
         User user = this.userRepository.fetchByUserId(userId);
         Partner partner = user.getEmployee().getPartner();
         Form form = formDTO.toForm();
+        form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         form.setDescription(form.getName());
         form.setPartner(partner);
         List<FormQuestionDTO> formQuestions = formDTO.getFormQuestions();
@@ -199,6 +202,8 @@ public class FormService {
             form.setUpdatedAt(DateUtils.getCurrentDate());
             form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
             Form updatedForm = this.formRepository.update(form);
+            updatedForm.setCreatedBy(formDTO.getCreatedBy());
+            updatedForm.setCreatedAt(formDTO.getCreatedAt());
             updatedForm.setFormQuestions(listOfFormQuestions);
             return new FormDTO(updatedForm);
     }

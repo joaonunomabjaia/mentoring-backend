@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.dto.district.DistrictDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 /**
  * @author Jose Julai Ritsure
@@ -33,7 +34,7 @@ public class HealthFacilityDTO extends BaseEntityDTO {
         healthFacility.setId(this.getId());
         healthFacility.setCreatedAt(this.getCreatedAt());
         healthFacility.setUpdatedAt(this.getUpdatedAt());
-        healthFacility.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) healthFacility.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getDistrictDTO()!=null) healthFacility.setDistrict(new District(this.getDistrictDTO()));
         return healthFacility;
     }

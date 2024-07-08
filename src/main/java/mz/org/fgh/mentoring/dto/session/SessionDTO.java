@@ -14,6 +14,7 @@ import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.session.SessionStatus;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @NoArgsConstructor
@@ -154,7 +155,7 @@ public class SessionDTO extends BaseEntityDTO {
         session.setUpdatedAt(this.getUpdatedAt());
         session.setUuid(this.getUuid());
         session.setCreatedAt(this.getCreatedAt());
-        session.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) session.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         session.setStartDate(this.getStartDate());
         session.setEndDate(this.getEndDate());
         session.setPerformedDate(this.getPerformedDate());
