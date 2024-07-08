@@ -32,6 +32,5 @@ public interface RondaMenteeRepository extends CrudRepository<RondaMentee, Long>
             "where rm.ronda.id = :rondaId")
     List<RondaMentee> findByRonda(Long rondaId);
 
-    @Query("delete from RondaMentee rm where rm.ronda = :ronda")
-    void deleteAllOfRonda(Ronda ronda);
+    void deleteByRonda(Ronda ronda);
 }

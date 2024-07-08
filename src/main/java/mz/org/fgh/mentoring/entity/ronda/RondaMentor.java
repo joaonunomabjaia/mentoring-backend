@@ -3,7 +3,6 @@ package mz.org.fgh.mentoring.entity.ronda;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.ronda.RondaMentorDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
@@ -45,7 +44,7 @@ public class RondaMentor extends BaseEntity {
             this.setEndDate(rondaMentorDTO.getEndDate());
             this.setMentor(new Tutor(rondaMentorDTO.getMentor()));
             this.setRonda(new Ronda());
-            this.getRonda().setUuid(rondaMentorDTO.getRonda().getUuid());
+            if (rondaMentorDTO.getRonda() != null) this.getRonda().setUuid(rondaMentorDTO.getRonda().getUuid());
       }
 
 

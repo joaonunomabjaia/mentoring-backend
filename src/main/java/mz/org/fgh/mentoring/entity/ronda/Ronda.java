@@ -89,8 +89,6 @@ public class Ronda extends BaseEntity {
                 "description='" + description + '\'' +
                 ", rondaType=" + rondaType +
                 ", healthFacility=" + healthFacility +
-                ", rondaMentees=" + rondaMentees +
-                ", rondaMentors=" + rondaMentors +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';
