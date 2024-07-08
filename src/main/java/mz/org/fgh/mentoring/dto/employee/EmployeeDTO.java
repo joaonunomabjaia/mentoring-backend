@@ -58,8 +58,10 @@ public class EmployeeDTO extends BaseEntityDTO {
     private Set<LocationDTO> setLocations(Set<Location> locationSet) {
         Set<LocationDTO> locationDTOSet = new HashSet<LocationDTO>();
 
-        for (Location location : locationSet) {
-            locationDTOSet.add(new LocationDTO(location));
+        if(!locationSet.isEmpty()) {
+            for (Location location : locationSet) {
+                locationDTOSet.add(new LocationDTO(location));
+            }
         }
         return locationDTOSet;
     }

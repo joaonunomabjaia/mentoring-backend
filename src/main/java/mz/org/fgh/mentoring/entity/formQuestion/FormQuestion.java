@@ -36,7 +36,7 @@ public class FormQuestion extends BaseEntity {
     @ToString.Exclude
     @JsonIgnore
     @NotNull
-    @ManyToOne( fetch = FetchType.LAZY)
+    @ManyToOne( fetch = FetchType.EAGER)
     @JoinColumn( name = "QUESTION_ID", nullable = false )
     private Question question;
 

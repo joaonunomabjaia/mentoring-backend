@@ -41,6 +41,7 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.TreeSet;
 
 @Singleton
 public class MentorshipService {
@@ -134,9 +135,12 @@ public class MentorshipService {
 
                         Optional<Form> optForm = formRepository.findByUuid(mentorshipDTO.getForm().getUuid());
                         Form form = optForm.get();
+                        form.setFormQuestions(null);
+                        form.setAnswers(null);
 
                         Optional<Tutored> optTutored = tutoredRepository.findByUuid(mentorshipDTO.getMentee().getUuid());
                         Tutored tutored = optTutored.get();
+                        tutored.getEmployee().setLocations(null);
 
                         User user = userRepository.findById(userId).get();
 
@@ -148,6 +152,9 @@ public class MentorshipService {
                         session.setMentee(tutored);
                         Optional<Ronda> optionalRonda = rondaRepository.findByUuid(sessionDTO.getRonda().getUuid());
                         Ronda ronda = optionalRonda.get();
+                        ronda.setRondaMentees(null);
+                        ronda.setRondaMentors(null);
+                        ronda.setHealthFacility(null);
                         session.setRonda(ronda);
                         session.setCreatedBy(user.getUuid());
                         session.setCreatedAt(DateUtils.getCurrentDate());
@@ -155,9 +162,12 @@ public class MentorshipService {
 
                         Mentorship mentorship = mentorshipDTO.getMentorship();
                         mentorship.setSession(session);
+                        mentorship.getSession().setForm(null);
                         mentorship.setForm(form);
                         Optional<Tutor> optTutor = tutorRepository.findByUuid(mentorshipDTO.getMentor().getUuid());
                         Tutor tutor = optTutor.get();
+                        tutor.getEmployee().setLocations(null);
+                        tutor.setTutorProgrammaticAreas(null);
                         mentorship.setTutor(tutor);
                         mentorship.setTutored(tutored);
                         Optional<Cabinet> optCabinet = cabinetRepository.findByUuid(mentorshipDTO.getCabinet().getUuid());
@@ -193,13 +203,16 @@ public class MentorshipService {
         for (AnswerDTO answerDTO: answerDTOS) {
             Answer answer = answerDTO.getAnswer();
             answer.setForm(form);
+            mentorship.setAnswers(null);
             answer.setMentorship(mentorship);
             Optional<Question> optionalQuestion = questionRepository.findByUuid(answerDTO.getQuestion().getUuid());
             Question question = optionalQuestion.get();
+            question.setQuestionCategory(null);
             answer.setQuestion(question);
             answer.setCreatedBy(user.getUuid());
             answer.setCreatedAt(DateUtils.getCurrentDate());
             Answer savedAnswer = answerRepository.save(answer);
+            savedAnswer.setMentorship(null);
             answers.add(savedAnswer);
         }
         return answers;

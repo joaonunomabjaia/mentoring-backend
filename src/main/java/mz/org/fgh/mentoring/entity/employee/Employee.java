@@ -66,7 +66,6 @@ public class Employee extends BaseEntity {
     @JoinColumn(name = "PARTNER_ID")
     private Partner partner;
 
-    @NotNull
     @OneToMany(mappedBy="employee", fetch = FetchType.EAGER)
     private Set<Location> locations;
 

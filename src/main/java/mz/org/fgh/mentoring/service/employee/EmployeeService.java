@@ -64,7 +64,11 @@ public class EmployeeService {
         employee.setPartner(partnerRepository.findByUuid(employee.getPartner().getUuid()));
         Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
 
-        Set<Location>locations =  employee.getLocations();
+        Set<Location> locations =  employee.getLocations();
+
+        if(locations.isEmpty()) {
+            throw new RuntimeException("É obrigatório indicar pelo menos uma localização deste Employee!");
+        }
 
         for (Location location : locations) {
             location.setEmployee(createdEmployee);

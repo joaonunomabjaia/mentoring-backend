@@ -50,7 +50,7 @@ public class RondaDTO extends BaseEntityDTO {
         if(ronda.getRondaType()!=null) {
             this.setRondaType(new RondaTypeDTO(ronda.getRondaType()));
         }
-        this.setHealthFacility(new HealthFacilityDTO(ronda.getHealthFacility()));
+        if(ronda.getHealthFacility()!=null) this.setHealthFacility(new HealthFacilityDTO(ronda.getHealthFacility()));
         if (Utilities.listHasElements(ronda.getRondaMentees())) {
             List<RondaMenteeDTO> rondaMenteeDTOS = ronda.getRondaMentees().stream()
                     .map(RondaMenteeDTO::new)
