@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 @Data
 @NoArgsConstructor
@@ -22,10 +23,10 @@ public class RondaMenteeDTO extends BaseEntityDTO {
 
     public RondaMenteeDTO(RondaMentee rondaMentee) {
         super(rondaMentee);
-        this.setMentee(new TutoredDTO(rondaMentee.getTutored()));
+        if(rondaMentee.getTutored()!=null) this.setMentee(new TutoredDTO(rondaMentee.getTutored()));
         this.setStartDate(rondaMentee.getStartDate());
         this.setEndDate(rondaMentee.getEndDate());
-        //this.setRonda(new RondaDTO(rondaMentee.getRonda()));
+        //if(rondaMentee.getRonda()!=null) this.setRonda(new RondaDTO(rondaMentee.getRonda()));
     }
 
     public Date getStartDate() {
@@ -61,11 +62,13 @@ public class RondaMenteeDTO extends BaseEntityDTO {
     }
     public RondaMentee getRondaMentee() {
         RondaMentee rondaMentee = new RondaMentee();
+        rondaMentee.setId(this.getId());
         rondaMentee.setUuid(this.getUuid());
         rondaMentee.setStartDate(this.getStartDate());
         rondaMentee.setEndDate(this.getEndDate());
         rondaMentee.setCreatedAt(this.getCreatedAt());
         rondaMentee.setUpdatedAt(this.getUpdatedAt());
+        rondaMentee.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getMentee()!=null) {
             rondaMentee.setTutored(this.getMentee().getMentee());
         }

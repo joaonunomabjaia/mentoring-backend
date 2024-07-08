@@ -66,7 +66,6 @@ public class Employee extends BaseEntity {
     @JoinColumn(name = "PARTNER_ID")
     private Partner partner;
 
-    @NotNull
     @OneToMany(mappedBy="employee", fetch = FetchType.EAGER)
     private Set<Location> locations;
 
@@ -76,9 +75,9 @@ public class Employee extends BaseEntity {
         super(employeeDTO);
         this.setName(employeeDTO.getName());
         this.setSurname(employeeDTO.getSurname());
-        this.setLocations(retriveLocations(employeeDTO.getLocationDTOSet()));
-        this.setPartner(new Partner(employeeDTO.getPartnerDTO()));
-        this.setProfessionalCategory(new ProfessionalCategory(employeeDTO.getProfessionalCategoryDTO()));
+        if(employeeDTO.getLocationDTOSet()!=null) this.setLocations(retriveLocations(employeeDTO.getLocationDTOSet()));
+        if(employeeDTO.getPartnerDTO()!=null) this.setPartner(new Partner(employeeDTO.getPartnerDTO()));
+        if(employeeDTO.getProfessionalCategoryDTO()!=null) this.setProfessionalCategory(new ProfessionalCategory(employeeDTO.getProfessionalCategoryDTO()));
         this.setEmail(employeeDTO.getEmail());
         this.setNuit(employeeDTO.getNuit());
         this.setTrainingYear(employeeDTO.getTrainingYear());

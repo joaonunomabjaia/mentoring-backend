@@ -44,6 +44,7 @@ public abstract class AbstractRondaRepository extends AbstaractBaseRepository im
                     "FROM rondas r " +
                     "INNER JOIN ronda_mentor rmr ON rmr.RONDA_ID = r.id " +
                     "INNER JOIN tutors t ON rmr.MENTOR_ID = t.id " +
+                    "INNER JOIN health_facilities hf ON r.HEALTH_FACILITY_ID = hf.id " +
                     "WHERE t.uuid = :mentorUuid";
 
             NativeQuery<Long> qw = session.createSQLQuery(sql);

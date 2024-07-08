@@ -27,8 +27,7 @@ public class ProgramDTO extends BaseEntityDTO implements Serializable {
 
     public  ProgramDTO(Program program) {
         super(program);
-        this.id = program.getId();
-        this.name = program.getName();
-        this.description = program.getDescription();
+        this.setDescription(program.getDescription());
+        this.setName(program.getName());
     }
 }

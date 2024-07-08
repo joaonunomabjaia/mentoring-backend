@@ -37,11 +37,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@ToString
 public class Mentorship extends BaseEntity {
-
-    @Column(name = "CODE", nullable = false, length = 50)
-    private String code;
 
     @Column(name = "START_DATE", nullable = false)
     private Date startDate;
@@ -128,8 +124,27 @@ public class Mentorship extends BaseEntity {
             List<Answer> answerList = new ArrayList<>();
             for (AnswerDTO answerDTO: mentorshipDTO.getAnswers()) {
                 answerList.add(new Answer(answerDTO));
-                this.setAnswers(answerList);
             }
+            this.setAnswers(answerList);
         }
+    }
+
+    @Override
+    public String toString() {
+        return "Mentorship{" +
+                "endDate=" + endDate +
+                ", startDate=" + startDate +
+                ", performedDate=" + performedDate +
+                ", tutor=" + tutor +
+                ", tutored=" + tutored +
+                ", form=" + form +
+                ", session=" + session +
+                ", cabinet=" + cabinet +
+                ", evaluationType=" + evaluationType +
+                ", iterationNumber=" + iterationNumber +
+                ", door=" + door +
+                ", demonstration=" + demonstration +
+                ", demonstrationDetails='" + demonstrationDetails + '\'' +
+                '}';
     }
 }

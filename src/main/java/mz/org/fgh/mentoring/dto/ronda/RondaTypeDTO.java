@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.ronda.RondaType;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
@@ -15,19 +16,14 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class RondaTypeDTO extends BaseEntityDTO {
 
-    private Long id;
-
-    private String uuid;
-
     private String code;
 
     private String description;
 
     public RondaTypeDTO(RondaType rondaType) {
-        this.id = rondaType.getId();
-        this.uuid = rondaType.getUuid();
-        this.code = rondaType.getCode();
-        this.description = rondaType.getDescription();
+        super(rondaType);
+        this.setCode(rondaType.getCode());
+        this.setDescription(rondaType.getDescription());
     }
 
     public RondaType getRondaType() {
@@ -36,6 +32,7 @@ public class RondaTypeDTO extends BaseEntityDTO {
         rondaType.setUuid(this.getUuid());
         rondaType.setCode(this.getCode());
         rondaType.setDescription(this.getDescription());
+        rondaType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return rondaType;
     }
 }

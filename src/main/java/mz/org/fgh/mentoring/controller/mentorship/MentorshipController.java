@@ -3,12 +3,14 @@ package mz.org.fgh.mentoring.controller.mentorship;
 import io.micronaut.core.version.annotation.Version;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -55,11 +57,10 @@ public class MentorshipController {
     @Operation(summary = "Creates a Collection of mentorships records")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentorship")
-    @Version(API_VERSION)
     @Post("/save")
-    public List<MentorshipDTO> saveMentorships(List<MentorshipDTO> mentorshipDTOS) {
+    public List<MentorshipDTO> saveMentorships(@Body List<MentorshipDTO> mentorshipDTOS, Authentication authentication) {
         LOG.debug("Created mentorships {}", mentorshipDTOS);
-        List<MentorshipDTO> dtos = mentorshipService.saveMentorships(mentorshipDTOS);
+        List<MentorshipDTO> dtos = mentorshipService.saveMentorships(mentorshipDTOS, (Long) authentication.getAttributes().get("userInfo"));
         return dtos;
     }
 }

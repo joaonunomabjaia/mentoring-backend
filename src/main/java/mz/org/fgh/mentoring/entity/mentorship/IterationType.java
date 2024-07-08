@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.mentorship.IterationTypeDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,6 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class IterationType extends BaseEntity {
 
     @NotEmpty
@@ -29,4 +29,14 @@ public class IterationType extends BaseEntity {
     @NotEmpty
     @Column(name = "code", nullable = false)
     private  String code;
+
+    public IterationType() {
+
+    }
+
+    public IterationType(IterationTypeDTO iterationTypeDTO) {
+        super(iterationTypeDTO);
+        this.setCode(iterationTypeDTO.getCode());
+        this.setDescription(iterationTypeDTO.getDescription());
+    }
 }
