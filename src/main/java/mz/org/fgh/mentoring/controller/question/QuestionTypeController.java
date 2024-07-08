@@ -13,9 +13,7 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.question.QuestionTypeDTO;
-import mz.org.fgh.mentoring.dto.question.ResponseTypeDTO;
 import mz.org.fgh.mentoring.service.question.QuestionTypeService;
-import mz.org.fgh.mentoring.service.question.ResponseTypeService;
 
 import java.util.List;
 

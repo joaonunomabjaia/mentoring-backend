@@ -3,8 +3,8 @@ package mz.org.fgh.mentoring.entity.mentorship;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.mentorship.TimeOfDayDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +19,6 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@NoArgsConstructor
 public class TimeOfDay extends BaseEntity {
 
     @NotEmpty
@@ -29,4 +28,14 @@ public class TimeOfDay extends BaseEntity {
     @NotEmpty
     @Column(name = "code", nullable = false)
     private  String code;
+
+    public TimeOfDay() {
+
+    }
+
+    public TimeOfDay(TimeOfDayDTO timeOfDayDTO) {
+        super(timeOfDayDTO);
+        this.setCode(timeOfDayDTO.getCode());
+        this.setDescription(timeOfDayDTO.getDescription());
+    }
 }

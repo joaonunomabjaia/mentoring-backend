@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.entity.career;
 
-import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
@@ -35,7 +34,7 @@ public class CareerType extends BaseEntity {
     }
 
     public CareerType(CareerTypeDTO careerTypeDTO){
-        this.setUuid(careerTypeDTO.getUuid());
+        super(careerTypeDTO);
         this.setCode(careerTypeDTO.getCode());
         this.setDescription(careerTypeDTO.getDescription());
     }

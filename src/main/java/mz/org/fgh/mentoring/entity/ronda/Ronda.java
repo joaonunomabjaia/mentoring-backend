@@ -63,6 +63,7 @@ public class Ronda extends BaseEntity {
         this.setDescription(rondaDTO.getDescription());
         this.setStartDate(rondaDTO.getStartDate());
         this.setEndDate(rondaDTO.getEndDate());
+        if(rondaDTO.getRondaType()!=null) this.setRondaType(new RondaType(rondaDTO.getRondaType()));
         this.setRondaType(new RondaType(rondaDTO.getRondaType()));
         this.setMentorType(rondaDTO.getMentorType());
         if(rondaDTO.getHealthFacility()!=null) {

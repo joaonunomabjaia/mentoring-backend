@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.setting.SettingDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -21,16 +22,9 @@ import java.time.LocalDateTime;
 @Table(name = "SETTINGS")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class Setting extends BaseEntity {
-
-    /*
-    public static final String SETTING_TYPE_DATE = "DATE";
-    public static final String SETTING_TYPE_TEXT = "TEXT";
-    public static final String SETTING_TYPE_NUMERIC = "NUMERIC";
-     */
 
     @NotNull
     @Column(name = "DESIGNATION", nullable = false)
@@ -51,4 +45,17 @@ public class Setting extends BaseEntity {
     @NotNull
     @Column(name = "DESCRIPTION")
     private String description;
+
+    public Setting() {
+
+    }
+
+    public Setting(SettingDTO settingDTO) {
+        super(settingDTO);
+        this.setDescription(settingDTO.getDescription());
+        this.setDesignation(settingDTO.getDesignation());
+        this.setValue(settingDTO.getValue());
+        this.setEnabled(settingDTO.getEnabled());
+        this.setType(settingDTO.getType());
+    }
 }

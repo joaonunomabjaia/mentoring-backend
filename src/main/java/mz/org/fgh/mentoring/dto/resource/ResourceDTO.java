@@ -22,15 +22,16 @@ public class ResourceDTO extends BaseEntityDTO implements Serializable {
     }
     public  ResourceDTO(Resource resource, CompletedFileUpload file) {
         super(resource);
-        this.resource = resource.getResource();
-        this.file = file;
+        this.setResource(resource.getResource());
+        this.setFile(file);
     }
 
-    public Resource convertToReource(LifeCycleStatus lifeCycleStatus) {
+    public Resource convertToReource() {
         Resource resource1 = new Resource();
-        resource1.setId(this.getId());
         resource1.setUuid(this.getUuid());
-        resource1.setLifeCycleStatus(lifeCycleStatus);
+        resource1.setId(this.getId());
+        resource1.setUpdatedAt(this.getUpdatedAt());
+        resource1.setCreatedAt(this.getCreatedAt());
         resource1.setResource(this.getResource());
         return resource1;
     }

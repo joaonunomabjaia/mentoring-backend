@@ -21,17 +21,7 @@ public class IterationTypeDTO extends BaseEntityDTO implements Serializable {
 
     public IterationTypeDTO(IterationType iterationType) {
         super(iterationType);
-        this.description = iterationType.getDescription();
-        this.code = iterationType.getCode();
-    }
-
-    public IterationType toIterationType() {
-        IterationType iterationType = new IterationType();
-        iterationType.setCode(this.getCode());
-        iterationType.setId(this.getId());
-        iterationType.setDescription(this.getDescription());
-        iterationType.setUuid(this.getUuid());
-        iterationType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        return iterationType;
+        this.setCode(iterationType.getCode());
+        this.setDescription(iterationType.getDescription());
     }
 }

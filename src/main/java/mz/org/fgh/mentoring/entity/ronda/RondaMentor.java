@@ -42,7 +42,7 @@ public class RondaMentor extends BaseEntity {
             super(rondaMentorDTO);
             this.setStartDate(rondaMentorDTO.getStartDate());
             this.setEndDate(rondaMentorDTO.getEndDate());
-            this.setMentor(new Tutor(rondaMentorDTO.getMentor()));
+            if(rondaMentorDTO.getMentor()!=null) this.setMentor(new Tutor(rondaMentorDTO.getMentor()));
             this.setRonda(new Ronda());
             if (rondaMentorDTO.getRonda() != null) this.getRonda().setUuid(rondaMentorDTO.getRonda().getUuid());
       }
@@ -51,8 +51,6 @@ public class RondaMentor extends BaseEntity {
       @Override
       public String toString() {
             return "RondaMentor{" +
-                    "ronda=" + ronda +
-                    ", mentor=" + mentor +
                     ", startDate=" + startDate +
                     ", endDate=" + endDate +
                     '}';

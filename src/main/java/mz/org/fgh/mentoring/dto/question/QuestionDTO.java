@@ -29,10 +29,10 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
 
     public QuestionDTO(Question question) {
         super(question);
-        this.code = question.getCode();
-        this.question = question.getQuestion();
+        this.setCode(question.getCode());
+        this.setQuestion(question.getQuestion());
         if(question.getQuestionCategory()!=null) {
-            this.questionCategoryDTO = new QuestionCategoryDTO(question.getQuestionCategory());
+            this.setQuestionCategoryDTO(new QuestionCategoryDTO(question.getQuestionCategory()));
         }
     }
 
@@ -42,8 +42,10 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         question.setCode(this.getCode());
         question.setId(this.getId());
         question.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        QuestionCategory questionCategory = this.getQuestionCategoryDTO().toQuestionCategory();
-        question.setQuestionCategory(questionCategory);
+        question.setUuid(this.getUuid());
+        question.setCreatedAt(this.getCreatedAt());
+        question.setUpdatedAt(this.getUpdatedAt());
+        if (this.getQuestionCategoryDTO()!=null) question.setQuestionCategory(new QuestionCategory(this.getQuestionCategoryDTO()));
         return question;
     }
 

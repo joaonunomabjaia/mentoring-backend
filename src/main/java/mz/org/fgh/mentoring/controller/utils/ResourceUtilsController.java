@@ -18,9 +18,7 @@ import mz.org.fgh.mentoring.dto.mentorship.DoorDTO;
 import mz.org.fgh.mentoring.dto.mentorship.IterationTypeDTO;
 import mz.org.fgh.mentoring.dto.mentorship.TimeOfDayDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionTypeDTO;
-import mz.org.fgh.mentoring.entity.form.FormType;
 import mz.org.fgh.mentoring.service.career.CareerTypeService;
-import mz.org.fgh.mentoring.service.form.FormTypeService;
 import mz.org.fgh.mentoring.service.mentorship.DoorService;
 import mz.org.fgh.mentoring.service.mentorship.IterationTypeService;
 import mz.org.fgh.mentoring.service.mentorship.TimeOfDayService;
@@ -37,8 +35,6 @@ public class ResourceUtilsController extends BaseController {
 
     @Inject
     private CareerTypeService careeTypeService;
-    @Inject
-    private FormTypeService formTypeService;
 
     @Inject
     private QuestionTypeService questionTypeService;
@@ -66,16 +62,6 @@ public class ResourceUtilsController extends BaseController {
     }
      */
 
-    @Operation(summary = "Return a list off all FormType")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "FormType")
-    @Version(API_VERSION)
-    @Get("/formtypes")
-    public List<FormType> findAllFormType1(){
-        LOG.debug("Searching FormType version 1");
-        return this.formTypeService.findAll();
-    }
-
     @Operation(summary = "Return a list off all QuestionType")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "QuestionType")
@@ -94,12 +80,6 @@ public class ResourceUtilsController extends BaseController {
     }
 
      */
-
-    @Get("/formtypes")
-    public List<FormType> findAllFormType(){
-        LOG.debug("Searching FormType version 2");
-        return this.formTypeService.findAll();
-    }
 
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Return a list off all doors")

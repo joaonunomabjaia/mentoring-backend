@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.career.Career;
 
 /**
@@ -12,7 +13,7 @@ import mz.org.fgh.mentoring.entity.career.Career;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CareerDTO {
+public class CareerDTO extends BaseEntityDTO {
 
     @JsonProperty(value = "uuid")
     private String uuid;
@@ -24,7 +25,7 @@ public class CareerDTO {
     private CareerTypeDTO careerTypeDTO;
 
     public CareerDTO(Career career){
-        this.setUuid(career.getUuid());
+        super(career);
         this.setPosition(career.getPosition());
         this.setCareerTypeDTO(new CareerTypeDTO(career.getCareerType()));
     }

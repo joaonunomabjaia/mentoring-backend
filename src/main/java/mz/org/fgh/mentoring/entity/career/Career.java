@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.career.CareerDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 
 import javax.persistence.*;
@@ -18,7 +19,6 @@ import java.util.Set;
 @Table(name = "CARRERS")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Career extends BaseEntity {
 
@@ -31,4 +31,13 @@ public class Career extends BaseEntity {
     @Column(name = "POSITION", nullable = false)
     private String position;
 
+    public Career() {
+
+    }
+
+    public Career(CareerDTO careerDTO) {
+        super(careerDTO);
+        this.setPosition(careerDTO.getPosition());
+        if(careerDTO.getCareerTypeDTO()!=null) this.setCareerType(new CareerType(careerDTO.getCareerTypeDTO()));
+    }
 }

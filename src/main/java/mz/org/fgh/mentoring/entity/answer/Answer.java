@@ -40,7 +40,7 @@ public class Answer extends BaseEntity {
     @JoinColumn(name = "FORM_QUESTION_ID")
     private FormQuestion formQuestion;
 
-    @Column(name = "VALUE", nullable = false)
+    @Column(name = "TEXT_VALUE", nullable = false)
     private String value;
 
     public Answer() {

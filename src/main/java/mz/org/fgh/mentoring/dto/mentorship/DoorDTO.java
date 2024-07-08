@@ -21,17 +21,7 @@ public class DoorDTO extends BaseEntityDTO {
 
     public DoorDTO(Door door) {
         super(door);
-        this.description = door.getDescription();
-        this.code = door.getCode();
-    }
-
-    public Door toDoor() {
-        Door door = new Door();
-        door.setCode(this.getCode());
-        door.setId(this.getId());
-        door.setDescription(this.getDescription());
-        door.setUuid(this.getUuid());
-        door.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        return door;
+        this.setCode(door.getCode());
+        this.setDescription(door.getDescription());
     }
 }

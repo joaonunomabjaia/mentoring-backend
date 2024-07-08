@@ -30,7 +30,7 @@ public class QuestionCategory extends BaseEntity {
     public QuestionCategory(){}
     public QuestionCategory(QuestionCategoryDTO questionCategoryDTO){
         super(questionCategoryDTO);
-        this.category = questionCategoryDTO.getCategory();
+        this.setCategory(questionCategoryDTO.getCategory());
     }
 
     @Override

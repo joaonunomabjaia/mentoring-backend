@@ -16,12 +16,19 @@ import mz.org.fgh.mentoring.dto.session.SessionDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
+import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
+import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.mentorship.Door;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
+import mz.org.fgh.mentoring.entity.question.EvaluationType;
+import mz.org.fgh.mentoring.entity.session.Session;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
+import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 @Data
 @NoArgsConstructor
 public class MentorshipDTO extends BaseEntityDTO {
-    private String code;
     private Integer iterationNumber;
     private Date startDate;
     private Date endDate;
@@ -67,17 +74,9 @@ public class MentorshipDTO extends BaseEntityDTO {
             List<AnswerDTO> answerDTOS = new ArrayList<>();
             for (Answer answer: mentorship.getAnswers()) {
                 answerDTOS.add(new AnswerDTO(answer));
-                this.setAnswers(answerDTOS);
             }
+            this.setAnswers(answerDTOS);
         }
-    }
-
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
     }
 
     public Integer getIterationNumber() {
@@ -185,6 +184,46 @@ public class MentorshipDTO extends BaseEntityDTO {
     }
 
     public Mentorship getMentorship() {
-        return new Mentorship(this);
+        Mentorship mentorship = new Mentorship();
+        mentorship.setUuid(this.getUuid());
+        mentorship.setId(this.getId());
+        mentorship.setCreatedAt(this.getCreatedAt());
+        mentorship.setUpdatedAt(this.getUpdatedAt());
+        mentorship.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        mentorship.setStartDate(this.getStartDate());
+        mentorship.setEndDate(this.getEndDate());
+        mentorship.setIterationNumber(this.getIterationNumber());
+        mentorship.setDemonstration(this.isDemonstration());
+        mentorship.setDemonstrationDetails(this.getDemonstrationDetails());
+
+        if(this.getMentor()!=null) {
+            mentorship.setTutor(new Tutor(this.getMentor()));
+        }
+        if(this.getMentee()!=null) {
+            mentorship.setTutored(new Tutored(this.getMentee()));
+        }
+        if(this.getSession()!=null) {
+            mentorship.setSession(new Session(this.getSession()));
+        }
+        if(this.getForm()!=null) {
+            mentorship.setForm(new Form(this.getForm()));
+        }
+        if(this.getCabinet()!=null) {
+            mentorship.setCabinet(new Cabinet(this.getCabinet()));
+        }
+        if(this.getDoor()!=null) {
+            mentorship.setDoor(new Door(this.getDoor()));
+        }
+        if(this.getEvaluationType()!=null) {
+            mentorship.setEvaluationType(new EvaluationType(this.getEvaluationType()));
+        }
+        if(this.getAnswers()!=null) {
+            List<Answer> answerList = new ArrayList<>();
+            for (AnswerDTO answerDTO: this.getAnswers()) {
+                answerList.add(new Answer(answerDTO));
+            }
+            mentorship.setAnswers(answerList);
+        }
+        return mentorship;
     }
 }

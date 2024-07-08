@@ -30,23 +30,13 @@ public class ProgrammaticAreaDTO extends BaseEntityDTO {
 
     public ProgrammaticAreaDTO(ProgrammaticArea programmaticArea) {
         super(programmaticArea);
-        this.id = programmaticArea.getId();
-        this.code = programmaticArea.getCode();
-        this.description = programmaticArea.getDescription();
-        this.name = programmaticArea.getName();
+        this.setCode(programmaticArea.getCode());
+        this.setDescription(programmaticArea.getDescription());
+        this.setName(programmaticArea.getName());
 
         if (programmaticArea.getProgram()!= null) {
             this.setProgram(new ProgramDTO(programmaticArea.getProgram()));
         }
-    }
-
-    public ProgrammaticArea toProgrammaticArea() {
-        ProgrammaticArea programmaticArea = new ProgrammaticArea();
-        programmaticArea.setCode(this.getCode());
-        programmaticArea.setDescription(this.getDescription());
-        programmaticArea.setId(this.getId());
-        programmaticArea.setUuid(this.getUuid());
-        return programmaticArea;
     }
 
     @Override

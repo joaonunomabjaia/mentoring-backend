@@ -41,9 +41,9 @@ public class Question  extends BaseEntity {
     public Question(){}
     public Question(QuestionDTO questionDTO){
         super(questionDTO);
-        this.code=questionDTO.getCode();
-        this.question=questionDTO.getQuestion();
-        this.questionCategory = new QuestionCategory(questionDTO.getQuestionCategoryDTO());
+        this.setCode(questionDTO.getCode());
+        this.setQuestion(questionDTO.getQuestion());
+        if(questionDTO.getQuestionCategoryDTO()!=null) this.setQuestionCategory(new QuestionCategory(questionDTO.getQuestionCategoryDTO()));
     }
 
     @Override

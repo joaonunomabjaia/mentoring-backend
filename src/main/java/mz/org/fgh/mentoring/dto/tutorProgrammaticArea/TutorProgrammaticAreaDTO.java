@@ -7,7 +7,10 @@ import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 @Data
 @AllArgsConstructor
@@ -28,19 +31,20 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
     public TutorProgrammaticAreaDTO(TutorProgrammaticArea tutorProgrammaticArea) {
         super(tutorProgrammaticArea);
         if(tutorProgrammaticArea.getProgrammaticArea()!=null) {
-            this.programmaticAreaDTO = new ProgrammaticAreaDTO(tutorProgrammaticArea.getProgrammaticArea());
+            this.setProgrammaticAreaDTO(new ProgrammaticAreaDTO(tutorProgrammaticArea.getProgrammaticArea()));
         }
     }
 
     public TutorProgrammaticArea toTutorProgrammaticArea() {
-            TutorProgrammaticArea tutorProgrammaticArea = new TutorProgrammaticArea();
-            if(this.getProgrammaticAreaDTO()!=null) {
-                tutorProgrammaticArea.setProgrammaticArea(this.getProgrammaticAreaDTO().toProgrammaticArea());
-            }
-            /*if(this.getTutorDTO()!=null) {
-                tutorProgrammaticArea.setTutor(this.getTutorDTO().toTutor());
-            }*/
-            return tutorProgrammaticArea;
+        TutorProgrammaticArea tutorProgrammaticArea = new TutorProgrammaticArea();
+        tutorProgrammaticArea.setId(this.getId());
+        tutorProgrammaticArea.setUpdatedAt(this.getUpdatedAt());
+        tutorProgrammaticArea.setUuid(this.getUuid());
+        tutorProgrammaticArea.setCreatedAt(this.getCreatedAt());
+        tutorProgrammaticArea.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if(this.getTutorDTO()!=null) tutorProgrammaticArea.setTutor(new Tutor(this.getTutorDTO()));
+        if(this.getProgrammaticAreaDTO()!=null) tutorProgrammaticArea.setProgrammaticArea(new ProgrammaticArea(this.getProgrammaticAreaDTO()));
+        return tutorProgrammaticArea;
         }
 
     }

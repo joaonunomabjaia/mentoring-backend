@@ -5,6 +5,10 @@ import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
+import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
+import mz.org.fgh.mentoring.entity.question.Question;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 /**
  * @author Jose Julai Ritsure
@@ -38,7 +42,23 @@ public class AnswerDTO extends BaseEntityDTO {
     }
 
     public Answer getAnswer() {
-        return new Answer(this);
+        Answer answer = new Answer();
+        answer.setUuid(this.getUuid());
+        answer.setId(this.getId());
+        answer.setCreatedAt(this.getCreatedAt());
+        answer.setUpdatedAt(this.getUpdatedAt());
+        answer.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        answer.setValue(answer.getValue());
+        if(answer.getMentorship()!=null) {
+            answer.setMentorship(new Mentorship(this.getMentorship()));
+        }
+        if(answer.getForm()!=null) {
+            answer.setForm(new Form(this.getForm()));
+        }
+        if(answer.getQuestion()!=null) {
+            answer.setQuestion(new Question(this.getQuestion()));
+        }
+        return answer;
     }
 
     public String getValue() {

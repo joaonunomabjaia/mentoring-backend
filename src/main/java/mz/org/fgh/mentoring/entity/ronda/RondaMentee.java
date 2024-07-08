@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.ronda.RondaMenteeDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
@@ -23,10 +24,12 @@ import java.util.Date;
 @AllArgsConstructor
 public class RondaMentee extends BaseEntity {
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "RONDA_ID")
     private Ronda ronda;
 
+    @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MENTEE_ID")
     private Tutored tutored;
@@ -55,8 +58,6 @@ public class RondaMentee extends BaseEntity {
     @Override
     public String toString() {
         return "RondaMentee{" +
-                "ronda=" + ronda +
-                ", tutored=" + tutored +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';

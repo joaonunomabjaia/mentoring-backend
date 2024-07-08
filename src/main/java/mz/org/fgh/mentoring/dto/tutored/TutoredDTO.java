@@ -9,6 +9,7 @@ import lombok.Setter;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 /**
  * @author Jose Julai Ritsure
@@ -26,7 +27,7 @@ public class TutoredDTO extends BaseEntityDTO {
 
     public TutoredDTO(Tutored tutored) {
         super(tutored);
-       this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
+        if(tutored.getEmployee()!=null) this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
 
     }
 
@@ -34,6 +35,9 @@ public class TutoredDTO extends BaseEntityDTO {
         Tutored tutored = new Tutored();
         tutored.setId(this.getId());
         tutored.setUuid(this.getUuid());
+        tutored.setCreatedAt(this.getCreatedAt());
+        tutored.setUpdatedAt(this.getUpdatedAt());
+        tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
             tutored.setEmployee(this.getEmployeeDTO().getEmployee());
         }

@@ -32,8 +32,8 @@ public class QuestionType  extends BaseEntity {
     public QuestionType(){}
     public QuestionType(QuestionTypeDTO questionTypeDTO) {
         super(questionTypeDTO);
-        this.description= questionTypeDTO.getDescription();
-        this.code= questionTypeDTO.getCode();
+        this.setCode(questionTypeDTO.getCode());
+        this.setDescription(questionTypeDTO.getDescription());
     }
 
     @Override

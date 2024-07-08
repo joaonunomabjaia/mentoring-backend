@@ -55,7 +55,7 @@ public class Location extends BaseEntity {
         super(locationDTO);
         this.setEmployee(employee);
         this.setLocationLevel(locationDTO.getLocationLevel());
-        this.setProvince(new Province(locationDTO.getProvinceDTO()));
+        if(locationDTO.getProvinceDTO()!=null) this.setProvince(new Province(locationDTO.getProvinceDTO()));
         if(locationDTO.getDistrictDTO()!=null)
         this.setDistrict(new District(locationDTO.getDistrictDTO()));
         if(locationDTO.getHealthFacilityDTO()!=null)

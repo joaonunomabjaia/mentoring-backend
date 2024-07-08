@@ -168,7 +168,7 @@ public class FormService {
             Form newForm = this.formRepository.save(form);
             List<FormQuestion> newFormQuestions = new ArrayList<>();
             for (FormQuestionDTO dto : formQuestions) {
-                FormQuestion formQuestion = dto.toFormQuestion();
+                FormQuestion formQuestion = dto.getFormQuestion();
                 formQuestion.setCreatedBy(user.getUuid());
                 formQuestion.setCreatedAt(DateUtils.getCurrentDate());
                 formQuestion.setForm(newForm);
@@ -184,7 +184,7 @@ public class FormService {
         List<FormQuestion> listOfFormQuestions = new ArrayList<>();
         for (FormQuestionDTO dto : formQuestions) {
             if(dto.getId()==null) {
-                FormQuestion formQuestion = dto.toFormQuestion();
+                FormQuestion formQuestion = dto.getFormQuestion();
                 formQuestion.setCreatedBy(user.getUuid());
                 formQuestion.setCreatedAt(DateUtils.getCurrentDate());
                 formQuestion.setForm(form);
@@ -192,7 +192,7 @@ public class FormService {
                 FormQuestion newFQ = this.formQuestionRepository.save(formQuestion);
                 listOfFormQuestions.add(newFQ);
             } else {
-                listOfFormQuestions.add(dto.toFormQuestion());
+                listOfFormQuestions.add(dto.getFormQuestion());
             }
         }
             form.setUpdatedBy(user.getUuid());

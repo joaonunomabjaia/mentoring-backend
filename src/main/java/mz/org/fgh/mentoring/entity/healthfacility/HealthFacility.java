@@ -38,7 +38,7 @@ public class HealthFacility extends BaseEntity {
     public HealthFacility(){}
     public HealthFacility(HealthFacilityDTO healthFacilityDTO) {
         super(healthFacilityDTO);
-        this.setDistrict(new District(healthFacilityDTO.getDistrictDTO()));
+        if(healthFacilityDTO.getDistrictDTO()!=null) this.setDistrict(new District(healthFacilityDTO.getDistrictDTO()));
         this.setHealthFacility(healthFacilityDTO.getHealthFacility());
     }
 

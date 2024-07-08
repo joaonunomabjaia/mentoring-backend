@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.ArrayList;
@@ -44,13 +45,14 @@ public class RondaDTO extends BaseEntityDTO {
         this.setDescription(ronda.getDescription());
         this.setStartDate(ronda.getStartDate());
         this.setMentorType(ronda.getMentorType());
+        this.setEndDate(ronda.getEndDate());
         if(ronda.getEndDate()!=null) {
             this.setEndDate(ronda.getEndDate());
         }
         if(ronda.getRondaType()!=null) {
             this.setRondaType(new RondaTypeDTO(ronda.getRondaType()));
         }
-        this.setHealthFacility(new HealthFacilityDTO(ronda.getHealthFacility()));
+        if(ronda.getHealthFacility()!=null) this.setHealthFacility(new HealthFacilityDTO(ronda.getHealthFacility()));
         if (Utilities.listHasElements(ronda.getRondaMentees())) {
             List<RondaMenteeDTO> rondaMenteeDTOS = ronda.getRondaMentees().stream()
                     .map(RondaMenteeDTO::new)
@@ -75,6 +77,7 @@ public class RondaDTO extends BaseEntityDTO {
         ronda.setEndDate(this.getEndDate());
         ronda.setCreatedAt(this.getCreatedAt());
         ronda.setUpdatedAt(this.getUpdatedAt());
+        ronda.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getHealthFacility()!=null) {
             ronda.setHealthFacility(this.getHealthFacility().getHealthFacilityObj());
         }
