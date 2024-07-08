@@ -143,7 +143,7 @@ public class RondaService {
         HealthFacility healthFacility = healthFacilityRepository.findByUuid(ronda.getHealthFacility().getUuid()).get();
         Tutor mentor = tutorRepository.findByUuid(ronda.getRondaMentors().get(0).getMentor().getUuid()).get();
         RondaType rondaType = rondaTypeRepository.findByUuid(ronda.getRondaType().getUuid()).get();
-        if (isOnActiveRonda(mentor)) throw new RuntimeException("O mentor encontra-se em uma ronda activa, não é possível criar nova.");
+        //if (isOnActiveRonda(mentor)) throw new RuntimeException("O mentor encontra-se em uma ronda activa, não é possível criar nova.");
 
         ronda.setCreatedBy(user.getUuid());
         ronda.setCreatedAt(DateUtils.getCurrentDate());
@@ -233,5 +233,36 @@ public class RondaService {
         rondaMentorRepository.save(rondaMentor);
 
         return new RondaDTO(ronda);
+    }
+
+    @Transactional
+    public Ronda update(Ronda ronda, Long userId) {
+
+        User user = userRepository.findById(userId).get();
+        //if (isOnActiveRonda(mentor)) throw new RuntimeException("O mentor encontra-se em uma ronda activa, não é possível criar nova.");
+
+        ronda.setUpdatedBy(user.getUuid());
+        ronda.setUpdatedAt(DateUtils.getCurrentDate());
+        ronda.setHealthFacility(healthFacilityRepository.findByUuid(ronda.getHealthFacility().getUuid()).get());
+        ronda.setRondaType(rondaTypeRepository.findByUuid(ronda.getRondaType().getUuid()).get());
+        Ronda createdRonda = this.rondaRepository.update(ronda);
+
+        this.rondaMenteeRepository.deleteAllOfRonda(ronda);
+
+        if(Utilities.listHasElements(ronda.getRondaMentees())) {
+            for (RondaMentee rondaMentee: ronda.getRondaMentees()) {
+                rondaMentee.setRonda(createdRonda);
+                rondaMentee.setTutored(tutoredRepository.findByUuid(rondaMentee.getTutored().getUuid()).get());
+                rondaMentee.setCreatedBy(user.getUuid());
+                rondaMentee.setCreatedAt(DateUtils.getCurrentDate());
+                rondaMentee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                this.rondaMenteeRepository.save(rondaMentee);
+            }
+        }
+        return createdRonda;
+    }
+
+    public Optional<Ronda> getByUuid(String uuid) {
+        return this.rondaRepository.findByUuid(uuid);
     }
 }

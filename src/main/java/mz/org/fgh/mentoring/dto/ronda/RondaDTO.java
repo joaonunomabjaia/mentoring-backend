@@ -10,7 +10,6 @@ import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
 import mz.org.fgh.mentoring.util.Utilities;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -25,6 +24,8 @@ public class RondaDTO extends BaseEntityDTO {
     private Date startDate;
 
     private Date endDate;
+
+    private String mentorType;
 
     @JsonProperty(value = "rondaTypeDTO")
     private RondaTypeDTO rondaType;
@@ -42,6 +43,7 @@ public class RondaDTO extends BaseEntityDTO {
         super(ronda);
         this.setDescription(ronda.getDescription());
         this.setStartDate(ronda.getStartDate());
+        this.setMentorType(ronda.getMentorType());
         if(ronda.getEndDate()!=null) {
             this.setEndDate(ronda.getEndDate());
         }
@@ -67,6 +69,7 @@ public class RondaDTO extends BaseEntityDTO {
         Ronda ronda = new Ronda();
         ronda.setId(this.getId());
         ronda.setUuid(this.getUuid());
+        ronda.setMentorType(this.getMentorType());
         ronda.setDescription(this.getDescription());
         ronda.setStartDate(this.getStartDate());
         ronda.setEndDate(this.getEndDate());

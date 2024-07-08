@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.RONDA)
@@ -207,4 +208,29 @@ public class RondaController extends BaseController {
         return listAsDtos(this.rondaService.getAllOfMentor(mentorUuid), RondaDTO.class);
     }
 
+    @Operation(summary = "Save Ronda")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Post(
+            consumes = MediaType.APPLICATION_JSON,
+            produces = MediaType.APPLICATION_JSON,
+            value = "/update"
+    )
+    public HttpResponse<RestAPIResponse> patchRonda (@Body RondaDTO rondaDTO, Authentication authentication) {
+        try {
+            Ronda ronda = new Ronda(rondaDTO);
+            Optional<Ronda> existingRonda = this.rondaService.getByUuid(ronda.getUuid());
+
+            ronda.setId(existingRonda.get().getId());
+            Ronda r = this.rondaService.update(ronda, (Long) authentication.getAttributes().get("userInfo"));
+
+            return HttpResponse.created(new RondaDTO(r));
+        } catch (Exception e) {
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
 }

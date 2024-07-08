@@ -4,13 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.Column;
@@ -56,6 +52,9 @@ public class Ronda extends BaseEntity {
     @Column(name = "END_DATE")
     private Date endDate;
 
+    @Column(name = "mentor_type")
+    private String mentorType;
+
     public Ronda () {
     }
 
@@ -65,6 +64,7 @@ public class Ronda extends BaseEntity {
         this.setStartDate(rondaDTO.getStartDate());
         this.setEndDate(rondaDTO.getEndDate());
         this.setRondaType(new RondaType(rondaDTO.getRondaType()));
+        this.setMentorType(rondaDTO.getMentorType());
         if(rondaDTO.getHealthFacility()!=null) {
             this.setHealthFacility(new HealthFacility(rondaDTO.getHealthFacility()));
         }
