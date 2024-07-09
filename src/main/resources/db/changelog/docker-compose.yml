@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  mentoring-backend:
+    image: mentoring-backend:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+    volumes:
+      - /his/mentoring/backend/log:/his/mentoring/backend/log
+    environment:
+      MENTORING_DB_HOST: ${MENTORING_DB_HOST}
+      MENTORING_DB_PORT: ${MENTORING_DB_PORT}
+      MENTORING_DB_USERNAME: ${MENTORING_DB_USERNAME}
+      MENTORING_DB_PASSWORD: ${MENTORING_DB_PASSWORD}
