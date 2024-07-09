@@ -10,6 +10,7 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 /**
  * @author Jose Julai Ritsure
@@ -37,7 +38,7 @@ public class TutoredDTO extends BaseEntityDTO {
         tutored.setUuid(this.getUuid());
         tutored.setCreatedAt(this.getCreatedAt());
         tutored.setUpdatedAt(this.getUpdatedAt());
-        tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
             tutored.setEmployee(this.getEmployeeDTO().getEmployee());
         }

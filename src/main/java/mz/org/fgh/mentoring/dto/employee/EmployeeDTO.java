@@ -10,6 +10,7 @@ import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -76,7 +77,7 @@ public class EmployeeDTO extends BaseEntityDTO {
         employee.setTrainingYear(this.getTrainingYear());
         employee.setPhoneNumber(this.getPhoneNumber());
         employee.setEmail(this.getEmail());
-        employee.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) employee.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getProfessionalCategoryDTO()!=null) {
             employee.setProfessionalCategory(this.getProfessionalCategoryDTO().getProfessionalCategory());
         }

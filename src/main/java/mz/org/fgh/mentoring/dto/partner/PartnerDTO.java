@@ -6,6 +6,7 @@ import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @AllArgsConstructor
@@ -33,7 +34,7 @@ public class PartnerDTO extends BaseEntityDTO {
         partner.setUuid(this.getUuid());
         partner.setDescription(this.getDescription());
         partner.setCreatedAt(this.getCreatedAt());
-        partner.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) partner.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return partner;
     }
 }

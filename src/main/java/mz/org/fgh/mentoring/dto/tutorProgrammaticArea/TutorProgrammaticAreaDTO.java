@@ -11,6 +11,7 @@ import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @AllArgsConstructor
@@ -41,7 +42,7 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
         tutorProgrammaticArea.setUpdatedAt(this.getUpdatedAt());
         tutorProgrammaticArea.setUuid(this.getUuid());
         tutorProgrammaticArea.setCreatedAt(this.getCreatedAt());
-        tutorProgrammaticArea.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) tutorProgrammaticArea.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getTutorDTO()!=null) tutorProgrammaticArea.setTutor(new Tutor(this.getTutorDTO()));
         if(this.getProgrammaticAreaDTO()!=null) tutorProgrammaticArea.setProgrammaticArea(new ProgrammaticArea(this.getProgrammaticAreaDTO()));
         return tutorProgrammaticArea;

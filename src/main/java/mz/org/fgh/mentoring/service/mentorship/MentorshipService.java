@@ -174,7 +174,7 @@ public class MentorshipService {
                         Cabinet cabinet = optCabinet.get();
                         mentorship.setCabinet(cabinet);
                         Optional<Door> optDoor = doorRepository.findByUuid(mentorshipDTO.getDoor().getUuid());
-                        Door door = optDoor.get() ;
+                        Door door = optDoor.get();
                         mentorship.setDoor(door);
                         Optional<EvaluationType> optEvaluationType = evaluationTypeRepository.findByUuid(mentorshipDTO.getEvaluationType().getUuid());
                         EvaluationType evaluationType = optEvaluationType.get();

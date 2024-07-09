@@ -25,6 +25,7 @@ import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @NoArgsConstructor
@@ -189,7 +190,7 @@ public class MentorshipDTO extends BaseEntityDTO {
         mentorship.setId(this.getId());
         mentorship.setCreatedAt(this.getCreatedAt());
         mentorship.setUpdatedAt(this.getUpdatedAt());
-        mentorship.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) mentorship.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         mentorship.setStartDate(this.getStartDate());
         mentorship.setEndDate(this.getEndDate());
         mentorship.setIterationNumber(this.getIterationNumber());

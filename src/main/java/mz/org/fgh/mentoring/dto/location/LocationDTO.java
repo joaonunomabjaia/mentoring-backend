@@ -9,6 +9,8 @@ import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 import mz.org.fgh.mentoring.entity.location.Location;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @NoArgsConstructor
@@ -37,6 +39,7 @@ public class LocationDTO extends BaseEntityDTO {
         Location location = new Location();
         location.setId(this.getId());
         location.setUuid(this.getUuid());
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) location.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
             location.setEmployee(this.employeeDTO.getEmployee());
         }

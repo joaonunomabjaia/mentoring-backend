@@ -7,12 +7,12 @@ import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.io.Serializable;
 
@@ -34,6 +34,8 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
     private Integer sequence;
 
+    private String formUuid;
+
     @Creator
     public FormQuestionDTO() {
         super();
@@ -52,7 +54,7 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
             this.setResponseType(new ResponseTypeDTO(formQuestion.getResponseType()));
         }
         if(formQuestion.getForm()!=null) {
-            this.setForm(new FormDTO(formQuestion.getForm()));
+            this.setFormUuid(formQuestion.getForm().getUuid());
         }
     }
 
@@ -62,8 +64,8 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         formQuestion.setId(this.getId());
         formQuestion.setCreatedAt(this.getCreatedAt());
         formQuestion.setUpdatedAt(this.getUpdatedAt());
-        formQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        formQuestion.setSequence(formQuestion.getSequence());
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) formQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        formQuestion.setSequence(this.getSequence());
         if(this.getQuestion()!=null) {
             formQuestion.setQuestion(new Question(this.getQuestion()));
         }
@@ -72,9 +74,6 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         }
         if(this.getResponseType()!=null) {
             formQuestion.setResponseType(new ResponseType(this.getResponseType()));
-        }
-        if(this.getForm()!=null) {
-            formQuestion.setForm(new Form(this.getForm()));
         }
         return formQuestion;
     }
