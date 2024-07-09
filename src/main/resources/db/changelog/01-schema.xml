@@ -2147,6 +2147,15 @@
                                  referencedTableName="tutoreds" referencedColumnNames="id"/>
     </changeSet>
     <changeSet id="Table-sessions-session_form_id_fk" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE constraint_type = 'FOREIGN KEY'
+                  AND constraint_name = 'session_form_id_fk'
+                  AND table_name = 'sessions';
+            </sqlCheck>
+        </preConditions>
         <comment>
             Create question type foreign key on question table
         </comment>
