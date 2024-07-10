@@ -154,7 +154,6 @@ public class MentorshipService {
                         Ronda ronda = optionalRonda.get();
                         ronda.setRondaMentees(null);
                         ronda.setRondaMentors(null);
-                        ronda.setHealthFacility(null);
                         session.setRonda(ronda);
                         session.setCreatedBy(user.getUuid());
                         session.setCreatedAt(DateUtils.getCurrentDate());
@@ -162,7 +161,6 @@ public class MentorshipService {
 
                         Mentorship mentorship = mentorshipDTO.getMentorship();
                         mentorship.setSession(session);
-                        mentorship.getSession().setForm(null);
                         mentorship.setForm(form);
                         Optional<Tutor> optTutor = tutorRepository.findByUuid(mentorshipDTO.getMentor().getUuid());
                         Tutor tutor = optTutor.get();
@@ -183,7 +181,7 @@ public class MentorshipService {
                         mentorship.setCreatedAt(DateUtils.getCurrentDate());
                         Mentorship savedMentorship = mentorshipRepository.save(mentorship);
                         List<Answer> answers = saveMentorshipAnswers(savedMentorship, form, mentorshipDTO.getAnswers(), user);
-                        savedMentorship.setAnswers(answers);
+                        //savedMentorship.setAnswers(answers);
 
                         MentorshipDTO dto = new MentorshipDTO(savedMentorship);
                         savedMentorships.add(dto);
@@ -203,16 +201,13 @@ public class MentorshipService {
         for (AnswerDTO answerDTO: answerDTOS) {
             Answer answer = answerDTO.getAnswer();
             answer.setForm(form);
-            mentorship.setAnswers(null);
             answer.setMentorship(mentorship);
             Optional<Question> optionalQuestion = questionRepository.findByUuid(answerDTO.getQuestion().getUuid());
             Question question = optionalQuestion.get();
-            question.setQuestionCategory(null);
             answer.setQuestion(question);
             answer.setCreatedBy(user.getUuid());
             answer.setCreatedAt(DateUtils.getCurrentDate());
             Answer savedAnswer = answerRepository.save(answer);
-            savedAnswer.setMentorship(null);
             answers.add(savedAnswer);
         }
         return answers;

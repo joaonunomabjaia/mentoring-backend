@@ -33,12 +33,10 @@ public class Session extends BaseEntity {
     @Column(name = "START_DATE", nullable = false)
     private Date startDate;
 
-    @NotNull
-    @Column(name = "END_DATE", nullable = false)
+    @Column(name = "END_DATE")
     private Date endDate;
 
-    @NotNull
-    @Column(name = "PERFORMED_DATE", nullable = false)
+    @Column(name = "PERFORMED_DATE")
     private Date performedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
