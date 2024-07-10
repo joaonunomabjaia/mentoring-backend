@@ -150,5 +150,8 @@ public class TutoredService {
         return this.tutoredRepository.save(tutored);
     }
 
+    public Tutored findByUuid(String uuid) {
+        return tutoredRepository.findByUuid(uuid).orElseThrow(() -> new IllegalArgumentException("Tutored not found"));
+    }
 
 }

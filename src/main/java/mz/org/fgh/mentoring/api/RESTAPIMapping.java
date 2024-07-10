@@ -58,4 +58,5 @@ public class RESTAPIMapping {
     public final static String RESOURCE = "resources";
     public final static String SESSION_STATUS = "sessionStatuses";
     public final static String SESSIONS = "sessions";
+    public static final String SESSIONS_REOMMENDED_RESOURCES = "sessionsReommendedResources";
 }

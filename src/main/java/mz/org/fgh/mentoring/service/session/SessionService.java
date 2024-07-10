@@ -44,4 +44,8 @@ public class SessionService {
         }
         return sessions;
     }
+
+    public Session findByUuid(String uuid) {
+        return sessionRepository.findByUuid(uuid).orElseThrow(() -> new IllegalArgumentException("Session not found"));
+    }
 }
