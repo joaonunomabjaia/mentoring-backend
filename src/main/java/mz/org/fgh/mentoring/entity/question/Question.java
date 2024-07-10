@@ -32,9 +32,8 @@ public class Question  extends BaseEntity {
     @Column(name = "QUESTION", nullable = false)
     private String question;
 
-    @ToString.Exclude
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "QUESTION_CATEGORY_ID")
+    @JoinColumn(name = "QUESTION_CATEGORY_ID", nullable = false)
     private QuestionCategory questionCategory;
 
     @Creator

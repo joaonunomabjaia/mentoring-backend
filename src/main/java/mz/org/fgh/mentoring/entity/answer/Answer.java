@@ -28,7 +28,7 @@ public class Answer extends BaseEntity {
     private Form form;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MENTORSHIP_ID")
+    @JoinColumn(name = "MENTORSHIP_ID", nullable = false)
     private Mentorship mentorship;
 
     @NotNull
@@ -36,11 +36,7 @@ public class Answer extends BaseEntity {
     @JoinColumn(name = "QUESTION_ID", nullable = false)
     private Question question;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FORM_QUESTION_ID")
-    private FormQuestion formQuestion;
-
-    @Column(name = "TEXT_VALUE", nullable = false)
+    @Column(name = "VALUE", nullable = false)
     private String value;
 
     public Answer() {
@@ -55,7 +51,8 @@ public class Answer extends BaseEntity {
             this.setQuestion(new Question(answerDTO.getQuestion()));
         }
         if(answerDTO.getMentorship()!=null) {
-            this.setMentorship(new Mentorship(answerDTO.getMentorship()));
+            this.setMentorship(new Mentorship());
+            this.getMentorship().setUuid(answerDTO.getMentorship().getUuid());
         }
     }
 

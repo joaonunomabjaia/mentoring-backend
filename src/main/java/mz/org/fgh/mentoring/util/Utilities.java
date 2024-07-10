@@ -203,4 +203,19 @@ public class Utilities {
         }
         return sb.toString();
     }
+
+    public static <T extends Object, S extends Object> List<S> parse(List<T> list, Class<S> classe)  {
+        if (list == null) return null;
+        List<S> parsedList = new ArrayList<S>();
+
+        for (T t : list){
+            try {
+                parsedList.add(classe.getDeclaredConstructor(t.getClass()).newInstance(t));
+            } catch (IllegalAccessException | InstantiationException | InvocationTargetException |
+                     NoSuchMethodException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return parsedList;
+    }
 }
