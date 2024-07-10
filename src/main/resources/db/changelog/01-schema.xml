@@ -2261,24 +2261,26 @@
 
     <changeSet id="TABLE_session_recommended_resource_creation" author="voloide">
         <createTable tableName="session_recommended_resource">
-            <column name="id" type="BIGINT" autoIncrement="true">
+            <!-- BaseEntity fields -->
+            <column name="ID" type="BIGINT">
                 <constraints primaryKey="true" nullable="false"/>
             </column>
-            <column name="uuid" type="VARCHAR(255)">
+            <column name="UUID" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="life_cycle_status" type="VARCHAR(50)">
+            <column name="CREATED_BY" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="sync_status" type="VARCHAR(50)">
+            <column name="CREATED_AT" type="TIMESTAMP">
                 <constraints nullable="false"/>
             </column>
-            <column name="created_at" type="TIMESTAMP">
+            <column name="UPDATED_BY" type="VARCHAR(50)"/>
+            <column name="UPDATED_AT" type="TIMESTAMP"/>
+            <column name="LIFE_CYCLE_STATUS" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="updated_at" type="TIMESTAMP">
-                <constraints nullable="false"/>
-            </column>
+
+            <!-- Additional fields specific to session_recommended_resource -->
             <column name="session_id" type="BIGINT">
                 <constraints nullable="false"/>
             </column>
@@ -2303,25 +2305,21 @@
             </column>
         </createTable>
 
-        <addForeignKeyConstraint
-                baseTableName="session_recommended_resource"
-                baseColumnNames="session_id"
-                constraintName="fk_session_resource_session"
-                referencedTableName="session"
-                referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint
-                baseTableName="session_recommended_resource"
-                baseColumnNames="tutored_id"
-                constraintName="fk_session_resource_tutored"
-                referencedTableName="tutored"
-                referencedColumnNames="id"/>
-
-        <addForeignKeyConstraint
-                baseTableName="session_recommended_resource"
-                baseColumnNames="tutor_id"
-                constraintName="fk_session_resource_tutor"
-                referencedTableName="tutor"
-                referencedColumnNames="id"/>
+        <!-- Foreign key constraints -->
+        <addForeignKeyConstraint baseTableName="session_recommended_resource"
+                                 baseColumnNames="session_id"
+                                 constraintName="fk_session_recommended_resource_session"
+                                 referencedTableName="sessions"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="session_recommended_resource"
+                                 baseColumnNames="tutored_id"
+                                 constraintName="fk_session_recommended_resource_tutored"
+                                 referencedTableName="tutoreds"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="session_recommended_resource"
+                                 baseColumnNames="tutor_id"
+                                 constraintName="fk_session_recommended_resource_tutor"
+                                 referencedTableName="tutors"
+                                 referencedColumnNames="id"/>
     </changeSet>
 </databaseChangeLog>
