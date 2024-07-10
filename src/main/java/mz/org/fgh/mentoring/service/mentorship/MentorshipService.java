@@ -127,69 +127,86 @@ public class MentorshipService {
                 Optional<Session> optionalSession = sessionRepository.findByUuid(sessionDTO.getUuid());
                 Session session =  optionalSession.isPresent() ? optionalSession.get() : null;
 
-                Optional<Mentorship> optMentorship = mentorshipRepository.findByUuid(mentorshipDTO.getUuid());
-                Mentorship existingMentorship = optMentorship.isPresent() ? optMentorship.get() : null;
+                try {
 
-                if(session==null && existingMentorship==null) {
-                    try {
+                    Optional<Form> optForm = formRepository.findByUuid(mentorshipDTO.getForm().getUuid());
+                    Form form = optForm.get();
+                    form.setFormQuestions(null);
+                    form.setAnswers(null);
 
-                        Optional<Form> optForm = formRepository.findByUuid(mentorshipDTO.getForm().getUuid());
-                        Form form = optForm.get();
-                        form.setFormQuestions(null);
-                        form.setAnswers(null);
+                    Optional<Tutored> optTutored = tutoredRepository.findByUuid(mentorshipDTO.getMentee().getUuid());
+                    Tutored tutored = optTutored.get();
+                    tutored.getEmployee().setLocations(null);
 
-                        Optional<Tutored> optTutored = tutoredRepository.findByUuid(mentorshipDTO.getMentee().getUuid());
-                        Tutored tutored = optTutored.get();
-                        tutored.getEmployee().setLocations(null);
+                    User user = userRepository.findById(userId).get();
+                    Optional<SessionStatus> optSessionStatus = sessionStatusRepository.findByUuid(sessionDTO.getSessionStatus().getUuid());
+                    SessionStatus sessionStatus = optSessionStatus.get();
 
-                        User user = userRepository.findById(userId).get();
+                    Optional<Ronda> optionalRonda = rondaRepository.findByUuid(sessionDTO.getRonda().getUuid());
+                    Ronda ronda = optionalRonda.get();
+                    ronda.setRondaMentees(null);
+                    ronda.setRondaMentors(null);
 
-                        session = sessionDTO.getSession();
-                        Optional<SessionStatus> optSessionStatus = sessionStatusRepository.findByUuid(session.getStatus().getUuid());
-                        SessionStatus sessionStatus = optSessionStatus.get();
-                        session.setStatus(sessionStatus);
-                        session.setForm(form);
-                        session.setMentee(tutored);
-                        Optional<Ronda> optionalRonda = rondaRepository.findByUuid(sessionDTO.getRonda().getUuid());
-                        Ronda ronda = optionalRonda.get();
-                        ronda.setRondaMentees(null);
-                        ronda.setRondaMentors(null);
-                        session.setRonda(ronda);
-                        session.setCreatedBy(user.getUuid());
-                        session.setCreatedAt(DateUtils.getCurrentDate());
-                        sessionRepository.save(session);
+                if(session!=null) {
+                    session.setStatus(sessionStatus);
+                    session.setForm(form);
+                    session.setMentee(tutored);
+                    session.setRonda(ronda);
+                    session.setUpdatedBy(user.getUuid());
+                    session.setUpdatedAt(DateUtils.getCurrentDate());
+                    sessionRepository.update(session);
+                }
+                else {
+                    session = sessionDTO.getSession();
+                    session.setStatus(sessionStatus);
+                    session.setForm(form);
+                    session.setMentee(tutored);
+                    session.setRonda(ronda);
+                    session.setCreatedBy(user.getUuid());
+                    session.setCreatedAt(DateUtils.getCurrentDate());
+                    sessionRepository.save(session);
+                }
 
-                        Mentorship mentorship = mentorshipDTO.getMentorship();
-                        mentorship.setSession(session);
-                        mentorship.setForm(form);
-                        Optional<Tutor> optTutor = tutorRepository.findByUuid(mentorshipDTO.getMentor().getUuid());
-                        Tutor tutor = optTutor.get();
-                        tutor.getEmployee().setLocations(null);
-                        tutor.setTutorProgrammaticAreas(null);
-                        mentorship.setTutor(tutor);
-                        mentorship.setTutored(tutored);
-                        Optional<Cabinet> optCabinet = cabinetRepository.findByUuid(mentorshipDTO.getCabinet().getUuid());
-                        Cabinet cabinet = optCabinet.get();
-                        mentorship.setCabinet(cabinet);
-                        Optional<Door> optDoor = doorRepository.findByUuid(mentorshipDTO.getDoor().getUuid());
-                        Door door = optDoor.get();
-                        mentorship.setDoor(door);
-                        Optional<EvaluationType> optEvaluationType = evaluationTypeRepository.findByUuid(mentorshipDTO.getEvaluationType().getUuid());
-                        EvaluationType evaluationType = optEvaluationType.get();
-                        mentorship.setEvaluationType(evaluationType);
-                        mentorship.setCreatedBy(user.getUuid());
-                        mentorship.setCreatedAt(DateUtils.getCurrentDate());
-                        Mentorship savedMentorship = mentorshipRepository.save(mentorship);
-                        List<Answer> answers = saveMentorshipAnswers(savedMentorship, form, mentorshipDTO.getAnswers(), user);
-                        //savedMentorship.setAnswers(answers);
+                Optional<Mentorship> optionalMentorship = this.mentorshipRepository.findByUuid(mentorshipDTO.getMentorship().getUuid());
+                Mentorship mentorship = optionalMentorship.isPresent() ? optionalMentorship.get() : null;
 
-                        MentorshipDTO dto = new MentorshipDTO(savedMentorship);
-                        savedMentorships.add(dto);
-                    }
-                    catch (Exception exception) {
-                        LOG.error(exception.getMessage());
-                        throw new RuntimeException("Error while running MentorshipService");
-                    }
+                if(mentorship!=null) {
+                    mentorship.setUpdatedBy(user.getUuid());
+                    mentorship.setUpdatedAt(DateUtils.getCurrentDate());
+                    Mentorship savedMentorship = mentorshipRepository.update(mentorship);
+                    MentorshipDTO dto = new MentorshipDTO(savedMentorship);
+                    savedMentorships.add(dto);
+                }
+                else {
+                    mentorship = mentorshipDTO.getMentorship();
+                    mentorship.setSession(session);
+                    mentorship.setForm(form);
+                    Optional<Tutor> optTutor = tutorRepository.findByUuid(mentorshipDTO.getMentor().getUuid());
+                    Tutor tutor = optTutor.get();
+                    tutor.getEmployee().setLocations(null);
+                    tutor.setTutorProgrammaticAreas(null);
+                    mentorship.setTutor(tutor);
+                    mentorship.setTutored(tutored);
+                    Optional<Cabinet> optCabinet = cabinetRepository.findByUuid(mentorshipDTO.getCabinet().getUuid());
+                    Cabinet cabinet = optCabinet.get();
+                    mentorship.setCabinet(cabinet);
+                    Optional<Door> optDoor = doorRepository.findByUuid(mentorshipDTO.getDoor().getUuid());
+                    Door door = optDoor.get();
+                    mentorship.setDoor(door);
+                    Optional<EvaluationType> optEvaluationType = evaluationTypeRepository.findByUuid(mentorshipDTO.getEvaluationType().getUuid());
+                    EvaluationType evaluationType = optEvaluationType.get();
+                    mentorship.setEvaluationType(evaluationType);
+                    mentorship.setCreatedBy(user.getUuid());
+                    mentorship.setCreatedAt(DateUtils.getCurrentDate());
+                    Mentorship savedMentorship = mentorshipRepository.save(mentorship);
+                    saveMentorshipAnswers(savedMentorship, form, mentorshipDTO.getAnswers(), user);
+                    MentorshipDTO dto = new MentorshipDTO(savedMentorship);
+                    savedMentorships.add(dto);
+                }
+                }
+                catch (Exception exception) {
+                    LOG.error(exception.getMessage());
+                    throw new RuntimeException("Error while running MentorshipService");
                 }
             }
         }

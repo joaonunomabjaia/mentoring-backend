@@ -53,14 +53,15 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
     Optional<Session> getTutoredZeroSession(Long tutoredId);
 
     @Query("SELECT s FROM Session s " +
-            "JOIN s.ronda r " +
-            "JOIN s.mentorships m " +
-            "JOIN m.tutor t " +
-            "JOIN m.tutored td " +
-            "JOIN m.form f " +
-            "JOIN m.cabinet c " +
-            "JOIN m.evaluationType et " +
-            "JOIN m.door d " +
+            "INNER JOIN FETCH s.ronda r " +
+            "INNER JOIN FETCH s.mentorships m " +
+            "INNER JOIN FETCH s.status st " +
+            "INNER JOIN FETCH m.tutor t " +
+            "INNER JOIN FETCH m.tutored td " +
+            "INNER JOIN FETCH m.form f " +
+            "INNER JOIN FETCH m.cabinet c " +
+            "INNER JOIN FETCH m.evaluationType et " +
+            "INNER JOIN FETCH m.door d " +
             "WHERE r.id = :rondaId ")
     Optional<Session> findByRonda(Long rondaId);
 }

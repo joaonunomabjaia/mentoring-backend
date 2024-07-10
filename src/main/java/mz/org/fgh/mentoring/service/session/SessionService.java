@@ -5,6 +5,7 @@ import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
+import mz.org.fgh.mentoring.repository.mentorship.MentorshipRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -22,10 +23,13 @@ public class SessionService {
 
     AnswerRepository answerRepository;
 
-    public SessionService(SessionRepository sessionRepository, RondaRepository rondaRepository, AnswerRepository answerRepository) {
+    MentorshipRepository mentorshipRepository;
+
+    public SessionService(SessionRepository sessionRepository, RondaRepository rondaRepository, AnswerRepository answerRepository, MentorshipRepository mentorshipRepository) {
         this.sessionRepository = sessionRepository;
         this.rondaRepository = rondaRepository;
         this.answerRepository = answerRepository;
+        this.mentorshipRepository = mentorshipRepository;
     }
 
     public List<Session> getAllRondas(List<String> rondasUuids) {
@@ -35,10 +39,11 @@ public class SessionService {
             Optional<Session> optSession = sessionRepository.findByRonda(ronda.getId());
             if(optSession.isPresent()) {
                 Session session = optSession.get();
-                List<Mentorship> mentorships = session.getMentorships();
+                List<Mentorship> mentorships = this.mentorshipRepository.fetchBySessionUuid(session.getUuid(), LifeCycleStatus.ACTIVE);
                 for (Mentorship mentorship : mentorships) {
                     mentorship.setAnswers(answerRepository.fetchByMentorshipUuid(mentorship.getUuid(), LifeCycleStatus.ACTIVE));
                 }
+                session.setMentorships(mentorships);
                 sessions.add(session);
             }
         }
