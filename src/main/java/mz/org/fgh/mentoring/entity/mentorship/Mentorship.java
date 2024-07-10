@@ -98,6 +98,7 @@ public class Mentorship extends BaseEntity {
         this.setIterationNumber(this.getIterationNumber());
         this.setDemonstration(mentorshipDTO.isDemonstration());
         this.setDemonstrationDetails(mentorshipDTO.getDemonstrationDetails());
+        this.setPerformedDate(mentorshipDTO.getPerformedDate());
 
         if(mentorshipDTO.getMentor()!=null) {
             this.setTutor(new Tutor(mentorshipDTO.getMentor()));

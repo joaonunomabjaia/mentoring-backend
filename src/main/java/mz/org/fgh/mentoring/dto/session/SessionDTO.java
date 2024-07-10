@@ -43,10 +43,12 @@ public class SessionDTO extends BaseEntityDTO {
             this.setSessionStatus(new SessionStatusDTO(session.getStatus()));
         }
         if(session.getForm()!=null) {
-            this.setForm(new FormDTO(session.getForm()));
+            this.setForm(new FormDTO());
+            this.getForm().setUuid(session.getForm().getUuid());
         }
         if(session.getRonda()!=null) {
-            this.setRonda(new RondaDTO(session.getRonda()));
+            this.setRonda(new RondaDTO());
+            this.getRonda().setUuid(session.getRonda().getUuid());
         }
         if(session.getMentee()!=null) {
             this.setMentee(new TutoredDTO(session.getMentee()));

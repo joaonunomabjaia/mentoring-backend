@@ -43,6 +43,7 @@ public class MentorshipDTO extends BaseEntityDTO {
     private List<AnswerDTO> answers;
     private boolean demonstration;
     private String demonstrationDetails;
+    private Date performedDate;
     public MentorshipDTO(Mentorship mentorship) {
         super(mentorship);
         this.setStartDate(mentorship.getStartDate());
@@ -50,17 +51,22 @@ public class MentorshipDTO extends BaseEntityDTO {
         this.setIterationNumber(mentorship.getIterationNumber());
         this.setDemonstration(mentorship.isDemonstration());
         this.setDemonstrationDetails(mentorship.getDemonstrationDetails());
+        this.setPerformedDate(mentorship.getPerformedDate());
         if(mentorship.getTutor()!=null) {
-            this.setMentor(new TutorDTO(mentorship.getTutor()));
+            this.setMentor(new TutorDTO());
+            this.getMentor().setUuid(mentorship.getTutor().getUuid());
         }
         if(mentorship.getTutored()!=null) {
-            this.setMentee(new TutoredDTO(mentorship.getTutored()));
+            this.setMentee(new TutoredDTO());
+            this.getMentee().setUuid(mentorship.getTutored().getUuid());
         }
         if(mentorship.getSession()!=null) {
-            this.setSession(new SessionDTO(mentorship.getSession()));
+            this.setSession(new SessionDTO());
+            this.getSession().setUuid(mentorship.getSession().getUuid());
         }
         if(mentorship.getForm()!=null) {
-            this.setForm(new FormDTO(mentorship.getForm()));
+            this.setForm(new FormDTO());
+            this.getForm().setUuid(mentorship.getForm().getUuid());
         }
         if(mentorship.getCabinet()!=null) {
             this.setCabinet(new CabinetDTO(mentorship.getCabinet()));
@@ -72,10 +78,7 @@ public class MentorshipDTO extends BaseEntityDTO {
             this.setEvaluationType(new EvaluationTypeDTO(mentorship.getEvaluationType()));
         }
         if(mentorship.getAnswers()!=null) {
-            List<AnswerDTO> answerDTOS = new ArrayList<>();
-            for (Answer answer: mentorship.getAnswers()) {
-                answerDTOS.add(new AnswerDTO(answer));
-            }
+            List<AnswerDTO> answerDTOS = Utilities.parse(mentorship.getAnswers(), AnswerDTO.class);
             this.setAnswers(answerDTOS);
         }
     }
@@ -196,18 +199,23 @@ public class MentorshipDTO extends BaseEntityDTO {
         mentorship.setIterationNumber(this.getIterationNumber());
         mentorship.setDemonstration(this.isDemonstration());
         mentorship.setDemonstrationDetails(this.getDemonstrationDetails());
+        mentorship.setPerformedDate(this.getPerformedDate());
 
         if(this.getMentor()!=null) {
-            mentorship.setTutor(new Tutor(this.getMentor()));
+            mentorship.setTutor(new Tutor());
+            mentorship.getTutor().setUuid(this.getMentor().getUuid());
         }
         if(this.getMentee()!=null) {
-            mentorship.setTutored(new Tutored(this.getMentee()));
+            mentorship.setTutored(new Tutored());
+            mentorship.getTutored().setUuid(this.getMentee().getUuid());
         }
         if(this.getSession()!=null) {
-            mentorship.setSession(new Session(this.getSession()));
+            mentorship.setSession(new Session());
+            mentorship.getSession().setUuid(this.getSession().getUuid());
         }
         if(this.getForm()!=null) {
-            mentorship.setForm(new Form(this.getForm()));
+            mentorship.setForm(new Form());
+            mentorship.getForm().setUuid(this.getForm().getUuid());
         }
         if(this.getCabinet()!=null) {
             mentorship.setCabinet(new Cabinet(this.getCabinet()));
@@ -219,11 +227,8 @@ public class MentorshipDTO extends BaseEntityDTO {
             mentorship.setEvaluationType(new EvaluationType(this.getEvaluationType()));
         }
         if(this.getAnswers()!=null) {
-            List<Answer> answerList = new ArrayList<>();
-            for (AnswerDTO answerDTO: this.getAnswers()) {
-                answerList.add(new Answer(answerDTO));
-            }
-            mentorship.setAnswers(answerList);
+            List<Answer> answers = Utilities.parse(mentorship.getAnswers(), Answer.class);
+            mentorship.setAnswers(answers);
         }
         return mentorship;
     }

@@ -48,6 +48,7 @@ public class AnswerDTO extends BaseEntityDTO {
         answer.setId(this.getId());
         answer.setCreatedAt(this.getCreatedAt());
         answer.setUpdatedAt(this.getUpdatedAt());
+        answer.setValue(this.getValue());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) answer.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         answer.setValue(answer.getValue());
         if(answer.getMentorship()!=null) {
