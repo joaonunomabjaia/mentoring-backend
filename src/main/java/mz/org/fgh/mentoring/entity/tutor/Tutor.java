@@ -10,8 +10,10 @@ import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
+import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -41,6 +43,9 @@ public class Tutor extends BaseEntity {
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mentor")
     private List<RondaMentor> rondaMentors = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SessionRecommendedResource> recommendedResources;
 
     @Creator
     public Tutor() {}

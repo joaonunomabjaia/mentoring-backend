@@ -166,4 +166,8 @@ public class TutorService {
 
         return formDTOS;
     }
+
+    public Tutor findByUuid(String uuid) {
+        return tutorRepository.findByUuid(uuid).orElseThrow(() -> new IllegalArgumentException("Tutor not found"));
+    }
 }
