@@ -87,7 +87,7 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
 //            @Nullable Date endDate
 //    );
 
-    @Query("select r from Ronda r where r.uuid IN (:rondasUuids)")
+    @Query("select r from Ronda r where r.endDate IS NULL and r.uuid IN (:rondasUuids)")
     List<Ronda> findRondasByUuids(List<String> rondasUuids);
 
 }

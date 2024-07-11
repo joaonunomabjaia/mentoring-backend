@@ -32,13 +32,16 @@ public class AnswerDTO extends BaseEntityDTO {
         super(answer);
         this.setValue(answer.getValue());
         if(answer.getMentorship()!=null) {
-            this.setMentorship(new MentorshipDTO(answer.getMentorship()));
+            this.setMentorship(new MentorshipDTO());
+            this.getMentorship().setUuid(answer.getMentorship().getUuid());
         }
         if(answer.getForm()!=null) {
-            this.setForm(new FormDTO(answer.getForm()));
+            this.setForm(new FormDTO());
+            this.getForm().setUuid(answer.getForm().getUuid());
         }
         if(answer.getQuestion()!=null) {
-            this.setQuestion(new QuestionDTO(answer.getQuestion()));
+            this.setQuestion(new QuestionDTO());
+            this.getQuestion().setUuid(answer.getQuestion().getUuid());
         }
     }
 

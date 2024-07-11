@@ -77,7 +77,7 @@ public class RondaDTO extends BaseEntityDTO {
         ronda.setEndDate(this.getEndDate());
         ronda.setCreatedAt(this.getCreatedAt());
         ronda.setUpdatedAt(this.getUpdatedAt());
-        ronda.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) ronda.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getHealthFacility()!=null) {
             ronda.setHealthFacility(this.getHealthFacility().getHealthFacilityObj());
         }
