@@ -31,7 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 @Schema(name = "Mentorship", description = "The outcome of the provided mentoring to the tutored individuals")
-@Entity(name = "mentorship")
+@Entity(name = "Mentorship")
 @Table(name = "mentorships")
 @Setter
 @Getter

@@ -1,11 +1,13 @@
 package mz.org.fgh.mentoring.dto.session;
 
 import java.util.Date;
+import java.util.List;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -31,6 +33,7 @@ public class SessionDTO extends BaseEntityDTO {
     private String pointsToImprove;
     private String workPlan;
     private String observations;
+    private List<MentorshipDTO> mentorships;
     public SessionDTO(Session session) {
         super(session);
         this.setStartDate(session.getStartDate());
