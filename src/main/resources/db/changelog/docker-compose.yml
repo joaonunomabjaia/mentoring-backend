@@ -10,8 +10,11 @@ services:
       - "8087:8087"
     volumes:
       - /his/mentoring/backend/log:/his/mentoring/backend/log
+      - /his/mentoring/backend/ea_resources:/his/mentoring/backend/ea_resources
     environment:
       MENTORING_DB_HOST: ${MENTORING_DB_HOST}
       MENTORING_DB_PORT: ${MENTORING_DB_PORT}
       MENTORING_DB_USERNAME: ${MENTORING_DB_USERNAME}
       MENTORING_DB_PASSWORD: ${MENTORING_DB_PASSWORD}
+      MENTORING_NOTIFICATION_EMAIL: ${MENTORING_NOTIFICATION_EMAIL}
+      MENTORING_NOTIFICATION_EMAIL_PASSWORD: ${MENTORING_NOTIFICATION_EMAIL_PASSWORD}
