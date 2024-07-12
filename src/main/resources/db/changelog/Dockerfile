@@ -7,9 +7,8 @@ WORKDIR /his/mentoring/backend
 # Create a directory for logs
 RUN mkdir -p /his/mentoring/backend/log
 
-# Define a volume for logs
-VOLUME ["/his/mentoring/backend/log"]
-
+# Define volumes for logs and resources
+VOLUME ["/his/mentoring/backend/log", "/his/mentoring/backend/ea_resources"]
 # Copy the jar file into the container
 COPY mentoring-backend-1.1-all.jar /his/mentoring/backend/mentoring-backend-1.1-all.jar
 

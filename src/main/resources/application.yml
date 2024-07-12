@@ -1,14 +1,16 @@
 micronaut:
   application:
     name: mentoringBackend
+  scheduling:
+    enabled: true
   email:
     mailer:
       defaultMailer: gmail
       gmail:
         host: smtp.gmail.com
         port: 587
-        username: noreply@csaude.org.mz
-        password: szcn fouw trqz dihh
+        username: ${MENTORING_NOTIFICATION_EMAIL}
+        password: ${MENTORING_NOTIFICATION_EMAIL_PASSWORD}
         tls: true
   router:
     static-resources:
@@ -61,7 +63,7 @@ micronaut:
         signatures:
           secret:
             generator:
-              secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"' # <2>
+              secret: '"${JWT_GENERATOR_SIGNATURE_SECRET}"'
 #end::security[]
 ---
 #tag::refresh[]
@@ -71,9 +73,9 @@ micronaut:
       jwt:
         generator:
           refresh-token:
-            secret: '"${JWT_GENERATOR_SIGNATURE_SECRET:pleaseChangeThisSecretForANewOne}"' # <1>
+            secret: '"${JWT_GENERATOR_SIGNATURE_SECRET}"'
           access-token:
-            expiration: 600000
+            expiration: 6000
 #end::refresh[]
 ---
 # management endpoints settings
@@ -108,6 +110,8 @@ datasources:
     db-type: mariadb
     dialect: MYSQL
     driver-class-name: org.mariadb.jdbc.Driver
+    maximum-pool-size: 50
+    minimum-idle: 5
 ---
 #liquibase
 liquibase:
@@ -123,3 +127,8 @@ jpa:
     properties:
       hibernate:
         show_sql: false
+metrics:
+  enabled: true
+  export:
+    prometheus:
+      enabled: true

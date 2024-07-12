@@ -99,4 +99,10 @@ public class Ronda extends BaseEntity {
     public boolean isComplete() {
         return this.endDate != null;
     }
+
+    @JsonIgnore
+    public boolean isRondaZero() {
+        return this.rondaType.getCode().equals("SESSAO_ZERO");
+    }
+
 }

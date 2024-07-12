@@ -11,6 +11,7 @@ import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -34,6 +35,9 @@ public class Tutored extends BaseEntity {
 
     @Transient
     private boolean zeroEvaluationDone;
+
+    @Column(name = "ZERO_EVALUATION_SCORE")
+    private Double zeroEvaluationScore;
 
     @OneToMany(mappedBy = "tutored", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<SessionRecommendedResource> recommendedResources;

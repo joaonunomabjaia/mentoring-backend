@@ -20,6 +20,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -101,6 +102,12 @@ public class Session extends BaseEntity {
         }
     }
 
+    public void addMentorship(Mentorship mentorship) {
+        if(mentorships==null) {
+            mentorships = new ArrayList<>();
+        }
+        mentorships.add(mentorship);
+    }
     @Override
     public String toString() {
         return "Session{" +

@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.mentorship;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -147,5 +148,10 @@ public class Mentorship extends BaseEntity {
                 ", demonstration=" + demonstration +
                 ", demonstrationDetails='" + demonstrationDetails + '\'' +
                 '}';
+    }
+
+    @JsonIgnore
+    public boolean isPatientEvaluation() {
+        return this.evaluationType.isPatientEvaluation();
     }
 }

@@ -1,9 +1,9 @@
 package mz.org.fgh.mentoring.entity.question;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 
@@ -22,6 +22,9 @@ import javax.validation.constraints.NotEmpty;
 @AllArgsConstructor
 public class EvaluationType extends BaseEntity {
 
+    public static final String CONSULTA = "Consulta";
+    public static final String FICHA = "Ficha";
+
     @NotEmpty
     @Column(name = "description", nullable = false)
     private String description;
@@ -38,5 +41,14 @@ public class EvaluationType extends BaseEntity {
         super(evaluationTypeDTO);
         this.setCode(evaluationTypeDTO.getCode());
         this.setDescription(evaluationTypeDTO.getDescription());
+    }
+
+    @JsonIgnore
+    public boolean isPatientEvaluation() {
+        return this.code.equals(EvaluationType.CONSULTA);
+    }
+    @JsonIgnore
+    public boolean isFichaEvaluation() {
+        return this.code.equals(EvaluationType.FICHA);
     }
 }

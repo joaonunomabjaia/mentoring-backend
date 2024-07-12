@@ -26,8 +26,14 @@ public class TutoredDTO extends BaseEntityDTO {
     @Getter
     private boolean zeroEvaluationDone;
 
+    @Setter
+    @Getter
+    private Double zeroEvaluationScore;
+
     public TutoredDTO(Tutored tutored) {
         super(tutored);
+        this.zeroEvaluationDone = tutored.isZeroEvaluationDone();
+        this.zeroEvaluationScore = tutored.getZeroEvaluationScore();
         if(tutored.getEmployee()!=null) this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
 
     }
@@ -38,6 +44,8 @@ public class TutoredDTO extends BaseEntityDTO {
         tutored.setUuid(this.getUuid());
         tutored.setCreatedAt(this.getCreatedAt());
         tutored.setUpdatedAt(this.getUpdatedAt());
+        tutored.setZeroEvaluationScore(this.getZeroEvaluationScore());
+        tutored.setZeroEvaluationDone(this.isZeroEvaluationDone());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
             tutored.setEmployee(this.getEmployeeDTO().getEmployee());
