@@ -2322,4 +2322,27 @@
                                  referencedTableName="tutors"
                                  referencedColumnNames="id"/>
     </changeSet>
+    <changeSet id="2024-07-11-drop-status-column" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="sessions" columnName="STATUS"/>
+        </preConditions>
+        <dropColumn tableName="sessions" columnName="STATUS"/>
+    </changeSet>
+    <changeSet id="2024-07-12-add-zero-evaluation-score-column" author="your-voloide">
+        <!-- Precondition to ensure the column doesn't already exist -->
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutoreds" columnName="ZERO_EVALUATION_SCORE"/>
+            </not>
+        </preConditions>
+
+        <comment>Add ZERO_EVALUATION_SCORE column to tutoreds table</comment>
+
+        <!-- Adding the new column to the table -->
+        <addColumn tableName="tutoreds">
+            <column name="ZERO_EVALUATION_SCORE" type="double">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>
