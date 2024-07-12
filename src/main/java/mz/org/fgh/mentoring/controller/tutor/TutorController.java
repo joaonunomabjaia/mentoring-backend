@@ -24,17 +24,23 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
+import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
+import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
+import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import static mz.org.fgh.mentoring.api.RESTAPIMapping.API_VERSION;
@@ -47,10 +53,16 @@ public class TutorController extends BaseController {
     private TutorService tutorService;
 
     @Inject
+    private ProgramaticAreaRepository programaticAreaRepository;
+
+    @Inject
     private TutorProgrammaticAreaService tutorProgrammaticAreaService;
 
     @Inject
     private ProgramaticAreaService programmaticAreaService;
+
+    @Inject
+    private UserRepository userRepository;
 
     public TutorController() {
     }
@@ -135,21 +147,28 @@ public class TutorController extends BaseController {
         return new TutorDTO(tutor);
     }
 
-  /*  @Get("/user/{userUuid}")
-    public TutorDTO findTutorByUserUuid(@PathVariable("userUuid") String userUuid){
-
-        Tutor tutor = this.tutorService.findTutorByUserUuid(userUuid);
-        return new TutorDTO(tutor);
-    }*/
-
     @Operation(summary = "Save Mentor to database and generate correspondent user")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentor")
     @Post("/save")
     public HttpResponse<RestAPIResponse> create (@Body TutorDTO tutorDTO, Authentication authentication) {
+        TutorProgrammaticArea tutorProgrammaticArea;
+        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).get();
         try {
             Tutor tutor = new Tutor(tutorDTO);
-            tutor = this.tutorService.create(tutor, (Long) authentication.getAttributes().get("userInfo"));
+            tutor = this.tutorService.create(tutor, user.getId());
+            List<ProgrammaticArea> programmaticAreas = programaticAreaRepository.findAll();
+
+            for (ProgrammaticArea programmaticArea: programmaticAreas) {
+                tutorProgrammaticArea = new TutorProgrammaticArea();
+                tutorProgrammaticArea.setTutor(tutor);
+                tutorProgrammaticArea.setProgrammaticArea(programmaticArea);
+                tutorProgrammaticArea.setCreatedBy(user.getUuid());
+                tutorProgrammaticArea.setCreatedAt(new Date());
+                tutorProgrammaticArea.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                tutor.getTutorProgrammaticAreas().add(tutorProgrammaticAreaService.create(tutorProgrammaticArea, user.getId()));
+            }
+
             LOG.info("Created mentor {}", tutor);
             return HttpResponse.created(new TutorDTO(tutor));
         } catch (Exception e) {

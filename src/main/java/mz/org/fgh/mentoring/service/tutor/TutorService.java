@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.tutor;
 
+import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
@@ -126,7 +127,9 @@ public class TutorService {
     public List<Tutor> search(String name, Long nuit, Long userId, String phoneNumber) {
 
         User user = userRepository.findById(userId).get();
-        return this.tutorRepository.search(name, nuit, user, phoneNumber);
+        String nuitString = nuit != null ? nuit.toString() : null;
+
+        return this.tutorRepository.search(name, nuitString, user, phoneNumber);
     }
 
     public Tutor getTutorByEmployeeUuid(String uuid) {

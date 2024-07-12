@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.repository.tutor;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.employee.Employee;
@@ -27,8 +28,8 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
 
     @Query(value = "select * from tutors limit :lim offset :of ", nativeQuery = true)
     List<Tutor> findTutorWithLimit(long lim, long of);
-
-    List<Tutor> search(String name, Long nuit, User User, String phoneNumber);
+    
+    List<Tutor> search(@Nullable String name,@Nullable String nuit, User user,@Nullable String phoneNumber);
 
     Tutor findByEmployee(Employee employee);
 /*
