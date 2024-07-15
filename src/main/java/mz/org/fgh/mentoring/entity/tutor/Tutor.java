@@ -13,7 +13,6 @@ import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
@@ -44,7 +43,7 @@ public class Tutor extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "mentor")
     private List<RondaMentor> rondaMentors = new ArrayList<>();
 
-    @OneToMany(mappedBy = "tutor", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "tutor")
     private List<SessionRecommendedResource> recommendedResources;
 
     @Creator
