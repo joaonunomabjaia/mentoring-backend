@@ -37,17 +37,20 @@ public class UserRoleService {
         }
         return userRoleDTOS;
     }
+
     @Transactional
     public UserRole mergeUserRole(Long userId,Long roleId, Long authUserId) {
         User authUser = userRepository.findById(authUserId).get();
         Role roleDB = roleRepository.findById(roleId).get();
-
+        UserRole userRole;
         try {
-            UserRole userRole = userRoleRepository.findByUserId(userId);
+            userRole = userRoleRepository.findByUserId(userId);
+            userRole.setUpdatedBy(authUser.getUuid());
+            userRole.setUpdatedAt(DateUtils.getCurrentDate());
             userRole.setRole(roleDB);
             return userRoleRepository.update(userRole);
         }catch (Exception e){
-            UserRole userRole = new UserRole();
+            userRole = new UserRole();
             userRole.setCreatedBy(authUser.getUuid());
             userRole.setUuid(UUID.randomUUID().toString());
             userRole.setCreatedAt(DateUtils.getCurrentDate());

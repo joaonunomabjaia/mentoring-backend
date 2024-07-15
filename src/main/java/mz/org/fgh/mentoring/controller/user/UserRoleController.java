@@ -5,6 +5,8 @@ import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Patch;
+import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
@@ -42,11 +44,12 @@ public class UserRoleController extends BaseController {
     public List<UserRoleDTO> getAll() {
         return userRoleService.findAllUserRoles();
     }
+  
     @Operation(summary = "Update User from database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "User")
     @Put("/merge")
-    public HttpResponse<RestAPIResponse> update (@QueryValue Long userId, @QueryValue Long roleId, Authentication authentication) {
+    public HttpResponse<RestAPIResponse> merge (@QueryValue Long userId, @QueryValue Long roleId, Authentication authentication) {
         UserRole userRole = userRoleService.mergeUserRole(userId, roleId, (Long) authentication.getAttributes().get("userInfo"));
 
         LOG.info("Created User {}", userRole);
