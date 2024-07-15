@@ -14,14 +14,13 @@ import javax.mail.Session;
 import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Properties;
+import java.util.stream.Collectors;
 
 @Singleton
 public class EmailService {
@@ -68,13 +67,13 @@ public class EmailService {
     }
 
     public String loadHtmlTemplate(String templateName) throws Exception {
-        Optional<URL> resourceUrlOptional = resourceLoader.getResource("classpath:templates/" + templateName + ".html");
-        if (resourceUrlOptional.isPresent()) {
-            URL resourceUrl = resourceUrlOptional.get();
-            Path templatePath = Paths.get(resourceUrl.toURI());
-            return Files.readString(templatePath);
-        } else {
-            throw new IOException("Template file not found: " + templateName);
+        try (InputStream inputStream = getClass().getResourceAsStream("/templates/" + templateName + ".html")) {
+            if (inputStream == null) {
+                throw new IOException("Template file not found: " + templateName);
+            }
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
+                return reader.lines().collect(Collectors.joining(System.lineSeparator()));
+            }
         }
     }
 
