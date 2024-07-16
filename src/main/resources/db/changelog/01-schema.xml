@@ -2345,6 +2345,16 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="form_code_defaultValue_null" author="joao">
+        <modifyDataType tableName="forms" columnName="code" newDataType="VARCHAR(255)"/>
+        <addDefaultValue tableName="forms" columnName="code" defaultValueComputed="NULL"/>
+    </changeSet>
+
+    <changeSet id="question_code_defaultValue_null" author="joao">
+        <modifyDataType tableName="questions" columnName="code" newDataType="VARCHAR(255)"/>
+        <addDefaultValue tableName="questions" columnName="code" defaultValueComputed="NULL"/>
+    </changeSet>
+
     <changeSet id="ALTER-TABLE-REFRESH-TOKEN-USER_NAME-UNIQUE-CONSTRAINT-REVIEW" author="ialuj">
         <sql>
             ALTER TABLE refresh_token DROP KEY USER_NAME;
