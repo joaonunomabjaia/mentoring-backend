@@ -1,21 +1,7 @@
 package mz.org.fgh.mentoring.entity.user;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
-import javax.validation.constraints.NotEmpty;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.sun.istack.NotNull;
-
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -28,6 +14,19 @@ import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.location.Province;
 import mz.org.fgh.mentoring.entity.role.UserRole;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
+
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.validation.constraints.NotEmpty;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author Jose Julai Ritsure
@@ -143,5 +142,9 @@ public class User extends BaseEntity {
                 ", employee=" + employee +
                 ", userRoles=" + userRoles +
                 '}';
+    }
+
+    public boolean isActive() {
+        return this.getLifeCycleStatus().equals(LifeCycleStatus.ACTIVE);
     }
 }
