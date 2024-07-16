@@ -157,6 +157,7 @@ public class FormService {
         User user = this.userRepository.fetchByUserId(userId);
         Partner partner = user.getEmployee().getPartner();
         Form form = formDTO.toForm();
+        form.setCode("N/A");
         form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         form.setDescription(form.getName());
         form.setPartner(partner);
@@ -176,6 +177,7 @@ public class FormService {
                 formQuestion.setCreatedAt(DateUtils.getCurrentDate());
                 formQuestion.setForm(newForm);
                 formQuestion.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                formQuestion.setSequence(1);
                 FormQuestion newFQ = this.formQuestionRepository.save(formQuestion);
                 newFormQuestions.add(newFQ);
             }
