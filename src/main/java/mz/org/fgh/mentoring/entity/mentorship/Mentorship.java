@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.mentorship;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
@@ -31,7 +32,7 @@ import java.util.Date;
 import java.util.List;
 
 @Schema(name = "Mentorship", description = "The outcome of the provided mentoring to the tutored individuals")
-@Entity(name = "mentorship")
+@Entity(name = "Mentorship")
 @Table(name = "mentorships")
 @Setter
 @Getter
@@ -98,6 +99,7 @@ public class Mentorship extends BaseEntity {
         this.setIterationNumber(this.getIterationNumber());
         this.setDemonstration(mentorshipDTO.isDemonstration());
         this.setDemonstrationDetails(mentorshipDTO.getDemonstrationDetails());
+        this.setPerformedDate(mentorshipDTO.getPerformedDate());
 
         if(mentorshipDTO.getMentor()!=null) {
             this.setTutor(new Tutor(mentorshipDTO.getMentor()));
@@ -146,5 +148,10 @@ public class Mentorship extends BaseEntity {
                 ", demonstration=" + demonstration +
                 ", demonstrationDetails='" + demonstrationDetails + '\'' +
                 '}';
+    }
+
+    @JsonIgnore
+    public boolean isPatientEvaluation() {
+        return this.evaluationType.isPatientEvaluation();
     }
 }

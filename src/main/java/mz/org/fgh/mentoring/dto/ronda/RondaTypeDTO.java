@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.ronda.RondaType;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.Column;
 import javax.validation.constraints.NotEmpty;
@@ -32,7 +33,7 @@ public class RondaTypeDTO extends BaseEntityDTO {
         rondaType.setUuid(this.getUuid());
         rondaType.setCode(this.getCode());
         rondaType.setDescription(this.getDescription());
-        rondaType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) rondaType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return rondaType;
     }
 }

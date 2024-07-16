@@ -5,6 +5,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.io.Serializable;
 
@@ -28,7 +29,7 @@ public class CabinetDTO extends BaseEntityDTO {
         cabinet.setId(this.getId());
         cabinet.setCreatedAt(this.getCreatedAt());
         cabinet.setUpdatedAt(this.getUpdatedAt());
-        cabinet.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) cabinet.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         cabinet.setName(this.getName());
         return cabinet;
     }

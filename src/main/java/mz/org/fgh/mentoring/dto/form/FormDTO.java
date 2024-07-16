@@ -57,6 +57,7 @@ public class FormDTO extends BaseEntityDTO {
         this.description = form.getDescription();
         this.createdAt = form.getCreatedAt();
         this.createdBy = form.getCreatedBy();
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         try {
             if(form.getPartner()!=null) {
                 this.partnerDTO = new PartnerDTO(form.getPartner());
@@ -84,12 +85,12 @@ public class FormDTO extends BaseEntityDTO {
         form.setId(this.getId());
         form.setCreatedAt(this.getCreatedAt());
         form.setUpdatedAt(this.getUpdatedAt());
-        form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         form.setDescription(this.getDescription());
         form.setName(this.getName());
         form.setCode(this.getCode());
         form.setTargetFile(this.getTargetFile());
         form.setTargetPatient(this.getTargetPatient());
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getPartnerDTO()!=null) form.setPartner(new Partner(this.getPartnerDTO()));
         if(this.getProgrammaticAreaDTO()!=null) form.setProgrammaticArea(new ProgrammaticArea(this.getProgrammaticAreaDTO()));
         return form;

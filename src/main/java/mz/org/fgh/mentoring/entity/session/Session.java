@@ -4,8 +4,6 @@ package mz.org.fgh.mentoring.entity.session;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.session.SessionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -13,8 +11,16 @@ import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -23,18 +29,15 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-@ToString
 public class Session extends BaseEntity {
     @NotNull
     @Column(name = "START_DATE", nullable = false)
     private Date startDate;
 
-    @NotNull
-    @Column(name = "END_DATE", nullable = false)
+    @Column(name = "END_DATE")
     private Date endDate;
 
-    @NotNull
-    @Column(name = "PERFORMED_DATE", nullable = false)
+    @Column(name = "PERFORMED_DATE")
     private Date performedDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -71,6 +74,9 @@ public class Session extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "session")
     private List<Mentorship> mentorships;
 
+    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<SessionRecommendedResource> recommendedResources;
+
     public Session() {
     }
 
@@ -94,5 +100,27 @@ public class Session extends BaseEntity {
         if(sessionDTO.getForm()!=null) {
             this.setForm(new Form(sessionDTO.getForm()));
         }
+    }
+
+    public void addMentorship(Mentorship mentorship) {
+        if(mentorships==null) {
+            mentorships = new ArrayList<>();
+        }
+        mentorships.add(mentorship);
+    }
+    @Override
+    public String toString() {
+        return "Session{" +
+                "startDate=" + startDate +
+                ", endDate=" + endDate +
+                ", performedDate=" + performedDate +
+                ", status=" + status +
+                ", ronda=" + ronda +
+                ", reason='" + reason + '\'' +
+                ", strongPoints='" + strongPoints + '\'' +
+                ", pointsToImprove='" + pointsToImprove + '\'' +
+                ", workPlan='" + workPlan + '\'' +
+                ", observations='" + observations + '\'' +
+                '}';
     }
 }

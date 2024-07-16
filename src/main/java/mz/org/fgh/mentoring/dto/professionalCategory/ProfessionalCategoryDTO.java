@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @NoArgsConstructor
@@ -29,7 +30,7 @@ public class ProfessionalCategoryDTO extends BaseEntityDTO {
         professionalCategory.setUuid(this.getUuid());
         professionalCategory.setDescription(this.getDescription());
         professionalCategory.setCreatedAt(this.getCreatedAt());
-        professionalCategory.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) professionalCategory.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return professionalCategory;
     }
 

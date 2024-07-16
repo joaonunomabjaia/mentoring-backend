@@ -11,15 +11,16 @@ import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.mentorship.Door;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
-import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.session.SessionStatus;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.report.SessionSummary;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
+import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.location.CabinetRepository;
 import mz.org.fgh.mentoring.repository.mentorship.DoorRepository;
@@ -28,12 +29,12 @@ import mz.org.fgh.mentoring.repository.question.EvaluationTypeRepository;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRepository;
-import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.session.SessionStatusRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,179 +42,298 @@ import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.TreeSet;
 
 @Singleton
 public class MentorshipService {
 
     private final MentorshipRepository mentorshipRepository;
-    @Inject
-    private SessionRepository sessionRepository;
-
-    @Inject
-    FormRepository formRepository;
-
-    @Inject
-    TutorRepository tutorRepository;
-
-    @Inject
-    TutoredRepository tutoredRepository;
-
-    @Inject
-    CabinetRepository cabinetRepository;
-
-    @Inject
-    HealthFacilityRepository healthFacilityRepository;
-
-    @Inject
-    private EvaluationTypeRepository evaluationTypeRepository;
-
-    @Inject
-    private DoorRepository doorRepository;
-
-    @Inject
-    private RondaRepository rondaRepository;
-
-    @Inject
-    private SessionStatusRepository sessionStatusRepository;
-
-    @Inject
-    private QuestionRepository questionRepository;
-
-    @Inject
-    private FormQuestionRepository formQuestionRepository;
-
-    @Inject
-    private AnswerRepository answerRepository;
-
-    @Inject
-    private UserRepository userRepository;
+    private final SessionRepository sessionRepository;
+    private final FormRepository formRepository;
+    private final TutorRepository tutorRepository;
+    private final TutoredRepository tutoredRepository;
+    private final CabinetRepository cabinetRepository;
+    private final HealthFacilityRepository healthFacilityRepository;
+    private final EvaluationTypeRepository evaluationTypeRepository;
+    private final DoorRepository doorRepository;
+    private final RondaRepository rondaRepository;
+    private final SessionStatusRepository sessionStatusRepository;
+    private final QuestionRepository questionRepository;
+    private final FormQuestionRepository formQuestionRepository;
+    private final AnswerRepository answerRepository;
+    private final UserRepository userRepository;
 
     private static final Logger LOG = LoggerFactory.getLogger(MentorshipService.class);
 
-    public MentorshipService(MentorshipRepository mentorshipRepository){
+    @Inject
+    public MentorshipService(MentorshipRepository mentorshipRepository, SessionRepository sessionRepository,
+                             FormRepository formRepository, TutorRepository tutorRepository,
+                             TutoredRepository tutoredRepository, CabinetRepository cabinetRepository,
+                             HealthFacilityRepository healthFacilityRepository, EvaluationTypeRepository evaluationTypeRepository,
+                             DoorRepository doorRepository, RondaRepository rondaRepository,
+                             SessionStatusRepository sessionStatusRepository, QuestionRepository questionRepository,
+                             FormQuestionRepository formQuestionRepository, AnswerRepository answerRepository,
+                             UserRepository userRepository) {
         this.mentorshipRepository = mentorshipRepository;
+        this.sessionRepository = sessionRepository;
+        this.formRepository = formRepository;
+        this.tutorRepository = tutorRepository;
+        this.tutoredRepository = tutoredRepository;
+        this.cabinetRepository = cabinetRepository;
+        this.healthFacilityRepository = healthFacilityRepository;
+        this.evaluationTypeRepository = evaluationTypeRepository;
+        this.doorRepository = doorRepository;
+        this.rondaRepository = rondaRepository;
+        this.sessionStatusRepository = sessionStatusRepository;
+        this.questionRepository = questionRepository;
+        this.formQuestionRepository = formQuestionRepository;
+        this.answerRepository = answerRepository;
+        this.userRepository = userRepository;
     }
 
-    public List<Session> synchronizeMentorships(final List<Session> sessions) {
-        for (final Session session : sessions) {
-            Optional<Session> optSession = this.sessionRepository.findByUuid(session.getUuid());
-            Session se = optSession.isPresent() ? optSession.get() : null;
-
-            if (se == null) {
-                Session newSession = sessionRepository.save(session);
-                for (final Mentorship mentorship : session.getMentorships()) {
-                    mentorship.setSession(newSession);
-                    mentorship.setForm(formRepository.findByUuid(mentorship.getForm().getUuid()).get());
-                    mentorship.setTutor(tutorRepository.findByUuid(mentorship.getTutor().getUuid()).get());
-                    mentorship.setTutored(tutoredRepository.findByUuid(mentorship.getTutored().getUuid()).get());
-                    mentorship.setCabinet(cabinetRepository.findByUuid(mentorship.getCabinet().getUuid()).get());
-
-                    mentorshipRepository.save(mentorship);
-                }
-
+    public List<Session> synchronizeMentorships(List<Session> sessions) {
+        for (Session session : sessions) {
+            Optional<Session> optSession = sessionRepository.findByUuid(session.getUuid());
+            if (optSession.isEmpty()) {
+                saveNewSessionWithMentorships(session);
             }
         }
         return sessions;
     }
 
+    private void saveNewSessionWithMentorships(Session session) {
+        Session newSession = sessionRepository.save(session);
+        for (Mentorship mentorship : session.getMentorships()) {
+            mentorship.setSession(newSession);
+            mentorship.setForm(formRepository.findByUuid(mentorship.getForm().getUuid()).orElseThrow());
+            mentorship.setTutor(tutorRepository.findByUuid(mentorship.getTutor().getUuid()).orElseThrow());
+            mentorship.setTutored(tutoredRepository.findByUuid(mentorship.getTutored().getUuid()).orElseThrow());
+            mentorship.setCabinet(cabinetRepository.findByUuid(mentorship.getCabinet().getUuid()).orElseThrow());
+            mentorshipRepository.save(mentorship);
+        }
+    }
+
     @Transactional
     public List<MentorshipDTO> saveMentorships(List<MentorshipDTO> mentorshipDTOS, Long userId) {
         List<MentorshipDTO> savedMentorships = new ArrayList<>();
-        for (MentorshipDTO mentorshipDTO: mentorshipDTOS) {
-            if(mentorshipDTO.getSession()!=null) {
-                SessionDTO sessionDTO = mentorshipDTO.getSession();
+        User user = userRepository.findById(userId).orElseThrow();
 
-                Optional<Session> optionalSession = sessionRepository.findByUuid(sessionDTO.getUuid());
-                Session session =  optionalSession.isPresent() ? optionalSession.get() : null;
-
-                Optional<Mentorship> optMentorship = mentorshipRepository.findByUuid(mentorshipDTO.getUuid());
-                Mentorship existingMentorship = optMentorship.isPresent() ? optMentorship.get() : null;
-
-                if(session==null && existingMentorship==null) {
-                    try {
-
-                        Optional<Form> optForm = formRepository.findByUuid(mentorshipDTO.getForm().getUuid());
-                        Form form = optForm.get();
-                        form.setFormQuestions(null);
-                        form.setAnswers(null);
-
-                        Optional<Tutored> optTutored = tutoredRepository.findByUuid(mentorshipDTO.getMentee().getUuid());
-                        Tutored tutored = optTutored.get();
-                        tutored.getEmployee().setLocations(null);
-
-                        User user = userRepository.findById(userId).get();
-
-                        session = sessionDTO.getSession();
-                        Optional<SessionStatus> optSessionStatus = sessionStatusRepository.findByUuid(session.getStatus().getUuid());
-                        SessionStatus sessionStatus = optSessionStatus.get();
-                        session.setStatus(sessionStatus);
-                        session.setForm(form);
-                        session.setMentee(tutored);
-                        Optional<Ronda> optionalRonda = rondaRepository.findByUuid(sessionDTO.getRonda().getUuid());
-                        Ronda ronda = optionalRonda.get();
-                        ronda.setRondaMentees(null);
-                        ronda.setRondaMentors(null);
-                        ronda.setHealthFacility(null);
-                        session.setRonda(ronda);
-                        session.setCreatedBy(user.getUuid());
-                        session.setCreatedAt(DateUtils.getCurrentDate());
-                        sessionRepository.save(session);
-
-                        Mentorship mentorship = mentorshipDTO.getMentorship();
-                        mentorship.setSession(session);
-                        mentorship.getSession().setForm(null);
-                        mentorship.setForm(form);
-                        Optional<Tutor> optTutor = tutorRepository.findByUuid(mentorshipDTO.getMentor().getUuid());
-                        Tutor tutor = optTutor.get();
-                        tutor.getEmployee().setLocations(null);
-                        tutor.setTutorProgrammaticAreas(null);
-                        mentorship.setTutor(tutor);
-                        mentorship.setTutored(tutored);
-                        Optional<Cabinet> optCabinet = cabinetRepository.findByUuid(mentorshipDTO.getCabinet().getUuid());
-                        Cabinet cabinet = optCabinet.get();
-                        mentorship.setCabinet(cabinet);
-                        Optional<Door> optDoor = doorRepository.findByUuid(mentorshipDTO.getDoor().getUuid());
-                        Door door = optDoor.get() ;
-                        mentorship.setDoor(door);
-                        Optional<EvaluationType> optEvaluationType = evaluationTypeRepository.findByUuid(mentorshipDTO.getEvaluationType().getUuid());
-                        EvaluationType evaluationType = optEvaluationType.get();
-                        mentorship.setEvaluationType(evaluationType);
-                        mentorship.setCreatedBy(user.getUuid());
-                        mentorship.setCreatedAt(DateUtils.getCurrentDate());
-                        Mentorship savedMentorship = mentorshipRepository.save(mentorship);
-                        List<Answer> answers = saveMentorshipAnswers(savedMentorship, form, mentorshipDTO.getAnswers(), user);
-                        savedMentorship.setAnswers(answers);
-
-                        MentorshipDTO dto = new MentorshipDTO(savedMentorship);
-                        savedMentorships.add(dto);
-                    }
-                    catch (Exception exception) {
-                        LOG.error(exception.getMessage());
-                        throw new RuntimeException("Error while running MentorshipService");
-                    }
-                }
+        for (MentorshipDTO mentorshipDTO : mentorshipDTOS) {
+            if (mentorshipDTO.getSession() != null) {
+                saveMentorshipWithSession(mentorshipDTO, user, savedMentorships);
             }
         }
         return savedMentorships;
     }
 
-    private List<Answer> saveMentorshipAnswers(Mentorship mentorship, Form form, List<AnswerDTO> answerDTOS, User user) throws RuntimeException {
+    private void saveMentorshipWithSession(MentorshipDTO mentorshipDTO, User user, List<MentorshipDTO> savedMentorships) {
+        SessionDTO sessionDTO = mentorshipDTO.getSession();
+        Session session = sessionRepository.findByUuid(sessionDTO.getUuid()).orElse(sessionDTO.getSession());
+
+        try {
+            Form form = getForm(mentorshipDTO);
+            Tutored tutored = getTutored(mentorshipDTO);
+            SessionStatus sessionStatus = getSessionStatus(sessionDTO);
+            Ronda ronda = getRonda(sessionDTO);
+
+            if (session.getId() != null) {
+                updateSession(session, sessionStatus, form, tutored, ronda, user);
+            } else {
+                createNewSession(session, sessionStatus, form, tutored, ronda, user);
+            }
+
+            saveMentorship(mentorshipDTO, session, form, tutored, user, savedMentorships);
+        } catch (Exception exception) {
+            LOG.error(exception.getMessage());
+            throw new RuntimeException("Error while running MentorshipService", exception);
+        }
+    }
+
+    private Form getForm(MentorshipDTO mentorshipDTO) {
+        Form form = formRepository.findByUuid(mentorshipDTO.getForm().getUuid()).orElseThrow();
+        form.setFormQuestions(null);
+        form.setAnswers(null);
+        return form;
+    }
+
+    private Tutored getTutored(MentorshipDTO mentorshipDTO) {
+        Tutored tutored = tutoredRepository.findByUuid(mentorshipDTO.getMentee().getUuid()).orElseThrow();
+        tutored.getEmployee().setLocations(null);
+        return tutored;
+    }
+
+    private SessionStatus getSessionStatus(SessionDTO sessionDTO) {
+        return sessionStatusRepository.findByUuid(sessionDTO.getSessionStatus().getUuid()).orElseThrow();
+    }
+
+    private Ronda getRonda(SessionDTO sessionDTO) {
+        Ronda ronda = rondaRepository.findByUuid(sessionDTO.getRonda().getUuid()).orElseThrow();
+        ronda.setRondaMentees(null);
+        ronda.setRondaMentors(null);
+        return ronda;
+    }
+
+    private void updateSession(Session session, SessionStatus sessionStatus, Form form, Tutored tutored, Ronda ronda, User user) {
+        session.setStatus(sessionStatus);
+        session.setForm(form);
+        session.setMentee(tutored);
+        session.setRonda(ronda);
+        session.setUpdatedBy(user.getUuid());
+        session.setUpdatedAt(DateUtils.getCurrentDate());
+        sessionRepository.update(session);
+    }
+
+    private void createNewSession(Session session, SessionStatus sessionStatus, Form form, Tutored tutored, Ronda ronda, User user) {
+        session.setStatus(sessionStatus);
+        session.setForm(form);
+        session.setMentee(tutored);
+        session.setRonda(ronda);
+        session.setCreatedBy(user.getUuid());
+        session.setCreatedAt(DateUtils.getCurrentDate());
+        sessionRepository.save(session);
+    }
+
+    private void saveMentorship(MentorshipDTO mentorshipDTO, Session session, Form form, Tutored tutored, User user, List<MentorshipDTO> savedMentorships) {
+        Optional<Mentorship> optionalMentorship = mentorshipRepository.findByUuid(mentorshipDTO.getMentorship().getUuid());
+        Mentorship mentorship = optionalMentorship.orElseGet(mentorshipDTO::getMentorship);
+
+        if (mentorship.getId() != null) {
+            mentorship.setUpdatedBy(user.getUuid());
+            mentorship.setUpdatedAt(DateUtils.getCurrentDate());
+            Mentorship savedMentorship = mentorshipRepository.update(mentorship);
+            savedMentorships.add(new MentorshipDTO(savedMentorship));
+            if (session.getRonda().isRondaZero()) {
+                updateMenteeZeroScore(mentorship);
+            }
+        } else {
+            createNewMentorship(mentorshipDTO, session, form, tutored, user, savedMentorships, mentorship);
+        }
+    }
+
+    private void createNewMentorship(MentorshipDTO mentorshipDTO, Session session, Form form, Tutored tutored, User user, List<MentorshipDTO> savedMentorships, Mentorship mentorship) {
+        mentorship.setSession(session);
+        mentorship.setForm(form);
+        mentorship.setTutor(getTutor(mentorshipDTO));
+        mentorship.setTutored(tutored);
+        mentorship.setCabinet(getCabinet(mentorshipDTO));
+        mentorship.setDoor(getDoor(mentorshipDTO));
+        mentorship.setEvaluationType(getEvaluationType(mentorshipDTO));
+        mentorship.setCreatedBy(user.getUuid());
+        mentorship.setCreatedAt(DateUtils.getCurrentDate());
+
+        Mentorship savedMentorship = mentorshipRepository.save(mentorship);
+        saveMentorshipAnswers(savedMentorship, form, mentorshipDTO.getAnswers(), user);
+        savedMentorships.add(new MentorshipDTO(savedMentorship));
+        if (session.getRonda().isRondaZero()) {
+            updateMenteeZeroScore(mentorship);
+        }
+    }
+
+    private void updateMenteeZeroScore(Mentorship mentorship) {
+        Tutored tutored = mentorship.getTutored();
+        tutored.setZeroEvaluationDone(true);
+        tutored.setZeroEvaluationScore(determineZeroEvaluationScore(mentorship));
+        tutoredRepository.update(tutored);
+    }
+
+    private double determineZeroEvaluationScore(Mentorship mentorship) {
+        if (!Utilities.listHasElements(mentorship.getSession().getMentorships())) mentorship.getSession().addMentorship(mentorship);
+
+        return  determineSessionScore(generateSessionSummary(mentorship.getSession()));
+    }
+
+    private double determineSessionScore(List<SessionSummary> sessionSummaries) {
+        if (!Utilities.listHasElements(sessionSummaries)) return 0;
+
+        int yesCount = 0;
+        int noCount = 0;
+        for (SessionSummary sessionSummary : sessionSummaries){
+            yesCount = yesCount + sessionSummary.getSimCount();
+            noCount = noCount + sessionSummary.getNaoCount();
+        }
+        return (double) yesCount / (yesCount + noCount) *100;
+    }
+
+    public List<SessionSummary> generateSessionSummary(Session session) {
+        List<SessionSummary> summaries = new ArrayList<>();
+
+        for (Mentorship mentorship : session.getMentorships()) {
+            if (mentorship.isPatientEvaluation()) {
+                for (Answer answer : mentorship.getAnswers()) {
+                    String cat = answer.getQuestion().getQuestionCategory().getCategory();
+                    if (categoryAlreadyExists(cat, summaries)){
+                        doCountInCategory(cat, summaries, answer);
+                    } else {
+                        summaries.add(initSessionSummary(answer));
+                    }
+                }
+                break;
+            }
+        }
+        return summaries;
+    }
+
+    private SessionSummary initSessionSummary(Answer answer) {
+        SessionSummary sessionSummary = new SessionSummary();
+        sessionSummary.setTitle(answer.getQuestion().getQuestionCategory().getCategory());
+
+        if (answer.getValue().equals("SIM")) {
+            sessionSummary.setSimCount(sessionSummary.getSimCount() + 1);
+        } else if (answer.getValue().equals("NAO")) {
+            sessionSummary.setNaoCount(sessionSummary.getNaoCount() + 1);
+        }
+        return sessionSummary;
+    }
+
+    private void doCountInCategory(String cat, List<SessionSummary> summaries, Answer answer) {
+        for (SessionSummary sessionSummary : summaries) {
+            if (sessionSummary.getTitle().equals(cat)) {
+                if (answer.getValue().equals("SIM")) {
+                    sessionSummary.setSimCount(sessionSummary.getSimCount() + 1);
+                } else if (answer.getValue().equals("NAO")) {
+                    sessionSummary.setNaoCount(sessionSummary.getNaoCount() + 1);
+                }
+            }
+        }
+    }
+
+    private boolean categoryAlreadyExists(String cat, List<SessionSummary> summaries) {
+        for (SessionSummary sessionSummary : summaries) {
+            if (sessionSummary.getTitle().equals(cat)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Tutor getTutor(MentorshipDTO mentorshipDTO) {
+        Tutor tutor = tutorRepository.findByUuid(mentorshipDTO.getMentor().getUuid()).orElseThrow();
+        tutor.getEmployee().setLocations(null);
+        tutor.setTutorProgrammaticAreas(null);
+        return tutor;
+    }
+
+    private Cabinet getCabinet(MentorshipDTO mentorshipDTO) {
+        return cabinetRepository.findByUuid(mentorshipDTO.getCabinet().getUuid()).orElseThrow();
+    }
+
+    private Door getDoor(MentorshipDTO mentorshipDTO) {
+        return doorRepository.findByUuid(mentorshipDTO.getDoor().getUuid()).orElseThrow();
+    }
+
+    private EvaluationType getEvaluationType(MentorshipDTO mentorshipDTO) {
+        return evaluationTypeRepository.findByUuid(mentorshipDTO.getEvaluationType().getUuid()).orElseThrow();
+    }
+
+    private List<Answer> saveMentorshipAnswers(Mentorship mentorship, Form form, List<AnswerDTO> answerDTOS, User user) {
         List<Answer> answers = new ArrayList<>();
-        for (AnswerDTO answerDTO: answerDTOS) {
+        for (AnswerDTO answerDTO : answerDTOS) {
             Answer answer = answerDTO.getAnswer();
             answer.setForm(form);
-            mentorship.setAnswers(null);
             answer.setMentorship(mentorship);
-            Optional<Question> optionalQuestion = questionRepository.findByUuid(answerDTO.getQuestion().getUuid());
-            Question question = optionalQuestion.get();
-            question.setQuestionCategory(null);
-            answer.setQuestion(question);
+            answer.setQuestion(questionRepository.findByUuid(answerDTO.getQuestion().getUuid()).orElseThrow());
             answer.setCreatedBy(user.getUuid());
             answer.setCreatedAt(DateUtils.getCurrentDate());
-            Answer savedAnswer = answerRepository.save(answer);
-            savedAnswer.setMentorship(null);
-            answers.add(savedAnswer);
+            answers.add(answerRepository.save(answer));
         }
         return answers;
     }

@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.repository.ronda;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -31,4 +32,5 @@ public interface RondaMenteeRepository extends CrudRepository<RondaMentee, Long>
             "where rm.ronda.id = :rondaId")
     List<RondaMentee> findByRonda(Long rondaId);
 
+    void deleteByRonda(Ronda ronda);
 }

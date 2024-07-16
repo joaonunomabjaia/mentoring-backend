@@ -10,6 +10,7 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 /**
  * @author Jose Julai Ritsure
@@ -25,8 +26,14 @@ public class TutoredDTO extends BaseEntityDTO {
     @Getter
     private boolean zeroEvaluationDone;
 
+    @Setter
+    @Getter
+    private Double zeroEvaluationScore;
+
     public TutoredDTO(Tutored tutored) {
         super(tutored);
+        this.zeroEvaluationDone = tutored.isZeroEvaluationDone();
+        this.zeroEvaluationScore = tutored.getZeroEvaluationScore();
         if(tutored.getEmployee()!=null) this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
 
     }
@@ -37,7 +44,9 @@ public class TutoredDTO extends BaseEntityDTO {
         tutored.setUuid(this.getUuid());
         tutored.setCreatedAt(this.getCreatedAt());
         tutored.setUpdatedAt(this.getUpdatedAt());
-        tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        tutored.setZeroEvaluationScore(this.getZeroEvaluationScore());
+        tutored.setZeroEvaluationDone(this.isZeroEvaluationDone());
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
             tutored.setEmployee(this.getEmployeeDTO().getEmployee());
         }

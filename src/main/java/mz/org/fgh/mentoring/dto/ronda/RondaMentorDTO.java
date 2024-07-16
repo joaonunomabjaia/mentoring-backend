@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @NoArgsConstructor
@@ -67,7 +68,7 @@ public class RondaMentorDTO extends BaseEntityDTO {
         rondaMentor.setEndDate(this.getEndDate());
         rondaMentor.setCreatedAt(this.getCreatedAt());
         rondaMentor.setUpdatedAt(this.getUpdatedAt());
-        rondaMentor.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) rondaMentor.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getMentor()!=null) {
             rondaMentor.setMentor(this.getMentor().getTutor());
         }

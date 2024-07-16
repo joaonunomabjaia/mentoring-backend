@@ -139,6 +139,7 @@ public class FormController extends BaseController {
     @Tag(name = "Form")
     public HttpResponse<RestAPIResponse> saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication){
         try {
+            formDTO.setCode(null);
             FormDTO dto = this.formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
             return HttpResponse.created(dto);
         } catch (Exception e) {

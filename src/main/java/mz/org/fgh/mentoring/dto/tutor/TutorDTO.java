@@ -51,7 +51,7 @@ public class TutorDTO extends BaseEntityDTO {
         tutor.setUuid(this.getUuid());
         tutor.setCreatedAt(this.getCreatedAt());
         tutor.setUpdatedAt(this.getUpdatedAt());
-        tutor.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) tutor.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
             tutor.setEmployee(this.getEmployeeDTO().getEmployee());
         }

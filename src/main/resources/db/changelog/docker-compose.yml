@@ -1,0 +1,42 @@
+version: '3.8'
+
+networks:
+  mentoring-network:
+
+services:
+  backend:
+    image: mentoring-backend:latest
+    container_name: mentoring-backend
+    networks:
+      - mentoring-network
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "8087:8087"
+    volumes:
+      - /his/mentoring/backend/log:/his/mentoring/backend/log
+      - /his/mentoring/backend/ea_resources:/his/mentoring/backend/ea_resources
+    environment:
+      MENTORING_DB_HOST: ${MENTORING_DB_HOST}
+      MENTORING_DB_PORT: ${MENTORING_DB_PORT}
+      MENTORING_DB_USERNAME: ${MENTORING_DB_USERNAME}
+      MENTORING_DB_PASSWORD: ${MENTORING_DB_PASSWORD}
+      MENTORING_NOTIFICATION_EMAIL: ${MENTORING_NOTIFICATION_EMAIL}
+      MENTORING_NOTIFICATION_EMAIL_PASSWORD: ${MENTORING_NOTIFICATION_EMAIL_PASSWORD}
+      JWT_GENERATOR_SIGNATURE_SECRET: ${JWT_GENERATOR_SIGNATURE_SECRET}
+
+  frontend:
+    image: mentoring-frontend:latest
+    container_name: mentoring-frontend
+    networks:
+      - mentoring-network
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "466:80"
+    environment:
+      - API_URL=http://backend:8087
+    depends_on:
+      - backend

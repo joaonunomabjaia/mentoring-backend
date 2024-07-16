@@ -2020,43 +2020,6 @@
             <column name="should_reset_password" type="boolean" defaultValue="0" />
         </addColumn>
     </changeSet>
-
-    <!--<changeSet id="Table-sessions-addColumn-session_ronda_fk" author="ialuj">
-        <comment>
-            Create iteration type foreign key on mentorships table
-        </comment>
-        <addForeignKeyConstraint constraintName="session_ronda_fk"
-                                 baseTableName="sessions" baseColumnNames="ronda_id"
-                                 referencedTableName="ronda" referencedColumnNames="id"/>
-    </changeSet>-->
-    <!--<changeSet id="Table-answers-addColumn-form_question_id" author="ialuj" >
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="answers" columnName="FORM_QUESTION_ID"/>
-            </not>
-        </preConditions>
-        <addColumn tableName="answers">
-            <column name="FORM_QUESTION_ID"  type="bigint(20)"/>
-        </addColumn>
-    </changeSet>
-    <changeSet id="Table-answers-addColumn-answers_form_question_fk" author="ialuj">
-        <comment>
-            Create iteration type foreign key on answers table
-        </comment>
-        <addForeignKeyConstraint constraintName="answers_form_question_fk"
-                                 baseTableName="answers" baseColumnNames="form_question_id"
-                                 referencedTableName="answers" referencedColumnNames="id"/>
-    </changeSet>
-    <changeSet id="Table-answers-addColumn-answer" author="ialuj" >
-        <preConditions onFail="MARK_RAN">
-            <not>
-                <columnExists tableName="answers" columnName="ANSWER"/>
-            </not>
-        </preConditions>
-        <addColumn tableName="answers">
-            <column name="ANSWER"  type="bigint(20)"/>
-        </addColumn>
-    </changeSet>-->
     <changeSet id="able-mentorships-dropFk-mentorships_time_of_day_fk_21062024" author="ialuj">
         <dropForeignKeyConstraint baseTableName="mentorships" constraintName="mentorships_time_of_day_fk" />
     </changeSet>
@@ -2147,6 +2110,15 @@
                                  referencedTableName="tutoreds" referencedColumnNames="id"/>
     </changeSet>
     <changeSet id="Table-sessions-session_form_id_fk" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*)
+                FROM information_schema.table_constraints
+                WHERE constraint_type = 'FOREIGN KEY'
+                  AND constraint_name = 'session_form_id_fk'
+                  AND table_name = 'sessions';
+            </sqlCheck>
+        </preConditions>
         <comment>
             Create question type foreign key on question table
         </comment>
@@ -2208,5 +2180,187 @@
             <columnExists tableName="answers" columnName="NUMERIC_VALUE"/>
         </preConditions>
         <dropColumn tableName="answers" columnName="NUMERIC_VALUE" />
+    </changeSet>
+    <changeSet id="add_mentor_type" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="rondas" columnName="mentor_type"/>
+            </not>
+        </preConditions>
+        <!-- Add mentor_type column -->
+        <addColumn tableName="rondas">
+            <column name="mentor_type" type="VARCHAR(255)"/>
+        </addColumn>
+
+        <!-- Update existing data to have the value "Interno" -->
+        <update tableName="rondas">
+            <column name="mentor_type" value="Interno"/>
+        </update>
+    </changeSet>
+    <changeSet id="Table-answers-addConstraint-FK_MENTORSHIP_NOT_NULL" author="ialuj">
+        <sql>
+            ALTER TABLE answers MODIFY COLUMN MENTORSHIP_ID BIGINT(20) NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet id="Table-sessions-addConstraint-FK_FORM_NOT_NULL" author="ialuj">
+        <sql>
+            ALTER TABLE sessions MODIFY COLUMN FORM_ID BIGINT(20) NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet id="Table-answers-dropColumn-FORM_QUESTION_ID" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="answers" columnName="FORM_QUESTION_ID"/>
+        </preConditions>
+        <dropColumn tableName="answers" columnName="FORM_QUESTION_ID" />
+    </changeSet>
+    <changeSet id="ALTER-TABLES-CONSTRAINTS-REVIEW" author="ialuj">
+        <sql>
+            ALTER TABLE sessions MODIFY COLUMN SESSION_STATUS_ID bigint(20) NOT NULL;
+            ALTER TABLE sessions MODIFY COLUMN RONDA_ID bigint(20) NOT NULL;
+            ALTER TABLE sessions MODIFY COLUMN MENTEE_ID bigint(20) NOT NULL;
+            ALTER TABLE sessions MODIFY COLUMN END_DATE datetime NULL;
+            ALTER TABLE answers DROP COLUMN BOOLEAN_VALUE;
+            ALTER TABLE answers CHANGE TEXT_VALUE VALUE varchar(180) CHARACTER SET utf8 COLLATE utf8_general_ci NOT NULL;
+            ALTER TABLE mentorships MODIFY COLUMN PERFORMED_DATE date NOT NULL;
+            ALTER TABLE mentorships MODIFY COLUMN SESSION_ID bigint(20) NOT NULL;
+            ALTER TABLE mentorships MODIFY COLUMN CABINET_ID bigint(20) NOT NULL;
+            ALTER TABLE mentorships MODIFY COLUMN ITERATION_TYPE_ID bigint(20) NOT NULL;
+            ALTER TABLE mentorships MODIFY COLUMN ITERATION_NUMBER int(11) NOT NULL;
+            ALTER TABLE mentorships MODIFY COLUMN DOOR_ID bigint(20) NOT NULL;
+            ALTER TABLE rondas MODIFY COLUMN START_DATE datetime NOT NULL;
+            ALTER TABLE rondas MODIFY COLUMN HEALTH_FACILITY_ID bigint(20) NOT NULL;
+            ALTER TABLE rondas MODIFY COLUMN RONDA_TYPE_ID bigint(20) NOT NULL;
+
+        </sql>
+    </changeSet>
+    <changeSet id="ALTER-TABLE-QUESTIONS-CONSTRAINTS-REVIEW" author="ialuj">
+        <sql>
+            ALTER TABLE questions MODIFY COLUMN QUESTION_CATEGORY_ID bigint(20) NOT NULL;
+        </sql>
+    </changeSet>
+    <changeSet id="ALTER-TABLES-UNIQUE-CONSTRAINTS-REVIEW" author="ialuj">
+        <sql>
+            ALTER TABLE sessions MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE answers MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE mentorships MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE questions MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE forms MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE forms_questions MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE health_facilities MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE rondas MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE tutors MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE tutoreds MODIFY COLUMN UUID varchar(50) UNIQUE;
+            ALTER TABLE question_categories MODIFY COLUMN UUID varchar(50) UNIQUE;
+        </sql>
+    </changeSet>
+    <changeSet id="ALTER-TABLES-SESSIONS-PERFORMED_DATE-CONSTRAINTS-REVIEW" author="ialuj">
+        <sql>
+            ALTER TABLE sessions MODIFY COLUMN PERFORMED_DATE date NULL;
+        </sql>
+    </changeSet>
+
+    <changeSet id="TABLE_session_recommended_resource_creation" author="voloide">
+        <createTable tableName="session_recommended_resource">
+            <!-- BaseEntity fields -->
+            <column name="ID" type="BIGINT">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="UUID" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="CREATED_BY" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="TIMESTAMP">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="VARCHAR(50)"/>
+            <column name="UPDATED_AT" type="TIMESTAMP"/>
+            <column name="LIFE_CYCLE_STATUS" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+
+            <!-- Additional fields specific to session_recommended_resource -->
+            <column name="session_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tutored_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="tutor_id" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_link" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="resource_name" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="date_recommended" type="DATE">
+                <constraints nullable="false"/>
+            </column>
+            <column name="notification_date" type="DATE"/>
+            <column name="notification_status" type="VARCHAR(10)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+
+        <!-- Foreign key constraints -->
+        <addForeignKeyConstraint baseTableName="session_recommended_resource"
+                                 baseColumnNames="session_id"
+                                 constraintName="fk_session_recommended_resource_session"
+                                 referencedTableName="sessions"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="session_recommended_resource"
+                                 baseColumnNames="tutored_id"
+                                 constraintName="fk_session_recommended_resource_tutored"
+                                 referencedTableName="tutoreds"
+                                 referencedColumnNames="id"/>
+        <addForeignKeyConstraint baseTableName="session_recommended_resource"
+                                 baseColumnNames="tutor_id"
+                                 constraintName="fk_session_recommended_resource_tutor"
+                                 referencedTableName="tutors"
+                                 referencedColumnNames="id"/>
+    </changeSet>
+    <changeSet id="2024-07-11-drop-status-column" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="sessions" columnName="STATUS"/>
+        </preConditions>
+        <dropColumn tableName="sessions" columnName="STATUS"/>
+    </changeSet>
+    <changeSet id="2024-07-12-add-zero-evaluation-score-column" author="your-voloide">
+        <!-- Precondition to ensure the column doesn't already exist -->
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="tutoreds" columnName="ZERO_EVALUATION_SCORE"/>
+            </not>
+        </preConditions>
+
+        <comment>Add ZERO_EVALUATION_SCORE column to tutoreds table</comment>
+
+        <!-- Adding the new column to the table -->
+        <addColumn tableName="tutoreds">
+            <column name="ZERO_EVALUATION_SCORE" type="double">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="form_code_defaultValue_null" author="joao">
+        <modifyDataType tableName="forms" columnName="code" newDataType="VARCHAR(255)"/>
+        <addDefaultValue tableName="forms" columnName="code" defaultValueComputed="NULL"/>
+    </changeSet>
+
+    <changeSet id="question_code_defaultValue_null" author="joao">
+        <modifyDataType tableName="questions" columnName="code" newDataType="VARCHAR(255)"/>
+        <addDefaultValue tableName="questions" columnName="code" defaultValueComputed="NULL"/>
+    </changeSet>
+
+    <changeSet id="ALTER-TABLE-REFRESH-TOKEN-USER_NAME-UNIQUE-CONSTRAINT-REVIEW" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <indexExists tableName="refresh_token" indexName="USER_NAME"/>
+        </preConditions>
+        <sql>
+            ALTER TABLE refresh_token DROP KEY USER_NAME;
+        </sql>
     </changeSet>
 </databaseChangeLog>

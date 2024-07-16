@@ -28,7 +28,7 @@ public interface RefreshTokenRepository extends CrudRepository<RefreshTokenEntit
     @Transactional
     RefreshTokenEntity updateByUsername(RefreshTokenEntity refreshTokenEntity, String userName);
 
-    RefreshTokenEntity findByUsername(String userName);
+    Optional<RefreshTokenEntity> findByUsernameAndRevoked(String userName, Boolean revoked);
 
     long updateByUsername(@NonNull @NotBlank String username, boolean revoked);
 }

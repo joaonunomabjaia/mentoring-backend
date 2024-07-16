@@ -6,6 +6,7 @@ import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 @Data
 @NoArgsConstructor
@@ -40,7 +41,7 @@ public class ResponseTypeDTO extends BaseEntityDTO {
         responseType.setId(this.getId());
         responseType.setCreatedAt(this.getCreatedAt());
         responseType.setUpdatedAt(this.getUpdatedAt());
-        responseType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) responseType.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         responseType.setCode(responseType.getCode());
         responseType.setDescription(responseType.getDescription());
         return responseType;

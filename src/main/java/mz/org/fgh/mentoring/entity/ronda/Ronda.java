@@ -4,13 +4,9 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
-import org.hibernate.annotations.Fetch;
-import org.hibernate.annotations.FetchMode;
-
 import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.Column;
@@ -56,6 +52,9 @@ public class Ronda extends BaseEntity {
     @Column(name = "END_DATE")
     private Date endDate;
 
+    @Column(name = "mentor_type")
+    private String mentorType;
+
     public Ronda () {
     }
 
@@ -65,6 +64,8 @@ public class Ronda extends BaseEntity {
         this.setStartDate(rondaDTO.getStartDate());
         this.setEndDate(rondaDTO.getEndDate());
         if(rondaDTO.getRondaType()!=null) this.setRondaType(new RondaType(rondaDTO.getRondaType()));
+        this.setRondaType(new RondaType(rondaDTO.getRondaType()));
+        this.setMentorType(rondaDTO.getMentorType());
         if(rondaDTO.getHealthFacility()!=null) {
             this.setHealthFacility(new HealthFacility(rondaDTO.getHealthFacility()));
         }
@@ -89,8 +90,6 @@ public class Ronda extends BaseEntity {
                 "description='" + description + '\'' +
                 ", rondaType=" + rondaType +
                 ", healthFacility=" + healthFacility +
-                ", rondaMentees=" + rondaMentees +
-                ", rondaMentors=" + rondaMentors +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';
@@ -100,4 +99,10 @@ public class Ronda extends BaseEntity {
     public boolean isComplete() {
         return this.endDate != null;
     }
+
+    @JsonIgnore
+    public boolean isRondaZero() {
+        return this.rondaType.getCode().equals("SESSAO_ZERO");
+    }
+
 }

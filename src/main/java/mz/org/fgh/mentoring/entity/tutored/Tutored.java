@@ -8,13 +8,17 @@ import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
+import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+import java.util.List;
 
 @Schema(name = "Tutoreds", description = "A professional that provide mentoring to the tutored individuals")
 @Entity(name = "Tutored")
@@ -31,6 +35,11 @@ public class Tutored extends BaseEntity {
     @Transient
     private boolean zeroEvaluationDone;
 
+    @Column(name = "ZERO_EVALUATION_SCORE")
+    private Double zeroEvaluationScore;
+
+    @OneToMany(mappedBy = "tutored")
+    private List<SessionRecommendedResource> recommendedResources;
 
     @Creator
     public Tutored() {
