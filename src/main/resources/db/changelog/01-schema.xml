@@ -2345,4 +2345,9 @@
             </column>
         </addColumn>
     </changeSet>
+    <changeSet id="ALTER-TABLE-REFRESH-TOKEN-USER_NAME-UNIQUE-CONSTRAINT-REVIEW" author="ialuj">
+        <sql>
+            ALTER TABLE refresh_token DROP KEY USER_NAME;
+        </sql>
+    </changeSet>
 </databaseChangeLog>
