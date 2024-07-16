@@ -2109,23 +2109,23 @@
                                  baseTableName="sessions" baseColumnNames="mentee_id"
                                  referencedTableName="tutoreds" referencedColumnNames="id"/>
     </changeSet>
-    <changeSet id="Table-sessions-session_form_id_fk" author="ialuj">
-        <preConditions onFail="MARK_RAN">
-            <sqlCheck expectedResult="0">
-                SELECT COUNT(*)
-                FROM information_schema.table_constraints
-                WHERE constraint_type = 'FOREIGN KEY'
-                  AND constraint_name = 'session_form_id_fk'
-                  AND table_name = 'sessions';
-            </sqlCheck>
-        </preConditions>
-        <comment>
-            Create question type foreign key on question table
-        </comment>
-        <addForeignKeyConstraint constraintName="session_form_id_fk"
-                                 baseTableName="sessions" baseColumnNames="form_id"
-                                 referencedTableName="forms" referencedColumnNames="id"/>
-    </changeSet>
+<!--    <changeSet id="Table-sessions-session_form_id_fk" author="ialuj">-->
+<!--        <preConditions onFail="MARK_RAN">-->
+<!--            <sqlCheck expectedResult="0">-->
+<!--                SELECT COUNT(*)-->
+<!--                FROM information_schema.table_constraints-->
+<!--                WHERE constraint_type = 'FOREIGN KEY'-->
+<!--                  AND constraint_name = 'session_form_id_fk'-->
+<!--                  AND table_name = 'sessions';-->
+<!--            </sqlCheck>-->
+<!--        </preConditions>-->
+<!--        <comment>-->
+<!--            Create question type foreign key on question table-->
+<!--        </comment>-->
+<!--        <addForeignKeyConstraint constraintName="session_form_id_fk"-->
+<!--                                 baseTableName="sessions" baseColumnNames="form_id"-->
+<!--                                 referencedTableName="forms" referencedColumnNames="id"/>-->
+<!--    </changeSet>-->
     <changeSet id="Table-mentorship_add_columns" author="ialuj">
     <preConditions onFail="MARK_RAN">
         <not>
@@ -2344,5 +2344,14 @@
                 <constraints nullable="true"/>
             </column>
         </addColumn>
+    </changeSet>
+    <changeSet id="form_code_defaultValue_null" author="joao">
+        <modifyDataType tableName="forms" columnName="code" newDataType="VARCHAR(255)"/>
+        <addDefaultValue tableName="forms" columnName="code" defaultValueComputed="NULL"/>
+    </changeSet>
+
+    <changeSet id="question_code_defaultValue_null" author="joao">
+        <modifyDataType tableName="questions" columnName="code" newDataType="VARCHAR(255)"/>
+        <addDefaultValue tableName="questions" columnName="code" defaultValueComputed="NULL"/>
     </changeSet>
 </databaseChangeLog>
