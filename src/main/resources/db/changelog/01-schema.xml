@@ -2346,6 +2346,9 @@
         </addColumn>
     </changeSet>
     <changeSet id="ALTER-TABLE-REFRESH-TOKEN-USER_NAME-UNIQUE-CONSTRAINT-REVIEW" author="ialuj">
+        <preConditions onFail="MARK_RAN">
+            <indexExists tableName="refresh_token" indexName="USER_NAME"/>
+        </preConditions>
         <sql>
             ALTER TABLE refresh_token DROP KEY USER_NAME;
         </sql>

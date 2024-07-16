@@ -45,7 +45,7 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
         return Flowable.create(emitter -> {
             Optional<User> possibleUser = users.findByUsername(identity);
 
-            if (possibleUser.isPresent()) {
+            if (possibleUser.isPresent() && possibleUser.get().isActive()) {
 
 
                 String secret = (String) authenticationRequest.getSecret();
