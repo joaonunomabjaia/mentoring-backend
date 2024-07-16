@@ -39,7 +39,8 @@ micronaut:
         mycors:
           allowed-origins:
             - "http://localhost:9000"
-            - "http://10.10.2.30" # Add your allowed origins here
+            - "http://localhost:466"
+            - "http://10.10.2.30"
           allowed-methods:
             - GET
             - POST

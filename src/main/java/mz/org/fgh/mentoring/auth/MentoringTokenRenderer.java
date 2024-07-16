@@ -36,8 +36,9 @@ public class MentoringTokenRenderer implements TokenRenderer {
     public AccessRefreshToken render(Authentication authentication, Integer expiresIn, String accessToken, String refreshToken) {
         MentoringAccessRefreshToken token =  new MentoringAccessRefreshToken(authentication.getName(), authentication.getRoles(), expiresIn, accessToken, refreshToken, BEARER_TOKEN_TYPE);
 
-        RefreshTokenEntity existingRefreshToken =  refreshTokenRepository.findByUsernameAndRevoked(authentication.getName(), false);
-        if (existingRefreshToken != null) {
+        Optional<RefreshTokenEntity> optRefreshToken = refreshTokenRepository.findByUsernameAndRevoked(authentication.getName(), false);
+        if (optRefreshToken.isPresent()) {
+            RefreshTokenEntity existingRefreshToken =    optRefreshToken.get();
             existingRefreshToken.setRefreshToken(refreshToken);
             refreshTokenRepository.updateByUsername(existingRefreshToken, authentication.getName());
         }
