@@ -30,8 +30,9 @@ public class RefreshTokenHandler implements RefreshTokenPersistence {
                 event.getAuthentication().getName() != null) {
             String payload = event.getRefreshToken();
             RefreshTokenEntity refreshTokenEntity = new RefreshTokenEntity(event.getAuthentication().getName(), payload, false);
-            RefreshTokenEntity existingRefreshToken =  refreshTokenRepository.findByUsernameAndRevoked(event.getAuthentication().getName(), false);
-            if (existingRefreshToken != null) {
+            Optional<RefreshTokenEntity> optRefreshToken = refreshTokenRepository.findByUsernameAndRevoked(event.getAuthentication().getName(), false);
+            if (optRefreshToken.isPresent()) {
+                RefreshTokenEntity existingRefreshToken =    optRefreshToken.get();
                 existingRefreshToken.setRevoked(true);
                 refreshTokenRepository.updateByUsername(existingRefreshToken, event.getAuthentication().getName());
             }
