@@ -1,5 +1,8 @@
 package mz.org.fgh.mentoring.auth;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -34,6 +37,11 @@ public class AuthController {
     private RefreshTokenRepository refreshTokenRepository;
     @Inject
     private UserRepository userRepository;
+    private final ObjectMapper objectMapper;
+
+    public AuthController(ObjectMapper objectMapper) {
+        this.objectMapper = objectMapper;
+    }
 
     /**
      * Endpoint to refresh JWT tokens.
@@ -41,10 +49,18 @@ public class AuthController {
 
     @Post("/refresh")
     @Produces(MediaType.APPLICATION_JSON)
-    public Publisher<AccessRefreshToken> refreshAccessToken(@Body String refreshToken) {
+    public Publisher<AccessRefreshToken> refreshAccessToken(@Body String body) {
         return Flux.create(emitter -> {
+            String refreshToken = null;
+            try {
+                JsonNode jsonNode = objectMapper.readTree(body);
+                refreshToken = jsonNode.get("refresh_token").asText();
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+
             Optional<RefreshTokenEntity> tokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken);
-            if (tokenEntity.isPresent() && !tokenEntity.get().getRevoked()) {
+            if (tokenEntity.isPresent()) {
                 Authentication authentication = Authentication.build(tokenEntity.get().getUsername());
 
                 Optional<User> user = userRepository.findByUsername(authentication.getName());
@@ -58,6 +74,7 @@ public class AuthController {
 
                 Map<String, Object> refreshTokenAttributes = new HashMap<>(attributes);
                 refreshTokenAttributes.put("type", "refresh");
+                refreshTokenAttributes.put("time", DateUtils.getCurrentDate());
                 String newRefreshToken = jwtTokenGenerator.generateToken(refreshTokenAttributes).get();
 
                 // Save the new refresh token to the database

@@ -69,7 +69,6 @@ public class SessionRecommendedResource extends BaseEntity {
         this.resourceLink = dto.getResourceLink();
         this.resourceName = dto.getResourceName();
         this.dateRecommended = dto.getDateRecommended();
-        this.notificationDate = dto.getNotificationDate();
-        this.notificationStatus = NotificationStatus.valueOf(dto.getNotificationStatus());
+        this.notificationStatus = NotificationStatus.PENDING;
     }
 }
