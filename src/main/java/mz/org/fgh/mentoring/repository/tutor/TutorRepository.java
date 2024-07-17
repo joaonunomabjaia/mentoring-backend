@@ -32,6 +32,8 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
     List<Tutor> search(@Nullable String name,@Nullable String nuit, User user,@Nullable String phoneNumber);
 
     Tutor findByEmployee(Employee employee);
+
+
 /*
     @Query("From Tutor t inner join fetch t.user u where u.uuid = :userUUID ")
     Tutor findTutorByUserUuid(String userUUID);*/
