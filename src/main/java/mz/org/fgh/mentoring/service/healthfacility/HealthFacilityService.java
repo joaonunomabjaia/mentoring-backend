@@ -128,12 +128,11 @@ public class HealthFacilityService {
     }
     @Transactional
     public HealthFacility update(HealthFacility healthFacility, Long userId) {
-        HealthFacility healthFacilityDB = findById(healthFacility.getId());
         User user = userRepository.findById(userId).get();
-        healthFacilityDB.setUpdatedBy(user.getUuid());
-        healthFacilityDB.setUpdatedAt(DateUtils.getCurrentDate());
+        healthFacility.setUpdatedBy(user.getUuid());
+        healthFacility.setUpdatedAt(DateUtils.getCurrentDate());
 
-        return this.healthFacilityRepository.update(healthFacilityDB);
+        return this.healthFacilityRepository.update(healthFacility);
     }
 
     @Transactional

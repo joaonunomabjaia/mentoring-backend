@@ -4,6 +4,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 
+import mz.org.fgh.mentoring.service.district.DistrictService;
+import mz.org.fgh.mentoring.service.province.ProvinceServce;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,9 +44,14 @@ public class HealthFacilityController extends BaseController {
     public static final Logger LOG = LoggerFactory.getLogger(HealthFacilityController.class);
 
     private final HealthFacilityService healthFacilityService;
+    private final ProvinceServce provinceServce;
 
-    public HealthFacilityController(HealthFacilityService healthFacilityService) {
+    private final DistrictService districtService;
+
+    public HealthFacilityController(HealthFacilityService healthFacilityService, ProvinceServce provinceServce, DistrictService districtService) {
         this.healthFacilityService = healthFacilityService;
+        this.provinceServce = provinceServce;
+        this.districtService = districtService;
     }
 
     @Operation(summary = "Return a list off all HealthFacilities of specified District")
@@ -132,7 +139,8 @@ public class HealthFacilityController extends BaseController {
             healthFacility.setHealthFacility(healthFacilityDTO.getHealthFacility());
         }
         if(healthFacilityDTO.getDistrictDTO()!=null){
-            healthFacility.setDistrict(new District(healthFacilityDTO.getDistrictDTO()));
+            District district = districtService.getById_1(healthFacilityDTO.getDistrictDTO().getId());
+            healthFacility.setDistrict(district);
         }
         this.healthFacilityService.update(healthFacility, (Long) authentication.getAttributes().get("userInfo"));
 

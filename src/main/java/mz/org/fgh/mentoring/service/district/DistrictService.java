@@ -58,4 +58,10 @@ public class DistrictService {
 
         return new DistrictDTO(district);
     }
+    public District getById_1(Long id){
+
+        District district = this.districtRepository.findById(id).get();
+
+        return district;
+    }
 }
