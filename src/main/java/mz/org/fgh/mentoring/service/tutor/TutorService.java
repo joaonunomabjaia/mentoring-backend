@@ -71,7 +71,7 @@ public class TutorService {
 
     private void generateMentorUser(Tutor tutor, User creator) {
         try {
-            String password = Utilities.generateRandomPassword(6);
+            String password = Utilities.generateRandomPassword(8);
             User user = new User();
             String username = tutor.getEmployee().getName().toLowerCase()+"."+tutor.getEmployee().getSurname().toLowerCase();
             username = generateUserName(username);

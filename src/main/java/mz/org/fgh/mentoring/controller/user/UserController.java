@@ -43,6 +43,7 @@ public class UserController extends BaseController {
     public List<UserDTO> getAll() {
         return userService.findAllUsers();
     }
+
     @Operation(summary = "Get User from database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "User")
@@ -113,6 +114,16 @@ public class UserController extends BaseController {
         User user = this.userService.findById(id);        
         this.userService.destroy(user);       
 
+        return new UserDTO(user);
+    }
+
+    @Operation(summary = "Get User from database")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Get("/getByuuid/{uuid}")
+    public UserDTO getByuuid(@PathVariable("uuid") String uuid){
+
+        User user = this.userService.findByUuid(uuid);
         return new UserDTO(user);
     }
 
