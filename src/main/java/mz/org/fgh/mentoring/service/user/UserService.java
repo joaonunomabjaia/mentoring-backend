@@ -80,61 +80,69 @@ public class UserService {
     }
     @Transactional
     public User create(User user, Long userId) {
-        User authUser = userRepository.findById(userId).get();
-        String password = Utilities.generateRandomPassword(6);
-
-        user.setId(null);
-        user.setCreatedBy(authUser.getUuid());
-        user.setUuid(UUID.randomUUID().toString());
-        user.setCreatedAt(DateUtils.getCurrentDate());
-        user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        user.setSalt(UUID.randomUUID().toString());
         try {
-            user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
-            user.setShouldResetPassword(true);
-        } catch (Exception e) {
+            User authUser = userRepository.findById(userId).get();
+            String password = Utilities.generateRandomPassword(6);
+
+            user.setId(null);
+            user.setCreatedBy(authUser.getUuid());
+            user.setUuid(UUID.randomUUID().toString());
+            user.setCreatedAt(DateUtils.getCurrentDate());
+            user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            user.setSalt(UUID.randomUUID().toString());
+            try {
+                user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
+                user.setShouldResetPassword(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            Employee userEmployee = user.getEmployee();
+            userEmployee.setCreatedBy(authUser.getUuid());
+            userEmployee.setUuid(UUID.randomUUID().toString());
+            userEmployee.setCreatedAt(DateUtils.getCurrentDate());
+            userEmployee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            userEmployee.setProfessionalCategory(professionalCategoryRepository.findByUuid(userEmployee.getProfessionalCategory().getUuid()));
+            userEmployee.setPartner(partnerRepository.findByUuid(userEmployee.getPartner().getUuid()));
+
+            Employee employee = employeeService.createOrUpdate(userEmployee,authUser);
+            user.setEmployee(employee);
+
+            return this.userRepository.save(user);
+        }catch (Exception e){
             throw new RuntimeException(e);
         }
-
-        Employee userEmployee = user.getEmployee();
-        userEmployee.setCreatedBy(authUser.getUuid());
-        userEmployee.setUuid(UUID.randomUUID().toString());
-        userEmployee.setCreatedAt(DateUtils.getCurrentDate());
-        userEmployee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        userEmployee.setProfessionalCategory(professionalCategoryRepository.findByUuid(userEmployee.getProfessionalCategory().getUuid()));
-        userEmployee.setPartner(partnerRepository.findByUuid(userEmployee.getPartner().getUuid()));
-
-        Employee employee = employeeService.createOrUpdate(userEmployee,authUser);
-        user.setEmployee(employee);
-
-        return this.userRepository.save(user);
     }
 
     @Transactional
     public User update(UserDTO userDTO, User userDB,Long userId) {
-        User authUser = userRepository.findById(userId).get();
+        try {
+            User authUser = userRepository.findById(userId).get();
 
-        userDB.setUpdatedBy(authUser.getUuid());
-        userDB.setUpdatedAt(DateUtils.getCurrentDate());
-        userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
-        userDB.setEmployee(new Employee(userDTO.getEmployeeDTO()));
-        userDB.setUsername(userDTO.getUsername());
+            userDB.setUpdatedBy(authUser.getUuid());
+            userDB.setUpdatedAt(DateUtils.getCurrentDate());
+            userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
+            userDB.setEmployee(new Employee(userDTO.getEmployeeDTO()));
+            userDB.setUsername(userDTO.getUsername());
 
-        Employee employeeDB = employeeRepository.findById(userDTO.getEmployeeDTO().getId()).get();
-        employeeDB.setUpdatedBy(authUser.getUuid());
-        employeeDB.setUpdatedAt(DateUtils.getCurrentDate());
-        employeeDB.setEmail(userDTO.getEmployeeDTO().getEmail());
-        employeeDB.setName(userDTO.getEmployeeDTO().getName());
-        employeeDB.setPartner(new Partner(userDTO.getEmployeeDTO().getPartnerDTO()));
-        employeeDB.setPhoneNumber(userDTO.getEmployeeDTO().getPhoneNumber());
-        employeeDB.setNuit(userDTO.getEmployeeDTO().getNuit());
-        employeeDB.setProfessionalCategory(new ProfessionalCategory(userDTO.getEmployeeDTO().getProfessionalCategoryDTO()));
-        employeeDB.setSurname(userDTO.getEmployeeDTO().getSurname());
-        employeeDB.setTrainingYear(userDTO.getEmployeeDTO().getTrainingYear());
+            Employee employeeDB = employeeRepository.findById(userDTO.getEmployeeDTO().getId()).get();
+            employeeDB.setUpdatedBy(authUser.getUuid());
+            employeeDB.setUpdatedAt(DateUtils.getCurrentDate());
+            employeeDB.setEmail(userDTO.getEmployeeDTO().getEmail());
+            employeeDB.setName(userDTO.getEmployeeDTO().getName());
+            employeeDB.setPartner(new Partner(userDTO.getEmployeeDTO().getPartnerDTO()));
+            employeeDB.setPhoneNumber(userDTO.getEmployeeDTO().getPhoneNumber());
+            employeeDB.setNuit(userDTO.getEmployeeDTO().getNuit());
+            employeeDB.setProfessionalCategory(new ProfessionalCategory(userDTO.getEmployeeDTO().getProfessionalCategoryDTO()));
+            employeeDB.setSurname(userDTO.getEmployeeDTO().getSurname());
+            employeeDB.setTrainingYear(userDTO.getEmployeeDTO().getTrainingYear());
 
-        employeeRepository.update(employeeDB);
+            employeeRepository.update(employeeDB);
 
-        return this.userRepository.update(userDB);
+            return this.userRepository.update(userDB);
+        }catch (Exception e){
+            throw new RuntimeException(e);
+        }
     }
 
     @Transactional
