@@ -84,7 +84,7 @@ public class UserService {
     public User create(User user, Long userId) {
         try {
             User authUser = userRepository.findById(userId).get();
-            String password = Utilities.generateRandomPassword(6);
+            String password = Utilities.generateRandomPassword(8);
 
             user.setId(null);
             user.setCreatedBy(authUser.getUuid());

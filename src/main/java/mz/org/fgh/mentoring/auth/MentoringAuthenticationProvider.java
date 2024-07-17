@@ -62,10 +62,14 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
                 } else {
                     LOG.debug("Wrong password for user {} ...", identity);
                 }
-            } else {
+            } if (possibleUser.isPresent() && !possibleUser.get().isActive()) {
+                LOG.debug("User not active...", identity);
+                emitter.onError(new AuthenticationException(new AuthenticationFailed("O Utilizador encontra-se inactivo!")));
+            }else {
                 LOG.debug("No user {} found in the system...", identity);
+                emitter.onError(new AuthenticationException(new AuthenticationFailed("Utilizador ou senha inválida!")));
             }
-            emitter.onError(new AuthenticationException(new AuthenticationFailed("Utilizador ou senha inválida!")));
+
         }, BackpressureStrategy.ERROR);
     }
 
