@@ -2363,4 +2363,10 @@
             ALTER TABLE refresh_token DROP KEY USER_NAME;
         </sql>
     </changeSet>
+    <changeSet id="uq_role_user_unique_constraint" author="voloide">
+        <addUniqueConstraint
+                columnNames="role_id, user_id"
+                constraintName="uq_role_user"
+                tableName="user_role"/>
+    </changeSet>
 </databaseChangeLog>

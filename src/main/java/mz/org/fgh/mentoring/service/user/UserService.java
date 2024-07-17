@@ -1,12 +1,5 @@
 package mz.org.fgh.mentoring.service.user;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.transaction.Transactional;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
@@ -24,6 +17,13 @@ import mz.org.fgh.mentoring.service.ronda.RondaService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
+import mz.org.fgh.util.EmailSender;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class UserService {
@@ -46,6 +46,8 @@ public class UserService {
 
     @Inject
     private RoleService roleService;
+    @Inject
+    private EmailSender emailSender;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -108,8 +110,9 @@ public class UserService {
             Employee employee = employeeService.createOrUpdate(userEmployee,authUser);
             user.setEmployee(employee);
 
-            return this.userRepository.save(user);
-        }catch (Exception e){
+            emailSender.sendEmailToUser(user, password);
+                return this.userRepository.save(user);
+        } catch (Exception e) {
             throw new RuntimeException(e);
         }
     }
