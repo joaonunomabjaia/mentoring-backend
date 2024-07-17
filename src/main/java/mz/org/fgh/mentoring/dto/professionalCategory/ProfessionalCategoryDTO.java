@@ -33,4 +33,10 @@ public class ProfessionalCategoryDTO extends BaseEntityDTO {
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) professionalCategory.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         return professionalCategory;
     }
+
+    @Override
+    public String toString() {
+        return "ProfessionalCategoryDTO [code=" + code + ", description=" + description + "]";
+    }
 }
+
