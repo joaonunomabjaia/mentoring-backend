@@ -39,13 +39,16 @@ micronaut:
         mycors:
           allowed-origins:
             - "http://localhost:9000"
-            - "http://localhost:466"
+            - "http://localhost:80"
             - "http://10.10.2.30"
           allowed-methods:
             - GET
             - POST
             - PATCH
             - DELETE
+            - OPTIONS
+            - PUT
+            - HEAD
           allowed-headers:
             - Content-Type
             - Authorization

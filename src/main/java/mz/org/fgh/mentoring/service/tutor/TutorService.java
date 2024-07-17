@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.service.tutor;
 
-import jakarta.annotation.Nullable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
@@ -15,13 +14,11 @@ import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
-import mz.org.fgh.util.EmailService;
+import mz.org.fgh.util.EmailSender;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
@@ -38,7 +35,7 @@ public class TutorService {
     @Inject
     private TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository;
     @Inject
-    private EmailService emailService;
+    private EmailSender emailSender;
 
     public TutorService(TutorRepository tutorRepository, UserRepository userRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository) {
         this.tutorRepository = tutorRepository;
@@ -87,7 +84,7 @@ public class TutorService {
             user.setCreatedBy(creator.getUuid());
             user.setCreatedAt(DateUtils.getCurrentDate());
             userRepository.save(user);
-            sendmailToUser(user, password);
+            emailSender.sendEmailToUser(user, password);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -104,21 +101,6 @@ public class TutorService {
         return username;
     }
 
-    private void sendmailToUser(User user, String password) throws Exception {
-
-        String htmlTemplate = emailService.loadHtmlTemplate("emailTemplate");
-
-        // Populate variables
-        Map<String, String> variables = new HashMap<>();
-        variables.put("name", user.getEmployee().getFullName());
-        variables.put("user", user.getUsername());
-        variables.put("password", password);
-
-        String populatedHtml = emailService.populateTemplateVariables(htmlTemplate, variables);
-
-        // Send email
-        emailService.sendEmail(user.getEmployee().getEmail(), "Registo no Sistema Mentoria", populatedHtml);
-    }
 
     public List<Tutor> findTutorWithLimit(long limit, long offset){
       return this.tutorRepository.findTutorWithLimit(limit, offset);

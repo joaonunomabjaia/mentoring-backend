@@ -25,6 +25,7 @@ import mz.org.fgh.mentoring.dto.session.SessionRecommendedResourceDTO;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 import mz.org.fgh.mentoring.service.session.SessionRecommendedResourceService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,14 +56,18 @@ public class SessionRecommendedResourceController extends BaseController {
     @Operation(summary = "Save a new Session Recommended Resource")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "SessionRecommendedResource")
-    @Post
+    @Post("/save")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public HttpResponse<RestAPIResponse> save(@Body SessionRecommendedResourceDTO sessionRecommendedResourceDTO) {
+    public List<SessionRecommendedResourceDTO> save(@Body List<SessionRecommendedResourceDTO> sessionRecommendedResourceDTOs) {
         Long userId = (Long) securityService.getAuthentication().get().getAttributes().get("userInfo");
-        SessionRecommendedResource resource = convertToEntity(sessionRecommendedResourceDTO);
-        SessionRecommendedResource savedResource = sessionRecommendedResourceService.save(resource, userId);
-        return HttpResponse.created(new SessionRecommendedResourceDTO(savedResource));
+        List<SessionRecommendedResource> resources = new ArrayList<>();
+        for (SessionRecommendedResourceDTO dto : sessionRecommendedResourceDTOs){
+            SessionRecommendedResource resource = convertToEntity(dto);
+            resources.add(resource);
+        }
+        List<SessionRecommendedResource> savedResources = sessionRecommendedResourceService.saveMany(resources, userId);
+        return listAsDtos(savedResources, SessionRecommendedResourceDTO.class);
     }
 
     @Operation(summary = "Update an existing Session Recommended Resource")

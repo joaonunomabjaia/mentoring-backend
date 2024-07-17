@@ -34,7 +34,6 @@ import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
-import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -202,7 +201,9 @@ public class MentorshipService {
             Mentorship savedMentorship = mentorshipRepository.update(mentorship);
             savedMentorships.add(new MentorshipDTO(savedMentorship));
             if (session.getRonda().isRondaZero()) {
-                updateMenteeZeroScore(mentorship);
+                mentorship.getTutored().setZeroEvaluationDone(mentorshipDTO.getMentee().isZeroEvaluationDone());
+                mentorship.getTutored().setZeroEvaluationScore(mentorshipDTO.getMentee().getZeroEvaluationScore());
+                tutoredRepository.update(mentorship.getTutored());
             }
         } else {
             createNewMentorship(mentorshipDTO, session, form, tutored, user, savedMentorships, mentorship);
@@ -224,33 +225,10 @@ public class MentorshipService {
         saveMentorshipAnswers(savedMentorship, form, mentorshipDTO.getAnswers(), user);
         savedMentorships.add(new MentorshipDTO(savedMentorship));
         if (session.getRonda().isRondaZero()) {
-            updateMenteeZeroScore(mentorship);
+            mentorship.getTutored().setZeroEvaluationDone(mentorshipDTO.getMentee().isZeroEvaluationDone());
+            mentorship.getTutored().setZeroEvaluationScore(mentorshipDTO.getMentee().getZeroEvaluationScore());
+            tutoredRepository.update(mentorship.getTutored());
         }
-    }
-
-    private void updateMenteeZeroScore(Mentorship mentorship) {
-        Tutored tutored = mentorship.getTutored();
-        tutored.setZeroEvaluationDone(true);
-        tutored.setZeroEvaluationScore(determineZeroEvaluationScore(mentorship));
-        tutoredRepository.update(tutored);
-    }
-
-    private double determineZeroEvaluationScore(Mentorship mentorship) {
-        if (!Utilities.listHasElements(mentorship.getSession().getMentorships())) mentorship.getSession().addMentorship(mentorship);
-
-        return  determineSessionScore(generateSessionSummary(mentorship.getSession()));
-    }
-
-    private double determineSessionScore(List<SessionSummary> sessionSummaries) {
-        if (!Utilities.listHasElements(sessionSummaries)) return 0;
-
-        int yesCount = 0;
-        int noCount = 0;
-        for (SessionSummary sessionSummary : sessionSummaries){
-            yesCount = yesCount + sessionSummary.getSimCount();
-            noCount = noCount + sessionSummary.getNaoCount();
-        }
-        return (double) yesCount / (yesCount + noCount) *100;
     }
 
     public List<SessionSummary> generateSessionSummary(Session session) {
