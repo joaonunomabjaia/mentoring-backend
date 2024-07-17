@@ -112,4 +112,12 @@ public class SessionRecommendedResourceService {
             sessionRecommendedResourceRepository.update(resource); // Update the status to SENT
         }
     }
+
+    public List<SessionRecommendedResource> saveMany(List<SessionRecommendedResource> resources, Long userId) {
+        List<SessionRecommendedResource> list = new ArrayList<>();
+        for (SessionRecommendedResource resource : resources) {
+            list.add(this.save(resource, userId));
+        }
+        return list;
+    }
 }
