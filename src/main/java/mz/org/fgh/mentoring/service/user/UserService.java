@@ -1,12 +1,5 @@
 package mz.org.fgh.mentoring.service.user;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
-
-import javax.transaction.Transactional;
-
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
@@ -24,6 +17,13 @@ import mz.org.fgh.mentoring.service.ronda.RondaService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
+import mz.org.fgh.util.EmailSender;
+
+import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class UserService {
@@ -46,6 +46,8 @@ public class UserService {
 
     @Inject
     private RoleService roleService;
+    @Inject
+    private EmailSender emailSender;
 
     public UserService(UserRepository userRepository) {
         this.userRepository = userRepository;
@@ -80,34 +82,39 @@ public class UserService {
     }
     @Transactional
     public User create(User user, Long userId) {
-        User authUser = userRepository.findById(userId).get();
-        String password = Utilities.generateRandomPassword(6);
-
-        user.setId(null);
-        user.setCreatedBy(authUser.getUuid());
-        user.setUuid(UUID.randomUUID().toString());
-        user.setCreatedAt(DateUtils.getCurrentDate());
-        user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        user.setSalt(UUID.randomUUID().toString());
         try {
-            user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
-            user.setShouldResetPassword(true);
+            User authUser = userRepository.findById(userId).get();
+            String password = Utilities.generateRandomPassword(6);
+
+            user.setId(null);
+            user.setCreatedBy(authUser.getUuid());
+            user.setUuid(UUID.randomUUID().toString());
+            user.setCreatedAt(DateUtils.getCurrentDate());
+            user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            user.setSalt(UUID.randomUUID().toString());
+            try {
+                user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
+                user.setShouldResetPassword(true);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+
+            Employee userEmployee = user.getEmployee();
+            userEmployee.setCreatedBy(authUser.getUuid());
+            userEmployee.setUuid(UUID.randomUUID().toString());
+            userEmployee.setCreatedAt(DateUtils.getCurrentDate());
+            userEmployee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            userEmployee.setProfessionalCategory(professionalCategoryRepository.findByUuid(userEmployee.getProfessionalCategory().getUuid()));
+            userEmployee.setPartner(partnerRepository.findByUuid(userEmployee.getPartner().getUuid()));
+
+            Employee employee = employeeService.createOrUpdate(userEmployee,authUser);
+            user.setEmployee(employee);
+
+            emailSender.sendEmailToUser(user, password);
+            return this.userRepository.save(user);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
-        Employee userEmployee = user.getEmployee();
-        userEmployee.setCreatedBy(authUser.getUuid());
-        userEmployee.setUuid(UUID.randomUUID().toString());
-        userEmployee.setCreatedAt(DateUtils.getCurrentDate());
-        userEmployee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        userEmployee.setProfessionalCategory(professionalCategoryRepository.findByUuid(userEmployee.getProfessionalCategory().getUuid()));
-        userEmployee.setPartner(partnerRepository.findByUuid(userEmployee.getPartner().getUuid()));
-
-        Employee employee = employeeService.createOrUpdate(userEmployee,authUser);
-        user.setEmployee(employee);
-
-        return this.userRepository.save(user);
     }
 
     @Transactional
