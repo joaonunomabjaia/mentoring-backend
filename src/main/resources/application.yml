@@ -45,6 +45,7 @@ micronaut:
             - GET
             - POST
             - PATCH
+            - PUT
             - DELETE
           allowed-headers:
             - Content-Type
