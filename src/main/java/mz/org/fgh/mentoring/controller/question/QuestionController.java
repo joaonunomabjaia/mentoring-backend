@@ -105,6 +105,7 @@ public class QuestionController extends BaseController {
     public HttpResponse<RestAPIResponse> update (@Body QuestionDTO questionDTO, Authentication authentication) {
 
         Question question = this.questionService.findById(questionDTO.getId()).get();
+        question.setCode(questionDTO.getCode());
         question.setQuestion(questionDTO.getQuestion());
         question.setQuestionCategory(new QuestionCategory(questionDTO.getQuestionCategoryDTO()));
         question = this.questionService.update(question, (Long) authentication.getAttributes().get("userInfo"));
