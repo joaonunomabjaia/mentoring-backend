@@ -179,4 +179,9 @@ public class UserService {
             this.userRepository.delete(user);
         }
     }
+
+    public User findByUuid(String uuid) {
+        Optional<User> possibleUser = this.userRepository.findByUuid(uuid);
+        return possibleUser.orElse(null);
+    }
 }
