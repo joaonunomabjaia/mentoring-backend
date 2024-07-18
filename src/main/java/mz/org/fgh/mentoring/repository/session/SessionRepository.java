@@ -4,6 +4,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.session.Session;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
