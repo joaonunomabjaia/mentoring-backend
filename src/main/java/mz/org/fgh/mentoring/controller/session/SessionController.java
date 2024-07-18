@@ -1,10 +1,13 @@
 package mz.org.fgh.mentoring.controller.session;
 
 import io.micronaut.http.MediaType;
+import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
 import io.micronaut.http.annotation.Get;
+import io.micronaut.http.annotation.Post;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
+import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,13 +16,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.dto.session.SessionDTO;
-import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.service.session.SessionService;
+import mz.org.fgh.mentoring.util.Utilities;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Controller(RESTAPIMapping.SESSIONS)
@@ -35,22 +36,16 @@ public class SessionController extends BaseController {
     @Get("/getAllOfRondas")
     public List<SessionDTO> getAllRondas(@QueryValue("rondasUuids") List<String> rondasUuids) {
         List<Session> sessions = this.sessionService.getAllRondas(rondasUuids);
-        List<SessionDTO> sessionDTOS = new ArrayList<>();
-        for (Session session: sessions) {
-            SessionDTO sessionDTO = new SessionDTO(session);
-            List<MentorshipDTO> mentorshipDTOList = composeMentorships(session);
-            sessionDTO.setMentorships(mentorshipDTOList);
-            sessionDTOS.add(sessionDTO);
-        }
-        return sessionDTOS;
+        return listAsDtos(sessions, SessionDTO.class);
     }
 
-    private List<MentorshipDTO> composeMentorships(Session session) {
-        List<MentorshipDTO> dtos = new ArrayList<>();
-        for (Mentorship mentorship: session.getMentorships()) {
-            MentorshipDTO mentorshipDTO = new MentorshipDTO(mentorship);
-            dtos.add(mentorshipDTO);
-        }
-        return dtos;
+    @Operation(summary = "Creates a Collection of sessions records")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Session")
+    @Post("/save")
+    public List<SessionDTO> save(@Body List<SessionDTO> sessionDTOS, Authentication authentication) {
+        List<Session> sessions = Utilities.parse(sessionDTOS, Session.class);
+        List<Session> savedSessionList = sessionService.createOrUpdate(sessions, (Long) authentication.getAttributes().get("userInfo"));
+        return listAsDtos(savedSessionList, SessionDTO.class);
     }
 }

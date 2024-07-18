@@ -7,11 +7,15 @@ import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.Question;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 @Schema(name = "Answer", description = "The outcome provided during a mentoring session")
@@ -32,7 +36,7 @@ public class Answer extends BaseEntity {
     private Mentorship mentorship;
 
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "QUESTION_ID", nullable = false)
     private Question question;
 
@@ -56,4 +60,12 @@ public class Answer extends BaseEntity {
         }
     }
 
+    @Override
+    public String toString() {
+        return "Answer{" +
+                "form=" + form +
+                ", question=" + question +
+                ", value='" + value + '\'' +
+                '}';
+    }
 }

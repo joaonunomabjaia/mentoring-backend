@@ -55,4 +55,8 @@ public class RondaMentor extends BaseEntity {
                     ", endDate=" + endDate +
                     '}';
       }
+
+      public boolean isActive() {
+            return getEndDate() == null;
+      }
 }

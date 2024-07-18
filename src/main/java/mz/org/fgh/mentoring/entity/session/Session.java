@@ -11,7 +11,6 @@ import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -74,7 +73,7 @@ public class Session extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "session")
     private List<Mentorship> mentorships;
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "session")
     private List<SessionRecommendedResource> recommendedResources;
 
     public Session() {
@@ -115,7 +114,6 @@ public class Session extends BaseEntity {
                 ", endDate=" + endDate +
                 ", performedDate=" + performedDate +
                 ", status=" + status +
-                ", ronda=" + ronda +
                 ", reason='" + reason + '\'' +
                 ", strongPoints='" + strongPoints + '\'' +
                 ", pointsToImprove='" + pointsToImprove + '\'' +

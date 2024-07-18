@@ -4,6 +4,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.answer.Answer;
+import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -22,4 +23,6 @@ public interface AnswerRepository extends CrudRepository<Answer, Long> {
 
     @Query("Select a FROM Answer a join fetch a.question q WHERE q.id = :questionId")
     List<Answer> getByQuestionId(Long questionId);
+
+    List<Answer> findByMentorship(Mentorship mentorship);
 }

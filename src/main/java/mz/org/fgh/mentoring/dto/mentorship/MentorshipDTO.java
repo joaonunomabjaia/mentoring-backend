@@ -1,34 +1,22 @@
 package mz.org.fgh.mentoring.dto.mentorship;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
+import io.micronaut.core.annotation.Creator;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
-import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.dto.location.CabinetDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.session.SessionDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
-import mz.org.fgh.mentoring.entity.answer.Answer;
-import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
-import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.mentorship.Door;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
-import mz.org.fgh.mentoring.entity.question.EvaluationType;
-import mz.org.fgh.mentoring.entity.session.Session;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.entity.tutored.Tutored;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
+import java.util.Date;
+import java.util.List;
+
 @Data
-@NoArgsConstructor
 public class MentorshipDTO extends BaseEntityDTO {
     private Integer iterationNumber;
     private Date startDate;
@@ -44,6 +32,11 @@ public class MentorshipDTO extends BaseEntityDTO {
     private boolean demonstration;
     private String demonstrationDetails;
     private Date performedDate;
+
+    @Creator
+    public MentorshipDTO() {
+    }
+
     public MentorshipDTO(Mentorship mentorship) {
         super(mentorship);
         this.setStartDate(mentorship.getStartDate());
@@ -81,155 +74,5 @@ public class MentorshipDTO extends BaseEntityDTO {
             List<AnswerDTO> answerDTOS = Utilities.parse(mentorship.getAnswers(), AnswerDTO.class);
             this.setAnswers(answerDTOS);
         }
-    }
-
-    public Integer getIterationNumber() {
-        return iterationNumber;
-    }
-
-    public void setIterationNumber(Integer iterationNumber) {
-        this.iterationNumber = iterationNumber;
-    }
-
-    public Date getStartDate() {
-        return startDate;
-    }
-
-    public void setStartDate(Date startDate) {
-        this.startDate = startDate;
-    }
-
-    public Date getEndDate() {
-        return endDate;
-    }
-
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
-    }
-
-    public TutorDTO getMentor() {
-        return mentor;
-    }
-
-    public void setMentor(TutorDTO mentor) {
-        this.mentor = mentor;
-    }
-
-    public TutoredDTO getMentee() {
-        return mentee;
-    }
-
-    public void setMentee(TutoredDTO mentee) {
-        this.mentee = mentee;
-    }
-
-    public SessionDTO getSession() {
-        return session;
-    }
-
-    public void setSession(SessionDTO session) {
-        this.session = session;
-    }
-
-    public FormDTO getForm() {
-        return form;
-    }
-
-    public void setForm(FormDTO form) {
-        this.form = form;
-    }
-
-    public CabinetDTO getCabinet() {
-        return cabinet;
-    }
-
-    public void setCabinet(CabinetDTO cabinet) {
-        this.cabinet = cabinet;
-    }
-
-    public DoorDTO getDoor() {
-        return door;
-    }
-
-    public void setDoor(DoorDTO door) {
-        this.door = door;
-    }
-
-    public EvaluationTypeDTO getEvaluationType() {
-        return evaluationType;
-    }
-
-    public void setEvaluationType(EvaluationTypeDTO evaluationType) {
-        this.evaluationType = evaluationType;
-    }
-
-    public boolean isDemonstration() {
-        return demonstration;
-    }
-
-    public void setDemonstration(boolean demonstration) {
-        this.demonstration = demonstration;
-    }
-
-    public String getDemonstrationDetails() {
-        return demonstrationDetails;
-    }
-
-    public void setDemonstrationDetails(String demonstrationDetails) {
-        this.demonstrationDetails = demonstrationDetails;
-    }
-
-    public List<AnswerDTO> getAnswers() {
-        return answers;
-    }
-
-    public void setAnswers(List<AnswerDTO> answers) {
-        this.answers = answers;
-    }
-
-    public Mentorship getMentorship() {
-        Mentorship mentorship = new Mentorship();
-        mentorship.setUuid(this.getUuid());
-        mentorship.setId(this.getId());
-        mentorship.setCreatedAt(this.getCreatedAt());
-        mentorship.setUpdatedAt(this.getUpdatedAt());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) mentorship.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        mentorship.setStartDate(this.getStartDate());
-        mentorship.setEndDate(this.getEndDate());
-        mentorship.setIterationNumber(this.getIterationNumber());
-        mentorship.setDemonstration(this.isDemonstration());
-        mentorship.setDemonstrationDetails(this.getDemonstrationDetails());
-        mentorship.setPerformedDate(this.getPerformedDate());
-
-        if(this.getMentor()!=null) {
-            mentorship.setTutor(new Tutor());
-            mentorship.getTutor().setUuid(this.getMentor().getUuid());
-        }
-        if(this.getMentee()!=null) {
-            mentorship.setTutored(new Tutored());
-            mentorship.getTutored().setUuid(this.getMentee().getUuid());
-        }
-        if(this.getSession()!=null) {
-            mentorship.setSession(new Session());
-            mentorship.getSession().setUuid(this.getSession().getUuid());
-        }
-        if(this.getForm()!=null) {
-            mentorship.setForm(new Form());
-            mentorship.getForm().setUuid(this.getForm().getUuid());
-        }
-        if(this.getCabinet()!=null) {
-            mentorship.setCabinet(new Cabinet(this.getCabinet()));
-        }
-        if(this.getDoor()!=null) {
-            mentorship.setDoor(new Door(this.getDoor()));
-        }
-        if(this.getEvaluationType()!=null) {
-            mentorship.setEvaluationType(new EvaluationType(this.getEvaluationType()));
-        }
-        if(this.getAnswers()!=null) {
-            List<Answer> answers = Utilities.parse(mentorship.getAnswers(), Answer.class);
-            mentorship.setAnswers(answers);
-        }
-        return mentorship;
     }
 }

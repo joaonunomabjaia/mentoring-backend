@@ -20,7 +20,7 @@ public class SessionNotificationScheduler {
         this.sessionService = sessionService;
     }
 
-    @Scheduled(fixedDelay = "24h") // Schedule this to run every hour
+    @Scheduled(fixedDelay = "2m") // Schedule this to run every hour
     public void sendPendingNotifications(){
 
         try {
