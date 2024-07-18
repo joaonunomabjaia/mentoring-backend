@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.entity.session;
 
 import io.micronaut.core.annotation.Creator;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.session.SessionRecommendedResourceDTO;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
@@ -20,6 +21,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "session_recommended_resource")
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @Data
 public class SessionRecommendedResource extends BaseEntity {
     @ManyToOne
@@ -51,6 +53,9 @@ public class SessionRecommendedResource extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "notification_status", nullable = false)
     private NotificationStatus notificationStatus;
+
+    @Column(name = "token", nullable = true)
+    private String token;
 
     public enum NotificationStatus {
         PENDING,

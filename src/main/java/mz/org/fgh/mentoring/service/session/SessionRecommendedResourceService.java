@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.session;
 
+import io.micronaut.security.token.jwt.generator.JwtTokenGenerator;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.session.SessionRecommendedResourceDTO;
@@ -20,7 +21,9 @@ import mz.org.fgh.util.EmailService;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Singleton
 public class SessionRecommendedResourceService {
@@ -35,8 +38,12 @@ public class SessionRecommendedResourceService {
     private UserService userService;
     @Inject
     private EmailService emailService;
+    @Inject
+    private JwtTokenGenerator jwtTokenGenerator;
 
     private final SessionRecommendedResourceRepository sessionRecommendedResourceRepository;
+
+    private static final String BASE_URL = System.getenv("BASE_URL_BACKEND");
 
     public SessionRecommendedResourceService(SessionRecommendedResourceRepository sessionRecommendedResourceRepository) {
         this.sessionRecommendedResourceRepository = sessionRecommendedResourceRepository;
@@ -106,10 +113,32 @@ public class SessionRecommendedResourceService {
         List<SessionRecommendedResource> pendingResources = sessionRecommendedResourceRepository.findByNotificationStatus(SessionRecommendedResource.NotificationStatus.PENDING);
         if (!Utilities.listHasElements(pendingResources)) return;
 
+        try {
         for (SessionRecommendedResource resource : pendingResources) {
-            emailService.sendEmail(resource.getTutored().getEmployee().getEmail(), "Assunto", "Texto"); // Send an email for the resource
+
+            String htmlTampleteResult = emailService.loadHtmlTemplate("emailNotificationRecomendeResource");
+
+            Map<String, Object> attributes = new HashMap<>();
+            attributes.put("nuit", resource.getTutored().getEmployee().getNuit());
+
+            String tokenForTutored = this.jwtTokenGenerator.generateToken(attributes).get();
+            resource.setToken(tokenForTutored);
+
+            Map<String, String> variables = new HashMap<>();
+
+            variables.put("menteesName", resource.getTutored().getEmployee().getFullName());
+            variables.put("mentorName", resource.getTutor().getEmployee().getFullName());
+            variables.put("link",BASE_URL+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName());
+
+            String populationHtml = emailService.populateTemplateVariables(htmlTampleteResult, variables);
+
+            emailService.sendEmail(resource.getTutored().getEmployee().getEmail(), "Acesso aos Recursos no Mentoria Web", populationHtml);
+
             resource.setNotificationStatus(SessionRecommendedResource.NotificationStatus.SENT);
             sessionRecommendedResourceRepository.update(resource); // Update the status to SENT
+        }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
     }
 

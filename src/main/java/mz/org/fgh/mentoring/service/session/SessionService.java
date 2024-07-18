@@ -15,13 +15,17 @@ import mz.org.fgh.mentoring.repository.session.SessionStatusRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
+import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import mz.org.fgh.mentoring.util.Utilities;
+import mz.org.fgh.util.EmailService;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import javax.mail.MessagingException;
+import javax.transaction.Transactional;
+import java.util.*;
 
 @Singleton
 public class SessionService extends BaseService {
@@ -44,6 +48,14 @@ public class SessionService extends BaseService {
                           UserRepository userRepository, SessionStatusRepository sessionStatusRepository,
                           TutorRepository tutorRepository, TutoredRepository tutoredRepository,
                           FormRepository formRepository) {
+    MentorshipRepository mentorshipRepository;
+
+    TutorRepository tutorRepository;
+
+    @Inject
+    private EmailService emailService;
+
+    public SessionService(SessionRepository sessionRepository, RondaRepository rondaRepository, AnswerRepository answerRepository, MentorshipRepository mentorshipRepository, TutorRepository tutorRepository) {
         this.sessionRepository = sessionRepository;
         this.rondaRepository = rondaRepository;
         this.answerRepository = answerRepository;
@@ -53,6 +65,7 @@ public class SessionService extends BaseService {
         this.tutorRepository = tutorRepository;
         this.tutoredRepository = tutoredRepository;
         this.formRepository = formRepository;
+        this.tutorRepository = tutorRepository;
     }
 
     public List<Session> getAllRondas(List<String> rondasUuids) {
@@ -71,6 +84,42 @@ public class SessionService extends BaseService {
 
     public Session findByUuid(String uuid) {
         return sessionRepository.findByUuid(uuid).orElseThrow(() -> new IllegalArgumentException("Session not found"));
+    }
+
+    @Transactional
+    public void processPendingSessions() throws MessagingException {
+
+        Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, 2);
+        cal.set(Calendar.HOUR_OF_DAY, 0);
+        cal.set(Calendar.MINUTE,0);
+        cal.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+
+        Date startDate = cal.getTime();
+
+        List<Session> sessions = sessionRepository.getAllOfRondaPending(startDate);
+
+        if (!Utilities.listHasElements(sessions)) return;
+
+        for (Session session : sessions){
+
+            try {
+                String htmlTemplate = emailService.loadHtmlTemplate("emailNotificationTemplate");
+
+                Map<String, String> variables = new HashMap<>();
+                variables.put("menteesName", session.getMentee().getEmployee().getFullName());
+                variables.put("mentorName", session.getRonda().getRondaMentors().get(0).getMentor().getEmployee().getFullName());
+                variables.put("date", session.getStartDate().toString() );
+
+                String populatedHtml = emailService.populateTemplateVariables(htmlTemplate, variables);
+
+                emailService.sendEmail(session.getMentee().getEmployee().getEmail(), "Notificacão de Agenda de Sessão de Mentoria", populatedHtml); // Send an email for the resource
+
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
     }
 
     public List<Session> createOrUpdate(List<Session> sessions, Long userId) {

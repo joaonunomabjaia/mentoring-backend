@@ -29,4 +29,6 @@ public interface SessionRecommendedResourceRepository extends CrudRepository<Ses
     List<SessionRecommendedResource> findAllByTutoredUuid(String tutoredUuid);
 
     List<SessionRecommendedResource> findByNotificationStatus(SessionRecommendedResource.NotificationStatus status);
+
+    Optional<SessionRecommendedResource> findByToken(String token);
 }

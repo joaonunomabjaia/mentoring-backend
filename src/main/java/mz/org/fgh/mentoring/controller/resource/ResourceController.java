@@ -18,10 +18,12 @@ import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.resource.ResourceDTO;
 import mz.org.fgh.mentoring.entity.earesource.Resource;
+import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.repository.resource.ResourceRepository;
+import mz.org.fgh.mentoring.repository.session.SessionRecommendedResourceRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
@@ -42,21 +44,25 @@ import java.util.UUID;
 /**
  * @author Joao Nuno Mabjaia
  */
-@Secured(SecurityRule.IS_AUTHENTICATED)
+
 @Controller(RESTAPIMapping.RESOURCE)
 public class ResourceController extends BaseController {
 
     private ResourceRepository resourceRepository;
     private SettingsRepository settingsRepository;
     private final UserRepository userRepository;
+
+    private SessionRecommendedResourceRepository sessionRecommendedResourceRepository;
     public static final Logger LOG = LoggerFactory.getLogger(ResourceController.class);
 
-    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, SettingsRepository settingsRepository) {
+    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, SettingsRepository settingsRepository, SessionRecommendedResourceRepository sessionRecommendedResourceRepository) {
         this.resourceRepository = resourceRepository;
         this.userRepository = userRepository;
         this.settingsRepository = settingsRepository;
+        this.sessionRecommendedResourceRepository = sessionRecommendedResourceRepository;
     }
 
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     @Operation(summary = "Return a list off all Resources")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Resource")
@@ -72,6 +78,7 @@ public class ResourceController extends BaseController {
         return resourceDTOS;
     }
 
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     @Operation(summary = "Save Resource to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Resource")
@@ -97,6 +104,7 @@ public class ResourceController extends BaseController {
         }
     }
 
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     @Operation(summary = "Update the Resources JSON")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Patch("/updateresourcetreewithoutfile")
@@ -125,6 +133,7 @@ public class ResourceController extends BaseController {
         }
     }
 
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     @Operation(summary = "Update the Resources JSON")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Patch(value = "/updateresourcetree", consumes = MediaType.MULTIPART_FORM_DATA)
@@ -187,6 +196,7 @@ public class ResourceController extends BaseController {
         }
     }
 
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     @Operation(summary = "Obter recurso do servidor")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
     @Get("/load")
@@ -220,6 +230,67 @@ public class ResourceController extends BaseController {
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
                     .error(e.getLocalizedMessage())
                     .message("Erro ao buscar arquivo de recurso").build());
+        }
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Obter recurso do servidor")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
+    @Get("/load/documento/")
+    @Tag(name = "Resource")
+    public HttpResponse<?> loadFileByToken(@QueryValue String nuit, @QueryValue String token, @QueryValue String fileName) {
+
+        Optional<SessionRecommendedResource> sessionRecommendedResource = this.sessionRecommendedResourceRepository.findByToken(token);
+
+        if(!sessionRecommendedResource.isPresent() ){
+            return HttpResponse.serverError().body(MentoringAPIError.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                    .error("Token não encontrada")
+                    .message("Acesso recusado").build());
+        }
+
+        if(Integer.toString(sessionRecommendedResource.get().getTutored().getEmployee().getNuit()).equals(nuit)){
+
+            try {
+                Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
+                if (pathFromSettings.isPresent()) {
+                    Path filePath = Paths.get(pathFromSettings.get().getValue(), fileName);
+                    if (Files.exists(filePath)) {
+                        byte[] fileBytes = Files.readAllBytes(filePath);
+
+                        HttpResponse<?> results = HttpResponse.ok()
+                                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                                .contentLength(fileBytes.length)
+                                .body(fileBytes);
+
+                        return results;
+                    } else {
+                        return HttpResponse.notFound().body(MentoringAPIError.builder()
+                                .status(HttpStatus.NOT_FOUND.getCode())
+                                .error("Arquivo não encontrado")
+                                .message("Arquivo com o nome especificado não encontrado").build());
+                    }
+                } else {
+                    return HttpResponse.serverError().body(MentoringAPIError.builder()
+                            .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                            .error("Configuração não encontrada")
+                            .message("Diretório de recursos não configurado").build());
+                }
+            } catch (Exception e) {
+                LOG.error("Erro ao buscar arquivo de recurso: {}", e.getMessage());
+                return HttpResponse.serverError().body(MentoringAPIError.builder()
+                        .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                        .error(e.getLocalizedMessage())
+                        .message("Erro ao buscar arquivo de recurso").build());
+            }
+
+        } else {
+
+            return HttpResponse.serverError().body(MentoringAPIError.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
+                    .error("Token ou o NUIT errado ")
+                    .message("Acesso recusado ").build());
+
         }
     }
 
