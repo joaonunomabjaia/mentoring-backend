@@ -2260,12 +2260,17 @@
     </changeSet>
 
     <changeSet id="TABLE_session_recommended_resource_creation" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="session_recommended_resource"/>
+            </not>
+        </preConditions>
         <createTable tableName="session_recommended_resource">
             <!-- BaseEntity fields -->
-            <column name="ID" type="BIGINT">
-                <constraints primaryKey="true" nullable="false"/>
+            <column name="ID" type="bigint(20)" autoIncrement="true">
+                <constraints primaryKey="true"/>
             </column>
-            <column name="UUID" type="VARCHAR(50)">
+            <column name="UUID" type="VARCHAR(200)">
                 <constraints nullable="false" unique="true"/>
             </column>
             <column name="CREATED_BY" type="VARCHAR(50)">
@@ -2304,7 +2309,6 @@
                 <constraints nullable="false"/>
             </column>
         </createTable>
-
         <!-- Foreign key constraints -->
         <addForeignKeyConstraint baseTableName="session_recommended_resource"
                                  baseColumnNames="session_id"
@@ -2322,6 +2326,19 @@
                                  referencedTableName="tutors"
                                  referencedColumnNames="id"/>
     </changeSet>
+
+    <changeSet id="add-column-token-varchar" author="miguel">
+        <preConditions  onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="session_recommended_resource" columnName="token"/>
+            </not>
+        </preConditions>
+        <!-- add token column -->
+        <addColumn tableName="session_recommended_resource">
+            <column name="token" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+
     <changeSet id="2024-07-11-drop-status-column" author="voloide">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="sessions" columnName="STATUS"/>

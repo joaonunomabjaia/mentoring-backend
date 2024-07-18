@@ -64,4 +64,14 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
             "INNER JOIN FETCH m.door d " +
             "WHERE r.id = :rondaId ")
     Optional<Session> findByRonda(Long rondaId);
+
+    @Query("SELECT s FROM Session s " +
+            "INNER JOIN FETCH s.ronda r " +
+            "INNER JOIN FETCH s.mentorships m " +
+            "INNER JOIN FETCH s.status st " +
+            "INNER JOIN FETCH m.tutor t " +
+            "INNER JOIN FETCH m.tutored td " +
+            "WHERE s.startDate =:startDate " +
+            "AND  s.endDate is null ")
+    List<Session> getAllOfRondaPending(Date startDate);
 }
