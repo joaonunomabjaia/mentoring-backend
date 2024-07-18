@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.session.Session;
+import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.Column;
@@ -42,6 +44,9 @@ public class Ronda extends BaseEntity {
 
     @OneToMany(mappedBy="ronda", fetch = FetchType.LAZY)
     private List<RondaMentee> rondaMentees;
+
+    @OneToMany(mappedBy="ronda", fetch = FetchType.LAZY)
+    private List<Session> sessions;
 
     @OneToMany(mappedBy="ronda", fetch = FetchType.LAZY)
     private List<RondaMentor> rondaMentors;
@@ -105,4 +110,14 @@ public class Ronda extends BaseEntity {
         return this.rondaType.getCode().equals("SESSAO_ZERO");
     }
 
+    @JsonIgnore
+    public Tutor getActiveMentor() {
+        if(this.getRondaMentors() == null) return null;
+        for (RondaMentor rondaMentor : rondaMentors) {
+            if (rondaMentor.isActive()) {
+                return rondaMentor.getMentor();
+            }
+        }
+        return null;
+    }
 }

@@ -24,6 +24,7 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
+import mz.org.fgh.mentoring.dto.ronda.RondaReportDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
@@ -31,6 +32,7 @@ import mz.org.fgh.mentoring.repository.ronda.RondaMenteeRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaMentorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.ronda.RondaService;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -174,13 +176,14 @@ public class RondaController extends BaseController {
     @Operation(summary = "Saves a list of Rounds")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
-    @Post(
+    @Patch(
             consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON
+            produces = MediaType.APPLICATION_JSON,
+            value = "/closeRonda"
     )
-    public List<RondaDTO> postRondas(@Body List<RondaDTO> rondaDTOS, Authentication authentication) {
-        List<RondaDTO> dtos = this.rondaService.createRondas(rondaDTOS, (Long) authentication.getAttributes().get("userInfo"));
-        return dtos;
+    public List<RondaDTO> closeRonda(@Body List<RondaDTO> rondaDTOS, Authentication authentication) {
+        List<Ronda> rondas = Utilities.parse(rondaDTOS, Ronda.class);
+        return listAsDtos(this.rondaService.updateMany(rondas, (Long) authentication.getAttributes().get("userInfo")), RondaDTO.class);
     }
 
     @Operation(summary = "Save Ronda")
@@ -259,5 +262,13 @@ public class RondaController extends BaseController {
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
         }
+    }
+
+    @Operation(summary = "Generate Summary Report of Ronda")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Get("/report/{uuid}")
+    public RondaReportDTO generateReport(@PathVariable("uuid") String uuid){
+       return this.rondaService.generateReport(uuid);
     }
 }

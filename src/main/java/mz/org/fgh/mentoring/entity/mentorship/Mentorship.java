@@ -5,16 +5,13 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
 import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
@@ -94,9 +91,9 @@ public class Mentorship extends BaseEntity {
 
     public Mentorship(MentorshipDTO mentorshipDTO) {
         super(mentorshipDTO);
-        this.setStartDate(this.getStartDate());
-        this.setEndDate(this.getEndDate());
-        this.setIterationNumber(this.getIterationNumber());
+        this.setStartDate(mentorshipDTO.getStartDate());
+        this.setEndDate(mentorshipDTO.getEndDate());
+        this.setIterationNumber(mentorshipDTO.getIterationNumber());
         this.setDemonstration(mentorshipDTO.isDemonstration());
         this.setDemonstrationDetails(mentorshipDTO.getDemonstrationDetails());
         this.setPerformedDate(mentorshipDTO.getPerformedDate());

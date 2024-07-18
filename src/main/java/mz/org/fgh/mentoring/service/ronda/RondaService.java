@@ -2,20 +2,29 @@ package mz.org.fgh.mentoring.service.ronda;
 
 import io.micronaut.core.annotation.Nullable;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.base.BaseService;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
+import mz.org.fgh.mentoring.dto.ronda.RondaReportDTO;
+import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
+import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
 import mz.org.fgh.mentoring.entity.ronda.RondaType;
+import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.report.RondaSummary;
+import mz.org.fgh.mentoring.report.SessionSummary;
+import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaMenteeRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaMentorRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaTypeRepository;
+import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
@@ -27,12 +36,14 @@ import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 @Singleton
-public class RondaService {
+public class RondaService extends BaseService {
 
     private final RondaRepository rondaRepository;
     private final RondaMentorRepository rondaMentorRepository;
@@ -42,11 +53,13 @@ public class RondaService {
     private final TutorRepository tutorRepository;
     private final HealthFacilityRepository healthFacilityRepository;
     private final RondaTypeRepository rondaTypeRepository;
+    private final SessionRepository sessionRepository;
+    private final AnswerRepository answerRepository;
 
     public RondaService(RondaRepository rondaRepository, RondaMentorRepository rondaMentorRepository,
                         RondaMenteeRepository rondaMenteeRepository, UserRepository userRepository,
                         TutoredRepository tutoredRepository, TutorRepository tutorRepository,
-                        HealthFacilityRepository healthFacilityRepository, RondaTypeRepository rondaTypeRepository) {
+                        HealthFacilityRepository healthFacilityRepository, RondaTypeRepository rondaTypeRepository, SessionRepository sessionRepository, AnswerRepository answerRepository) {
         this.rondaRepository = rondaRepository;
         this.rondaMentorRepository = rondaMentorRepository;
         this.rondaMenteeRepository = rondaMenteeRepository;
@@ -55,6 +68,8 @@ public class RondaService {
         this.tutorRepository = tutorRepository;
         this.healthFacilityRepository = healthFacilityRepository;
         this.rondaTypeRepository = rondaTypeRepository;
+        this.sessionRepository = sessionRepository;
+        this.answerRepository = answerRepository;
     }
 
     public List<Ronda> findAll(){
@@ -280,5 +295,140 @@ public class RondaService {
         this.rondaMenteeRepository.deleteByRonda(existingRonda.get());
         this.rondaMentorRepository.deleteByRonda(existingRonda.get());
         this.rondaRepository.delete(existingRonda.get());
+    }
+
+    public RondaReportDTO generateReport(String uuid) {
+        Optional<Ronda> existingRonda = this.rondaRepository.findByUuid(uuid);
+        RondaReportDTO rod = new RondaReportDTO();
+
+        Ronda ronda = null;
+        if (existingRonda.isPresent()) {
+            ronda = existingRonda.get();
+            loadRondaDependencies(ronda);
+        }
+
+        List<RondaSummary> rondaSummaryList = new ArrayList<>();
+
+
+        for (RondaMentee mentee : ronda.getRondaMentees()){
+            RondaSummary rondaSummary = new RondaSummary();
+            rondaSummary.setRonda(ronda);
+            rondaSummary.setZeroEvaluation(mentee.getTutored().getZeroEvaluationScore());
+            rondaSummary.setMentor(ronda.getActiveMentor().getEmployee().getFullName());
+            rondaSummary.setMentee(mentee.getTutored().getEmployee().getFullName());
+            rondaSummary.setNuit(mentee.getTutored().getEmployee().getNuit());
+            List<Session> sessions = new ArrayList<>();
+            for (Session session : ronda.getSessions()){
+                if (session.getMentee().equals(mentee.getTutored())){
+                    sessions.add(session);
+                }
+            }
+            sessions.sort(Comparator.comparing(Session::getStartDate));
+            rondaSummary.setSummaryDetails(new HashMap<>());
+            int i = 1;
+            for (Session session : sessions){
+                rondaSummary.getSummaryDetails().put(i, generateSessionSummary(session));
+
+                i++;
+            }
+            rondaSummary.setSession1(determineSessionScore(rondaSummary.getSummaryDetails().get(1)));
+            rondaSummary.setSession2(determineSessionScore(rondaSummary.getSummaryDetails().get(2)));
+            rondaSummary.setSession3(determineSessionScore(rondaSummary.getSummaryDetails().get(3)));
+            rondaSummary.setSession4(determineSessionScore(rondaSummary.getSummaryDetails().get(4)));
+            rondaSummaryList.add(rondaSummary);
+        }
+
+        rod.setRondaSummaryList(rondaSummaryList);
+        return rod;
+    }
+
+    private List<SessionSummary> generateSessionSummary(Session session) {
+        List<SessionSummary> summaries = new ArrayList<>();
+
+        for (Mentorship mentorship : session.getMentorships()) {
+            if (mentorship.isPatientEvaluation()) {
+                for (Answer answer : mentorship.getAnswers()) {
+                    String cat = answer.getQuestion().getQuestionCategory().getCategory();
+                    if (categoryAlreadyExists(cat, summaries)){
+                        doCountInCategory(cat, summaries, answer);
+                    } else {
+                        summaries.add(initSessionSummary(answer));
+                    }
+                }
+                break;
+            }
+        }
+        return summaries;
+    }
+
+    private void doCountInCategory(String cat, List<SessionSummary> summaries, Answer answer) {
+        for (SessionSummary sessionSummary : summaries) {
+            if (sessionSummary.getTitle().equals(cat)) {
+                if (answer.getValue().equals("SIM")) {
+                    sessionSummary.setSimCount(sessionSummary.getSimCount() + 1);
+                } else if (answer.getValue().equals("NAO")) {
+                    sessionSummary.setNaoCount(sessionSummary.getNaoCount() + 1);
+                }
+            }
+        }
+    }
+    private boolean categoryAlreadyExists(String cat, List<SessionSummary> summaries) {
+        for (SessionSummary sessionSummary : summaries) {
+            if (sessionSummary.getTitle().equals(cat)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private SessionSummary initSessionSummary(Answer answer) {
+        SessionSummary sessionSummary = new SessionSummary();
+        sessionSummary.setTitle(answer.getQuestion().getQuestionCategory().getCategory());
+
+        if (answer.getValue().equals("SIM")) {
+            sessionSummary.setSimCount(sessionSummary.getSimCount() + 1);
+        } else if (answer.getValue().equals("NAO")) {
+            sessionSummary.setNaoCount(sessionSummary.getNaoCount() + 1);
+        }
+        return sessionSummary;
+    }
+
+    private void loadRondaDependencies(Ronda ronda) {
+        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+        ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
+        ronda.setSessions(sessionRepository.findAllOfRonda(ronda.getId()));
+        for (Session session : ronda.getSessions()){
+            for (Mentorship mentorship : session.getMentorships()){
+                mentorship.setAnswers(answerRepository.findByMentorship(mentorship));
+            }
+        }
+    }
+
+    private double determineSessionScore(List<SessionSummary> sessionSummaries) {
+        int yesCount = 0;
+        int noCount = 0;
+        for (SessionSummary sessionSummary : sessionSummaries){
+            yesCount = yesCount + sessionSummary.getSimCount();
+            noCount = noCount + sessionSummary.getNaoCount();
+        }
+        return (double) yesCount / (yesCount + noCount) *100;
+    }
+
+    @Transactional
+    public List<Ronda> updateMany(List<Ronda> rondas, Long userId) {
+        List<Ronda> updatedRondas = new ArrayList<>();
+        for (Ronda ronda : rondas) {
+            User user = userRepository.findById(userId).get();
+
+            Optional<Ronda> existingRonda = this.rondaRepository.findByUuid(ronda.getUuid());
+
+            ronda.setId(existingRonda.get().getId());
+            addUpdateAuditInfo(ronda, existingRonda.get(), user);
+            ronda.setHealthFacility(healthFacilityRepository.findByUuid(ronda.getHealthFacility().getUuid()).get());
+            ronda.setRondaType(rondaTypeRepository.findByUuid(ronda.getRondaType().getUuid()).get());
+            Ronda createdRonda = this.rondaRepository.update(ronda);
+            updatedRondas.add(createdRonda);
+        }
+        return updatedRondas;
     }
 }
