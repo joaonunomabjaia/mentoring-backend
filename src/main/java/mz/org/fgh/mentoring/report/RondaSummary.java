@@ -1,7 +1,7 @@
 package mz.org.fgh.mentoring.report;
 
 import lombok.Data;
-import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 
 import java.util.List;
 import java.util.Map;
@@ -16,7 +16,7 @@ public class RondaSummary {
     private double session2;
     private double session3;
     private double session4;
-    private double finalScore;
-    private Ronda ronda;
+    private String finalScore;
+    private RondaDTO ronda;
     Map<Integer, List<SessionSummary>> summaryDetails;
 }

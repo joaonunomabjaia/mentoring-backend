@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.service.ronda;
 
 import io.micronaut.core.annotation.Nullable;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.base.BaseService;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
@@ -28,6 +29,7 @@ import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.mentorship.MentorshipService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -55,6 +57,8 @@ public class RondaService extends BaseService {
     private final RondaTypeRepository rondaTypeRepository;
     private final SessionRepository sessionRepository;
     private final AnswerRepository answerRepository;
+    @Inject
+    MentorshipService mentorshipService;
 
     public RondaService(RondaRepository rondaRepository, RondaMentorRepository rondaMentorRepository,
                         RondaMenteeRepository rondaMenteeRepository, UserRepository userRepository,
@@ -312,7 +316,6 @@ public class RondaService extends BaseService {
 
         for (RondaMentee mentee : ronda.getRondaMentees()){
             RondaSummary rondaSummary = new RondaSummary();
-            rondaSummary.setRonda(ronda);
             rondaSummary.setZeroEvaluation(mentee.getTutored().getZeroEvaluationScore());
             rondaSummary.setMentor(ronda.getActiveMentor().getEmployee().getFullName());
             rondaSummary.setMentee(mentee.getTutored().getEmployee().getFullName());
@@ -335,10 +338,12 @@ public class RondaService extends BaseService {
             rondaSummary.setSession2(determineSessionScore(rondaSummary.getSummaryDetails().get(2)));
             rondaSummary.setSession3(determineSessionScore(rondaSummary.getSummaryDetails().get(3)));
             rondaSummary.setSession4(determineSessionScore(rondaSummary.getSummaryDetails().get(4)));
+            rondaSummary.setFinalScore(rondaSummary.getSession4() < 86 ? "Repetir Ronda" : "Graduado");
             rondaSummaryList.add(rondaSummary);
         }
 
         rod.setRondaSummaryList(rondaSummaryList);
+        rod.setRonda(new RondaDTO(ronda));
         return rod;
     }
 
@@ -398,6 +403,7 @@ public class RondaService extends BaseService {
         ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
         ronda.setSessions(sessionRepository.findAllOfRonda(ronda.getId()));
         for (Session session : ronda.getSessions()){
+            session.setMentorships(mentorshipService.findAllOfSession(session));
             for (Mentorship mentorship : session.getMentorships()){
                 mentorship.setAnswers(answerRepository.findByMentorship(mentorship));
             }
@@ -410,6 +416,7 @@ public class RondaService extends BaseService {
         for (SessionSummary sessionSummary : sessionSummaries){
             yesCount = yesCount + sessionSummary.getSimCount();
             noCount = noCount + sessionSummary.getNaoCount();
+            sessionSummary.setProgressPercentage((double) sessionSummary.getSimCount() / (sessionSummary.getSimCount() + sessionSummary.getNaoCount()) *100);
         }
         return (double) yesCount / (yesCount + noCount) *100;
     }
