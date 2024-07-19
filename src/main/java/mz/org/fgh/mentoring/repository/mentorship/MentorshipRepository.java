@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.repository.mentorship;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
+import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.PerformedSession;
 
@@ -36,4 +37,6 @@ public interface MentorshipRepository extends CrudRepository<Mentorship, Long> {
             "INNER JOIN FETCH m.session s " +
             "WHERE s.uuid = :sessionUuid ")
     List<Mentorship> fetchBySessionUuid(String sessionUuid, LifeCycleStatus lifeCycleStatus);
+
+    List<Mentorship> findBySession(Session session);
 }

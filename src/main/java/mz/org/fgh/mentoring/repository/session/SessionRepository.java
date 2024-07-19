@@ -47,14 +47,7 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
 
     @Query("SELECT s FROM Session s " +
             "INNER JOIN FETCH s.ronda r " +
-            "INNER JOIN FETCH s.mentorships m " +
             "INNER JOIN FETCH s.status st " +
-            "INNER JOIN FETCH m.tutor t " +
-            "INNER JOIN FETCH m.tutored td " +
-            "INNER JOIN FETCH m.form f " +
-            "INNER JOIN FETCH m.cabinet c " +
-            "INNER JOIN FETCH m.evaluationType et " +
-            "INNER JOIN FETCH m.door d " +
             "WHERE r.id = :rondaId ")
     List<Session> findAllOfRonda(Long rondaId);
 }

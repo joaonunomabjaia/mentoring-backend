@@ -50,11 +50,11 @@ public class Mentorship extends BaseEntity {
     @JoinColumn(name = "TUTOR_ID", nullable = false)
     private Tutor tutor;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "TUTORED_ID", nullable = false)
     private Tutored tutored;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FORM_ID", nullable = false)
     private Form form;
 
@@ -66,7 +66,7 @@ public class Mentorship extends BaseEntity {
     @JoinColumn(name = "CABINET_ID")
     private Cabinet cabinet;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "ITERATION_TYPE_ID", nullable = false)
     private EvaluationType evaluationType;
 
@@ -137,7 +137,6 @@ public class Mentorship extends BaseEntity {
                 ", tutor=" + tutor +
                 ", tutored=" + tutored +
                 ", form=" + form +
-                ", session=" + session +
                 ", cabinet=" + cabinet +
                 ", evaluationType=" + evaluationType +
                 ", iterationNumber=" + iterationNumber +

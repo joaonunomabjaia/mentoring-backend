@@ -39,7 +39,7 @@ public class Session extends BaseEntity {
     @Column(name = "PERFORMED_DATE")
     private Date performedDate;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SESSION_STATUS_ID", nullable = false)
     private SessionStatus status;
 
@@ -50,7 +50,7 @@ public class Session extends BaseEntity {
     @Column(name = "REASON")
     private String reason;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "MENTEE_ID", nullable = false)
     private Tutored mentee;
 

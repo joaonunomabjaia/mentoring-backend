@@ -8,5 +8,7 @@ import java.util.List;
 @Data
 public class RondaReportDTO {
 
+    private RondaDTO ronda;
+
     private List<RondaSummary> rondaSummaryList;
 }

@@ -5,6 +5,7 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.base.BaseService;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
+import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
@@ -96,5 +97,9 @@ public class MentorshipService extends BaseService {
             answerRepository.save(answer);
             LOG.info("Saved answer: {}", answer);
         }
+    }
+
+    public List<Mentorship> findAllOfSession(Session session) {
+        return mentorshipRepository.findBySession(session);
     }
 }
