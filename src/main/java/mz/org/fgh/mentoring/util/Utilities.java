@@ -2,6 +2,8 @@ package mz.org.fgh.mentoring.util;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
@@ -217,5 +219,10 @@ public class Utilities {
             }
         }
         return parsedList;
+    }
+
+    public static BigDecimal roundToOneDecimalPlace(Number number) {
+        BigDecimal bd = new BigDecimal(number.doubleValue());
+        return bd.setScale(1, RoundingMode.HALF_UP);
     }
 }
