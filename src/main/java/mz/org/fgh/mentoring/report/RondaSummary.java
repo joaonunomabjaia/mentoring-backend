@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.report;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 
@@ -18,5 +19,7 @@ public class RondaSummary {
     private double session4;
     private String finalScore;
     private RondaDTO ronda;
+    Map<String, List<String>> summaryDetailsMap;
+    @JsonIgnore
     Map<Integer, List<SessionSummary>> summaryDetails;
 }

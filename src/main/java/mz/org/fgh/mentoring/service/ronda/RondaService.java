@@ -42,6 +42,7 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 @Singleton
@@ -313,13 +314,13 @@ public class RondaService extends BaseService {
 
         List<RondaSummary> rondaSummaryList = new ArrayList<>();
 
-
         for (RondaMentee mentee : ronda.getRondaMentees()){
             RondaSummary rondaSummary = new RondaSummary();
-            rondaSummary.setZeroEvaluation(mentee.getTutored().getZeroEvaluationScore());
+            rondaSummary.setZeroEvaluation(Utilities.roundToOneDecimalPlace(mentee.getTutored().getZeroEvaluationScore()).doubleValue());
             rondaSummary.setMentor(ronda.getActiveMentor().getEmployee().getFullName());
             rondaSummary.setMentee(mentee.getTutored().getEmployee().getFullName());
             rondaSummary.setNuit(mentee.getTutored().getEmployee().getNuit());
+
             List<Session> sessions = new ArrayList<>();
             for (Session session : ronda.getSessions()){
                 if (session.getMentee().equals(mentee.getTutored())){
@@ -331,19 +332,30 @@ public class RondaService extends BaseService {
             int i = 1;
             for (Session session : sessions){
                 rondaSummary.getSummaryDetails().put(i, generateSessionSummary(session));
-
                 i++;
             }
-            rondaSummary.setSession1(determineSessionScore(rondaSummary.getSummaryDetails().get(1)));
-            rondaSummary.setSession2(determineSessionScore(rondaSummary.getSummaryDetails().get(2)));
-            rondaSummary.setSession3(determineSessionScore(rondaSummary.getSummaryDetails().get(3)));
-            rondaSummary.setSession4(determineSessionScore(rondaSummary.getSummaryDetails().get(4)));
+            rondaSummary.setSession1(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(1))).doubleValue());
+            rondaSummary.setSession2(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(2))).doubleValue());
+            rondaSummary.setSession3(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(3))).doubleValue());
+            rondaSummary.setSession4(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(4))).doubleValue());
             rondaSummary.setFinalScore(rondaSummary.getSession4() < 86 ? "Repetir Ronda" : "Graduado");
+
+            Map<String, List<String>> summaryDetails = new HashMap<>();
+
+            for (Map.Entry<Integer, List<SessionSummary>> entry : rondaSummary.getSummaryDetails().entrySet()) {
+                for (SessionSummary summary : entry.getValue()) {
+                    if (!summaryDetails.containsKey(String.valueOf(summary.getTitle()))) {
+                        summaryDetails.put(String.valueOf(summary.getTitle()), new ArrayList<>());
+                    }
+                    summaryDetails.get(summary.getTitle()).add(Utilities.roundToOneDecimalPlace(summary.getProgressPercentage()).toString() + "%");
+                }
+            }
+            rondaSummary.setSummaryDetailsMap(summaryDetails);
+
             rondaSummaryList.add(rondaSummary);
         }
 
         rod.setRondaSummaryList(rondaSummaryList);
-        rod.setRonda(new RondaDTO(ronda));
         return rod;
     }
 
