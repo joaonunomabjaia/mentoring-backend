@@ -54,7 +54,7 @@ public class Session extends BaseEntity {
     @JoinColumn(name = "MENTEE_ID", nullable = false)
     private Tutored mentee;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "FORM_ID", nullable = false)
     private Form form;
 
