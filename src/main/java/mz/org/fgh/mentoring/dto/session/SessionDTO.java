@@ -8,6 +8,7 @@ import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.session.Session;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.Date;
 import java.util.List;
@@ -54,6 +55,9 @@ public class SessionDTO extends BaseEntityDTO {
         }
         if(session.getMentee()!=null) {
             this.setMentee(new TutoredDTO(session.getMentee()));
+        }
+        if (Utilities.listHasElements(session.getMentorships())) {
+            setMentorships(Utilities.parse(session.getMentorships(), MentorshipDTO.class));
         }
     }
 }
