@@ -346,6 +346,7 @@ public class RondaService extends BaseService {
                 for (SessionSummary summary : entry.getValue()) {
                     if (!summaryDetails.containsKey(String.valueOf(summary.getTitle()))) {
                         summaryDetails.put(String.valueOf(summary.getTitle()), new ArrayList<>());
+                        summaryDetails.get(summary.getTitle()).add(summary.getTitle());
                     }
                     summaryDetails.get(summary.getTitle()).add(Utilities.roundToOneDecimalPlace(summary.getProgressPercentage()).toString() + "%");
                 }
