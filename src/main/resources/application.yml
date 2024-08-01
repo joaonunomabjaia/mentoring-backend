@@ -33,14 +33,16 @@ micronaut:
         - text/html
         - application/json
     port: 8087
+    context-path: /api
     cors:
       enabled: true
       configurations:
         mycors:
           allowed-origins:
             - "http://localhost:9000"
-            - "http://localhost:80"
+            - "http://10.10.12.72:9000"
             - "http://10.10.2.30"
+            - "http://mentoria.csaude.org.mz"
           allowed-methods:
             - GET
             - POST

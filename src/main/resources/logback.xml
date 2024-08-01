@@ -6,20 +6,24 @@
         </encoder>
     </appender>
 
-    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <file>/his/mentoring/backend/log/mentoring.log</file>
         <append>true</append>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/his/mentoring/backend/log/mentoring.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
-    <logger name="mz.org.fgh" level="DEBUG" />
-    <logger name="io.micronaut.data.query" level="DEBUG" />
-    <logger name="org.hibernate.SQL" level="DEBUG" />
-    <logger name="io.micronaut.data" level="DEBUG"/>
+    <logger name="mz.org.fgh" level="INFO" />
+    <logger name="io.micronaut.data.query" level="INFO" />
+    <logger name="org.hibernate.SQL" level="ERROR" />
+    <logger name="io.micronaut.data" level="INFO"/>
 
-    <root level="info">
+    <root level="INFO">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </root>

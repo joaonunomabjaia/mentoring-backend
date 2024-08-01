@@ -34,9 +34,9 @@ public abstract class AbstractQuestionRepository extends AbstaractBaseRepository
                     "WHERE 1=1 AND q.LIFE_CYCLE_STATUS = 'ACTIVE' ";
 
 
-//        if (code != null) {
-//            sql += " AND q.code like '%" + code + "%' ";
-//        }
+        if (code != null) {
+            sql += " AND q.code like '%" + code + "%' ";
+        }
         if (description != null) {
             sql += " AND q.question like '%" + description + "%' ";
         }
