@@ -17,6 +17,7 @@ import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailService;
+import org.jsoup.Jsoup;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -24,6 +25,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import org.jsoup.nodes.Document;
+
+import static javax.swing.text.html.HTML.Tag.LI;
+import static javax.swing.text.html.HTML.Tag.UL;
 
 @Singleton
 public class SessionRecommendedResourceService {
@@ -113,10 +118,14 @@ public class SessionRecommendedResourceService {
         List<SessionRecommendedResource> pendingResources = sessionRecommendedResourceRepository.findByNotificationStatus(SessionRecommendedResource.NotificationStatus.PENDING);
         if (!Utilities.listHasElements(pendingResources)) return;
 
+        List<String> menteesNames = new ArrayList<>();
+
+        List<String> links = new ArrayList<>();
+
+        Map<SessionRecommendedResource, List<String>> variableList = new HashMap<>();
+
         try {
         for (SessionRecommendedResource resource : pendingResources) {
-
-            String htmlTampleteResult = emailService.loadHtmlTemplate("emailNotificationRecomendeResource");
 
             Map<String, Object> attributes = new HashMap<>();
             attributes.put("nuit", resource.getTutored().getEmployee().getNuit());
@@ -124,19 +133,43 @@ public class SessionRecommendedResourceService {
             String tokenForTutored = this.jwtTokenGenerator.generateToken(attributes).get();
             resource.setToken(tokenForTutored);
 
-            Map<String, String> variables = new HashMap<>();
+            if(menteesNames.contains(resource.getTutored().getEmployee().getFullName())){
+                String link = BASE_URL+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
 
-            variables.put("menteesName", resource.getTutored().getEmployee().getFullName());
-            variables.put("mentorName", resource.getTutor().getEmployee().getFullName());
-            variables.put("link",BASE_URL+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName());
+                variableList.get(resource).add(link);
+            }else {
+                String link = BASE_URL+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
+                links = new ArrayList<>();
+                links.add(link);
+                variableList.put(resource, links);
+            }
 
-            String populationHtml = emailService.populateTemplateVariables(htmlTampleteResult, variables);
-
-            emailService.sendEmail(resource.getTutored().getEmployee().getEmail(), "Acesso aos Recursos no Mentoria Web", populationHtml);
+            menteesNames.add(resource.getTutored().getEmployee().getFullName());
 
             resource.setNotificationStatus(SessionRecommendedResource.NotificationStatus.SENT);
             sessionRecommendedResourceRepository.update(resource); // Update the status to SENT
         }
+
+        for(Map.Entry<SessionRecommendedResource, List<String>> entry : variableList.entrySet()){
+
+            String htmlTampleteResult = emailService.loadHtmlTemplate("emailNotificationRecomendeResource");
+
+            String results = htmlString(entry.getValue());
+
+            Document htm = Jsoup.parse(htmlTampleteResult);
+
+            htm.getElementsByTag("ul").append(results);
+
+            Map<String, String> variables = new HashMap<>();
+            variables.put("menteesName", entry.getKey().getTutored().getEmployee().getFullName());
+            variables.put("mentorName", entry.getKey().getTutor().getEmployee().getFullName());
+
+            String populationHtml = emailService.populateTemplateVariables(htm.html(), variables);
+
+            emailService.sendEmail(entry.getKey().getTutored().getEmployee().getEmail(), "Acesso aos Recursos no Mentoria Web", populationHtml);
+
+        }
+
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -148,5 +181,15 @@ public class SessionRecommendedResourceService {
             list.add(this.save(resource, userId));
         }
         return list;
+    }
+
+    private String htmlString(List<String> uls){
+
+        String HTMLSTring = "";
+        for(String ul : uls){
+            String [] resourseName = ul.split("fileName=");
+            HTMLSTring+="<li> <a href="+ul+">"+resourseName[1]+"</a></li>";
+        }
+        return  HTMLSTring;
     }
 }

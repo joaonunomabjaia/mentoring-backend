@@ -18,6 +18,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 import java.util.stream.Collectors;
@@ -80,6 +81,16 @@ public class EmailService {
     public String populateTemplateVariables(String htmlTemplate, Map<String, String> variables) {
         for (Map.Entry<String, String> entry : variables.entrySet()) {
             htmlTemplate = htmlTemplate.replace("${" + entry.getKey() + "}", entry.getValue());
+        }
+        return htmlTemplate;
+    }
+    public String populateTemplateVariablesList(String htmlTemplate, Map<String, List<String>> variables) {
+        for (Map.Entry<String, List<String>> entry : variables.entrySet()) {
+
+            for (String value : entry.getValue()){
+                htmlTemplate = htmlTemplate.replace( ("${" + entry.getKey() + "}"), value);
+            }
+
         }
         return htmlTemplate;
     }

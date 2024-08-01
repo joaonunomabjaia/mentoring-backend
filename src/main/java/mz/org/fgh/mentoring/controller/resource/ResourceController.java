@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import liquibase.util.FileUtil;
 import lombok.NonNull;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
@@ -28,11 +29,15 @@ import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
+import java.awt.*;
+import java.io.*;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -71,7 +76,7 @@ public class ResourceController extends BaseController {
 
         List<Resource> resources = resourceRepository.findAll();
         List<ResourceDTO> resourceDTOS = new ArrayList<>();
-        for (Resource resource: resources) {
+        for (Resource resource : resources) {
             ResourceDTO resourceDTO = new ResourceDTO(resource, null);
             resourceDTOS.add(resourceDTO);
         }
@@ -83,7 +88,7 @@ public class ResourceController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Resource")
     @Post("/save")
-    public HttpResponse<RestAPIResponse> create (@Body ResourceDTO resourceDTO, Authentication authentication) {
+    public HttpResponse<RestAPIResponse> create(@Body ResourceDTO resourceDTO, Authentication authentication) {
         try {
             Resource resource = new Resource(resourceDTO);
             User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).get();
@@ -109,11 +114,11 @@ public class ResourceController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Patch("/updateresourcetreewithoutfile")
     @Tag(name = "Resource")
-    public HttpResponse<RestAPIResponse> updateResourceTreeWithoutFile(@NonNull @Body ResourceDTO resourceDTO, Authentication authentication){
+    public HttpResponse<RestAPIResponse> updateResourceTreeWithoutFile(@NonNull @Body ResourceDTO resourceDTO, Authentication authentication) {
         try {
             Resource resource = new Resource(resourceDTO);
             User user = this.userRepository.fetchByUserId((Long) authentication.getAttributes().get("userInfo"));
-            Optional<Resource> resourceRepositoryByUuid =  this.resourceRepository.findByUuid(resource.getUuid());
+            Optional<Resource> resourceRepositoryByUuid = this.resourceRepository.findByUuid(resource.getUuid());
             if (resourceRepositoryByUuid.isPresent()) {
                 resourceRepositoryByUuid.get().setResource(resource.getResource());
                 resourceRepositoryByUuid.get().setUpdatedBy(user.getUuid());
@@ -233,6 +238,7 @@ public class ResourceController extends BaseController {
         }
     }
 
+
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Operation(summary = "Obter recurso do servidor")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_OCTET_STREAM))
@@ -242,14 +248,14 @@ public class ResourceController extends BaseController {
 
         Optional<SessionRecommendedResource> sessionRecommendedResource = this.sessionRecommendedResourceRepository.findByToken(token);
 
-        if(!sessionRecommendedResource.isPresent() ){
+        if (!sessionRecommendedResource.isPresent()) {
             return HttpResponse.serverError().body(MentoringAPIError.builder()
                     .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
                     .error("Token não encontrada")
                     .message("Acesso recusado").build());
         }
 
-        if(Integer.toString(sessionRecommendedResource.get().getTutored().getEmployee().getNuit()).equals(nuit)){
+        if (Integer.toString(sessionRecommendedResource.get().getTutored().getEmployee().getNuit()).equals(nuit)) {
 
             try {
                 Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
@@ -262,6 +268,10 @@ public class ResourceController extends BaseController {
                                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                                 .contentLength(fileBytes.length)
                                 .body(fileBytes);
+
+                        URI link = new URI("file://"+filePath.toString());
+
+                        Desktop.getDesktop().browse(link);
 
                         return results;
                     } else {
@@ -293,6 +303,5 @@ public class ResourceController extends BaseController {
 
         }
     }
-
 
 }
