@@ -18,7 +18,7 @@ public class ResourceNotificationScheduler {
         this.sessionRecommendedResourceService = sessionRecommendedResourceService;
     }
 
-    @Scheduled(fixedDelay = "1m") // Schedule this to run every hour
+    @Scheduled(fixedDelay = "24h")
     public void sendPendingNotifications() {
         try {
             sessionRecommendedResourceService.processPendingResources();

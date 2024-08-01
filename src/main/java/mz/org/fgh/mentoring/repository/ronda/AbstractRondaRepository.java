@@ -41,11 +41,11 @@ public abstract class AbstractRondaRepository extends AbstaractBaseRepository im
             Transaction transaction = session.beginTransaction();
 
             String sql = "SELECT DISTINCT r.id " +
-                    "FROM rondas r " +
-                    "INNER JOIN ronda_mentor rmr ON rmr.RONDA_ID = r.id " +
-                    "INNER JOIN tutors t ON rmr.MENTOR_ID = t.id " +
-                    "INNER JOIN health_facilities hf ON r.HEALTH_FACILITY_ID = hf.id " +
-                    "WHERE r.end_date is null and t.uuid = :mentorUuid";
+                            "FROM rondas r " +
+                            "INNER JOIN ronda_mentor rmr ON rmr.RONDA_ID = r.id " +
+                            "INNER JOIN tutors t ON rmr.MENTOR_ID = t.id " +
+                            "INNER JOIN health_facilities hf ON r.HEALTH_FACILITY_ID = hf.id " +
+                            "WHERE r.end_date is null and t.uuid = :mentorUuid";
 
             NativeQuery<Long> qw = session.createSQLQuery(sql);
             qw.setParameter("mentorUuid", mentorUuid);
