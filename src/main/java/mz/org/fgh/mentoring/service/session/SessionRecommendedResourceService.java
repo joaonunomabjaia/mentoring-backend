@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.service.session;
 import io.micronaut.security.token.jwt.generator.JwtTokenGenerator;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.config.ApplicationConfiguration;
 import mz.org.fgh.mentoring.dto.session.SessionRecommendedResourceDTO;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
@@ -42,11 +43,11 @@ public class SessionRecommendedResourceService {
     private JwtTokenGenerator jwtTokenGenerator;
 
     private final SessionRecommendedResourceRepository sessionRecommendedResourceRepository;
+    private final ApplicationConfiguration applicationConfiguration;
 
-    private static final String BASE_URL = System.getenv("BASE_URL_BACKEND");
-
-    public SessionRecommendedResourceService(SessionRecommendedResourceRepository sessionRecommendedResourceRepository) {
+    public SessionRecommendedResourceService(SessionRecommendedResourceRepository sessionRecommendedResourceRepository, ApplicationConfiguration applicationConfiguration) {
         this.sessionRecommendedResourceRepository = sessionRecommendedResourceRepository;
+        this.applicationConfiguration = applicationConfiguration;
     }
 
     @Transactional
@@ -128,7 +129,7 @@ public class SessionRecommendedResourceService {
 
             variables.put("menteesName", resource.getTutored().getEmployee().getFullName());
             variables.put("mentorName", resource.getTutor().getEmployee().getFullName());
-            variables.put("link",BASE_URL+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName());
+            variables.put("link",this.applicationConfiguration.getBaseUrl()+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName());
 
             String populationHtml = emailService.populateTemplateVariables(htmlTampleteResult, variables);
 
