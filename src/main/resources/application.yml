@@ -43,6 +43,7 @@ micronaut:
             - "http://10.10.12.72:9000"
             - "http://10.10.2.30"
             - "http://mentoria.csaude.org.mz"
+            - "http://mentdev.csaude.org.mz"
           allowed-methods:
             - GET
             - POST

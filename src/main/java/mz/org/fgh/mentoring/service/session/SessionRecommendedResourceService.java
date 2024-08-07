@@ -19,6 +19,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailService;
 import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
@@ -26,10 +27,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import org.jsoup.nodes.Document;
-
-import static javax.swing.text.html.HTML.Tag.LI;
-import static javax.swing.text.html.HTML.Tag.UL;
 
 @Singleton
 public class SessionRecommendedResourceService {
@@ -135,11 +132,11 @@ public class SessionRecommendedResourceService {
             resource.setToken(tokenForTutored);
 
             if(menteesNames.contains(resource.getTutored().getEmployee().getFullName())){
-                String link = BASE_URL+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
+                String link = this.applicationConfiguration.getBaseUrl()+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
 
                 variableList.get(resource).add(link);
             }else {
-                String link = BASE_URL+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
+                String link = this.applicationConfiguration.getBaseUrl()+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
                 links = new ArrayList<>();
                 links.add(link);
                 variableList.put(resource, links);
@@ -167,7 +164,7 @@ public class SessionRecommendedResourceService {
 
             String populationHtml = emailService.populateTemplateVariables(htm.html(), variables);
 
-            emailService.sendEmail(entry.getKey().getTutored().getEmployee().getEmail(), "Acesso aos Recursos no Mentoria Web", populationHtml);
+            emailService.sendEmail(entry.getKey().getTutored().getEmployee().getEmail(), "Acesso aos Recursos de Ensino e Aprendizagem", populationHtml);
 
         }
 
