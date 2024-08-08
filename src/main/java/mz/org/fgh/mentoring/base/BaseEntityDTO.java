@@ -24,6 +24,10 @@ public class BaseEntityDTO implements Serializable, RestAPIResponse {
 
     private Date updatedAt;
 
+    private String createdBy;
+
+    private String updatedBy;
+
     @Creator
     public BaseEntityDTO() {
     }
@@ -34,5 +38,7 @@ public class BaseEntityDTO implements Serializable, RestAPIResponse {
         if(baseEntity.getLifeCycleStatus() != null) this.setLifeCycleStatus(baseEntity.getLifeCycleStatus().toString());
         this.setCreatedAt(baseEntity.getCreatedAt());
         this.setUpdatedAt(baseEntity.getUpdatedAt());
+        this.setCreatedBy(baseEntity.getCreatedBy());
+        this.setUpdatedBy(baseEntity.getUpdatedBy());
     }
 }

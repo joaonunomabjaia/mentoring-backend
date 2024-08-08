@@ -64,6 +64,8 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         formQuestion.setId(this.getId());
         formQuestion.setCreatedAt(this.getCreatedAt());
         formQuestion.setUpdatedAt(this.getUpdatedAt());
+        formQuestion.setCreatedBy(this.getCreatedBy());
+        formQuestion.setUpdatedBy(this.getUpdatedBy());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) formQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         formQuestion.setSequence(this.getSequence());
         if(this.getQuestion()!=null) {
