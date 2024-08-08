@@ -24,7 +24,7 @@ public interface FormQuestionRepository extends PageableRepository<FormQuestion,
             "INNER JOIN FETCH fq.evaluationType et " +
             "INNER JOIN FETCH fq.responseType rt " +
             "INNER JOIN FETCH q.questionCategory " +
-            "WHERE f.id = :formId")
+            "WHERE f.id = :formId AND fq.lifeCycleStatus = 'ACTIVE' ")
     List<FormQuestion> fetchByForm(Long formId);
 
     List<FormQuestion> fetchByTutor(final Tutor tutor, final LifeCycleStatus lifeCycleStatus);
