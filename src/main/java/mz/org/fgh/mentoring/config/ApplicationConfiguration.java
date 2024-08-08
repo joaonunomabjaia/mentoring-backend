@@ -1,10 +1,16 @@
 package mz.org.fgh.mentoring.config;
 
-import io.micronaut.core.annotation.Introspected;
+import io.micronaut.context.annotation.ConfigurationProperties;
+import io.micronaut.context.annotation.Property;
+import io.micronaut.context.annotation.Requires;
+import lombok.Data;
 
-import javax.persistence.Entity;
-
-@Introspected(packages = {"mz.org.fgh.mentoring.entity"}, includedAnnotations = Entity.class)
-
+@Data
+@ConfigurationProperties("custom.app")
+@Requires(property = "custom.app.env")
 public class ApplicationConfiguration {
+
+    private String env;
+    @Property(name = "custom.app.base-url")
+    private String baseUrl;
 }

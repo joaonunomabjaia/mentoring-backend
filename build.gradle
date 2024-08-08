@@ -47,6 +47,8 @@ dependencies {
     implementation("io.micronaut.security:micronaut-security-jwt")
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")
     implementation("com.sun.mail:jakarta.mail:1.6.7")
+    implementation 'org.jsoup:jsoup:1.15.3'
+    implementation 'commons-io:commons-io:2.11.0'
 
     // Runtime Only Dependencies
     runtimeOnly("ch.qos.logback:logback-classic")

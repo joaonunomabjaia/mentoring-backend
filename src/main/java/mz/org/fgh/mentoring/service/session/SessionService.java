@@ -140,7 +140,7 @@ public class SessionService extends BaseService {
 
                 String populatedHtml = emailService.populateTemplateVariables(htmlTemplate, variables);
 
-                emailService.sendEmail(session.getMentee().getEmployee().getEmail(), "Notificacão de Agenda de Sessão de Mentoria", populatedHtml); // Send an email for the resource
+                emailService.sendEmail(session.getMentee().getEmployee().getEmail(), "Notificacão de Sessão de Mentoria Agendada", populatedHtml); // Send an email for the resource
 
             } catch (Exception e) {
                 throw new RuntimeException(e);
