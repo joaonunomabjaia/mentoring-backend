@@ -59,7 +59,8 @@ dependencies {
     compileOnly("org.projectlombok:lombok")
 }
 
-task nativeImage(type: Exec, dependsOn: build) {
+tasks.register('nativeImage', Exec) {
+    dependsOn build
     executable = 'native-image'
     args('-jar', "${project.buildDir}/libs/${project.name}-${project.version}.jar")
 }

@@ -18,10 +18,20 @@
         </encoder>
     </appender>
 
-    <logger name="mz.org.fgh" level="INFO" />
-    <logger name="io.micronaut.data.query" level="INFO" />
-    <logger name="org.hibernate.SQL" level="ERROR" />
-    <logger name="io.micronaut.data" level="INFO"/>
+    <if condition='property("ENV").equals("PRODUCTION")'>
+        <then>
+            <logger name="mz.org.fgh" level="INFO" />
+            <logger name="io.micronaut.data.query" level="INFO" />
+            <logger name="org.hibernate.SQL" level="ERROR" />
+            <logger name="io.micronaut.data" level="INFO"/>
+        </then>
+        <else>
+            <logger name="mz.org.fgh" level="DEBUG" />
+            <logger name="io.micronaut.data.query" level="DEBUG" />
+            <logger name="org.hibernate.SQL" level="DEBUG" />
+            <logger name="io.micronaut.data" level="DEBUG"/>
+        </else>
+    </if>
 
     <root level="INFO">
         <appender-ref ref="STDOUT"/>
