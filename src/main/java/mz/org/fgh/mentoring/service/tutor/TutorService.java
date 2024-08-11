@@ -11,6 +11,7 @@ import mz.org.fgh.mentoring.repository.location.LocationRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -37,10 +38,13 @@ public class TutorService {
     @Inject
     private EmailSender emailSender;
 
-    public TutorService(TutorRepository tutorRepository, UserRepository userRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository) {
+    private EmployeeService employeeService;
+
+    public TutorService(TutorRepository tutorRepository, UserRepository userRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository, EmployeeService employeeService) {
         this.tutorRepository = tutorRepository;
         this.userRepository = userRepository;
         this.tutorProgrammaticAreaRepository = tutorProgrammaticAreaRepository;
+        this.employeeService = employeeService;
     }
 
     public List<Tutor> findAll() {
@@ -131,7 +135,7 @@ public class TutorService {
         User user = userRepository.findById(userId).get();
         tutor.setUpdatedBy(user.getUuid());
         tutor.setUpdatedAt(DateUtils.getCurrentDate());
-        employeeRepository.createOrUpdate(tutor.getEmployee(), user);
+        employeeService.createOrUpdate(tutor.getEmployee(), user);
         locationRepository.createOrUpdate(tutor.getEmployee().getLocations(), user);
         this.tutorRepository.update(tutor);
         return tutor;
