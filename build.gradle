@@ -57,6 +57,11 @@ dependencies {
 
     // Compile Only Dependencies
     compileOnly("org.projectlombok:lombok")
+
+    testImplementation("org.mockito:mockito-core:4.11.0")  // Add Mockito core
+    testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")  // Add Mockito JUnit 5 integration
+    testImplementation("io.micronaut:micronaut-http-client") // Ensure HttpClient for tests is included
+
 }
 
 tasks.register('nativeImage', Exec) {
