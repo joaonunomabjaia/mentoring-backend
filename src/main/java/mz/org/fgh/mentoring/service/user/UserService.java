@@ -188,4 +188,19 @@ public class UserService {
         Optional<User> possibleUser = this.userRepository.findByUuid(uuid);
         return possibleUser.orElse(null);
     }
+
+    public List<UserDTO> searchUser(Long userId, String name, Long nuit, String userName){
+
+        User user = this.userRepository.findById(userId).get();
+
+        List<User> users = this.userRepository.search(user, name, nuit, userName);
+
+        List<UserDTO> userDTOS = new ArrayList<>(users.size());
+
+        for(User u : users){
+            userDTOS.add(new UserDTO(u));
+        }
+
+        return  userDTOS;
+    }
 }
