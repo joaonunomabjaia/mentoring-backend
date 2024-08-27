@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.controller.user;
 
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
@@ -21,6 +23,7 @@ import mz.org.fgh.mentoring.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -127,4 +130,19 @@ public class UserController extends BaseController {
         return new UserDTO(user);
     }
 
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Get("/search")
+    public List<UserDTO> searchUser(@NonNull @QueryValue("userId") Long userId,
+                                    @Nullable @QueryValue("name") String name,
+                                    @Nullable @QueryValue("nuit") Long nuit,
+                                    @Nullable @QueryValue("username") String userName){
+
+        List<UserDTO> userDTOS = new ArrayList<>();
+
+        userDTOS = this.userService.searchUser(userId, name, nuit, userName);
+
+        return  userDTOS;
+
+    }
 }

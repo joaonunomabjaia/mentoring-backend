@@ -8,7 +8,7 @@ import mz.org.fgh.mentoring.entity.user.User;
 import java.util.List;
 import java.util.Optional;
 
-@Repository
+
 public interface UserRepository extends CrudRepository<User, Long> {
 
     Optional<User> findByUsername(String userName);
@@ -19,4 +19,6 @@ public interface UserRepository extends CrudRepository<User, Long> {
     List<User> findAll();
 
     Optional<User> findByUuid(String uuid);
+
+    List<User> search( User user, String name, Long nuit, String userName);
 }
