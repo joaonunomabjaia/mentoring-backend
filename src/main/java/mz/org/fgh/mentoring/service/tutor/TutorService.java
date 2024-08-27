@@ -77,7 +77,9 @@ public class TutorService {
         try {
             String password = Utilities.generateRandomPassword(8);
             User user = new User();
-            String username = tutor.getEmployee().getName().toLowerCase()+"."+tutor.getEmployee().getSurname().toLowerCase();
+            String[] partesNames = tutor.getEmployee().getName().toLowerCase().split(" ");
+            String[] partesSunNames = tutor.getEmployee().getSurname().toLowerCase().split(" ");
+            String username = partesNames[0]+"."+partesSunNames[partesSunNames.length - 1];
             username = generateUserName(username);
             user.setUsername(username);
             user.setEmployee(tutor.getEmployee());
