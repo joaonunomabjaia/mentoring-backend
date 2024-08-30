@@ -26,6 +26,8 @@ micronaut:
           - 'X-API-VERSION'
           - 'Accept-Version'
   server:
+    multipart:
+      max-file-size: 50000000
     compression:
       enabled: true
       min-response-size: 2048   # Optional: Minimum response size to trigger compression (default is 2048 bytes)
