@@ -1,5 +1,8 @@
 package mz.org.fgh.mentoring.service.user;
 
+import io.micronaut.data.model.Page;
+
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
@@ -11,6 +14,7 @@ import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.service.role.RoleService;
 import mz.org.fgh.mentoring.service.ronda.RondaService;
@@ -18,6 +22,7 @@ import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailSender;
+
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -68,14 +73,19 @@ public class UserService {
         return null;
     }
 
-    public List<UserDTO> findAllUsers() {
-        List<User> userList = this.userRepository.findAll();
+    public Page<UserDTO>  findAllUsers(Pageable pageable) {
+
+        Page<User> pageUser = this.userRepository.findAll(pageable);
+
+        List<User> userList = pageUser.getContent();
+
         List<UserDTO> users = new ArrayList<UserDTO>();
         for (User user: userList) {
             UserDTO userDTO = new UserDTO(user);
             users.add(userDTO);
         }
-        return users;
+
+        return pageUser.map(this::userToDTO);
     }
     public User findById(final Long id){
         return this.userRepository.findById(id).get();
@@ -189,18 +199,16 @@ public class UserService {
         return possibleUser.orElse(null);
     }
 
-    public List<UserDTO> searchUser(Long userId, String name, Long nuit, String userName){
+    public Page<UserDTO> searchUser(Long userId, String name, String nuit, String userName, Pageable pageable){
 
         User user = this.userRepository.findById(userId).get();
 
-        List<User> users = this.userRepository.search(user, name, nuit, userName);
+        Page<User> userPages = this.userRepository.search(name,nuit, userName, pageable);
 
-        List<UserDTO> userDTOS = new ArrayList<>(users.size());
+         return userPages.map(this::userToDTO);
+    }
 
-        for(User u : users){
-            userDTOS.add(new UserDTO(u));
-        }
-
-        return  userDTOS;
+    private UserDTO userToDTO(User user){
+        return new UserDTO(user);
     }
 }
