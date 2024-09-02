@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.service.question;
 
 import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
@@ -130,6 +131,16 @@ public class QuestionService {
         boolean hasFormQuestions = formQuestionService.doesQuestionHaveFormQuestions(question);
         if(!hasAnswers && !hasFormQuestions){
             this.questionRepository.delete(question);
+        }
+    }
+
+    public List<QuestionDTO> getByPageAndSize(Long page, Long size) {
+        try {
+            Pageable pageable = Pageable.from(Math.toIntExact(page), Math.toIntExact(size));
+            List<Question> questionList = this.questionRepository.getByPageAndSize(pageable);
+            return Utilities.parseList(questionList,QuestionDTO.class);
+        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
+            throw new RuntimeException(e);
         }
     }
 }

@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.repository.question;
 
 import io.micronaut.data.annotation.Query;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
@@ -26,5 +27,8 @@ public interface QuestionRepository extends CrudRepository<Question, Long> {
     List<Question> search(final String code, final String question, final QuestionCategory questionsCategory);
 
     Optional<Question> findByUuid(String uuid);
+
+    @Query(value = "select * from questions where LIFE_CYCLE_STATUS = 'ACTIVE' ", nativeQuery = true)
+    List<Question> getByPageAndSize(Pageable pageable);
 
 }

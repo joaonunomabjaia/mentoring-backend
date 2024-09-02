@@ -142,5 +142,15 @@ public class QuestionController extends BaseController {
         return new QuestionDTO(question);
     }
 
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Return a list off all Questions")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Get("/getByPageAndSize")
+    public List<QuestionDTO> getByPageAndSize(@Nullable @QueryValue("page") Long page ,
+    @Nullable @QueryValue("size") Long size) {
+        return questionService.getByPageAndSize(page, size);
+    }
+
 
 }
