@@ -1,5 +1,9 @@
 package mz.org.fgh.mentoring.controller.user;
 
+import io.micronaut.core.annotation.NonNull;
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.*;
@@ -21,9 +25,7 @@ import mz.org.fgh.mentoring.service.user.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
-@Secured(SecurityRule.IS_AUTHENTICATED)
+@Secured(SecurityRule.IS_ANONYMOUS)
 @Controller(RESTAPIMapping.USER_CONTROLLER)
 public class UserController extends BaseController {
     public static final Logger LOG = LoggerFactory.getLogger(ProgramController.class);
@@ -36,12 +38,12 @@ public class UserController extends BaseController {
         return this.userService.getByCredencials(new User(username, password));
     }
 
-    @Operation(summary = "Return a list off all Users")
+
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "User")
     @Get("/getAll")
-    public List<UserDTO> getAll() {
-        return userService.findAllUsers();
+    public Page<UserDTO> getAll(Pageable pageable) {
+        return userService.findAllUsers(pageable);
     }
 
     @Operation(summary = "Get User from database")
@@ -127,4 +129,17 @@ public class UserController extends BaseController {
         return new UserDTO(user);
     }
 
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Get("/search")
+    public Page<UserDTO> searchUser(@NonNull @QueryValue("userId") Long userId,
+                                    @Nullable @QueryValue("name") String name,
+                                    @Nullable @QueryValue("nuit") String nuit,
+                                    @Nullable @QueryValue("username") String userName,
+                                    Pageable pageable){
+
+
+        return  this.userService.searchUser(userId, name, nuit, userName, pageable);
+
+    }
 }
