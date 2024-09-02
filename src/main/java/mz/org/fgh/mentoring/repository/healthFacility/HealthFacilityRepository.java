@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.repository.healthFacility;
 
 import io.micronaut.data.annotation.Query;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 
@@ -25,4 +26,7 @@ public interface HealthFacilityRepository extends CrudRepository<HealthFacility,
 
     @Query(value = "select * from health_facilities limit :limit offset :offset ", nativeQuery = true)
     List<HealthFacility> findHealthFacilitiesWithLimit(Long limit, Long offset);
+
+    @Query(value = "select * from health_facilities where LIFE_CYCLE_STATUS = 'ACTIVE' ", nativeQuery = true)
+    List<HealthFacility> findHealthFacilitiesByPage(Pageable pageable);
 }

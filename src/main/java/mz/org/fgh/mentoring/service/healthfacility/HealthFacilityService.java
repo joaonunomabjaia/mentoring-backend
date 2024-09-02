@@ -11,6 +11,7 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
@@ -151,5 +152,16 @@ public class HealthFacilityService {
         if(!hasRondas){
             this.healthFacilityRepository.delete(healthFacility);
         }
+    }
+
+    public List<HealthFacilityDTO> getByPageAndSize(Long page, Long size) {
+        try {
+            Pageable pageable = Pageable.from(Math.toIntExact(page), Math.toIntExact(size));
+            List<HealthFacility> healthFacilities = healthFacilityRepository.findHealthFacilitiesByPage(pageable);
+            return Utilities.parseList(healthFacilities, HealthFacilityDTO.class);
+        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+            throw new RuntimeException(e);
+        }
+
     }
 }

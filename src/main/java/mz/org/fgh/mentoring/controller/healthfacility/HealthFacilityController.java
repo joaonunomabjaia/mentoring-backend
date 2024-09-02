@@ -174,4 +174,14 @@ public class HealthFacilityController extends BaseController {
 
         return new HealthFacilityDTO(healthFacility);
     }
+
+    @Operation(summary = "Return a list off all HealthFacilities")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Tag(name = "HealthFacilities")
+    @Get("/getByPageAndSize")
+    public List<HealthFacilityDTO> getByPageAndSize(@Nullable @QueryValue("page") Long page ,
+                                          @Nullable @QueryValue("size") Long size) {
+        return this.healthFacilityService.getByPageAndSize(page, size);
+    }
 }

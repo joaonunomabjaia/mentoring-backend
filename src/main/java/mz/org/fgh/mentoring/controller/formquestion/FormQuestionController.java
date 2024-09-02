@@ -102,4 +102,12 @@ public class FormQuestionController extends BaseController {
         return listAsDtos(this.formQuestionService.fetchByFormsUuids(formsUuids, offset, limit), FormQuestionDTO. class);
     }
 
+    @Operation(summary = "Return a list of forms for the listed params")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Get("/getByFormsUuidsAndPageAndSize")
+    @Tag(name = "FormQuestion")
+    public List<FormQuestionDTO> findFormQuestionByFormsUuidsAndPageAndSize(@NonNull @QueryValue("formsUuids") List<String> formsUuids, @QueryValue("page") Long page, @QueryValue("size") Long size){
+        return listAsDtos(this.formQuestionService.fetchByFormsUuidsAndPageAndSize(formsUuids, page, size), FormQuestionDTO. class);
+    }
+
 }
