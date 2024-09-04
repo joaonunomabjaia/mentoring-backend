@@ -11,6 +11,8 @@ import org.slf4j.LoggerFactory;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -180,8 +182,7 @@ public class HealthFacilityController extends BaseController {
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Tag(name = "HealthFacilities")
     @Get("/getByPageAndSize")
-    public List<HealthFacilityDTO> getByPageAndSize(@Nullable @QueryValue("page") Long page ,
-                                          @Nullable @QueryValue("size") Long size) {
-        return this.healthFacilityService.getByPageAndSize(page, size);
+    public Page<HealthFacilityDTO> getByPageAndSize(Pageable pageable) {
+        return this.healthFacilityService.getByPageAndSize(pageable);
     }
 }

@@ -1,10 +1,12 @@
 package mz.org.fgh.mentoring.service.question;
 
 import io.micronaut.core.annotation.Creator;
+import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
+import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import mz.org.fgh.mentoring.entity.user.User;
@@ -66,19 +68,22 @@ public class QuestionService {
         return dtos;
     }
 
-    public  List<QuestionDTO> search(final String code, final String description, final Long categoryId) {
+    public  Page<QuestionDTO> search(final String code, final String description, final Long categoryId, Pageable pageable) {
         QuestionCategory questionCategory = null;
         if(categoryId != null && categoryId > 0) {
             questionCategory = questionCategoryRepository.findById(categoryId).get();
         }
-        List<Question> questions = questionRepository.search(code, description, questionCategory);
+        Page<Question> pageQuestion = questionRepository.search(code, description, questionCategory == null ? null : questionCategory.getId(), pageable);
+        List<Question> questions = pageQuestion.getContent();
         List<QuestionDTO> dtos = new ArrayList<>();
         for (Question question : questions) {
             QuestionDTO dto = new QuestionDTO(question);
             dtos.add(dto);
         }
-        return dtos;
+
+        return pageQuestion.map(this::questionToDTO);
     }
+
     public List<QuestionDTO> findAllQuestions() {
         List<Question> questionList = this.questionRepository.findAll();
 
@@ -134,13 +139,22 @@ public class QuestionService {
         }
     }
 
-    public List<QuestionDTO> getByPageAndSize(Long page, Long size) {
-        try {
-            Pageable pageable = Pageable.from(Math.toIntExact(page), Math.toIntExact(size));
-            List<Question> questionList = this.questionRepository.getByPageAndSize(pageable);
-            return Utilities.parseList(questionList,QuestionDTO.class);
-        } catch (InstantiationException | NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-            throw new RuntimeException(e);
+    public Page<QuestionDTO> getByPageAndSize(Pageable pageable) {
+        
+        Page<Question> pageQuestion = this.questionRepository.findAll(pageable);
+
+        List<Question> questionList = pageQuestion.getContent();
+
+        List<QuestionDTO> questions = new ArrayList<QuestionDTO>();
+        for (Question question: questionList) {
+            QuestionDTO questionDTO = new QuestionDTO(question);
+            questions.add(questionDTO);
         }
+
+        return pageQuestion.map(this::questionToDTO);
+    }
+
+    private QuestionDTO questionToDTO(Question question){
+        return new QuestionDTO(question);
     }
 }
