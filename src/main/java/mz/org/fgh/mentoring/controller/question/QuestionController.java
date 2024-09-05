@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
@@ -54,12 +56,13 @@ public class QuestionController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Question")
     @Get("/search")
-    public List<QuestionDTO> search(
+    public Page<QuestionDTO> search(
             @Nullable @QueryValue("code") String code,
             @Nullable @QueryValue("description") String description,
-            @Nullable @QueryValue("categoryId") Long categoryId
+            @Nullable @QueryValue("categoryId") Long categoryId,
+            Pageable pageable
     ) {
-        List<QuestionDTO> questions = questionService.search(code, description, categoryId);
+        Page<QuestionDTO> questions = questionService.search(code, description, categoryId, pageable);
         return questions;
     }
 
@@ -140,6 +143,15 @@ public class QuestionController extends BaseController {
         this.questionService.destroy(question);       
 
         return new QuestionDTO(question);
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Return a list off all Questions")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Question")
+    @Get("/getByPageAndSize")
+    public Page<QuestionDTO> getByPageAndSize(Pageable pageable) {
+        return questionService.getByPageAndSize(pageable);
     }
 
 
