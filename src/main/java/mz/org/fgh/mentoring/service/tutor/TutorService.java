@@ -18,6 +18,7 @@ import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailSender;
 
 import javax.transaction.Transactional;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -77,23 +78,37 @@ public class TutorService {
         try {
             String password = Utilities.generateRandomPassword(8);
             User user = new User();
-            String[] partesNames = tutor.getEmployee().getName().toLowerCase().split(" ");
-            String[] partesSunNames = tutor.getEmployee().getSurname().toLowerCase().split(" ");
-            String username = partesNames[0]+"."+partesSunNames[partesSunNames.length - 1];
+            String[] partesNames = tutor.getEmployee().getName().trim().toLowerCase().split(" ");
+            String[] partesSunNames = tutor.getEmployee().getSurname().trim().toLowerCase().split(" ");
+
+            // Gerar o username base e limpar os caracteres especiais e acentos
+            String username = partesNames[0] + "." + partesSunNames[partesSunNames.length - 1];
+            username = normalizeAndClean(username);
             username = generateUserName(username);
+
             user.setUsername(username);
             user.setEmployee(tutor.getEmployee());
             user.setSalt(UUID.randomUUID().toString());
-            user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
+            user.setPassword(Utilities.MD5Crypt(user.getSalt() + ":" + password));
             user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
             user.setUuid(UUID.randomUUID().toString());
             user.setCreatedBy(creator.getUuid());
             user.setCreatedAt(DateUtils.getCurrentDate());
             userRepository.save(user);
+
             emailSender.sendEmailToUser(user, password);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // Método para normalizar o texto (remover acentos e caracteres especiais)
+    private String normalizeAndClean(String input) {
+        // Remove acentos
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+
+        // Remove caracteres especiais (mantendo apenas letras, números e ponto)
+        return normalized.replaceAll("[^a-zA-Z0-9.]", "");
     }
 
     private String generateUserName(String username) {
@@ -101,11 +116,12 @@ public class TutorService {
 
         if (optionalUser.isPresent()) {
             Random random = new Random();
-            username += random.nextInt(101);
-            generateUserName(username);
+            username += random.nextInt(1000);  // Gerar um número entre 0 e 999 para evitar colisões.
+            return generateUserName(username); // Retorna o resultado da chamada recursiva.
         }
         return username;
     }
+
 
 
     public List<Tutor> findTutorWithLimit(long limit, long offset){
