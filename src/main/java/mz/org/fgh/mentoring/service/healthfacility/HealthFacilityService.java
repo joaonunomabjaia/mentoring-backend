@@ -11,11 +11,15 @@ import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.StringUtils;
 
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
+import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.location.Location;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
@@ -151,5 +155,23 @@ public class HealthFacilityService {
         if(!hasRondas){
             this.healthFacilityRepository.delete(healthFacility);
         }
+    }
+
+    public Page<HealthFacilityDTO> getByPageAndSize(Pageable pageable) {
+        Page<HealthFacility> pageHealthFacilities = this.healthFacilityRepository.findAll(pageable);
+
+        List<HealthFacility> hfList = pageHealthFacilities.getContent();
+
+        List<HealthFacilityDTO> healthFacilities = new ArrayList<HealthFacilityDTO>();
+        for (HealthFacility healthFacility: hfList) {
+            HealthFacilityDTO hfDTO = new HealthFacilityDTO(healthFacility);
+            healthFacilities.add(hfDTO);
+        }
+
+        return pageHealthFacilities.map(this::hfToDTO);
+    }
+
+    private HealthFacilityDTO hfToDTO(HealthFacility healthFacility){
+        return new HealthFacilityDTO(healthFacility);
     }
 }

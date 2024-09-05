@@ -87,4 +87,10 @@ public class FormQuestionService {
         List<Answer> answers = this.answerRepository.getByQuestionId(question.getId());
         return !answers.isEmpty();
     }
+
+    public List<FormQuestion> fetchByFormsUuidsAndPageAndSize(final List<String> formsUuids, Long page, Long size){
+
+        Pageable pageable = Pageable.from(Math.toIntExact(page), Math.toIntExact(size));
+        return formQuestionRepository.findByFormsUuids(formsUuids, pageable);
+    }
 }
