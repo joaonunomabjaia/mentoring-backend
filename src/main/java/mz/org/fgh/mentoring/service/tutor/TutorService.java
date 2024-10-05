@@ -3,12 +3,14 @@ package mz.org.fgh.mentoring.service.tutor;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
+import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
@@ -40,6 +42,8 @@ public class TutorService {
     private EmailSender emailSender;
 
     private EmployeeService employeeService;
+    @Inject
+    private SettingsRepository settingsRepository;
 
     public TutorService(TutorRepository tutorRepository, UserRepository userRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository, EmployeeService employeeService) {
         this.tutorRepository = tutorRepository;
@@ -88,15 +92,20 @@ public class TutorService {
 
             user.setUsername(username);
             user.setEmployee(tutor.getEmployee());
-            user.setSalt(UUID.randomUUID().toString());
-            user.setPassword(Utilities.MD5Crypt(user.getSalt() + ":" + password));
+            user.setSalt(Utilities.generateSalt());
+            user.setPassword(Utilities.encryptPassword(password,user.getSalt()));
             user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
             user.setUuid(UUID.randomUUID().toString());
             user.setCreatedBy(creator.getUuid());
             user.setCreatedAt(DateUtils.getCurrentDate());
             userRepository.save(user);
 
-            emailSender.sendEmailToUser(user, password);
+            Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
+
+            if (!settingOpt.isPresent()) {
+                throw new RuntimeException("Server URL not configured");
+            }
+            emailSender.sendEmailToUser(user, password, settingOpt.get().getValue());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

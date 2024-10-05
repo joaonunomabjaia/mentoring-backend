@@ -7,10 +7,12 @@ import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
+import mz.org.fgh.mentoring.dto.question.SectionDTO;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
+import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -20,8 +22,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
-    @JsonProperty(value = "form")
-    private FormDTO form;
+    private Long formId;
 
     @JsonProperty(value = "question")
     private QuestionDTO question;
@@ -34,6 +35,9 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
     private Integer sequence;
 
+    @JsonProperty(value = "section")
+    private SectionDTO sectionDTO;
+
     private String formUuid;
 
     @Creator
@@ -43,6 +47,7 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
     public FormQuestionDTO(FormQuestion formQuestion) {
         super(formQuestion);
+        this.setFormId(formQuestion.getForm().getId());
         this.setSequence(formQuestion.getSequence());
         if(formQuestion.getQuestion()!=null) {
             this.setQuestion(new QuestionDTO(formQuestion.getQuestion()));
@@ -55,6 +60,9 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         }
         if(formQuestion.getForm()!=null) {
             this.setFormUuid(formQuestion.getForm().getUuid());
+        }
+        if(formQuestion.getSection()!=null) {
+            this.setSectionDTO(new SectionDTO(formQuestion.getSection()));
         }
     }
 
@@ -76,6 +84,9 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         }
         if(this.getResponseType()!=null) {
             formQuestion.setResponseType(new ResponseType(this.getResponseType()));
+        }
+        if(this.getSectionDTO()!=null) {
+            formQuestion.setSection(new Section(this.getSectionDTO()));
         }
         return formQuestion;
     }

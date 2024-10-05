@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
@@ -13,10 +12,15 @@ import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
+import mz.org.fgh.mentoring.entity.question.Section;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.Comparator;
 
 @Schema(name = "FormQuestion", description = "A professional that provide mentoring to the tutored individuals")
 @Entity(name = "FormQuestion")
@@ -55,6 +59,10 @@ public class FormQuestion extends BaseEntity {
     @Column( name ="SEQUENCE" )
     private Integer sequence;
 
+    @ManyToOne( fetch = FetchType.EAGER)
+    @JoinColumn( name = "SECTION_ID", nullable = false )
+    private Section section;
+
     public FormQuestion() {
     }
 
@@ -64,7 +72,8 @@ public class FormQuestion extends BaseEntity {
         if(formQuestionDTO.getQuestion()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestion()));
         if(formQuestionDTO.getEvaluationType()!=null) this.setEvaluationType(new EvaluationType(formQuestionDTO.getEvaluationType()));
         if(formQuestionDTO.getResponseType()!=null) this.setResponseType(new ResponseType(formQuestionDTO.getResponseType()));
-        if(formQuestionDTO.getForm()!=null) this.setForm(new Form(formQuestionDTO.getForm()));
+        if(formQuestionDTO.getFormId()!=null) this.setForm(new Form(formQuestionDTO.getFormId()));
+        if(formQuestionDTO.getSectionDTO()!=null) this.setSection(new Section(formQuestionDTO.getSectionDTO()));
     }
 
     public @NotNull Question getQuestion() {

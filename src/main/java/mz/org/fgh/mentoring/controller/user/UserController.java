@@ -35,7 +35,7 @@ public class UserController extends BaseController {
 
     @Get("/getByCredencials/{username}/{password}")
     public UserDTO findByCredencials (@PathVariable("username") String username, @PathVariable("password") String password){
-        return this.userService.getByCredencials(new User(username, password));
+        return this.userService.getByCredentials(new User(username, password));
     }
 
 
@@ -75,7 +75,7 @@ public class UserController extends BaseController {
     @Patch("/update")
     public HttpResponse<RestAPIResponse> update (@Body UserDTO userDTO, Authentication authentication) {
         User userDB = this.userService.findById(userDTO.getId());
-        User user = this.userService.update(userDTO, userDB, (Long) authentication.getAttributes().get("userInfo"));
+        User user = this.userService.update(userDTO, userDB.getId());
 
         LOG.info("Created User {}", user);
 
@@ -100,7 +100,7 @@ public class UserController extends BaseController {
     @Patch("/password-reset")
     public HttpResponse<RestAPIResponse> resetPassword (@Body UserDTO userDTO, Authentication authentication) {
         User userDB = this.userService.findById(userDTO.getId());
-        User user = this.userService.resetPassword(userDTO, userDB, (Long) authentication.getAttributes().get("userInfo"));
+        User user = this.userService.resetPassword(userDTO, userDB.getId());
 
         LOG.info("Created User {}", user);
 

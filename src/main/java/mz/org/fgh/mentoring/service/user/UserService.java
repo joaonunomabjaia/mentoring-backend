@@ -1,20 +1,18 @@
 package mz.org.fgh.mentoring.service.user;
 
 import io.micronaut.data.model.Page;
-
 import io.micronaut.data.model.Pageable;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
+import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
+import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
-
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.service.role.RoleService;
 import mz.org.fgh.mentoring.service.ronda.RondaService;
@@ -22,193 +20,184 @@ import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailSender;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 import java.util.UUID;
 
 @Singleton
 public class UserService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
-    @Inject
-    private EmployeeService employeeService;
+    private final EmployeeService employeeService;
+    private final ProfessionalCategoryRepository professionalCategoryRepository;
+    private final PartnerRepository partnerRepository;
+    private final RondaService rondaService;
+    private final RoleService roleService;
+    private final EmailSender emailSender;
+    private final SettingsRepository settingsRepository;
 
-    @Inject
-    private EmployeeRepository employeeRepository;
-
-    @Inject
-    private  ProfessionalCategoryRepository professionalCategoryRepository;
-
-    @Inject
-    private  PartnerRepository partnerRepository;
-
-    @Inject
-    private RondaService rondaService;
-
-    @Inject
-    private RoleService roleService;
-    @Inject
-    private EmailSender emailSender;
-
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository,
+                       EmployeeService employeeService,
+                       ProfessionalCategoryRepository professionalCategoryRepository,
+                       PartnerRepository partnerRepository,
+                       RondaService rondaService,
+                       RoleService roleService,
+                       EmailSender emailSender,
+                       SettingsRepository settingsRepository) {
         this.userRepository = userRepository;
+        this.employeeService = employeeService;
+        this.professionalCategoryRepository = professionalCategoryRepository;
+        this.partnerRepository = partnerRepository;
+        this.rondaService = rondaService;
+        this.roleService = roleService;
+        this.emailSender = emailSender;
+        this.settingsRepository = settingsRepository;
     }
 
-    public UserDTO getByCredencials(User user) {
-        Optional<User> possibleUser = userRepository.findByUsername(user.getUsername());
-
-        if (possibleUser.isPresent()) {
-            if (possibleUser.get().getPassword().equals(user.getPassword())) {
-                /*if (possibleUser.get().isTutor()) {
-                    possibleUser.get().setUserIndividual(tutorRepository.findByUser(possibleUser.get()));
-                }*/
-                return null;
-            }
-        }
-
+    public UserDTO getByCredentials(User user) {
+        // Implement actual logic to get by credentials
         return null;
     }
 
-    public Page<UserDTO>  findAllUsers(Pageable pageable) {
-
-        Page<User> pageUser = this.userRepository.findAll(pageable);
-
-        List<User> userList = pageUser.getContent();
-
-        List<UserDTO> users = new ArrayList<UserDTO>();
-        for (User user: userList) {
-            UserDTO userDTO = new UserDTO(user);
-            users.add(userDTO);
-        }
-
-        return pageUser.map(this::userToDTO);
+    public Page<UserDTO> findAllUsers(Pageable pageable) {
+        Page<User> userPage = userRepository.findAll(pageable);
+        return userPage.map(UserDTO::new);
     }
-    public User findById(final Long id){
-        return this.userRepository.findById(id).get();
+
+    public User findById(Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
+
     @Transactional
     public User create(User user, Long userId) {
+        User authUser = findById(userId);
+        String password = Utilities.generateRandomPassword(8);
+
+        user.setId(null);
+        user.setCreatedBy(authUser.getUuid());
+        user.setUuid(UUID.randomUUID().toString());
+        user.setCreatedAt(DateUtils.getCurrentDate());
+        user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        user.setSalt(Utilities.generateSalt());
+
         try {
-            User authUser = userRepository.findById(userId).get();
-            String password = Utilities.generateRandomPassword(8);
+            user.setPassword(Utilities.encryptPassword(password, user.getSalt()));
+            user.setShouldResetPassword(true);
+            setupEmployee(user, authUser);
 
-            user.setId(null);
-            user.setCreatedBy(authUser.getUuid());
-            user.setUuid(UUID.randomUUID().toString());
-            user.setCreatedAt(DateUtils.getCurrentDate());
-            user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-            user.setSalt(UUID.randomUUID().toString());
-            try {
-                user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
-                user.setShouldResetPassword(true);
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-
-            Employee userEmployee = user.getEmployee();
-            userEmployee.setCreatedBy(authUser.getUuid());
-            userEmployee.setUuid(UUID.randomUUID().toString());
-            userEmployee.setCreatedAt(DateUtils.getCurrentDate());
-            userEmployee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-            userEmployee.setProfessionalCategory(professionalCategoryRepository.findByUuid(userEmployee.getProfessionalCategory().getUuid()));
-            userEmployee.setPartner(partnerRepository.findByUuid(userEmployee.getPartner().getUuid()));
-
-            Employee employee = employeeService.createOrUpdate(userEmployee,authUser);
-            user.setEmployee(employee);
-
-            emailSender.sendEmailToUser(user, password);
-                return this.userRepository.save(user);
+            String serverUrl = getSettingValue("SERVER_URL");
+            emailSender.sendEmailToUser(user, password, serverUrl);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOG.error("Error encrypting password", e);
+            throw new RuntimeException("Error encrypting password", e);
         }
+
+        return userRepository.save(user);
+    }
+
+    private void setupEmployee(User user, User authUser) {
+        Employee employee = user.getEmployee();
+        employee.setCreatedBy(authUser.getUuid());
+        employee.setUuid(UUID.randomUUID().toString());
+        employee.setCreatedAt(DateUtils.getCurrentDate());
+        employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+
+        employee.setProfessionalCategory(
+                professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()));
+        employee.setPartner(partnerRepository.findByUuid(employee.getPartner().getUuid()));
+
+        employeeService.createOrUpdate(employee, authUser);
+        user.setEmployee(employee);
+    }
+
+    private String getSettingValue(String designation) {
+        return settingsRepository.findByDesignation(designation)
+                .map(Setting::getValue)
+                .orElseThrow(() -> new IllegalStateException("Server URL not configured"));
     }
 
     @Transactional
-    public User update(UserDTO userDTO, User userDB,Long userId) {
-        try {
-            User authUser = userRepository.findById(userId).get();
+    public User update(UserDTO userDTO, Long userId) {
+        User authUser = findById(userId);
+        User userDB = findById(userDTO.getId());
 
-            userDB.setUpdatedBy(authUser.getUuid());
-            userDB.setUpdatedAt(DateUtils.getCurrentDate());
-            userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
-            userDB.setEmployee(new Employee(userDTO.getEmployeeDTO()));
-            userDB.setUsername(userDTO.getUsername());
+        userDB.setUpdatedBy(authUser.getUuid());
+        userDB.setUpdatedAt(DateUtils.getCurrentDate());
+        userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
+        userDB.setUsername(userDTO.getUsername());
 
-            Employee employeeDB = employeeRepository.findById(userDTO.getEmployeeDTO().getId()).get();
-            employeeDB.setUpdatedBy(authUser.getUuid());
-            employeeDB.setUpdatedAt(DateUtils.getCurrentDate());
-            employeeDB.setEmail(userDTO.getEmployeeDTO().getEmail());
-            employeeDB.setName(userDTO.getEmployeeDTO().getName());
-            employeeDB.setPartner(new Partner(userDTO.getEmployeeDTO().getPartnerDTO()));
-            employeeDB.setPhoneNumber(userDTO.getEmployeeDTO().getPhoneNumber());
-            employeeDB.setNuit(userDTO.getEmployeeDTO().getNuit());
-            employeeDB.setProfessionalCategory(new ProfessionalCategory(userDTO.getEmployeeDTO().getProfessionalCategoryDTO()));
-            employeeDB.setSurname(userDTO.getEmployeeDTO().getSurname());
-            employeeDB.setTrainingYear(userDTO.getEmployeeDTO().getTrainingYear());
+        updateEmployee(userDTO, authUser);
 
-            employeeRepository.update(employeeDB);
+        return userRepository.update(userDB);
+    }
 
-            return this.userRepository.update(userDB);
-        }catch (Exception e){
-            throw new RuntimeException(e);
-        }
+    private void updateEmployee(UserDTO userDTO, User authUser) {
+        Employee employeeDB = employeeService.findById(userDTO.getEmployeeDTO().getId())
+                .orElseThrow(() -> new NoSuchElementException("Employee not found"));
+
+        employeeDB.setUpdatedBy(authUser.getUuid());
+        employeeDB.setUpdatedAt(DateUtils.getCurrentDate());
+        employeeDB.setEmail(userDTO.getEmployeeDTO().getEmail());
+        employeeDB.setName(userDTO.getEmployeeDTO().getName());
+        employeeDB.setPhoneNumber(userDTO.getEmployeeDTO().getPhoneNumber());
+        employeeDB.setNuit(userDTO.getEmployeeDTO().getNuit());
+        employeeDB.setSurname(userDTO.getEmployeeDTO().getSurname());
+        employeeDB.setTrainingYear(userDTO.getEmployeeDTO().getTrainingYear());
+        employeeDB.setProfessionalCategory(
+                new ProfessionalCategory(userDTO.getEmployeeDTO().getProfessionalCategoryDTO()));
+        employeeDB.setPartner(new Partner(userDTO.getEmployeeDTO().getPartnerDTO()));
+
+        employeeService.update(employeeDB);
     }
 
     @Transactional
     public User delete(User user, Long userId) {
-        User authUser = userRepository.findById(userId).get();
+        User authUser = findById(userId);
         user.setLifeCycleStatus(LifeCycleStatus.DELETED);
         user.setUpdatedBy(authUser.getUuid());
         user.setUpdatedAt(DateUtils.getCurrentDate());
 
-        return this.userRepository.update(user);
+        return userRepository.update(user);
     }
 
     @Transactional
-    public User resetPassword(UserDTO userDTO, User userDB,Long userId) {
-        User authUser = userRepository.findById(userId).get();
+    public User resetPassword(UserDTO userDTO, Long userId) {
+        User authUser = findById(userId);
+        User userDB = findById(userDTO.getId());
 
         userDB.setUpdatedBy(authUser.getUuid());
         userDB.setUpdatedAt(DateUtils.getCurrentDate());
+
         try {
-            userDB.setPassword(Utilities.MD5Crypt(userDB.getSalt()+":"+userDTO.getPassword()));
+            userDB.setPassword(Utilities.encryptPassword(userDTO.getPassword(), userDB.getSalt()));
             userDB.setShouldResetPassword(userDTO.isShouldResetPassword());
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            LOG.error("Error resetting password", e);
+            throw new RuntimeException("Error resetting password", e);
         }
-        userDB.setUsername(userDTO.getUsername());
 
-        return this.userRepository.update(userDB);
+        return userRepository.update(userDB);
     }
 
     @Transactional
     public void destroy(User user) {
-        boolean hasRondas = this.rondaService.doesUserHaveRondas(user);
-        boolean hasRoles = this.roleService.doesUserHaveRoles(user);
-        if(!hasRondas && !hasRoles){
-            this.userRepository.delete(user);
+        if (!rondaService.doesUserHaveRondas(user) && !roleService.doesUserHaveRoles(user)) {
+            userRepository.delete(user);
         }
     }
 
     public User findByUuid(String uuid) {
-        Optional<User> possibleUser = this.userRepository.findByUuid(uuid);
-        return possibleUser.orElse(null);
+        return userRepository.findByUuid(uuid).orElse(null);
     }
 
-    public Page<UserDTO> searchUser(Long userId, String name, String nuit, String userName, Pageable pageable){
-
-        User user = this.userRepository.findById(userId).get();
-
-        Page<User> userPages = this.userRepository.search(name,nuit, userName, pageable);
-
-         return userPages.map(this::userToDTO);
-    }
-
-    private UserDTO userToDTO(User user){
-        return new UserDTO(user);
+    public Page<UserDTO> searchUser(Long userId, String name, String nuit, String userName, Pageable pageable) {
+        findById(userId);  // Verify the user exists
+        Page<User> userPages = userRepository.search(name, nuit, userName, pageable);
+        return userPages.map(UserDTO::new);
     }
 }

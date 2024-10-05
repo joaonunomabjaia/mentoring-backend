@@ -8,12 +8,15 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -22,10 +25,15 @@ import java.util.List;
 @AllArgsConstructor
 public class FormDTO extends BaseEntityDTO {
 
+    @NotEmpty(message = "Code cannot be empty")
+    @Size(max = 50, message = "Code cannot be longer than 50 characters")
     private String code;
 
+    @NotEmpty(message = "Name cannot be empty")
+    @Size(max = 250, message = "Name cannot be longer than 150 characters")
     private String name;
 
+    @Size(max = 455, message = "Description cannot be longer than 255 characters")
     private String description;
 
     @JsonProperty(value = "partner")
@@ -35,7 +43,10 @@ public class FormDTO extends BaseEntityDTO {
     private ProgrammaticAreaDTO programmaticAreaDTO;
 
     @JsonProperty(value = "formQuestions")
-    private List<FormQuestionDTO> formQuestions = new ArrayList<FormQuestionDTO>();
+    private List<FormQuestionDTO> formQuestions = new ArrayList<>();
+
+    @JsonProperty(value = "formSections")
+    private List<FormSectionDTO> formSections = new ArrayList<>();
 
     private Integer targetPatient;
 
@@ -44,6 +55,7 @@ public class FormDTO extends BaseEntityDTO {
     private Date createdAt;
 
     private String createdBy;
+
 
     @Creator
     public FormDTO() {
@@ -58,24 +70,28 @@ public class FormDTO extends BaseEntityDTO {
         this.createdAt = form.getCreatedAt();
         this.createdBy = form.getCreatedBy();
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+
         try {
-            if(form.getPartner()!=null) {
+            if (form.getPartner() != null) {
                 this.partnerDTO = new PartnerDTO(form.getPartner());
             }
-            if(form.getProgrammaticArea()!=null) {
+            if (form.getProgrammaticArea() != null) {
                 this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
             }
-            if(form.getFormQuestions()!=null && !form.getFormQuestions().isEmpty()) {
-                List<FormQuestion> formQuestionList = form.getFormQuestions();
-                for (FormQuestion formQuestion: formQuestionList) {
-                    FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);
-                    formQuestions.add(formQuestionDTO);
+            if (form.getFormQuestions() != null && !form.getFormQuestions().isEmpty()) {
+                for (FormQuestion formQuestion : form.getFormQuestions()) {
+                    this.formQuestions.add(new FormQuestionDTO(formQuestion));
+                }
+            }
+            if (form.getFormSections() != null && !form.getFormSections().isEmpty()) {
+                for (FormSection formSection : form.getFormSections()) {
+                    this.formSections.add(new FormSectionDTO(formSection));
                 }
             }
             this.targetPatient = form.getTargetPatient();
             this.targetFile = form.getTargetFile();
         } catch (Exception e) {
-
+            // Log exception if necessary
         }
     }
 
@@ -90,9 +106,28 @@ public class FormDTO extends BaseEntityDTO {
         form.setCode(this.getCode());
         form.setTargetFile(this.getTargetFile());
         form.setTargetPatient(this.getTargetPatient());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        if(this.getPartnerDTO()!=null) form.setPartner(new Partner(this.getPartnerDTO()));
-        if(this.getProgrammaticAreaDTO()!=null) form.setProgrammaticArea(new ProgrammaticArea(this.getProgrammaticAreaDTO()));
+
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
+            form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        }
+        if (this.getPartnerDTO() != null) {
+            form.setPartner(new Partner(this.getPartnerDTO()));
+        }
+        if (this.getProgrammaticAreaDTO() != null) {
+            form.setProgrammaticArea(new ProgrammaticArea(this.getProgrammaticAreaDTO()));
+        }
+        if (Utilities.listHasElements(this.formQuestions)) {
+            form.setFormQuestions(new ArrayList<>());
+            for (FormQuestionDTO formQuestionDTO : this.formQuestions) {
+                form.getFormQuestions().add(new FormQuestion(formQuestionDTO));
+            }
+        }
+        if (Utilities.listHasElements(this.formSections)) {
+            form.setFormSections(new ArrayList<>());
+            for (FormSectionDTO section : this.formSections) {
+                form.getFormSections().add(new FormSection(section));
+            }
+        }
         return form;
     }
 }

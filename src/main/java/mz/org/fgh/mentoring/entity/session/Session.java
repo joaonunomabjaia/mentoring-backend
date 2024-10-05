@@ -33,11 +33,14 @@ public class Session extends BaseEntity {
     @Column(name = "START_DATE", nullable = false)
     private Date startDate;
 
-    @Column(name = "END_DATE")
+    @Column(name = "END_DATE", nullable = false)
     private Date endDate;
 
     @Column(name = "PERFORMED_DATE")
     private Date performedDate;
+
+    @Column(name = "NEXT_SESSION_DATE")
+    private Date nextSessionDate;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "SESSION_STATUS_ID", nullable = false)
@@ -87,6 +90,7 @@ public class Session extends BaseEntity {
         this.setPointsToImprove(sessionDTO.getPointsToImprove());
         this.setStrongPoints(sessionDTO.getStrongPoints());
         this.setObservations(sessionDTO.getObservations());
+        this.setNextSessionDate(sessionDTO.getNextSessionDate());
         if(sessionDTO.getSessionStatus()!=null) {
             this.setStatus(new SessionStatus(sessionDTO.getSessionStatus()));
         }

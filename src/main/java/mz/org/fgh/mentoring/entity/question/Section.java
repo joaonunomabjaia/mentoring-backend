@@ -7,36 +7,37 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.dto.question.QuestionCategoryDTO;
+import mz.org.fgh.mentoring.dto.question.SectionDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 
-@Schema(name = "QuestionCategory", description = "All possible questions categories")
-@Entity(name = "QuestionCategory")
-@Table(name = "QUESTION_CATEGORIES")
+@Schema(name = "Section", description = "All possible form sections")
+@Entity(name = "Section")
+@Table(name = "section")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
-public class QuestionCategory extends BaseEntity {
+public class Section extends BaseEntity {
 
     @NotEmpty
-    @Column(name = "CATEGORY", nullable = false, length = 100)
-    private String category;
+    @Column(name = "DESCRIPTION", nullable = false, unique = true, length = 200)
+    private String description;
 
     @Creator
-    public QuestionCategory(){}
-    public QuestionCategory(QuestionCategoryDTO questionCategoryDTO){
+    public Section(){}
+
+    public Section(SectionDTO questionCategoryDTO){
         super(questionCategoryDTO);
-        this.setCategory(questionCategoryDTO.getCategory());
+        this.setDescription(questionCategoryDTO.getDescription());
     }
 
     @Override
     public String toString() {
-        return "QuestionCategory{" +
-                "category='" + category + '\'' +
+        return "Section{" +
+                "description='" + description + '\'' +
                 '}';
     }
 }

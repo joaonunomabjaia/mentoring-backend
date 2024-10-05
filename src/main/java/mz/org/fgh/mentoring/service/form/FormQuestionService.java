@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.form;
 
+import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
@@ -16,7 +17,6 @@ import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,23 +39,22 @@ public class FormQuestionService {
         this.formRepository = formRepository;
     }
 
-    public List<FormQuestion> findAll(){
-        return this.formQuestionRepository.findAll();
+    public Page<FormQuestion> findAll(Pageable pageable) {
+        return formQuestionRepository.findAll(pageable);
     }
 
     public Optional<FormQuestion> findById(Long id){
         return this.formQuestionRepository.findById(id);
     }
 
-    public List<FormQuestionDTO> fetchByForm(final Long formId){
-        List<FormQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId);
-        List<FormQuestionDTO> formQuestionDTOS = new ArrayList<>();
-        for (FormQuestion formQuestion : formQuestions) {
-            FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);
-            formQuestionDTOS.add(formQuestionDTO);
-        }
-     return formQuestionDTOS;
+    public Page<FormQuestionDTO> fetchByForm(final Long formId, Pageable pageable) {
+        // Fetch paginated FormQuestions from the repository
+        Page<FormQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId, pageable);
+
+        // Convert the Page<FormQuestion> to Page<FormQuestionDTO> by mapping entities to DTOs
+        return formQuestions.map(FormQuestionDTO::new);
     }
+
 
     public List<FormQuestion> fetchByTutor(final Tutor tutor){
         return  this.formQuestionRepository.fetchByTutor( tutor, LifeCycleStatus.ACTIVE);

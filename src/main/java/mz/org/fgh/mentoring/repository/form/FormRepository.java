@@ -1,8 +1,11 @@
 package mz.org.fgh.mentoring.repository.form;
 
 import io.micronaut.data.annotation.Query;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -14,6 +17,9 @@ public interface FormRepository extends CrudRepository<Form, Long> {
 
     @Override
     List<Form> findAll();
+
+    Page<Form> findAll(Pageable pageable);
+
     Optional<Form> findById(@NotNull Long id);
 
     Optional<Form> findByUuid(@NotNull String uuid);
@@ -51,4 +57,10 @@ public interface FormRepository extends CrudRepository<Form, Long> {
 
 
     List<Form> getAllOfTutor(final Tutor tutor);
+
+    @Query("SELECT f FROM Form f " +
+            "WHERE f.programmaticArea.program = :program " +
+            "ORDER BY f.createdAt DESC")
+    Optional<Form> findTopByProgramOrderByCreatedAtDesc(Program program);
+
 }

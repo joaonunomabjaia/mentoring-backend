@@ -1,21 +1,32 @@
 package mz.org.fgh.mentoring.entity.form;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Introspected;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.util.Utilities;
 
-import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "Form")
@@ -23,10 +34,11 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @AllArgsConstructor
+@Introspected
 public class Form extends BaseEntity {
 
     @NotEmpty
-    @Column(name = "CODE", nullable = false, length = 50 )
+    @Column(name = "CODE", nullable = false, length = 50, unique = true)
     private String code;
 
     @NotEmpty
@@ -34,7 +46,7 @@ public class Form extends BaseEntity {
     private String name;
 
     @NotEmpty
-    @Column(name = "DESCRIPTION")
+    @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
     @ToString.Exclude
@@ -46,11 +58,11 @@ public class Form extends BaseEntity {
 
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form", cascade = CascadeType.ALL)
     private List<FormQuestion> formQuestions;
 
     @NotNull
-    @Column(name = "TARGET_PATIENT", nullable = false )
+    @Column(name = "TARGET_PATIENT", nullable = false)
     private Integer targetPatient;
 
     @NotNull
@@ -59,17 +71,23 @@ public class Form extends BaseEntity {
 
     @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "PARTNER_ID")
+    @JoinColumn(name = "PARTNER_ID", nullable = false)
     private Partner partner;
 
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form")
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form", cascade = CascadeType.ALL)
     private List<Answer> answers;
 
-    public Form() {
-    }
+    // New relationship with FormSection
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form", cascade = CascadeType.ALL)
+    private List<FormSection> formSections;
 
+    @Creator
+    public Form(){}
+    // Constructor to initialize entity from FormDTO
     public Form(FormDTO formDTO) {
         super(formDTO);
         this.setCode(formDTO.getCode());
@@ -77,16 +95,29 @@ public class Form extends BaseEntity {
         this.setName(formDTO.getName());
         this.setTargetFile(formDTO.getTargetFile());
         this.setTargetPatient(formDTO.getTargetPatient());
-        if (formDTO.getPartnerDTO() != null) this.setPartner(new Partner(formDTO.getPartnerDTO()));
-        if (formDTO.getProgrammaticAreaDTO() != null) this.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
+        if (formDTO.getPartnerDTO() != null) {
+            this.setPartner(new Partner(formDTO.getPartnerDTO()));
+        }
+        if (formDTO.getProgrammaticAreaDTO() != null) {
+            this.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
+        }
+
+        if (Utilities.listHasElements(formDTO.getFormSections())) {
+            this.setFormSections(new ArrayList<>());
+            for (FormSectionDTO section : formDTO.getFormSections()) {
+                this.getFormSections().add(new FormSection(section));
+            }
+        }
+    }
+
+    public Form(Long formId) {
+        this.setId(formId);
     }
 
     @Override
     public String toString() {
         return "Form [code=" + code + ", name=" + name + ", description=" + description + ", programmaticArea="
                 + programmaticArea + ", targetPatient=" + targetPatient + ", targetFile=" + targetFile + ", partner="
-                + partner + "]";
+                + partner + ", formSections=" + formSections + "]";
     }
-
-    
 }

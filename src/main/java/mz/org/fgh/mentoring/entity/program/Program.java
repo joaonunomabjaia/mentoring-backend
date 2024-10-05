@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.entity.program;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -9,15 +10,12 @@ import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 
-import java.util.List;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
+import java.util.List;
 
 /**
  * @author Jose Julai Ritsure
@@ -36,6 +34,9 @@ public class Program extends BaseEntity {
     @Column(name = "DESCRIPTION", nullable = false)
     private String description;
 
+    @Column(name = "CODE", nullable = false)
+    private String code;
+
     @JsonIgnore
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "program")
     private List<ProgrammaticArea> programmaticAreas;
@@ -47,7 +48,7 @@ public class Program extends BaseEntity {
         super(programDTO);
         this.setName(programDTO.getName());
         this.setDescription(programDTO.getDescription());
-//        this.setProgrammaticAreas(retriveProgramaticAreas(programDTO.getProgrammaticAreaDTOSet()));
+        this.setCode(programDTO.getCode());
     }
 
     @Override
@@ -55,14 +56,7 @@ public class Program extends BaseEntity {
         return "Program{" +
                 "name='" + name + '\'' +
                 ", description='" + description + '\'' +
+                ", code='" + code + '\'' +
                 '}';
     }
-// private Set<ProgrammaticArea> retriveProgramaticAreas(Set<ProgrammaticAreaDTO> programmaticAreaDTOS) {
-    //     Set<ProgrammaticArea> programmaticAreaSet = new HashSet<>();
-    //     for (ProgrammaticAreaDTO programmaticAreaDTO : programmaticAreaDTOS) {
-    //         ProgrammaticArea programmaticArea = new ProgrammaticArea(programmaticAreaDTO, this);
-    //         programmaticAreaSet.add(programmaticArea);
-    //     }
-    //     return programmaticAreaSet;
-    // }
 }

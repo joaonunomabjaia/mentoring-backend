@@ -7,10 +7,12 @@ import mz.org.fgh.mentoring.config.ApplicationConfiguration;
 import mz.org.fgh.mentoring.dto.session.SessionRecommendedResourceDTO;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
+import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.session.SessionRecommendedResourceRepository;
+import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.service.tutored.TutoredService;
 import mz.org.fgh.mentoring.service.user.UserService;
@@ -27,6 +29,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 
 @Singleton
 public class SessionRecommendedResourceService {
@@ -43,6 +46,9 @@ public class SessionRecommendedResourceService {
     private EmailService emailService;
     @Inject
     private JwtTokenGenerator jwtTokenGenerator;
+
+    @Inject
+    private SettingsRepository settingsRepository;
 
     private final SessionRecommendedResourceRepository sessionRecommendedResourceRepository;
     private final ApplicationConfiguration applicationConfiguration;
@@ -122,6 +128,12 @@ public class SessionRecommendedResourceService {
 
         Map<SessionRecommendedResource, List<String>> variableList = new HashMap<>();
 
+        Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
+
+        if (!settingOpt.isPresent()) {
+            throw new RuntimeException("Server URL not configured");
+        }
+
         try {
         for (SessionRecommendedResource resource : pendingResources) {
 
@@ -159,6 +171,7 @@ public class SessionRecommendedResourceService {
             htm.getElementsByTag("ul").append(results);
 
             Map<String, String> variables = new HashMap<>();
+            variables.put("serverUrl", settingOpt.get().getValue());
             variables.put("menteesName", entry.getKey().getTutored().getEmployee().getFullName());
             variables.put("mentorName", entry.getKey().getTutor().getEmployee().getFullName());
 

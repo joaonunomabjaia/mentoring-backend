@@ -37,7 +37,7 @@ public class RESTAPIMapping {
     public final static String PROGRAM ="programs";
 
     public final static String QUESTION ="questions";
-    public final static String QUESTION_CATEGORY ="questionCategories";
+    public final static String SECTION ="section";
 
     public final static String RESPONSE_TYPE ="responseTypes";
     public final static String QUESTION_TYPE ="questionTypes";

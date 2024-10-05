@@ -2386,4 +2386,27 @@
                 constraintName="uq_role_user"
                 tableName="user_role"/>
     </changeSet>
+    <changeSet id="2024-09-23-add-next-session-date" author="voloide">
+        <addColumn tableName="sessions">
+            <column name="NEXT_SESSION_DATE" type="timestamp"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="2024-09-23-insert-server-url-setting" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM settings WHERE UUID = 'e3f9d947-b2ef-4f5c-b9d1-7b09a44dvdb9';
+            </sqlCheck>
+        </preConditions>
+
+        <insert tableName="settings">
+            <column name="CREATED_BY" value="dfd0e3c2-ab75-11ee-9996-0242ac150002" />
+            <column name="LIFE_CYCLE_STATUS" value="ACTIVE" />
+            <column name="UUID" value="e3f9d947-b2ef-4f5c-b9d1-7b09a44dvdb9" />
+            <column name="DESIGNATION" value="SERVER_URL" />
+            <column name="SETTING_VALUE" value="https://mentdev.csaude.org.mz" />
+            <column name="DESCRIPTION" value="SERVER_URL" />
+        </insert>
+    </changeSet>
+
+
 </databaseChangeLog>
