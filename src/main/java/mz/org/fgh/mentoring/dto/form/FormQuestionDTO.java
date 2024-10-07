@@ -7,12 +7,11 @@ import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
-import mz.org.fgh.mentoring.dto.question.SectionDTO;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
+import mz.org.fgh.mentoring.entity.form.FormSection;
+import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
-import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -22,7 +21,7 @@ import java.io.Serializable;
 @AllArgsConstructor
 public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
-    private Long formId;
+    private Long formSectionId;
 
     @JsonProperty(value = "question")
     private QuestionDTO question;
@@ -35,8 +34,7 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
     private Integer sequence;
 
-    @JsonProperty(value = "section")
-    private SectionDTO sectionDTO;
+    private FormSectionDTO formSectionDTO;
 
     private String formUuid;
 
@@ -45,49 +43,46 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         super();
     }
 
-    public FormQuestionDTO(FormQuestion formQuestion) {
-        super(formQuestion);
-        this.setFormId(formQuestion.getForm().getId());
-        this.setSequence(formQuestion.getSequence());
-        if(formQuestion.getQuestion()!=null) {
-            this.setQuestion(new QuestionDTO(formQuestion.getQuestion()));
+    public FormQuestionDTO(FormSectionQuestion formSectionQuestion) {
+        super(formSectionQuestion);
+        this.setFormSectionId(formSectionQuestion.getFormSection().getId());
+        this.setSequence(formSectionQuestion.getSequence());
+        if(formSectionQuestion.getQuestion()!=null) {
+            this.setQuestion(new QuestionDTO(formSectionQuestion.getQuestion()));
         }
-        if(formQuestion.getEvaluationType()!=null) {
-            this.setEvaluationType(new EvaluationTypeDTO(formQuestion.getEvaluationType()));
+        if(formSectionQuestion.getEvaluationType()!=null) {
+            this.setEvaluationType(new EvaluationTypeDTO(formSectionQuestion.getEvaluationType()));
         }
-        if(formQuestion.getResponseType()!=null) {
-            this.setResponseType(new ResponseTypeDTO(formQuestion.getResponseType()));
+        if(formSectionQuestion.getResponseType()!=null) {
+            this.setResponseType(new ResponseTypeDTO(formSectionQuestion.getResponseType()));
         }
-        if(formQuestion.getForm()!=null) {
-            this.setFormUuid(formQuestion.getForm().getUuid());
-        }
-        if(formQuestion.getSection()!=null) {
-            this.setSectionDTO(new SectionDTO(formQuestion.getSection()));
+        if(formSectionQuestion.getFormSection()!=null) {
+            this.setFormSectionDTO(new FormSectionDTO(formSectionQuestion.getFormSection()));
         }
     }
 
-    public FormQuestion getFormQuestion() {
-        FormQuestion formQuestion = new FormQuestion();
-        formQuestion.setUuid(this.getUuid());
-        formQuestion.setId(this.getId());
-        formQuestion.setCreatedAt(this.getCreatedAt());
-        formQuestion.setUpdatedAt(this.getUpdatedAt());
-        formQuestion.setCreatedBy(this.getCreatedBy());
-        formQuestion.setUpdatedBy(this.getUpdatedBy());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) formQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        formQuestion.setSequence(this.getSequence());
+    public FormSectionQuestion getFormQuestion() {
+        FormSectionQuestion formSectionQuestion = new FormSectionQuestion();
+        formSectionQuestion.setUuid(this.getUuid());
+        formSectionQuestion.setId(this.getId());
+        formSectionQuestion.setCreatedAt(this.getCreatedAt());
+        formSectionQuestion.setUpdatedAt(this.getUpdatedAt());
+        formSectionQuestion.setCreatedBy(this.getCreatedBy());
+        formSectionQuestion.setUpdatedBy(this.getUpdatedBy());
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) formSectionQuestion.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        formSectionQuestion.setSequence(this.getSequence());
         if(this.getQuestion()!=null) {
-            formQuestion.setQuestion(new Question(this.getQuestion()));
+            formSectionQuestion.setQuestion(new Question(this.getQuestion()));
         }
         if(this.getEvaluationType()!=null) {
-            formQuestion.setEvaluationType(new EvaluationType(this.getEvaluationType()));
+            formSectionQuestion.setEvaluationType(new EvaluationType(this.getEvaluationType()));
         }
         if(this.getResponseType()!=null) {
-            formQuestion.setResponseType(new ResponseType(this.getResponseType()));
+            formSectionQuestion.setResponseType(new ResponseType(this.getResponseType()));
         }
-        if(this.getSectionDTO()!=null) {
-            formQuestion.setSection(new Section(this.getSectionDTO()));
+        if(this.getFormSectionDTO()!=null) {
+            formSectionQuestion.setFormSection(new FormSection(this.getFormSectionDTO()));
         }
-        return formQuestion;
+        return formSectionQuestion;
     }
 }

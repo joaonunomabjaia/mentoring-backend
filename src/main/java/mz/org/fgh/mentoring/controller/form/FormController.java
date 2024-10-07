@@ -152,6 +152,7 @@ public class FormController {
         try {
             formDTO.setCode(null);
             FormDTO savedForm = formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
+            LOG.info("Created form {}", savedForm);
             return HttpResponse.created(savedForm);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);

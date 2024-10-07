@@ -24,7 +24,7 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
+import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.service.form.FormQuestionService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import org.slf4j.Logger;
@@ -54,7 +54,7 @@ public class FormQuestionController extends BaseController {
     public HttpResponse<Page<FormQuestionDTO>> getAll(@Nullable Pageable pageable) {
         LOG.debug("Searching paginated FormQuestions");
         try {
-            Page<FormQuestion> formQuestions = formQuestionService.findAll(pageable);
+            Page<FormSectionQuestion> formQuestions = formQuestionService.findAll(pageable);
             Page<FormQuestionDTO> formQuestionDTOs = formQuestions.map(FormQuestionDTO::new); // Convert to DTO
             return HttpResponse.ok(formQuestionDTOs);
         } catch (Exception e) {
@@ -68,7 +68,7 @@ public class FormQuestionController extends BaseController {
     @ApiResponse(responseCode = "200", description = "FormQuestion found")
     @ApiResponse(responseCode = "404", description = "FormQuestion not found")
     @Get("/{id}")
-    public Optional<FormQuestion> findById(@PathVariable Long id) {
+    public Optional<FormSectionQuestion> findById(@PathVariable Long id) {
         return formQuestionService.findById(id);
     }
 
@@ -92,9 +92,9 @@ public class FormQuestionController extends BaseController {
     @ApiResponse(responseCode = "201", description = "FormQuestion created successfully")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @Post(consumes = MediaType.APPLICATION_JSON, produces = MediaType.APPLICATION_JSON)
-    public FormQuestion create(@Body FormQuestion formQuestion) {
-        LOG.debug("Created FormQuestion {}", formQuestion);
-        return formQuestionService.create(formQuestion);
+    public FormSectionQuestion create(@Body FormSectionQuestion formSectionQuestion) {
+        LOG.debug("Created FormQuestion {}", formSectionQuestion);
+        return formQuestionService.create(formSectionQuestion);
     }
 
     @Operation(summary = "Remove a FormQuestion", description = "Inactivate or remove a specific FormQuestion.")

@@ -11,7 +11,6 @@ import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -56,10 +55,7 @@ public class Form extends BaseEntity {
     @JoinColumn(name = "PROGRAMMATIC_AREA_ID", nullable = false)
     private ProgrammaticArea programmaticArea;
 
-    @ToString.Exclude
-    @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form", cascade = CascadeType.ALL)
-    private List<FormQuestion> formQuestions;
+
 
     @NotNull
     @Column(name = "TARGET_PATIENT", nullable = false)
@@ -116,8 +112,12 @@ public class Form extends BaseEntity {
 
     @Override
     public String toString() {
-        return "Form [code=" + code + ", name=" + name + ", description=" + description + ", programmaticArea="
-                + programmaticArea + ", targetPatient=" + targetPatient + ", targetFile=" + targetFile + ", partner="
-                + partner + ", formSections=" + formSections + "]";
+        return "Form{" +
+                "code='" + code + '\'' +
+                ", name='" + name + '\'' +
+                ", description='" + description + '\'' +
+                ", targetPatient=" + targetPatient +
+                ", targetFile=" + targetFile +
+                '}';
     }
 }

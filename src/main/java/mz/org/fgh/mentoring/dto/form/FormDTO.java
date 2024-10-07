@@ -9,7 +9,7 @@ import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
+import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -78,11 +78,6 @@ public class FormDTO extends BaseEntityDTO {
             if (form.getProgrammaticArea() != null) {
                 this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
             }
-            if (form.getFormQuestions() != null && !form.getFormQuestions().isEmpty()) {
-                for (FormQuestion formQuestion : form.getFormQuestions()) {
-                    this.formQuestions.add(new FormQuestionDTO(formQuestion));
-                }
-            }
             if (form.getFormSections() != null && !form.getFormSections().isEmpty()) {
                 for (FormSection formSection : form.getFormSections()) {
                     this.formSections.add(new FormSectionDTO(formSection));
@@ -116,16 +111,17 @@ public class FormDTO extends BaseEntityDTO {
         if (this.getProgrammaticAreaDTO() != null) {
             form.setProgrammaticArea(new ProgrammaticArea(this.getProgrammaticAreaDTO()));
         }
-        if (Utilities.listHasElements(this.formQuestions)) {
-            form.setFormQuestions(new ArrayList<>());
-            for (FormQuestionDTO formQuestionDTO : this.formQuestions) {
-                form.getFormQuestions().add(new FormQuestion(formQuestionDTO));
-            }
-        }
         if (Utilities.listHasElements(this.formSections)) {
             form.setFormSections(new ArrayList<>());
             for (FormSectionDTO section : this.formSections) {
-                form.getFormSections().add(new FormSection(section));
+                FormSection formSection = new FormSection(section);
+                formSection.setFormSectionQuestions(new ArrayList<>());
+                if (Utilities.listHasElements(section.getFormQuestionDTOList())) {
+                    for (FormQuestionDTO question : section.getFormQuestionDTOList()) {
+                        formSection.getFormSectionQuestions().add(new FormSectionQuestion(question));
+                    }
+                }
+                form.getFormSections().add(formSection);
             }
         }
         return form;
