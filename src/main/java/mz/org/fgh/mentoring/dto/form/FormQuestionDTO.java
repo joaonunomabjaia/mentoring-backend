@@ -7,7 +7,6 @@ import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
-import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -23,7 +22,7 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
 
     private Long formSectionId;
 
-    @JsonProperty(value = "question")
+    @JsonProperty(value = "questionDTO")
     private QuestionDTO question;
 
     @JsonProperty(value = "evaluationType")
@@ -33,8 +32,6 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
     private ResponseTypeDTO responseType;
 
     private Integer sequence;
-
-    private FormSectionDTO formSectionDTO;
 
     private String formUuid;
 
@@ -56,9 +53,6 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         if(formSectionQuestion.getResponseType()!=null) {
             this.setResponseType(new ResponseTypeDTO(formSectionQuestion.getResponseType()));
         }
-        if(formSectionQuestion.getFormSection()!=null) {
-            this.setFormSectionDTO(new FormSectionDTO(formSectionQuestion.getFormSection()));
-        }
     }
 
     public FormSectionQuestion getFormQuestion() {
@@ -79,9 +73,6 @@ public class FormQuestionDTO extends BaseEntityDTO implements Serializable {
         }
         if(this.getResponseType()!=null) {
             formSectionQuestion.setResponseType(new ResponseType(this.getResponseType()));
-        }
-        if(this.getFormSectionDTO()!=null) {
-            formSectionQuestion.setFormSection(new FormSection(this.getFormSectionDTO()));
         }
         return formSectionQuestion;
     }

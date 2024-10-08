@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.form;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +27,7 @@ public class FormSectionDTO extends BaseEntityDTO implements Serializable {
 
     private Integer sequence;
 
+    @JsonProperty(value = "formQuestions")
     private List<FormQuestionDTO> formQuestionDTOList;
 
     @Creator
@@ -36,7 +38,7 @@ public class FormSectionDTO extends BaseEntityDTO implements Serializable {
         this.formId = formSection.getForm().getId();
         this.section = new SectionDTO(formSection.getSection());
         this.sequence = formSection.getSequence();
-        if (Utilities.listHasElements(formQuestionDTOList)) {
+        if (Utilities.listHasElements(formSection.getFormSectionQuestions())) {
             this.formQuestionDTOList = new ArrayList<>();
             for (FormSectionQuestion fsq : formSection.getFormSectionQuestions()) {
                 this.formQuestionDTOList.add(new FormQuestionDTO(fsq));

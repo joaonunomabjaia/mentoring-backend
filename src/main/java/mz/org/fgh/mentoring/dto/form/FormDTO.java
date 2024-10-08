@@ -39,7 +39,7 @@ public class FormDTO extends BaseEntityDTO {
     @JsonProperty(value = "partner")
     private PartnerDTO partnerDTO;
 
-    @JsonProperty(value = "programmaticArea")
+    @JsonProperty(value = "programmaticAreaDTO")
     private ProgrammaticAreaDTO programmaticAreaDTO;
 
     @JsonProperty(value = "formQuestions")

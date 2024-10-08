@@ -150,7 +150,6 @@ public class FormController {
     @Post("/saveOrUpdate")
     public HttpResponse<?> saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication) {
         try {
-            formDTO.setCode(null);
             FormDTO savedForm = formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
             LOG.info("Created form {}", savedForm);
             return HttpResponse.created(savedForm);

@@ -200,10 +200,10 @@ public class FormService {
             sequentialNumber++;
 
             // Generate the new form code with "TC-" prefix and formatted sequential number
-            newFormCode = String.format("TC-%s-%04d", form.getProgrammaticArea().getProgram().getCode(), sequentialNumber);
+            newFormCode = String.format("TVC-%s-%04d", form.getProgrammaticArea().getProgram().getCode(), sequentialNumber);
         } else {
             // If no previous form exists, start the sequence with 1
-            newFormCode = String.format("TC-%s-0001", form.getProgrammaticArea().getProgram().getCode());
+            newFormCode = String.format("TVC-%s-0001", form.getProgrammaticArea().getProgram().getCode());
         }
 
         return newFormCode;
