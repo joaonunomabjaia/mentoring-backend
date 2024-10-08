@@ -5,33 +5,35 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
-import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import java.util.Comparator;
 
-@Schema(name = "FormQuestion", description = "A professional that provide mentoring to the tutored individuals")
-@Entity(name = "FormQuestion")
-@Table(name = "forms_questions")
+@Schema(name = "FormSectionQuestion", description = "A professional that provide mentoring to the tutored individuals")
+@Entity(name = "FormSectionQuestion")
+@Table(name = "form_section_questions")
 @Data
 @AllArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
-public class FormQuestion extends BaseEntity {
+public class FormSectionQuestion extends BaseEntity {
 
-    @ToString.Exclude
     @NotNull
     @ManyToOne( fetch = FetchType.EAGER)
-    @JoinColumn( name = "FORM_ID", nullable = false )
-    private Form form;
+    @JoinColumn( name = "FORM_SECTION_ID", nullable = false )
+    private FormSection formSection;
 
     @ToString.Exclude
     @JsonIgnore
@@ -55,55 +57,16 @@ public class FormQuestion extends BaseEntity {
     @Column( name ="SEQUENCE" )
     private Integer sequence;
 
-    public FormQuestion() {
+    public FormSectionQuestion() {
     }
 
-    public FormQuestion(FormQuestionDTO formQuestionDTO) {
+    public FormSectionQuestion(FormQuestionDTO formQuestionDTO) {
         super(formQuestionDTO);
         this.setSequence(formQuestionDTO.getSequence());
         if(formQuestionDTO.getQuestion()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestion()));
         if(formQuestionDTO.getEvaluationType()!=null) this.setEvaluationType(new EvaluationType(formQuestionDTO.getEvaluationType()));
         if(formQuestionDTO.getResponseType()!=null) this.setResponseType(new ResponseType(formQuestionDTO.getResponseType()));
-        if(formQuestionDTO.getForm()!=null) this.setForm(new Form(formQuestionDTO.getForm()));
+
     }
 
-    public @NotNull Question getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(@NotNull Question question) {
-        this.question = question;
-    }
-
-    public @NotNull Form getForm() {
-        return form;
-    }
-
-    public void setForm(@NotNull Form form) {
-        this.form = form;
-    }
-
-    public @NotNull ResponseType getResponseType() {
-        return responseType;
-    }
-
-    public void setResponseType(@NotNull ResponseType responseType) {
-        this.responseType = responseType;
-    }
-
-    public @NotNull EvaluationType getEvaluationType() {
-        return evaluationType;
-    }
-
-    public void setEvaluationType(@NotNull EvaluationType evaluationType) {
-        this.evaluationType = evaluationType;
-    }
-
-    public Integer getSequence() {
-        return sequence;
-    }
-
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
-    }
 }

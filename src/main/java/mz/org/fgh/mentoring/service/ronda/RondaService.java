@@ -331,7 +331,7 @@ public class RondaService extends BaseService {
             rondaSummary.setSummaryDetails(new HashMap<>());
             int i = 1;
             for (Session session : sessions){
-                rondaSummary.getSummaryDetails().put(i, generateSessionSummary(session));
+                //rondaSummary.getSummaryDetails().put(i, generateSessionSummary(session));
                 i++;
             }
             rondaSummary.setSession1(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(1))).doubleValue());
@@ -366,7 +366,7 @@ public class RondaService extends BaseService {
         for (Mentorship mentorship : session.getMentorships()) {
             if (mentorship.isPatientEvaluation()) {
                 for (Answer answer : mentorship.getAnswers()) {
-                    String cat = answer.getQuestion().getQuestionCategory().getCategory();
+                    String cat = null; //answer.getQuestion().getSection().getCategory();
                     if (categoryAlreadyExists(cat, summaries)){
                         doCountInCategory(cat, summaries, answer);
                     } else {
@@ -401,7 +401,7 @@ public class RondaService extends BaseService {
 
     private SessionSummary initSessionSummary(Answer answer) {
         SessionSummary sessionSummary = new SessionSummary();
-        sessionSummary.setTitle(answer.getQuestion().getQuestionCategory().getCategory());
+        //sessionSummary.setTitle(answer.getQuestion().getSection().getCategory());
 
         if (answer.getValue().equals("SIM")) {
             sessionSummary.setSimCount(sessionSummary.getSimCount() + 1);

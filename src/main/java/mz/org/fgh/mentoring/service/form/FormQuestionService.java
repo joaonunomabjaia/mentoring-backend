@@ -1,12 +1,13 @@
 package mz.org.fgh.mentoring.service.form;
 
+import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.formQuestion.FormQuestion;
+import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
@@ -16,7 +17,6 @@ import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
@@ -39,44 +39,42 @@ public class FormQuestionService {
         this.formRepository = formRepository;
     }
 
-    public List<FormQuestion> findAll(){
-        return this.formQuestionRepository.findAll();
+    public Page<FormSectionQuestion> findAll(Pageable pageable) {
+        return formQuestionRepository.findAll(pageable);
     }
 
-    public Optional<FormQuestion> findById(Long id){
+    public Optional<FormSectionQuestion> findById(Long id){
         return this.formQuestionRepository.findById(id);
     }
 
-    public List<FormQuestionDTO> fetchByForm(final Long formId){
-        List<FormQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId);
-        List<FormQuestionDTO> formQuestionDTOS = new ArrayList<>();
-        for (FormQuestion formQuestion : formQuestions) {
-            FormQuestionDTO formQuestionDTO = new FormQuestionDTO(formQuestion);
-            formQuestionDTOS.add(formQuestionDTO);
-        }
-     return formQuestionDTOS;
+    public Page<FormQuestionDTO> fetchByForm(final Long formId, Pageable pageable) {
+        // Fetch paginated FormQuestions from the repository
+        Page<FormSectionQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId, pageable);
+
+        // Convert the Page<FormQuestion> to Page<FormQuestionDTO> by mapping entities to DTOs
+        return formQuestions.map(FormQuestionDTO::new);
     }
 
-    public List<FormQuestion> fetchByTutor(final Tutor tutor){
+
+    public List<FormSectionQuestion> fetchByTutor(final Tutor tutor){
         return  this.formQuestionRepository.fetchByTutor( tutor, LifeCycleStatus.ACTIVE);
     }
 
-    public FormQuestion create(FormQuestion formQuestion){
-        return this.formQuestionRepository.save(formQuestion);
+    public FormSectionQuestion create(FormSectionQuestion formSectionQuestion){
+        return this.formQuestionRepository.save(formSectionQuestion);
     }
 
     public void inactivate(Long userId, Long formId, FormQuestionDTO formQuestionDTO) {
         User user = this.userRepository.findById(userId).get();
         Form form = this.formRepository.findById(formId).get();
-        FormQuestion formQuestion = formQuestionDTO.getFormQuestion();
-        formQuestion.setForm(form);
-        formQuestion.setUpdatedBy(user.getUuid());
-        formQuestion.setUpdatedAt(new Date());
-        formQuestion.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
-        this.formQuestionRepository.update(formQuestion);
+        FormSectionQuestion formSectionQuestion = formQuestionDTO.getFormQuestion();
+        formSectionQuestion.setUpdatedBy(user.getUuid());
+        formSectionQuestion.setUpdatedAt(new Date());
+        formSectionQuestion.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
+        this.formQuestionRepository.update(formSectionQuestion);
     }
 
-    public List<FormQuestion> fetchByFormsUuids(final List<String> formsUuids, Long offset, Long limit){
+    public List<FormSectionQuestion> fetchByFormsUuids(final List<String> formsUuids, Long offset, Long limit){
         if (offset > 0) offset = offset/limit;
 
         Pageable pageable = Pageable.from(Math.toIntExact(offset), Math.toIntExact(limit));
@@ -88,7 +86,7 @@ public class FormQuestionService {
         return !answers.isEmpty();
     }
 
-    public List<FormQuestion> fetchByFormsUuidsAndPageAndSize(final List<String> formsUuids, Long page, Long size){
+    public List<FormSectionQuestion> fetchByFormsUuidsAndPageAndSize(final List<String> formsUuids, Long page, Long size){
 
         Pageable pageable = Pageable.from(Math.toIntExact(page), Math.toIntExact(size));
         return formQuestionRepository.findByFormsUuids(formsUuids, pageable);

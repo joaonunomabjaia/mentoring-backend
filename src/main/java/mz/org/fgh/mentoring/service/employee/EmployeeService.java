@@ -1,8 +1,5 @@
 package mz.org.fgh.mentoring.service.employee;
 
-import java.util.List;
-import java.util.Set;
-
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
@@ -16,6 +13,10 @@ import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 @Singleton
 public class EmployeeService {
@@ -95,5 +96,13 @@ public class EmployeeService {
 
     public List<Employee> findEmployeebyProfessionalCategory(Long professionalCategory){
        return employeeRepository.findByProfessionalCategory(professionalCategory);
+    }
+
+    public Optional<Employee> findById(Long id) {
+        return this.employeeRepository.findById(id);
+    }
+
+    public void update(Employee employeeDB) {
+        this.employeeRepository.update(employeeDB);
     }
 }

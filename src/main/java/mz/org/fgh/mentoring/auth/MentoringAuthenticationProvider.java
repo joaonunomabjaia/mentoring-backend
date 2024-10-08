@@ -50,7 +50,7 @@ public class MentoringAuthenticationProvider implements AuthenticationProvider {
 
                 String secret = (String) authenticationRequest.getSecret();
 
-                if (Utilities.MD5Crypt(possibleUser.get().getSalt()+":"+secret).equals(possibleUser.get().getPassword())) {
+                if (Utilities.encryptPassword(secret, possibleUser.get().getSalt()).equals(possibleUser.get().getPassword())) {
                     LOG.debug("User {} logged in...", identity);
                     Map<String, Object> userMap = new HashMap<>();
                     userMap.put("userInfo", possibleUser.get().getId());

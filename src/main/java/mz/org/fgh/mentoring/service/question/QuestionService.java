@@ -6,32 +6,33 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
-import mz.org.fgh.mentoring.dto.user.UserDTO;
+import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.entity.question.QuestionCategory;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
-import mz.org.fgh.mentoring.repository.question.QuestionsCategoryRepository;
+import mz.org.fgh.mentoring.repository.question.SectionRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.answer.AnswerService;
 import mz.org.fgh.mentoring.service.form.FormQuestionService;
+import mz.org.fgh.mentoring.service.program.ProgramService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.transaction.Transactional;
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Singleton
 public class QuestionService {
     @Inject
     private QuestionRepository questionRepository;
     @Inject
-    private QuestionsCategoryRepository questionCategoryRepository;
+    private SectionRepository questionCategoryRepository;
     @Inject
     private UserRepository userRepository;
 
@@ -40,12 +41,15 @@ public class QuestionService {
 
     @Inject
     private FormQuestionService formQuestionService ;
+    @Inject
+    private ProgramService programService;
+
     @Creator
     public QuestionService(){}
 
-    public QuestionService(QuestionRepository questionRepository, QuestionsCategoryRepository questionsCategoryRepository) {
+    public QuestionService(QuestionRepository questionRepository, SectionRepository sectionRepository) {
         this.questionRepository = questionRepository;
-        this.questionCategoryRepository = questionsCategoryRepository;
+        this.questionCategoryRepository = sectionRepository;
     }
 
 
@@ -68,21 +72,20 @@ public class QuestionService {
         return dtos;
     }
 
-    public  Page<QuestionDTO> search(final String code, final String description, final Long categoryId, Pageable pageable) {
-        QuestionCategory questionCategory = null;
-        if(categoryId != null && categoryId > 0) {
-            questionCategory = questionCategoryRepository.findById(categoryId).get();
-        }
-        Page<Question> pageQuestion = questionRepository.search(code, description, questionCategory == null ? null : questionCategory.getId(), pageable);
-        List<Question> questions = pageQuestion.getContent();
-        List<QuestionDTO> dtos = new ArrayList<>();
-        for (Question question : questions) {
-            QuestionDTO dto = new QuestionDTO(question);
-            dtos.add(dto);
+    public Page<QuestionDTO> search(final String code, final String description, final Long programId, Pageable pageable) {
+        // Fetch the program if the programId is valid
+        Long validProgramId = null;
+        if (programId != null && programId > 0) {
+            validProgramId = programService.findById(programId).map(Program::getId).orElse(null);
         }
 
+        // Perform the search using the repository
+        Page<Question> pageQuestion = questionRepository.search(code, description, validProgramId, pageable);
+
+        // Use Java streams to convert the list of Questions to QuestionDTOs
         return pageQuestion.map(this::questionToDTO);
     }
+
 
     public List<QuestionDTO> findAllQuestions() {
         List<Question> questionList = this.questionRepository.findAll();
@@ -98,14 +101,53 @@ public class QuestionService {
     public Question create(Question question, Long userId) {
         User user = userRepository.findById(userId).get();
         question.setCreatedBy(user.getUuid());
-        question.setUuid(UUID.randomUUID().toString());
-        question.setCreatedAt(DateUtils.getCurrentDate());
         question.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        question.setQuestion(question.getQuestion());
-        question.setQuestionCategory(question.getQuestionCategory());
+        question.setCode(generateQuestionCode(question));
 
         return this.questionRepository.save(question);
     }
+
+    protected @NotEmpty(message = "Code cannot be empty")
+    @Size(max = 50, message = "Code cannot exceed 50 characters")
+    String generateQuestionCode(Question question) {
+        // Ensure the question has a valid Program
+        if (question.getProgram() == null) {
+            throw new IllegalArgumentException("Question must be associated with a valid Program.");
+        }
+
+        // Retrieve the last created question code for this program from the database
+        Optional<Question> lastQuestionOpt = questionRepository.findTopByProgramOrderByCreatedAtDesc(question.getProgram());
+
+        String newQuestionCode;
+        if (lastQuestionOpt.isPresent()) {
+            // Extract the last question code and increment the sequential number
+            Question lastQuestion = lastQuestionOpt.get();
+            String lastQuestionCode = lastQuestion.getCode();
+
+            // Extract the sequential number part (assumed to be the numeric part at the end of the code)
+            String[] parts = lastQuestionCode.split("-");
+            int sequentialNumber;
+            try {
+                sequentialNumber = Integer.parseInt(parts[parts.length - 1]);
+            } catch (NumberFormatException e) {
+                // Handle the case where the last part of the code isn't a number
+                throw new IllegalStateException("Invalid question code format: " + lastQuestionCode);
+            }
+
+            // Increment the sequential number
+            sequentialNumber++;
+
+            // Generate the new question code with "CPT-" prefix and six-digit sequence
+            newQuestionCode = String.format("CPT-%s-%06d", question.getProgram().getCode(), sequentialNumber);
+        } else {
+            // If no previous question exists, start the sequence with 1
+            newQuestionCode = String.format("CPT-%s-000001", question.getProgram().getCode());
+        }
+
+        return newQuestionCode;
+    }
+
+
     public Optional<Question> findById(final Long id){
         return this.questionRepository.findById(id);
     }
@@ -115,7 +157,7 @@ public class QuestionService {
         question.setUpdatedBy(user.getUuid());
         question.setUpdatedAt(DateUtils.getCurrentDate());
         question.setQuestion(question.getQuestion());
-        question.setQuestionCategory(question.getQuestionCategory());
+        question.setProgram(question.getProgram());
 
         return this.questionRepository.update(question);
     }

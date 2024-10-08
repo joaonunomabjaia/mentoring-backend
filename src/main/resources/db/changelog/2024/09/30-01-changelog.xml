@@ -1,0 +1,817 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.18.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1727690074154-252" author="voloide">
+        <dropForeignKeyConstraint baseTableName="forms_questions" constraintName="FK_65y4ka36d6ei0qvtiwq1u0ssk"/>
+    </changeSet>
+    <changeSet id="1727690074154-253" author="voloide">
+        <dropForeignKeyConstraint baseTableName="TUTOR_PROGRAMATIC_AREA" constraintName="FK_89880663pcsalcdr428l86oe6"/>
+    </changeSet>
+    <changeSet id="1727690074154-254" author="voloide">
+        <dropForeignKeyConstraint baseTableName="questions" constraintName="FK_QUESTIONS_QUESTION_CATEGORY_ID"/>
+    </changeSet>
+    <changeSet id="1727690074154-255" author="voloide">
+        <dropForeignKeyConstraint baseTableName="TUTOR_PROGRAMATIC_AREA" constraintName="FK_hpc5t4axm5hr7m09fwut4xt62"/>
+    </changeSet>
+    <changeSet id="1727690074154-256" author="voloide">
+        <dropForeignKeyConstraint baseTableName="forms_questions" constraintName="FK_jva7738ctlcw665qamwx4is9j"/>
+    </changeSet>
+    <changeSet id="1727690074154-257" author="voloide">
+        <dropForeignKeyConstraint baseTableName="forms_questions" constraintName="evaluation_type_fq_fk"/>
+    </changeSet>
+    <changeSet id="1727690074154-258" author="voloide">
+        <dropForeignKeyConstraint baseTableName="location" constraintName="location_created_by_fk"/>
+    </changeSet>
+    <changeSet id="1727690074154-259" author="voloide">
+        <dropForeignKeyConstraint baseTableName="mentorships" constraintName="mentorships_iteration_type_fk"/>
+    </changeSet>
+    <changeSet id="1727690074154-260" author="voloide">
+        <dropForeignKeyConstraint baseTableName="forms_questions" constraintName="response_type_fq_fk"/>
+    </changeSet>
+    <changeSet id="1727690074154-189" author="voloide">
+        <createTable tableName="form_section">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_form_section"/>
+            </column>
+            <column name="UUID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="VARCHAR(50)"/>
+            <column name="UPDATED_AT" type="DATETIME"/>
+            <column name="LIFE_CYCLE_STATUS" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FORM_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SECTION_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEQUENCE" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1727690074154-190" author="voloide">
+        <createTable tableName="section">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_section"/>
+            </column>
+            <column name="UUID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="VARCHAR(50)"/>
+            <column name="UPDATED_AT" type="DATETIME"/>
+            <column name="LIFE_CYCLE_STATUS" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="DESCRIPTION" type="VARCHAR(200)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1727690074154-193" author="voloide">
+        <addColumn tableName="programs">
+            <column name="CODE" type="VARCHAR(255)"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="2024-09-30-update-programs-code" author="voloide">
+        <update tableName="programs">
+            <column name="CODE" value="HIV"/>
+            <where>ID = 1</where>
+        </update>
+        <update tableName="programs">
+            <column name="CODE" value="TB"/>
+            <where>ID = 2</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="1727690074154-194" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(255)" columnName="CODE" tableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-196" author="voloide">
+        <addColumn tableName="questions">
+            <column name="PROGRAM_ID" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1727690074154-197" author="voloide">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="PROGRAM_ID" tableName="questions"/>
+    </changeSet>
+    <changeSet id="1727690074154-198" author="voloide">
+        <addColumn tableName="forms_questions">
+            <column name="SECTION_ID" type="BIGINT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1727690074154-199" author="voloide">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="SECTION_ID" tableName="forms_questions"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-201" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_authority_uuid" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-202" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_cabinets_uuid" tableName="cabinets"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-205" author="voloide">
+        <addUniqueConstraint columnNames="DISTRICT" constraintName="uc_districts_district" tableName="districts"/>
+    </changeSet>
+    <changeSet id="1727690074154-206" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_districts_uuid" tableName="districts"/>
+    </changeSet>
+    <changeSet id="1727690074154-207" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_doors_uuid" tableName="doors"/>
+    </changeSet>
+    <changeSet id="1727690074154-208" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_employee_uuid" tableName="employee"/>
+    </changeSet>
+    <changeSet id="1727690074154-209" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_evaluation_type_uuid" tableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-210" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_form_section_uuid" tableName="form_section"/>
+    </changeSet>
+    <changeSet id="1727690074154-211" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_iterations_types_uuid" tableName="iterations_types"/>
+    </changeSet>
+    <changeSet id="1727690074154-212" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_location_uuid" tableName="location"/>
+    </changeSet>
+    <changeSet id="1727690074154-214" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_partners_uuid" tableName="partners"/>
+    </changeSet>
+    <changeSet id="1727690074154-215" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_professional_category_uuid"
+                             tableName="professional_category"/>
+    </changeSet>
+    <changeSet id="1727690074154-216" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_programmatic_areas_uuid"
+                             tableName="programmatic_areas"/>
+    </changeSet>
+    <changeSet id="1727690074154-217" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_programs_uuid" tableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-218" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_question_type_uuid" tableName="question_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-219" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_resources_uuid" tableName="resources"/>
+    </changeSet>
+    <changeSet id="1727690074154-220" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_response_type_uuid" tableName="response_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-221" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_role_authority_uuid" tableName="role_authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-222" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_role_uuid" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-223" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_ronda_mentee_uuid" tableName="ronda_mentee"/>
+    </changeSet>
+    <changeSet id="1727690074154-224" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_ronda_mentor_uuid" tableName="ronda_mentor"/>
+    </changeSet>
+    <changeSet id="1727690074154-225" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_ronda_type_uuid" tableName="ronda_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-226" author="voloide">
+        <addUniqueConstraint columnNames="DESCRIPTION" constraintName="uc_section_description" tableName="section"/>
+    </changeSet>
+    <changeSet id="1727690074154-227" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_section_uuid" tableName="section"/>
+    </changeSet>
+    <changeSet id="1727690074154-228" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_session_status_uuid" tableName="session_status"/>
+    </changeSet>
+    <changeSet id="1727690074154-229" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_settings_uuid" tableName="settings"/>
+    </changeSet>
+    <changeSet id="1727690074154-230" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_times_of_day_uuid" tableName="times_of_day"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-232" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_tutor_programmatic_area_uuid"
+                             tableName="tutor_programmatic_area"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-234" author="voloide">
+        <addUniqueConstraint columnNames="EMPLOYEE_ID" constraintName="uc_tutors_employee" tableName="tutors"/>
+    </changeSet>
+    <changeSet id="1727690074154-235" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_user_role_uuid" tableName="user_role"/>
+    </changeSet>
+    <changeSet id="1727690074154-236" author="voloide">
+        <addUniqueConstraint columnNames="EMPLOYEE_ID" constraintName="uc_users_employee" tableName="users"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-238" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="PROVINCE_ID" baseTableName="districts"
+                                 constraintName="FK_DISTRICTS_ON_PROVINCE" referencedColumnNames="ID"
+                                 referencedTableName="provinces"/>
+    </changeSet>
+    <changeSet id="1727690074154-239" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="PARTNER_ID" baseTableName="forms" constraintName="FK_FORMS_ON_PARTNER"
+                                 referencedColumnNames="ID" referencedTableName="partners"/>
+    </changeSet>
+    <changeSet id="1727690074154-240" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="SECTION_ID" baseTableName="forms_questions"
+                                 constraintName="FK_FORMS_QUESTIONS_ON_SECTION" referencedColumnNames="ID"
+                                 referencedTableName="section"/>
+    </changeSet>
+    <changeSet id="1727690074154-241" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="FORM_ID" baseTableName="form_section"
+                                 constraintName="FK_FORM_SECTION_ON_FORM" referencedColumnNames="ID"
+                                 referencedTableName="forms"/>
+    </changeSet>
+    <changeSet id="1727690074154-242" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="SECTION_ID" baseTableName="form_section"
+                                 constraintName="FK_FORM_SECTION_ON_SECTION" referencedColumnNames="ID"
+                                 referencedTableName="section"/>
+    </changeSet>
+    <changeSet id="1727690074154-243" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="ITERATION_TYPE_ID" baseTableName="mentorships"
+                                 constraintName="FK_MENTORSHIPS_ON_ITERATION_TYPE" referencedColumnNames="ID"
+                                 referencedTableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-244" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="PROGRAM_ID" baseTableName="questions"
+                                 constraintName="FK_QUESTIONS_ON_PROGRAM" referencedColumnNames="ID"
+                                 referencedTableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-245" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="RONDA_ID" baseTableName="sessions"
+                                 constraintName="FK_SESSIONS_ON_RONDA" referencedColumnNames="ID"
+                                 referencedTableName="rondas"/>
+    </changeSet>
+    <changeSet id="1727690074154-250" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="role_id" baseTableName="user_role"
+                                 constraintName="FK_USER_ROLE_ON_ROLE" referencedColumnNames="ID"
+                                 referencedTableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-251" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="user_id" baseTableName="user_role"
+                                 constraintName="FK_USER_ROLE_ON_USER" referencedColumnNames="ID"
+                                 referencedTableName="users"/>
+    </changeSet>
+    <changeSet id="1727690074154-272" author="voloide">
+        <dropTable cascadeConstraints="true" tableName="TUTOR_PROGRAMATIC_AREA"/>
+    </changeSet>
+    <changeSet id="1727690074154-273" author="voloide">
+        <dropTable cascadeConstraints="true" tableName="question_categories"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-277" author="voloide">
+        <dropColumn columnName="FORM_TYPE" tableName="forms"/>
+    </changeSet>
+    <changeSet id="1727690074154-278" author="voloide">
+        <dropColumn columnName="QUESTION_CATEGORY_ID" tableName="questions"/>
+    </changeSet>
+    <changeSet id="1727690074154-281" author="voloide">
+        <dropColumn columnName="VERSION" tableName="tutoreds"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-2" author="voloide">
+        <modifyDataType columnName="CODE" newDataType="VARCHAR(50)" tableName="forms"/>
+    </changeSet>
+    <changeSet id="1727690074154-3" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="CODE" tableName="forms" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-4" author="voloide">
+        <modifyDataType columnName="CODE" newDataType="VARCHAR(50)" tableName="questions"/>
+    </changeSet>
+    <changeSet id="1727690074154-5" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="CODE" tableName="questions" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-6" author="voloide">
+        <modifyDataType columnName="CODE" newDataType="VARCHAR(50)" tableName="ronda_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-7" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-8" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="doors"/>
+    </changeSet>
+    <changeSet id="1727690074154-9" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="employee"/>
+    </changeSet>
+    <changeSet id="1727690074154-10" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-11" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="iterations_types"/>
+    </changeSet>
+    <changeSet id="1727690074154-12" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="location"/>
+    </changeSet>
+    <changeSet id="1727690074154-13" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="professional_category"/>
+    </changeSet>
+    <changeSet id="1727690074154-14" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-15" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="provinces"/>
+    </changeSet>
+    <changeSet id="1727690074154-16" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="question_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-17" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="resources"/>
+    </changeSet>
+    <changeSet id="1727690074154-18" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="response_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-19" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-20" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="role_authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-21" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="ronda_mentee"/>
+    </changeSet>
+    <changeSet id="1727690074154-22" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="ronda_mentor"/>
+    </changeSet>
+    <changeSet id="1727690074154-23" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="ronda_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-24" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="rondas"/>
+    </changeSet>
+    <changeSet id="1727690074154-25" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="session_status"/>
+    </changeSet>
+    <changeSet id="1727690074154-26" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="times_of_day"/>
+    </changeSet>
+    <changeSet id="1727690074154-27" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="user_role"/>
+    </changeSet>
+    <changeSet id="1727690074154-28" author="voloide">
+        <modifyDataType columnName="CREATED_BY" newDataType="VARCHAR(50)" tableName="users"/>
+    </changeSet>
+    <changeSet id="1727690074154-29" author="voloide">
+        <modifyDataType columnName="DEMONSTRATION_DETAILS" newDataType="VARCHAR(255)" tableName="mentorships"/>
+    </changeSet>
+    <changeSet id="1727690074154-30" author="voloide">
+        <modifyDataType columnName="DESCRIPTION" newDataType="VARCHAR(255)" tableName="settings"/>
+    </changeSet>
+    <changeSet id="1727690074154-31" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(255)" columnName="DESCRIPTION" tableName="programmatic_areas"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-32" author="voloide">
+        <modifyDataType columnName="DESCRIPTION" newDataType="VARCHAR(255)" tableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-33" author="voloide">
+        <modifyDataType columnName="DESCRIPTION" newDataType="VARCHAR(100)" tableName="ronda_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-34" author="voloide">
+        <modifyDataType columnName="DESCRIPTION" newDataType="VARCHAR(100)" tableName="rondas"/>
+    </changeSet>
+    <changeSet id="1727690074154-35" author="voloide">
+        <modifyDataType columnName="DESIGNATION" newDataType="VARCHAR(255)" tableName="settings"/>
+    </changeSet>
+    <changeSet id="1727690074154-36" author="voloide">
+        <modifyDataType columnName="DESIGNATION" newDataType="VARCHAR(50)" tableName="provinces"/>
+    </changeSet>
+    <changeSet id="1727690074154-37" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="DESIGNATION" tableName="provinces"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="2024-09-30-update-settings-enabled" author="voloide">
+        <update tableName="settings">
+            <column name="ENABLED" value="1"/>
+            <where>ID = 35</where>
+        </update>
+        <update tableName="settings">
+            <column name="ENABLED" value="1"/>
+            <where>ID = 37</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="1727690074154-40" author="voloide">
+        <addNotNullConstraint columnDataType="BOOLEAN" columnName="ENABLED" tableName="settings" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-41" author="voloide">
+        <addNotNullConstraint columnDataType="DATETIME" columnName="END_DATE" tableName="sessions" validate="true"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-46" author="voloide">
+        <addAutoIncrement columnDataType="bigint" columnName="ID" tableName="session_recommended_resource"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-48" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-49" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="doors"/>
+    </changeSet>
+    <changeSet id="1727690074154-50" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="employee"/>
+    </changeSet>
+    <changeSet id="1727690074154-51" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-52" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="iterations_types"/>
+    </changeSet>
+    <changeSet id="1727690074154-53" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="location"/>
+    </changeSet>
+    <changeSet id="1727690074154-54" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="professional_category"/>
+    </changeSet>
+    <changeSet id="1727690074154-55" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-56" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="provinces"/>
+    </changeSet>
+    <changeSet id="1727690074154-57" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="question_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-58" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="resources"/>
+    </changeSet>
+    <changeSet id="1727690074154-59" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="response_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-60" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-61" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="role_authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-62" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="ronda_mentee"/>
+    </changeSet>
+    <changeSet id="1727690074154-63" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="ronda_mentor"/>
+    </changeSet>
+    <changeSet id="1727690074154-64" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="ronda_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-65" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="rondas"/>
+    </changeSet>
+    <changeSet id="1727690074154-66" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="session_status"/>
+    </changeSet>
+    <changeSet id="1727690074154-67" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="times_of_day"/>
+    </changeSet>
+    <changeSet id="1727690074154-68" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="user_role"/>
+    </changeSet>
+    <changeSet id="1727690074154-69" author="voloide">
+        <modifyDataType columnName="LIFE_CYCLE_STATUS" newDataType="VARCHAR(100)" tableName="users"/>
+    </changeSet>
+    <changeSet id="1727690074154-70" author="voloide">
+        <modifyDataType columnName="LOCATION_LEVEL" newDataType="VARCHAR(80)" tableName="location"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-74" author="voloide">
+        <modifyDataType columnName="NAME" newDataType="VARCHAR(50)" tableName="programs"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-77" author="voloide">
+        <addNotNullConstraint columnDataType="INT" columnName="NUIT" tableName="employee" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-78" author="voloide">
+        <modifyDataType columnName="OBSERVATIONS" newDataType="VARCHAR(255)" tableName="sessions"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-81" author="voloide">
+        <modifyDataType columnName="PASSWORD" newDataType="VARCHAR(500)" tableName="users"/>
+    </changeSet>
+    <changeSet id="1727690074154-82" author="voloide">
+        <dropColumn columnName="PERFORMED_DATE" tableName="mentorships"/>
+    </changeSet>
+    <changeSet id="1727690074154-83" author="voloide">
+        <addColumn tableName="mentorships">
+            <column name="PERFORMED_DATE" type="DATETIME">
+                <constraints nullable="false" validateNullable="true"/>
+            </column>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1727690074154-84" author="voloide">
+        <dropColumn columnName="PERFORMED_DATE" tableName="sessions"/>
+    </changeSet>
+    <changeSet id="1727690074154-85" author="voloide">
+        <addColumn tableName="sessions">
+            <column name="PERFORMED_DATE" type="DATETIME"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1727690074154-86" author="voloide">
+        <modifyDataType columnName="POINTS_TO_IMPROVE" newDataType="VARCHAR(555)" tableName="sessions"/>
+    </changeSet>
+    <changeSet id="1727690074154-87" author="voloide">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="PROGRAM_ID" tableName="programmatic_areas"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-88" author="voloide">
+        <addNotNullConstraint columnDataType="BIGINT" columnName="PROVINCE_ID" tableName="districts" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-89" author="voloide">
+        <modifyDataType columnName="QUESTION" newDataType="VARCHAR(1000)" tableName="questions"/>
+    </changeSet>
+    <changeSet id="1727690074154-90" author="voloide">
+        <modifyDataType columnName="REFRESH_TOKEN" newDataType="VARCHAR(500)" tableName="refresh_token"/>
+    </changeSet>
+    <changeSet id="1727690074154-91" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(500)" columnName="REFRESH_TOKEN" tableName="refresh_token"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-93" author="voloide">
+        <dropNotNullConstraint columnDataType="bigint" columnName="RONDA_TYPE_ID" tableName="rondas"/>
+    </changeSet>
+    <changeSet id="1727690074154-94" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(500)" columnName="SALT" tableName="users" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-96" author="voloide">
+        <modifyDataType columnName="SETTING_TYPE" newDataType="VARCHAR(255)" tableName="settings"/>
+    </changeSet>
+    <changeSet id="1727690074154-98" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(255)" columnName="SETTING_VALUE" tableName="settings"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-99" author="voloide">
+        <addNotNullConstraint columnDataType="BOOLEAN" columnName="SHOULD_RESET_PASSWORD" tableName="users"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-100" author="voloide">
+        <addNotNullConstraint columnDataType="DATETIME" columnName="START_DATE" tableName="ronda_mentee"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-101" author="voloide">
+        <addNotNullConstraint columnDataType="DATETIME" columnName="START_DATE" tableName="ronda_mentor"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-102" author="voloide">
+        <modifyDataType columnName="STRONG_POINTS" newDataType="VARCHAR(555)" tableName="sessions"/>
+    </changeSet>
+
+    <changeSet id="1727690074154-107" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-108" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="doors"/>
+    </changeSet>
+    <changeSet id="1727690074154-109" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="employee"/>
+    </changeSet>
+    <changeSet id="1727690074154-110" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-111" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="iterations_types"/>
+    </changeSet>
+    <changeSet id="1727690074154-112" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="location"/>
+    </changeSet>
+    <changeSet id="1727690074154-113" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="professional_category"/>
+    </changeSet>
+    <changeSet id="1727690074154-114" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-115" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="provinces"/>
+    </changeSet>
+    <changeSet id="1727690074154-116" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="question_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-117" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="resources"/>
+    </changeSet>
+    <changeSet id="1727690074154-118" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="response_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-119" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-120" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="role_authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-121" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="ronda_mentee"/>
+    </changeSet>
+    <changeSet id="1727690074154-122" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="ronda_mentor"/>
+    </changeSet>
+    <changeSet id="1727690074154-123" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="ronda_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-124" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="rondas"/>
+    </changeSet>
+    <changeSet id="1727690074154-125" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="session_status"/>
+    </changeSet>
+    <changeSet id="1727690074154-126" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="times_of_day"/>
+    </changeSet>
+    <changeSet id="1727690074154-127" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="user_role"/>
+    </changeSet>
+    <changeSet id="1727690074154-128" author="voloide">
+        <modifyDataType columnName="UPDATED_BY" newDataType="VARCHAR(50)" tableName="users"/>
+    </changeSet>
+    <changeSet id="1727690074154-129" author="voloide">
+        <modifyDataType columnName="USERNAME" newDataType="VARCHAR(250)" tableName="users"/>
+    </changeSet>
+    <changeSet id="1727690074154-130" author="voloide">
+        <modifyDataType columnName="USER_NAME" newDataType="VARCHAR(100)" tableName="refresh_token"/>
+    </changeSet>
+    <changeSet id="1727690074154-131" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="answers" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-132" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-133" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="doors"/>
+    </changeSet>
+    <changeSet id="1727690074154-134" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="employee"/>
+    </changeSet>
+    <changeSet id="1727690074154-135" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-136" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="forms" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-137" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="forms_questions"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-138" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="health_facilities"
+                              validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-139" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="iterations_types"/>
+    </changeSet>
+    <changeSet id="1727690074154-140" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="location"/>
+    </changeSet>
+    <changeSet id="1727690074154-141" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="mentorships" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-142" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="professional_category"/>
+    </changeSet>
+    <changeSet id="1727690074154-143" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="programs"/>
+    </changeSet>
+    <changeSet id="1727690074154-144" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="provinces"/>
+    </changeSet>
+    <changeSet id="1727690074154-145" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="question_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-146" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="questions" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-147" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="resources"/>
+    </changeSet>
+    <changeSet id="1727690074154-148" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="response_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-149" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-150" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="role_authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-151" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="ronda_mentee"/>
+    </changeSet>
+    <changeSet id="1727690074154-152" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="ronda_mentor"/>
+    </changeSet>
+    <changeSet id="1727690074154-153" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="ronda_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-154" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="rondas" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-155" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="session_status"/>
+    </changeSet>
+    <changeSet id="1727690074154-156" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="sessions" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-157" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="times_of_day"/>
+    </changeSet>
+    <changeSet id="1727690074154-158" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="tutoreds" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-159" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="tutors" validate="true"/>
+    </changeSet>
+    <changeSet id="1727690074154-160" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="user_role"/>
+    </changeSet>
+    <changeSet id="1727690074154-161" author="voloide">
+        <modifyDataType columnName="UUID" newDataType="VARCHAR(50)" tableName="users"/>
+    </changeSet>
+    <changeSet id="1727690074154-162" author="voloide">
+        <modifyDataType columnName="VALUE" newDataType="VARCHAR(255)" tableName="answers"/>
+    </changeSet>
+    <changeSet id="1727690074154-163" author="voloide">
+        <modifyDataType columnName="WORK_PLAN" newDataType="VARCHAR(555)" tableName="sessions"/>
+    </changeSet>
+    <changeSet id="1727690074154-164" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-165" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="doors"/>
+    </changeSet>
+    <changeSet id="1727690074154-166" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-167" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="iterations_types"/>
+    </changeSet>
+    <changeSet id="1727690074154-168" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="professional_category"/>
+    </changeSet>
+    <changeSet id="1727690074154-169" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="question_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-170" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="response_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-171" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-172" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="session_status"/>
+    </changeSet>
+    <changeSet id="1727690074154-173" author="voloide">
+        <modifyDataType columnName="code" newDataType="VARCHAR(255)" tableName="times_of_day"/>
+    </changeSet>
+    <changeSet id="1727690074154-174" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-175" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="doors"/>
+    </changeSet>
+    <changeSet id="1727690074154-176" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-177" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="iterations_types"/>
+    </changeSet>
+    <changeSet id="1727690074154-178" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="professional_category"/>
+    </changeSet>
+    <changeSet id="1727690074154-179" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="question_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-180" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="response_type"/>
+    </changeSet>
+    <changeSet id="1727690074154-181" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-182" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="session_status"/>
+    </changeSet>
+    <changeSet id="1727690074154-183" author="voloide">
+        <modifyDataType columnName="description" newDataType="VARCHAR(255)" tableName="times_of_day"/>
+    </changeSet>
+    <changeSet id="1727690074154-184" author="voloide">
+        <modifyDataType columnName="level" newDataType="VARCHAR(255)" tableName="role"/>
+    </changeSet>
+    <changeSet id="1727690074154-185" author="voloide">
+        <modifyDataType columnName="module" newDataType="VARCHAR(255)" tableName="authority"/>
+    </changeSet>
+    <changeSet id="1727690074154-186" author="voloide">
+        <modifyDataType columnName="notification_status" newDataType="VARCHAR(255)"
+                        tableName="session_recommended_resource"/>
+    </changeSet>
+
+</databaseChangeLog>

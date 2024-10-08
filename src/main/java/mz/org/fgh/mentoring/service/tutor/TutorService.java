@@ -3,12 +3,14 @@ package mz.org.fgh.mentoring.service.tutor;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutorProgrammaticArea.TutorProgrammaticAreaDTO;
+import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
+import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
@@ -18,6 +20,7 @@ import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailSender;
 
 import javax.transaction.Transactional;
+import java.text.Normalizer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -39,6 +42,8 @@ public class TutorService {
     private EmailSender emailSender;
 
     private EmployeeService employeeService;
+    @Inject
+    private SettingsRepository settingsRepository;
 
     public TutorService(TutorRepository tutorRepository, UserRepository userRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository, EmployeeService employeeService) {
         this.tutorRepository = tutorRepository;
@@ -77,23 +82,42 @@ public class TutorService {
         try {
             String password = Utilities.generateRandomPassword(8);
             User user = new User();
-            String[] partesNames = tutor.getEmployee().getName().toLowerCase().split(" ");
-            String[] partesSunNames = tutor.getEmployee().getSurname().toLowerCase().split(" ");
-            String username = partesNames[0]+"."+partesSunNames[partesSunNames.length - 1];
+            String[] partesNames = tutor.getEmployee().getName().trim().toLowerCase().split(" ");
+            String[] partesSunNames = tutor.getEmployee().getSurname().trim().toLowerCase().split(" ");
+
+            // Gerar o username base e limpar os caracteres especiais e acentos
+            String username = partesNames[0] + "." + partesSunNames[partesSunNames.length - 1];
+            username = normalizeAndClean(username);
             username = generateUserName(username);
+
             user.setUsername(username);
             user.setEmployee(tutor.getEmployee());
-            user.setSalt(UUID.randomUUID().toString());
-            user.setPassword(Utilities.MD5Crypt(user.getSalt()+":"+password));
+            user.setSalt(Utilities.generateSalt());
+            user.setPassword(Utilities.encryptPassword(password,user.getSalt()));
             user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
             user.setUuid(UUID.randomUUID().toString());
             user.setCreatedBy(creator.getUuid());
             user.setCreatedAt(DateUtils.getCurrentDate());
             userRepository.save(user);
-            emailSender.sendEmailToUser(user, password);
+
+            Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
+
+            if (!settingOpt.isPresent()) {
+                throw new RuntimeException("Server URL not configured");
+            }
+            emailSender.sendEmailToUser(user, password, settingOpt.get().getValue());
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // Método para normalizar o texto (remover acentos e caracteres especiais)
+    private String normalizeAndClean(String input) {
+        // Remove acentos
+        String normalized = Normalizer.normalize(input, Normalizer.Form.NFD).replaceAll("[\\p{InCombiningDiacriticalMarks}]", "");
+
+        // Remove caracteres especiais (mantendo apenas letras, números e ponto)
+        return normalized.replaceAll("[^a-zA-Z0-9.]", "");
     }
 
     private String generateUserName(String username) {
@@ -101,11 +125,12 @@ public class TutorService {
 
         if (optionalUser.isPresent()) {
             Random random = new Random();
-            username += random.nextInt(101);
-            generateUserName(username);
+            username += random.nextInt(1000);  // Gerar um número entre 0 e 999 para evitar colisões.
+            return generateUserName(username); // Retorna o resultado da chamada recursiva.
         }
         return username;
     }
+
 
 
     public List<Tutor> findTutorWithLimit(long limit, long offset){

@@ -29,6 +29,7 @@ public class SessionDTO extends BaseEntityDTO {
     private String workPlan;
     private String observations;
     private List<MentorshipDTO> mentorships;
+    private Date nextSessionDate;
 
     @Creator
     public SessionDTO() {
@@ -42,6 +43,7 @@ public class SessionDTO extends BaseEntityDTO {
         this.setPointsToImprove(session.getPointsToImprove());
         this.setStrongPoints(session.getStrongPoints());
         this.setObservations(session.getObservations());
+        this.setNextSessionDate(session.getNextSessionDate());
         if(session.getStatus()!=null) {
             this.setSessionStatus(new SessionStatusDTO(session.getStatus()));
         }

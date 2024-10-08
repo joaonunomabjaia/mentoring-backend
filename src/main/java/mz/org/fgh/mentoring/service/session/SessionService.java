@@ -5,6 +5,7 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.base.BaseService;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.session.Session;
+import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
@@ -12,9 +13,11 @@ import mz.org.fgh.mentoring.repository.mentorship.MentorshipRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.repository.session.SessionStatusRepository;
+import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import mz.org.fgh.util.EmailService;
@@ -49,6 +52,9 @@ public class SessionService extends BaseService {
     private EmailService emailService;
 
     @Inject
+    private SettingsRepository settingsRepository;
+
+
     public SessionService(SessionRepository sessionRepository, RondaRepository rondaRepository,
                           AnswerRepository answerRepository, MentorshipRepository mentorshipRepository,
                           UserRepository userRepository, SessionStatusRepository sessionStatusRepository,
@@ -128,19 +134,25 @@ public class SessionService extends BaseService {
 
         if (!Utilities.listHasElements(sessions)) return;
 
+        Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
+
+        if (!settingOpt.isPresent()) {
+            throw new RuntimeException("Server URL not configured");
+        }
         for (Session session : sessions){
 
             try {
                 String htmlTemplate = emailService.loadHtmlTemplate("emailNotificationTemplate");
 
                 Map<String, String> variables = new HashMap<>();
+                variables.put("serverUrl", settingOpt.get().getValue());
                 variables.put("menteesName", session.getMentee().getEmployee().getFullName());
-                variables.put("mentorName", session.getRonda().getRondaMentors().get(0).getMentor().getEmployee().getFullName());
-                variables.put("date", session.getStartDate().toString() );
+                variables.put("mentorName", session.getRonda().getActiveMentor().getEmployee().getFullName());
+                variables.put("date", DateUtils.formatToDDMMYYYY(session.getNextSessionDate()));
 
                 String populatedHtml = emailService.populateTemplateVariables(htmlTemplate, variables);
 
-                emailService.sendEmail(session.getMentee().getEmployee().getEmail(), "Notificacão de Sessão de Mentoria Agendada", populatedHtml); // Send an email for the resource
+                emailService.sendEmail(session.getMentee().getEmployee().getEmail(), "Notificação de Sessão de Mentoria Agendada", populatedHtml); // Send an email for the resource
 
             } catch (Exception e) {
                 throw new RuntimeException(e);

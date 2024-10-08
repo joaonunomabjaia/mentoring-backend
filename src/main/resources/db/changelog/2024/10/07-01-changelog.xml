@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.18.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1728282654531-7" author="voloide">
+        <createTable tableName="form_section_questions">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_form_section_questions"/>
+            </column>
+            <column name="UUID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="VARCHAR(50)"/>
+            <column name="UPDATED_AT" type="DATETIME"/>
+            <column name="LIFE_CYCLE_STATUS" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="FORM_SECTION_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="QUESTION_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="RESPONSE_TYPE_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="EVALUATION_TYPE_ID" type="BIGINT">
+                <constraints nullable="false"/>
+            </column>
+            <column name="SEQUENCE" type="INT"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1728282654531-8" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_form_section_questions_uuid"
+                             tableName="form_section_questions"/>
+    </changeSet>
+    <changeSet id="1728282654531-13" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="EVALUATION_TYPE_ID" baseTableName="form_section_questions"
+                                 constraintName="FK_FORM_SECTION_QUESTIONS_ON_EVALUATION_TYPE"
+                                 referencedColumnNames="ID" referencedTableName="evaluation_type"/>
+    </changeSet>
+    <changeSet id="1728282654531-14" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="FORM_SECTION_ID" baseTableName="form_section_questions"
+                                 constraintName="FK_FORM_SECTION_QUESTIONS_ON_FORM_SECTION" referencedColumnNames="ID"
+                                 referencedTableName="form_section"/>
+    </changeSet>
+    <changeSet id="1728282654531-15" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="QUESTION_ID" baseTableName="form_section_questions"
+                                 constraintName="FK_FORM_SECTION_QUESTIONS_ON_QUESTION" referencedColumnNames="ID"
+                                 referencedTableName="questions"/>
+    </changeSet>
+    <changeSet id="1728282654531-16" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="RESPONSE_TYPE_ID" baseTableName="form_section_questions"
+                                 constraintName="FK_FORM_SECTION_QUESTIONS_ON_RESPONSE_TYPE" referencedColumnNames="ID"
+                                 referencedTableName="response_type"/>
+    </changeSet>
+    <changeSet id="1728282654531-27" author="voloide">
+        <dropTable cascadeConstraints="true" tableName="forms_questions"/>
+    </changeSet>
+    <changeSet id="1728282654531-1" author="voloide">
+        <modifyDataType columnName="CODE" newDataType="VARCHAR(50)" tableName="forms"/>
+    </changeSet>
+    <changeSet id="1728282654531-2" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="CODE" tableName="forms" validate="true"/>
+    </changeSet>
+    <changeSet id="1728282654531-4" author="voloide">
+        <addNotNullConstraint columnDataType="INT" columnName="TARGET_PATIENT" tableName="forms" validate="true"/>
+    </changeSet>
+    <changeSet id="1728282654531-5" author="voloide">
+        <addNotNullConstraint columnDataType="VARCHAR(50)" columnName="UUID" tableName="forms" validate="true"/>
+    </changeSet>
+</databaseChangeLog>

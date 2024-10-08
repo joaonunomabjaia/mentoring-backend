@@ -1,55 +1,46 @@
 package mz.org.fgh.mentoring.dto.question;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-
 import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
+import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.entity.question.QuestionCategory;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import mz.org.fgh.mentoring.util.Utilities;
 
+import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 
 @Data
 @AllArgsConstructor
 public class QuestionDTO extends BaseEntityDTO implements Serializable {
 
+    @NotEmpty(message = "Code cannot be empty")
+    @Size(max = 50, message = "Code cannot exceed 50 characters")
     private String code;
 
-    private String question;
-    
-    @Creator
-    public QuestionDTO(){}
+    @NotEmpty(message = "Table Code cannot be empty")
+    @Size(max = 50, message = "Table Code cannot exceed 50 characters")
+    private String tableCode;
 
-    @JsonProperty(value = "questionCategory")
-    private QuestionCategoryDTO questionCategoryDTO;
+    @NotEmpty(message = "Question cannot be empty")
+    @Size(max = 1000, message = "Question cannot exceed 1000 characters")
+    private String question;
+
+    @JsonProperty(value = "program")
+    private ProgramDTO programDTO;
+
+    @Creator
+    public QuestionDTO() {}
 
     public QuestionDTO(Question question) {
         super(question);
         this.setCode(question.getCode());
+        this.setTableCode(question.getTableCode());
         this.setQuestion(question.getQuestion());
-        if(question.getQuestionCategory()!=null) {
-            this.setQuestionCategoryDTO(new QuestionCategoryDTO(question.getQuestionCategory()));
+        if (question.getProgram() != null) {
+            this.setProgramDTO(new ProgramDTO(question.getProgram()));
         }
     }
-
-    public Question toQuestion() {
-        Question question = new Question();
-        question.setQuestion(this.getQuestion());
-        question.setCode(this.getCode());
-        question.setId(this.getId());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) question.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        question.setUuid(this.getUuid());
-        question.setCreatedAt(this.getCreatedAt());
-        question.setUpdatedAt(this.getUpdatedAt());
-        if (this.getQuestionCategoryDTO()!=null) question.setQuestionCategory(new QuestionCategory(this.getQuestionCategoryDTO()));
-        return question;
-    }
-
-
 }
-

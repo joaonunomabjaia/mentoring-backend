@@ -2,6 +2,8 @@ package mz.org.fgh.mentoring.controller.form;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -11,7 +13,6 @@ import io.micronaut.http.annotation.Get;
 import io.micronaut.http.annotation.Patch;
 import io.micronaut.http.annotation.PathVariable;
 import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.Put;
 import io.micronaut.http.annotation.QueryValue;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
@@ -22,8 +23,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.api.RestAPIResponse;
-import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
@@ -33,117 +32,31 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.FORM_CONTROLLER)
-public class FormController extends BaseController {
+@Tag(name = "Form", description = "Form API for managing forms")
+public class FormController {
 
     @Inject
     FormService formService;
-   public FormController(){
-    }
+    public FormController() {}
 
-    public static final Logger LOG = LoggerFactory
-            .getLogger(FormController.class);
+    public static final Logger LOG = LoggerFactory.getLogger(FormController.class);
 
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Get("/form/{limit}/{offset}")
-    public List<FormDTO> getAll(@PathVariable("limit") long limit, @PathVariable("offset") long offset) {
-        LOG.debug("Searching forms version 2");
-        return formService.findAll(limit, offset);
-    }
-
-    @Get("/getById/{id}")
-    public Optional<Form> findById(@PathVariable("id") Long id){
-        return formService.findById(id);
-    }
-
-    @Get("/sample-forms")
-    public List<FormDTO> findSampleIndicatorForms(){
-      return  this.formService.findSampleIndicatorForms();
-    }
-
-    @Operation(summary = "Return a list of forms for the listed params")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Get("/search")
-    @Tag(name = "Form")
-    public List<FormDTO> findBySelectedFilter(@Nullable @QueryValue("code") String code,
-                                              @Nullable @QueryValue("name") String name,
-                                              @Nullable @QueryValue("program") String program,
-                                              @Nullable @QueryValue("programmaticAreaCode") String programmaticAreaCode){
-        return this.formService.findBySelectedFilter(code==null? StringUtils.EMPTY:code,
-                                                    name==null? StringUtils.EMPTY:name,
-                                                    programmaticAreaCode==null? StringUtils.EMPTY:programmaticAreaCode,
-                                                    program==null?StringUtils.EMPTY:program);
-    }
-
-    @Get("/programaticarea/{progrArea}")
-    public List<FormDTO> findFormByProgrammaticAreaUuid(@PathVariable("progrArea") String progrArea){
-
-        return this.formService.findFormByProgrammaticAreaUuid(progrArea);
-    }
-
-    @Get("/getByTutorUuidd/{tutorUuid}")
-    public List<FormDTO> getByTutorUuidd(@PathVariable("tutorUuid") String tutorUuid){
-
-        List<Form> forms = this.formService.getByTutorUuid(tutorUuid);
-        if (Utilities.listHasElements(forms)) {
-            try {
-                return Utilities.parseList(forms, FormDTO.class);
-            } catch (InstantiationException | IllegalAccessException | NoSuchMethodException |
-                     InvocationTargetException e) {
-                throw new RuntimeException(e);
-            }
-        }
-        else return new ArrayList<>();
-    }
-
-
-
-    @Post(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON
-    )
-    public Form create (@Body Form form) {
-        LOG.debug("Created form {} ", form);
-        return this.formService.create(form);
-    }
-
-    @Put(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON
-    )
-    public Form update(@Body Form form){
-        LOG.debug("update form {} ", form);
-        return this.formService.update(form);
-    }
-
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Get("/getformsbycodeornameorprogrammaticarea")
-    public List<FormDTO> getFormsByCodeAndNameAndProgrammaticAreaName(
-            @Nullable @QueryValue("code") String code,
-            @Nullable @QueryValue("name") String name,
-            @Nullable @QueryValue("programmaticArea") String programmaticArea
-    ) {
-        List<FormDTO> forms = formService.search(code, name, programmaticArea);;
-        return forms;
-    }
-
-    @Operation(summary = "Save or update a form and its associated objects")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Post("/saveOrUpdate")
-    @Tag(name = "Form")
-    public HttpResponse<RestAPIResponse> saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication){
+    @Operation(summary = "Retrieve all forms with pagination", description = "Fetches all forms with pagination using the Pageable object.")
+    @ApiResponse(responseCode = "200", description = "Forms retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = MediaType.APPLICATION_JSON, schema = @io.swagger.v3.oas.annotations.media.Schema(implementation = MentoringAPIError.class)))
+    @Get("/form")
+    public HttpResponse<?> getAll(@Nullable Pageable pageable) {
         try {
-            formDTO.setCode(null);
-            FormDTO dto = this.formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
-            return HttpResponse.created(dto);
+            Page<FormDTO> forms = formService.findAll(pageable);
+            return HttpResponse.ok(forms);
         } catch (Exception e) {
-            LOG.error(e.getMessage());
+            LOG.error(e.getMessage(), e);
             return HttpResponse.badRequest().body(MentoringAPIError.builder()
                     .status(HttpStatus.BAD_REQUEST.getCode())
                     .error(e.getLocalizedMessage())
@@ -152,21 +65,117 @@ public class FormController extends BaseController {
     }
 
 
-    @Operation(summary = "Update the form LifeCicleStatus")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Operation(summary = "Find form by ID", description = "Retrieves a specific form by its ID.")
+    @ApiResponse(responseCode = "200", description = "Form found")
+    @ApiResponse(responseCode = "404", description = "Form not found")
+    @Get("/getById/{id}")
+    public HttpResponse<?> findById(@PathVariable("id") Long id) {
+        try {
+            Optional<Form> form = formService.findById(id);
+            return form.map(HttpResponse::ok)
+                    .orElse(HttpResponse.notFound());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Search forms with filters", description = "Searches forms based on provided filters: code, name, program, and programmatic area code.")
+    @ApiResponse(responseCode = "200", description = "Forms retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @Get("/search")
+    public HttpResponse<?> findBySelectedFilter(@Nullable @QueryValue("code") String code,
+                                                @Nullable @QueryValue("name") String name,
+                                                @Nullable @QueryValue("program") String program,
+                                                @Nullable @QueryValue("programmaticAreaCode") String programmaticAreaCode) {
+        try {
+            List<FormDTO> forms = formService.findBySelectedFilter(
+                    StringUtils.defaultString(code),
+                    StringUtils.defaultString(name),
+                    StringUtils.defaultString(program),
+                    StringUtils.defaultString(programmaticAreaCode));
+            return HttpResponse.ok(forms);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Find forms by programmatic area UUID", description = "Retrieves forms associated with the given programmatic area UUID.")
+    @ApiResponse(responseCode = "200", description = "Forms retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @Get("/programaticarea/{progrArea}")
+    public HttpResponse<?> findFormByProgrammaticAreaUuid(@PathVariable("progrArea") String progrArea) {
+        try {
+            List<FormDTO> forms = formService.findFormByProgrammaticAreaUuid(progrArea);
+            return HttpResponse.ok(forms);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Find forms by tutor UUID", description = "Retrieves forms associated with the given tutor UUID.")
+    @ApiResponse(responseCode = "200", description = "Forms retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @Get("/getByTutorUuidd/{tutorUuid}")
+    public HttpResponse<?> getByTutorUuidd(@PathVariable("tutorUuid") String tutorUuid) {
+        try {
+            List<Form> forms = formService.getByTutorUuid(tutorUuid);
+            if (Utilities.listHasElements(forms)) {
+                return HttpResponse.ok(Utilities.parseList(forms, FormDTO.class));
+            }
+            return HttpResponse.ok(new ArrayList<>());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Save or update a form", description = "Saves a new form or updates an existing one.")
+    @ApiResponse(responseCode = "201", description = "Form saved or updated successfully")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @Post("/saveOrUpdate")
+    public HttpResponse<?> saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication) {
+        try {
+            FormDTO savedForm = formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
+            LOG.info("Created form {}", savedForm);
+            return HttpResponse.created(savedForm);
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Update the form life cycle status", description = "Updates the life cycle status of a form.")
+    @ApiResponse(responseCode = "200", description = "Form status updated successfully")
+    @ApiResponse(responseCode = "400", description = "Bad request")
     @Patch("/changeLifeCicleStatus")
-    @Tag(name = "Form")
-    public FormDTO changeLifeCicleStatus(@NonNull @Body FormDTO formDTO, Authentication authentication){
-        Form f = this.formService.updateLifeCycleStatus(formDTO.toForm(), (Long) authentication.getAttributes().get("userInfo"));
-        return new FormDTO(f);
+    public HttpResponse<?> changeLifeCicleStatus(@NonNull @Body FormDTO formDTO, Authentication authentication) {
+        try {
+            Form updatedForm = formService.updateLifeCycleStatus(formDTO.toForm(), (Long) authentication.getAttributes().get("userInfo"));
+            return HttpResponse.ok(new FormDTO(updatedForm));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
     }
-
-    @Operation(summary = "Return a list of forms for the listed params")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Get("/getall")
-    @Tag(name = "Form")
-    public List<FormDTO> getFormsByPartner(@Nullable @QueryValue("partnerId") Long partnerId){
-        return this.formService.getFormsByPartnerId(partnerId);
-    }
-
 }

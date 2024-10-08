@@ -49,7 +49,6 @@ dependencies {
     implementation("com.sun.mail:jakarta.mail:1.6.7")
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'commons-io:commons-io:2.11.0'
-    implementation ("org.jsoup:jsoup:1.15.3")
 
     // Runtime Only Dependencies
     runtimeOnly("ch.qos.logback:logback-classic")
@@ -58,6 +57,11 @@ dependencies {
 
     // Compile Only Dependencies
     compileOnly("org.projectlombok:lombok")
+
+    testImplementation("org.mockito:mockito-core:4.11.0")  // Add Mockito core
+    testImplementation("org.mockito:mockito-junit-jupiter:4.11.0")  // Add Mockito JUnit 5 integration
+    testImplementation("io.micronaut:micronaut-http-client") // Ensure HttpClient for tests is included
+
 }
 
 tasks.register('nativeImage', Exec) {

@@ -19,6 +19,7 @@ public class ProgramDTO extends BaseEntityDTO implements Serializable {
     private Long id;
     private String name;
     private String description;
+    private String code;
 
     @Creator
     public ProgramDTO () {
@@ -29,5 +30,6 @@ public class ProgramDTO extends BaseEntityDTO implements Serializable {
         super(program);
         this.setDescription(program.getDescription());
         this.setName(program.getName());
+        this.setCode(program.getCode());
     }
 }

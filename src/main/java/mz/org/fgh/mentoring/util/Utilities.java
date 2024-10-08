@@ -1,14 +1,16 @@
 package mz.org.fgh.mentoring.util;
 
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
+import java.security.spec.KeySpec;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -127,23 +129,6 @@ public class Utilities {
         return array;
     }
 
-    public Character parseToCharacter(char chr){
-        return new Character(chr);
-    }
-
-    public Character[] parseToCharacter(char ... toParse){
-        Character[] parsed = new Character[toParse.length];
-
-        int i = 0;
-
-        for (char chr : toParse){
-            parsed[i] = parseToCharacter(chr);
-            i++;
-        }
-
-        return parsed;
-    }
-
     /**
      * Verifica se uma determinada {@link List} contem todos os elementos passados pelo parametro
      *
@@ -172,26 +157,6 @@ public class Utilities {
         int pos = getPosOfElementOnList(list, toFind);
 
         return pos >= 0 ? list.get(pos) : null;
-    }
-
-    public static String MD5Crypt(String str) throws NoSuchAlgorithmException {
-        if (str == null || str.length() == 0) {
-            throw new IllegalArgumentException("String to encript cannot be null or zero length");
-        }
-
-        MessageDigest digester = MessageDigest.getInstance("MD5");;
-
-        digester.update(str.getBytes());
-        byte[] hash = digester.digest();
-        StringBuffer hexString = new StringBuffer();
-        for (int i = 0; i < hash.length; i++) {
-            if ((0xff & hash[i]) < 0x10) {
-                hexString.append("0" + Integer.toHexString((0xFF & hash[i])));
-            } else {
-                hexString.append(Integer.toHexString(0xFF & hash[i]));
-            }
-        }
-        return hexString.toString();
     }
 
     private static final String CHARACTERS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -224,5 +189,38 @@ public class Utilities {
     public static BigDecimal roundToOneDecimalPlace(Number number) {
         BigDecimal bd = new BigDecimal(number.doubleValue());
         return bd.setScale(1, RoundingMode.HALF_UP);
+    }
+
+    /**
+     * Generates a PBKDF2WithHmacSHA256 hash of password and salt and returns it as a Base64-encoded string.
+     * @param password the password to encrypt
+     * @param salt random string that should be used to salt the password
+     * @return Base64-encoded string of hash
+     */
+    public static String encryptPassword(String password, String salt) {
+        final String algorithm = "PBKDF2WithHmacSHA256";
+        final int iterations = 10000;
+        final int keyLength = 256;
+
+        try {
+            KeySpec spec = new PBEKeySpec(password.toCharArray(), salt.getBytes(), iterations, keyLength);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance(algorithm);
+            byte[] hash = factory.generateSecret(spec).getEncoded();
+
+            return Base64.getEncoder().encodeToString(hash);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Generates a random salt.
+     * @return Base64-encoded string of random salt
+     */
+    public static String generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
     }
 }
