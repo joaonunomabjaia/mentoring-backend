@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.service.form.FormQuestionService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
@@ -35,27 +35,27 @@ import java.util.Optional;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.FORM_QUESTION_CONTROLLER)
-@Tag(name = "FormQuestion", description = "Operations related to FormQuestions")
-public class FormQuestionController extends BaseController {
+@Tag(name = "FormSectionQuestion", description = "Operations related to FormSectionQuestion")
+public class FormSectionQuestionController extends BaseController {
 
     @Inject
     FormQuestionService formQuestionService;
     @Inject
     TutorService tutorService;
 
-    public FormQuestionController() {}
+    public FormSectionQuestionController() {}
 
-    public static final Logger LOG = LoggerFactory.getLogger(FormQuestionController.class);
+    public static final Logger LOG = LoggerFactory.getLogger(FormSectionQuestionController.class);
 
     @Operation(summary = "Retrieve paginated FormQuestions", description = "Fetches paginated FormQuestions using the Pageable object.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved FormQuestions")
     @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Get
-    public HttpResponse<Page<FormQuestionDTO>> getAll(@Nullable Pageable pageable) {
+    public HttpResponse<Page<FormSectionQuestionDTO>> getAll(@Nullable Pageable pageable) {
         LOG.debug("Searching paginated FormQuestions");
         try {
             Page<FormSectionQuestion> formQuestions = formQuestionService.findAll(pageable);
-            Page<FormQuestionDTO> formQuestionDTOs = formQuestions.map(FormQuestionDTO::new); // Convert to DTO
+            Page<FormSectionQuestionDTO> formQuestionDTOs = formQuestions.map(FormSectionQuestionDTO::new); // Convert to DTO
             return HttpResponse.ok(formQuestionDTOs);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -76,10 +76,10 @@ public class FormQuestionController extends BaseController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved FormQuestions")
     @ApiResponse(responseCode = "400", description = "Bad request", content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Get("/getByFormId")
-    public HttpResponse<Page<FormQuestionDTO>> findFormQuestionByFormId(@NonNull @QueryValue("formId") Long formId, @Nullable Pageable pageable) {
+    public HttpResponse<Page<FormSectionQuestionDTO>> findFormQuestionByFormId(@NonNull @QueryValue("formId") Long formId, @Nullable Pageable pageable) {
         LOG.debug("Searching paginated FormQuestions for formId: {}", formId);
         try {
-            Page<FormQuestionDTO> formQuestionDTOs = formQuestionService.fetchByForm(formId, pageable); // Convert entities to DTOs
+            Page<FormSectionQuestionDTO> formQuestionDTOs = formQuestionService.fetchByForm(formId, pageable); // Convert entities to DTOs
             return HttpResponse.ok(formQuestionDTOs);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -101,7 +101,7 @@ public class FormQuestionController extends BaseController {
     @ApiResponse(responseCode = "204", description = "FormQuestion removed successfully")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @Patch("/remove")
-    public void remove(@NonNull @QueryValue("formId") Long formId, @Body FormQuestionDTO formQuestionDTO, Authentication authentication) {
+    public void remove(@NonNull @QueryValue("formId") Long formId, @Body FormSectionQuestionDTO formQuestionDTO, Authentication authentication) {
         LOG.debug("Removing FormQuestion with formId: {}", formId);
         formQuestionService.inactivate((Long) authentication.getAttributes().get("userInfo"), formId, formQuestionDTO);
     }
@@ -110,16 +110,16 @@ public class FormQuestionController extends BaseController {
     @ApiResponse(responseCode = "200", description = "Successfully retrieved FormQuestions")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @Get("/getByFormsUuids")
-    public List<FormQuestionDTO> findFormQuestionByFormsUuids(@NonNull @QueryValue("formsUuids") List<String> formsUuids, @QueryValue("offset") Long offset, @QueryValue("limit") Long limit) {
-        return listAsDtos(formQuestionService.fetchByFormsUuids(formsUuids, offset, limit), FormQuestionDTO.class);
+    public List<FormSectionQuestionDTO> findFormQuestionByFormsUuids(@NonNull @QueryValue("formsUuids") List<String> formsUuids, @QueryValue("offset") Long offset, @QueryValue("limit") Long limit) {
+        return listAsDtos(formQuestionService.fetchByFormsUuids(formsUuids, offset, limit), FormSectionQuestionDTO.class);
     }
 
     @Operation(summary = "Get FormQuestions by Forms UUIDs with pagination", description = "Retrieve paginated FormQuestions associated with specific Forms UUIDs.")
     @ApiResponse(responseCode = "200", description = "Successfully retrieved FormQuestions")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @Get("/getByFormsUuidsAndPageAndSize")
-    public List<FormQuestionDTO> findFormQuestionByFormsUuidsAndPageAndSize(@NonNull @QueryValue("formsUuids") List<String> formsUuids, @QueryValue("page") Long page, @QueryValue("size") Long size) {
-        return listAsDtos(formQuestionService.fetchByFormsUuidsAndPageAndSize(formsUuids, page, size), FormQuestionDTO.class);
+    public List<FormSectionQuestionDTO> findFormQuestionByFormsUuidsAndPageAndSize(@NonNull @QueryValue("formsUuids") List<String> formsUuids, @QueryValue("page") Long page, @QueryValue("size") Long size) {
+        return listAsDtos(formQuestionService.fetchByFormsUuidsAndPageAndSize(formsUuids, page, size), FormSectionQuestionDTO.class);
     }
 
 }

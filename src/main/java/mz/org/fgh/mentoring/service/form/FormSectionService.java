@@ -4,10 +4,12 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.repository.form.FormSectionRepository;
 
 import javax.transaction.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
@@ -46,5 +48,9 @@ public class FormSectionService {
 
     public Optional<FormSection> getByUUID(String uuid) {
         return formSectionRepository.findByUuid(uuid);
+    }
+
+    public List<FormSection> getByForm(Form form) {
+        return formSectionRepository.findByForm(form);
     }
 }
