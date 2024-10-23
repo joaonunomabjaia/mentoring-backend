@@ -101,6 +101,7 @@ public class QuestionService {
     public Question create(Question question, Long userId) {
         User user = userRepository.findById(userId).get();
         question.setCreatedBy(user.getUuid());
+        question.setCreatedAt(DateUtils.getCurrentDate());
         question.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         question.setCode(generateQuestionCode(question));
 
@@ -156,8 +157,8 @@ public class QuestionService {
         User user = userRepository.findById(userId).get();
         question.setUpdatedBy(user.getUuid());
         question.setUpdatedAt(DateUtils.getCurrentDate());
-        question.setQuestion(question.getQuestion());
-        question.setProgram(question.getProgram());
+//        question.setQuestion(question.getQuestion());
+//        question.setProgram(question.getProgram());
 
         return this.questionRepository.update(question);
     }

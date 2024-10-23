@@ -134,7 +134,7 @@ public class QuestionController {
             Optional<Question> questionOpt = questionService.findById(questionDTO.getId());
             if (questionOpt.isPresent()) {
                 Question question = questionOpt.get();
-                question.setCode(questionDTO.getCode());
+                question.setTableCode(questionDTO.getTableCode());
                 question.setQuestion(questionDTO.getQuestion());
                 question.setProgram(new Program(questionDTO.getProgramDTO()));
                 question = questionService.update(question, (Long) authentication.getAttributes().get("userInfo"));
