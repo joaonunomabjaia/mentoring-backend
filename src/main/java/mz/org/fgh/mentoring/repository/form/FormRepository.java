@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.repository.form;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
@@ -50,7 +51,29 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     @Query(value = "select * from forms limit :lim offset :of ", nativeQuery = true)
     List<Form> findFormWithLimit(long lim, long of);
 
-    List<Form> search(final String code, final String name, final String programmaticArea);
+    @Query(value = "SELECT f FROM Form f " +
+            "INNER JOIN f.programmaticArea pa " +
+            "INNER JOIN pa.program p " +
+            "WHERE f.lifeCycleStatus = 'ACTIVE' " +
+            "AND (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
+            "AND (:name IS NULL OR f.name LIKE CONCAT('%', :name, '%')) " +
+            "AND (:program IS NULL OR p.name LIKE CONCAT('%', :program, '%')) " +
+            "AND (:programmaticArea IS NULL OR pa.name LIKE CONCAT('%', :programmaticArea, '%'))",
+            countQuery = "SELECT COUNT(f) FROM Form f " +
+                    "INNER JOIN f.programmaticArea pa " +
+                    "INNER JOIN pa.program p " +
+                    "WHERE f.lifeCycleStatus = 'ACTIVE' " +
+                    "AND (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
+                    "AND (:name IS NULL OR f.name LIKE CONCAT('%', :name, '%')) " +
+                    "AND (:program IS NULL OR p.name LIKE CONCAT('%', :program, '%')) " +
+                    "AND (:programmaticArea IS NULL OR pa.name LIKE CONCAT('%', :programmaticArea, '%'))")
+    Page<Form> search(
+            @Nullable String code,
+            @Nullable String name,
+            @Nullable String program,
+            @Nullable String programmaticArea,
+            Pageable pageable);
+
 
     @Query("select f from Form f " +
             "INNER JOIN FETCH f.programmaticArea pa " +

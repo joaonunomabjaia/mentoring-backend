@@ -10,6 +10,8 @@ import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
@@ -103,13 +105,15 @@ public class FormService {
         return  this.formRepository.update(form);
     }
 
-    public List<FormDTO> search(final String code, final String name, final String programmaticArea) {
-        List<Form> formList = this.formRepository.search(code, name, programmaticArea);
-        List<FormDTO> forms = new ArrayList<FormDTO>();
-        for (Form form: formList) {
-            forms.add(new FormDTO(form));
-        }
-        return forms;
+    public Page<FormDTO> search(final String code, final String name, final String program, final String programmaticArea, Pageable pageable)    {
+
+        Page<Form> pageForm = this.formRepository.search(code, name, program, programmaticArea, pageable);
+
+        return pageForm.map(this::formToDTO);
+    }
+
+    private FormDTO formToDTO(Form form){
+        return new FormDTO(form);
     }
 
     public Form updateLifeCycleStatus(Form form, Long userId) {
