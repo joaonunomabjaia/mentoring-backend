@@ -24,7 +24,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.form.FormService;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -83,20 +85,20 @@ public class FormController {
         }
     }
 
+
     @Operation(summary = "Search forms with filters", description = "Searches forms based on provided filters: code, name, program, and programmatic area code.")
-    @ApiResponse(responseCode = "200", description = "Forms retrieved successfully")
-    @ApiResponse(responseCode = "400", description = "Bad request")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Form")
     @Get("/search")
     public HttpResponse<?> findBySelectedFilter(@Nullable @QueryValue("code") String code,
                                                 @Nullable @QueryValue("name") String name,
                                                 @Nullable @QueryValue("program") String program,
-                                                @Nullable @QueryValue("programmaticAreaCode") String programmaticAreaCode) {
+                                                @Nullable @QueryValue("programmaticAreaCode") String programmaticAreaCode,
+                                                Pageable pageable
+    ) {
+
         try {
-            List<FormDTO> forms = formService.findBySelectedFilter(
-                    StringUtils.defaultString(code),
-                    StringUtils.defaultString(name),
-                    StringUtils.defaultString(program),
-                    StringUtils.defaultString(programmaticAreaCode));
+            Page<FormDTO> forms = formService.search(code, name, program, programmaticAreaCode, pageable);
             return HttpResponse.ok(forms);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
