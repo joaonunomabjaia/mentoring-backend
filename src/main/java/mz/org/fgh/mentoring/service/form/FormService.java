@@ -4,15 +4,12 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.QuestionDTO;
 import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
-import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.program.Program;
-import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
@@ -55,12 +52,12 @@ public class FormService {
         this.formQuestionRepository = formQuestionRepository;
     }
 
-    public Page<FormDTO> findAll(Pageable pageable) {
+    public Page<QuestionDTO> findAll(Pageable pageable) {
         // Fetch paginated forms from the repository
         Page<Form> formPage = this.formRepository.findAll(pageable);
 
         // Convert the Page<Form> to Page<FormDTO> by mapping the Form entities to DTOs
-        return formPage.map(FormDTO::new);
+        return formPage.map(QuestionDTO::new);
     }
 
 
@@ -69,30 +66,30 @@ public class FormService {
         return this.formRepository.findById(id);
     }
 
-    public List<FormDTO> findBySelectedFilter(final String code, String name, String programmaticAreaCode, String program){
-        List<FormDTO> formDTOS = new ArrayList<>();
+    public List<QuestionDTO> findBySelectedFilter(final String code, String name, String programmaticAreaCode, String program){
+        List<QuestionDTO> formDTOS = new ArrayList<>();
         List<Form> forms = this.formRepository.findBySelectedFilter(code, name, programmaticAreaCode, program);
         for(Form form : forms){
             List<FormSectionQuestion> formSectionQuestions = formQuestionRepository.fetchByForm(form.getId());
             //form.setFormQuestions(formSectionQuestions);
-            formDTOS.add(new FormDTO(form));
+            formDTOS.add(new QuestionDTO(form));
         }
         return formDTOS;
     }
 
-    public FormDTO findByCode(String code){
+    public QuestionDTO findByCode(String code){
         Form form = this.formRepository.findByCode(code);
-        return new FormDTO(form);
+        return new QuestionDTO(form);
     }
 
-    public List<FormDTO> findFormByProgrammaticAreaUuid(String programaticAreaUuid){
+    public List<QuestionDTO> findFormByProgrammaticAreaUuid(String programaticAreaUuid){
 
-        List<FormDTO> formDTOS = new ArrayList<>();
+        List<QuestionDTO> formDTOS = new ArrayList<>();
 
         List<Form> forms = this.formRepository.findFormByProgrammaticAreaUuid(programaticAreaUuid);
 
         for(Form form : forms){
-            formDTOS.add(new FormDTO(form));
+            formDTOS.add(new QuestionDTO(form));
         }
 
         return formDTOS;
@@ -105,15 +102,15 @@ public class FormService {
         return  this.formRepository.update(form);
     }
 
-    public Page<FormDTO> search(final String code, final String name, final String program, final String programmaticArea, Pageable pageable)    {
+    public Page<QuestionDTO> search(final String code, final String name, final String program, final String programmaticArea, Pageable pageable)    {
 
         Page<Form> pageForm = this.formRepository.search(code, name, program, programmaticArea, pageable);
 
         return pageForm.map(this::formToDTO);
     }
 
-    private FormDTO formToDTO(Form form){
-        return new FormDTO(form);
+    private QuestionDTO formToDTO(Form form){
+        return new QuestionDTO(form);
     }
 
     public Form updateLifeCycleStatus(Form form, Long userId) {
@@ -130,7 +127,7 @@ public class FormService {
     }
 
     @Transactional
-    public FormDTO saveOrUpdate(Long userId, FormDTO formDTO) {
+    public QuestionDTO saveOrUpdate(Long userId, QuestionDTO formDTO) {
         User user = this.userRepository.fetchByUserId(userId);
         Partner partner = user.getEmployee().getPartner();
         Form form = formDTO.toForm();
@@ -166,7 +163,7 @@ public class FormService {
                 }
             }
             Form newForm = this.formRepository.save(form);
-            return new FormDTO(newForm);
+            return new QuestionDTO(newForm);
         }
 
         return formDTO;

@@ -8,6 +8,7 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.question.SectionRepository;
@@ -163,6 +164,14 @@ public class QuestionService {
         return this.questionRepository.update(question);
     }
 
+    public Question updateLifeCycleStatus(Question question, Long userId) {
+        User user = this.userRepository.fetchByUserId(userId);
+            question.setUpdatedBy(user.getUuid());
+            question.setUpdatedAt(DateUtils.getCurrentDate());
+            this.questionRepository.update(question);
+            return question;
+    }
+
     @Transactional
     public Question delete(Question question, Long userId) {
         User user = userRepository.findById(userId).get();
@@ -198,6 +207,12 @@ public class QuestionService {
     }
 
     private QuestionDTO questionToDTO(Question question){
-        return new QuestionDTO(question);
+        return new QuestionDTO(question, this.existsInFormSectionQuestion(question));
     }
+
+    public boolean existsInFormSectionQuestion(Question question){
+        boolean resp = this.questionRepository.existsInFormSectionQuestion(question);
+
+        return resp;
+    };
 }

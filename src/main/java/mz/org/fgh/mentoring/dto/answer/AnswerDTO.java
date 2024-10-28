@@ -1,9 +1,8 @@
 package mz.org.fgh.mentoring.dto.answer;
 
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.QuestionDTO;
 import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
-import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
@@ -18,11 +17,11 @@ public class AnswerDTO extends BaseEntityDTO {
 
     private String value;
 
-    private FormDTO form;
+    private QuestionDTO form;
 
     private MentorshipDTO mentorship;
 
-    private QuestionDTO question;
+    private mz.org.fgh.mentoring.dto.question.QuestionDTO question;
 
     public AnswerDTO() {
 
@@ -36,11 +35,11 @@ public class AnswerDTO extends BaseEntityDTO {
             this.getMentorship().setUuid(answer.getMentorship().getUuid());
         }
         if(answer.getForm()!=null) {
-            this.setForm(new FormDTO());
+            this.setForm(new QuestionDTO());
             this.getForm().setUuid(answer.getForm().getUuid());
         }
         if(answer.getQuestion()!=null) {
-            this.setQuestion(new QuestionDTO());
+            this.setQuestion(new mz.org.fgh.mentoring.dto.question.QuestionDTO());
             this.getQuestion().setUuid(answer.getQuestion().getUuid());
         }
     }
@@ -74,11 +73,11 @@ public class AnswerDTO extends BaseEntityDTO {
         this.value = value;
     }
 
-    public FormDTO getForm() {
+    public QuestionDTO getForm() {
         return form;
     }
 
-    public void setForm(FormDTO form) {
+    public void setForm(QuestionDTO form) {
         this.form = form;
     }
 
@@ -90,11 +89,11 @@ public class AnswerDTO extends BaseEntityDTO {
         this.mentorship = mentorship;
     }
 
-    public QuestionDTO getQuestion() {
+    public mz.org.fgh.mentoring.dto.question.QuestionDTO getQuestion() {
         return question;
     }
 
-    public void setQuestion(QuestionDTO question) {
+    public void setQuestion(mz.org.fgh.mentoring.dto.question.QuestionDTO question) {
         this.question = question;
     }
 
