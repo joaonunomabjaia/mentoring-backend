@@ -23,6 +23,10 @@ public interface FormRepository extends CrudRepository<Form, Long> {
 
     Optional<Form> findById(@NotNull Long id);
 
+    @Query(value = "SELECT DISTINCT f FROM Form f LEFT JOIN FETCH f.formSections fs",
+           countQuery = "SELECT COUNT(f) FROM Form f")
+    Page<Form> findAllWithFormSections(Pageable pageable);
+
     Optional<Form> findByUuid(@NotNull String uuid);
 
     Form findByCode(String code);

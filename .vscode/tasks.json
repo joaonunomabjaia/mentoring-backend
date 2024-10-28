@@ -1,0 +1,14 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "gradle-build",
+        "type": "shell",
+        "command": "./gradlew build", // Use 'gradlew' to ensure the wrapper is used
+        "group": "build",
+        "problemMatcher": [],
+        "detail": "Build the project using Gradle"
+      }
+    ]
+  }
+  

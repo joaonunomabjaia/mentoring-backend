@@ -5,8 +5,7 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
-import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
-import mz.org.fgh.mentoring.dto.question.QuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
@@ -15,7 +14,7 @@ import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
+import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
@@ -25,6 +24,7 @@ import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.apache.commons.lang3.StringUtils;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
@@ -39,7 +39,7 @@ public class FormService {
 
     private UserRepository userRepository;
 
-    private FormQuestionRepository formQuestionRepository;
+    private FormSectionQuestionRepository formQuestionRepository;
     @Inject
     private FormSectionService formSectionService;
 
@@ -49,7 +49,7 @@ public class FormService {
     @Inject
     private TutorRepository tutorRepository;
 
-    public FormService(UserRepository userRepository, FormRepository formRepository, FormQuestionRepository formQuestionRepository) {
+    public FormService(UserRepository userRepository, FormRepository formRepository, FormSectionQuestionRepository formQuestionRepository) {
         this.userRepository = userRepository;
         this.formRepository = formRepository;
         this.formQuestionRepository = formQuestionRepository;
@@ -57,7 +57,7 @@ public class FormService {
 
     public Page<FormDTO> findAll(Pageable pageable) {
         // Fetch paginated forms from the repository
-        Page<Form> formPage = this.formRepository.findAll(pageable);
+        Page<Form> formPage = this.formRepository.findAllWithFormSections(pageable);
 
         // Convert the Page<Form> to Page<FormDTO> by mapping the Form entities to DTOs
         return formPage.map(FormDTO::new);
@@ -137,7 +137,7 @@ public class FormService {
         form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         form.setDescription(form.getName());
         form.setPartner(partner);
-        List<FormQuestionDTO> formQuestions = formDTO.getFormQuestions();
+        List<FormSectionQuestionDTO> formQuestions = formDTO.getFormQuestions();
 
 
         if(StringUtils.isEmpty(formDTO.getUuid())) {
@@ -218,8 +218,22 @@ public class FormService {
 
 
     public List<Form> getByTutorUuid(String tutorUuid) {
-        List<Form> forms = formRepository.getAllOfTutor(tutorRepository.findByUuid(tutorUuid).get());
-        //forms.forEach(form -> form.setFormQuestions(formQuestionRepository.fetchByForm(form.getId())));
-        return forms;
+    // Check if tutorUuid is valid
+    if (tutorUuid == null || tutorUuid.isEmpty()) {
+        throw new IllegalArgumentException("Tutor UUID cannot be null or empty");
     }
+
+    // Retrieve the tutor by UUID
+    return tutorRepository.findByUuid(tutorUuid)
+        .map(tutor -> {
+            // Retrieve all forms related to the tutor
+            List<Form> forms = formRepository.getAllOfTutor(tutor);
+            // For each form, fetch and set the related form sections
+            forms.forEach(form -> form.setFormSections(formSectionService.getByForm(form)));
+            return forms;
+        })
+        // Handle the case when the tutor is not found
+        .orElseThrow(() -> new EntityNotFoundException("Tutor not found for UUID: " + tutorUuid));
+}
+
 }

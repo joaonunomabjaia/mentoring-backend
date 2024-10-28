@@ -66,7 +66,7 @@ public class SectionController extends BaseController {
     }
 
     // Get a section by ID
-    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Secured(SecurityRule.IS_AUTHENTICATED)
     @Operation(summary = "Get a Section by its ID")
     @ApiResponses({
             @ApiResponse(responseCode = "200", description = "Successfully retrieved section", content = @Content(mediaType = MediaType.APPLICATION_JSON)),

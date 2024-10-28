@@ -31,6 +31,9 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
     @JsonProperty(value = "program")
     private ProgramDTO programDTO;
 
+    @JsonProperty(value = "programUuid")
+    private String programUuid;
+
     @Creator
     public QuestionDTO() {}
 
@@ -39,6 +42,7 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         this.setCode(question.getCode());
         this.setTableCode(question.getTableCode());
         this.setQuestion(question.getQuestion());
+        this.setProgramUuid(question.getProgram().getUuid());
         if (question.getProgram() != null) {
             this.setProgramDTO(new ProgramDTO(question.getProgram()));
         }

@@ -4,7 +4,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
@@ -12,7 +12,7 @@ import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
-import mz.org.fgh.mentoring.repository.form.FormQuestionRepository;
+import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -24,7 +24,7 @@ import java.util.Optional;
 @Singleton
 public class FormQuestionService {
 
-    FormQuestionRepository formQuestionRepository;
+    FormSectionQuestionRepository formQuestionRepository;
 
     private UserRepository userRepository;
 
@@ -33,7 +33,7 @@ public class FormQuestionService {
     @Inject
     private AnswerRepository answerRepository;
 
-    public FormQuestionService(FormQuestionRepository formQuestionRepository, UserRepository userRepository, FormRepository formRepository) {
+    public FormQuestionService(FormSectionQuestionRepository formQuestionRepository, UserRepository userRepository, FormRepository formRepository) {
         this.formQuestionRepository = formQuestionRepository;
         this.userRepository = userRepository;
         this.formRepository = formRepository;
@@ -47,27 +47,22 @@ public class FormQuestionService {
         return this.formQuestionRepository.findById(id);
     }
 
-    public Page<FormQuestionDTO> fetchByForm(final Long formId, Pageable pageable) {
+    public Page<FormSectionQuestionDTO> fetchByForm(final Long formId, Pageable pageable) {
         // Fetch paginated FormQuestions from the repository
         Page<FormSectionQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId, pageable);
 
         // Convert the Page<FormQuestion> to Page<FormQuestionDTO> by mapping entities to DTOs
-        return formQuestions.map(FormQuestionDTO::new);
+        return formQuestions.map(FormSectionQuestionDTO::new);
     }
 
-
-    public List<FormSectionQuestion> fetchByTutor(final Tutor tutor){
-        return  this.formQuestionRepository.fetchByTutor( tutor, LifeCycleStatus.ACTIVE);
-    }
 
     public FormSectionQuestion create(FormSectionQuestion formSectionQuestion){
         return this.formQuestionRepository.save(formSectionQuestion);
     }
 
-    public void inactivate(Long userId, Long formId, FormQuestionDTO formQuestionDTO) {
+    public void inactivate(Long userId, Long formId, FormSectionQuestionDTO formQuestionDTO) {
         User user = this.userRepository.findById(userId).get();
-        Form form = this.formRepository.findById(formId).get();
-        FormSectionQuestion formSectionQuestion = formQuestionDTO.getFormQuestion();
+        FormSectionQuestion formSectionQuestion = new FormSectionQuestion(formQuestionDTO);
         formSectionQuestion.setUpdatedBy(user.getUuid());
         formSectionQuestion.setUpdatedAt(new Date());
         formSectionQuestion.setLifeCycleStatus(LifeCycleStatus.INACTIVE);

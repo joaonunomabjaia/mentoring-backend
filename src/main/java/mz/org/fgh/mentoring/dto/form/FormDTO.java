@@ -43,7 +43,7 @@ public class FormDTO extends BaseEntityDTO {
     private ProgrammaticAreaDTO programmaticAreaDTO;
 
     @JsonProperty(value = "formQuestions")
-    private List<FormQuestionDTO> formQuestions = new ArrayList<>();
+    private List<FormSectionQuestionDTO> formQuestions = new ArrayList<>();
 
     @JsonProperty(value = "formSections")
     private List<FormSectionDTO> formSections = new ArrayList<>();
@@ -69,24 +69,22 @@ public class FormDTO extends BaseEntityDTO {
         this.description = form.getDescription();
         this.createdAt = form.getCreatedAt();
         this.createdBy = form.getCreatedBy();
+        this.targetPatient = form.getTargetPatient();
+        this.targetFile = form.getTargetFile();
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
 
-        try {
-            if (form.getPartner() != null) {
-                this.partnerDTO = new PartnerDTO(form.getPartner());
+        if (form.getPartner() != null) {
+            this.partnerDTO = new PartnerDTO(form.getPartner());
+        }
+        if (form.getProgrammaticArea() != null) {
+            this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
+        }
+        if (Utilities.listHasElements(form.getFormSections())) {
+            this.formSections = new ArrayList<>();
+            for (FormSection formSection : form.getFormSections()) {
+                formSection.setForm(form);
+                this.formSections.add(new FormSectionDTO(formSection));
             }
-            if (form.getProgrammaticArea() != null) {
-                this.programmaticAreaDTO = new ProgrammaticAreaDTO(form.getProgrammaticArea());
-            }
-            if (form.getFormSections() != null && !form.getFormSections().isEmpty()) {
-                for (FormSection formSection : form.getFormSections()) {
-                    this.formSections.add(new FormSectionDTO(formSection));
-                }
-            }
-            this.targetPatient = form.getTargetPatient();
-            this.targetFile = form.getTargetFile();
-        } catch (Exception e) {
-            // Log exception if necessary
         }
     }
 
@@ -117,7 +115,7 @@ public class FormDTO extends BaseEntityDTO {
                 FormSection formSection = new FormSection(section);
                 formSection.setFormSectionQuestions(new ArrayList<>());
                 if (Utilities.listHasElements(section.getFormQuestionDTOList())) {
-                    for (FormQuestionDTO question : section.getFormQuestionDTOList()) {
+                    for (FormSectionQuestionDTO question : section.getFormQuestionDTOList()) {
                         formSection.getFormSectionQuestions().add(new FormSectionQuestion(question));
                     }
                 }
