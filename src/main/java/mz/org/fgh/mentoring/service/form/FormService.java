@@ -5,14 +5,11 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.QuestionDTO;
-import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
-import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
@@ -138,10 +135,6 @@ public class FormService {
         Form responseForm;
         User user = this.userRepository.fetchByUserId(userId);
         Partner partner = user.getEmployee().getPartner();
-        Form form = formDTO.toForm();
-        form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        form.setDescription(form.getName());
-        form.setPartner(partner);
         List<FormSectionQuestionDTO> formQuestions = formDTO.getFormQuestions();
 
         if(isCreateStep) { // Trata-se de create
@@ -160,7 +153,6 @@ public class FormService {
 
         form.setDescription(formDTO.getName());
         form.setPartner(partner);
-        List<FormQuestionDTO> formQuestions = formDTO.getFormQuestions();
 
         if(isCreateStep) { // Trata-se de create
             for (FormSection fs : form.getFormSections()) {
