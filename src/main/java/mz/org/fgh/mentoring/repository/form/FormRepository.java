@@ -50,6 +50,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     @Query(value = "SELECT f FROM Form f " +
             "INNER JOIN f.programmaticArea pa " +
             "INNER JOIN pa.program p " +
+            "LEFT JOIN f.formSections fs " +
             "WHERE f.lifeCycleStatus = 'ACTIVE' " +
             "AND (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
             "AND (:name IS NULL OR f.name LIKE CONCAT('%', :name, '%')) " +
@@ -58,6 +59,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             countQuery = "SELECT COUNT(f) FROM Form f " +
                     "INNER JOIN f.programmaticArea pa " +
                     "INNER JOIN pa.program p " +
+                    "LEFT JOIN f.formSections fs " +
                     "WHERE f.lifeCycleStatus = 'ACTIVE' " +
                     "AND (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
                     "AND (:name IS NULL OR f.name LIKE CONCAT('%', :name, '%')) " +
@@ -69,6 +71,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             @Nullable String program,
             @Nullable String programmaticArea,
             Pageable pageable);
+
 
 
     @Query("select f from Form f " +

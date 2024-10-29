@@ -78,7 +78,7 @@ public class Form extends BaseEntity {
     // New relationship with FormSection
     @ToString.Exclude
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "form", cascade = CascadeType.ALL)
     private List<FormSection> formSections;
 
     @Creator

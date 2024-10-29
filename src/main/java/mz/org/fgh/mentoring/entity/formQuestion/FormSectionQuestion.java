@@ -50,7 +50,7 @@ public class FormSectionQuestion extends BaseEntity {
 
     @ToString.Exclude
     @NotNull
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EVALUATION_TYPE_ID")
     private EvaluationType evaluationType;
 
