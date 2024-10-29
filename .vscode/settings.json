@@ -1,0 +1,6 @@
+{
+    "terminal.integrated.env.linux": {
+        "JAVA_HOME": "/home/voloide/.sdkman/candidates/java/21.3.0.r17-grl",
+        "PATH": "/home/voloide/.sdkman/candidates/java/21.3.0.r17-grl/bin:${env:PATH}"
+    }
+}

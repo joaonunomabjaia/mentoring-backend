@@ -35,6 +35,8 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
 
     @JsonProperty("used_in_form_section")
     private boolean usedInFormSection;
+    @JsonProperty(value = "programUuid")
+    private String programUuid;
 
     @Creator
     public QuestionDTO() {}
@@ -56,6 +58,7 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         this.setTableCode(question.getTableCode());
         this.setQuestion(question.getQuestion());
         this.usedInFormSection = usedInFormSection;
+        this.setProgramUuid(question.getProgram().getUuid());
         if (question.getProgram() != null) {
             this.setProgramDTO(new ProgramDTO(question.getProgram()));
         }

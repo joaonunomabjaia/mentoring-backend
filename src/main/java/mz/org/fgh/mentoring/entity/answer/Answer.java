@@ -7,6 +7,7 @@ import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.question.Question;
 
@@ -40,6 +41,11 @@ public class Answer extends BaseEntity {
     @JoinColumn(name = "QUESTION_ID", nullable = false)
     private Question question;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "FORM_SECTION_QUESTION_ID", nullable = false)
+    private FormSectionQuestion formSectionQuestion;
+
     @Column(name = "VALUE", nullable = false)
     private String value;
 
@@ -48,16 +54,10 @@ public class Answer extends BaseEntity {
     public Answer(AnswerDTO answerDTO) {
         super(answerDTO);
         this.setValue(answerDTO.getValue());
-        if(answerDTO.getForm()!=null) {
-            this.setForm(new Form(answerDTO.getForm()));
-        }
-        if(answerDTO.getQuestion()!=null) {
-            this.setQuestion(new Question(answerDTO.getQuestion()));
-        }
-        if(answerDTO.getMentorship()!=null) {
-            this.setMentorship(new Mentorship());
-            this.getMentorship().setUuid(answerDTO.getMentorship().getUuid());
-        }
+        this.setForm(new Form(answerDTO.getFormUuid()));
+        this.setQuestion(new Question(answerDTO.getQuestionUUid()));
+        this.setMentorship(new Mentorship(answerDTO.getMentorshipUuid()));
+        this.setFormSectionQuestion(new FormSectionQuestion(answerDTO.getFormSectionQuestionUuid()));
     }
 
     @Override

@@ -199,8 +199,7 @@ public class QuestionService {
 
         List<QuestionDTO> questions = new ArrayList<QuestionDTO>();
         for (Question question: questionList) {
-            QuestionDTO questionDTO = new QuestionDTO(question);
-            questions.add(questionDTO);
+            questions.add(new QuestionDTO(question));
         }
 
         return pageQuestion.map(this::questionToDTO);

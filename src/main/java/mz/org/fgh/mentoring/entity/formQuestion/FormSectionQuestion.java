@@ -7,7 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.dto.form.FormQuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -60,7 +60,11 @@ public class FormSectionQuestion extends BaseEntity {
     public FormSectionQuestion() {
     }
 
-    public FormSectionQuestion(FormQuestionDTO formQuestionDTO) {
+    public FormSectionQuestion(String uuid) {
+        super(uuid);
+    }
+
+    public FormSectionQuestion(FormSectionQuestionDTO formQuestionDTO) {
         super(formQuestionDTO);
         this.setSequence(formQuestionDTO.getSequence());
         if(formQuestionDTO.getQuestion()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestion()));

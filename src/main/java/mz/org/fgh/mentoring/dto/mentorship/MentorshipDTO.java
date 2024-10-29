@@ -33,6 +33,14 @@ public class MentorshipDTO extends BaseEntityDTO {
     private String demonstrationDetails;
     private Date performedDate;
 
+    private String mentorUuid;
+    private String menteeUuid;
+    private String sessionUuid;
+    private String formUuid;
+    private String cabinetUuid;
+    private String doorUuid;
+    private String evaluationTypeUuid;
+
     @Creator
     public MentorshipDTO() {
     }

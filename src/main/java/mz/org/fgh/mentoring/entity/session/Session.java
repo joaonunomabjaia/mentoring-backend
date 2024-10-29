@@ -82,6 +82,10 @@ public class Session extends BaseEntity {
     public Session() {
     }
 
+    public Session(String uuid) {
+        super(uuid);
+    }
+
     public Session(SessionDTO sessionDTO) {
         super(sessionDTO);
         this.setStartDate(sessionDTO.getStartDate());
@@ -91,6 +95,7 @@ public class Session extends BaseEntity {
         this.setStrongPoints(sessionDTO.getStrongPoints());
         this.setObservations(sessionDTO.getObservations());
         this.setNextSessionDate(sessionDTO.getNextSessionDate());
+        this.setWorkPlan(sessionDTO.getWorkPlan());
         if(sessionDTO.getSessionStatus()!=null) {
             this.setStatus(new SessionStatus(sessionDTO.getSessionStatus()));
         }

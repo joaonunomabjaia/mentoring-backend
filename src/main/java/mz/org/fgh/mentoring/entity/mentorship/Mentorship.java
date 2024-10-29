@@ -16,6 +16,7 @@ import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -24,6 +25,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -89,6 +91,11 @@ public class Mentorship extends BaseEntity {
     public Mentorship() {
     }
 
+
+    public Mentorship(String uuid) {
+        super(uuid);
+    }
+
     public Mentorship(MentorshipDTO mentorshipDTO) {
         super(mentorshipDTO);
         this.setStartDate(mentorshipDTO.getStartDate());
@@ -97,34 +104,16 @@ public class Mentorship extends BaseEntity {
         this.setDemonstration(mentorshipDTO.isDemonstration());
         this.setDemonstrationDetails(mentorshipDTO.getDemonstrationDetails());
         this.setPerformedDate(mentorshipDTO.getPerformedDate());
-
-        if(mentorshipDTO.getMentor()!=null) {
-            this.setTutor(new Tutor(mentorshipDTO.getMentor()));
-        }
-        if(mentorshipDTO.getMentee()!=null) {
-            this.setTutored(new Tutored(mentorshipDTO.getMentee()));
-        }
-        if(mentorshipDTO.getSession()!=null) {
-            this.setSession(new Session(mentorshipDTO.getSession()));
-        }
-        if(mentorshipDTO.getForm()!=null) {
-            this.setForm(new Form(mentorshipDTO.getForm()));
-        }
-        if(mentorshipDTO.getCabinet()!=null) {
-            this.setCabinet(new Cabinet(mentorshipDTO.getCabinet()));
-        }
-        if(mentorshipDTO.getDoor()!=null) {
-            this.setDoor(new Door(mentorshipDTO.getDoor()));
-        }
-        if(mentorshipDTO.getEvaluationType()!=null) {
-            this.setEvaluationType(new EvaluationType(mentorshipDTO.getEvaluationType()));
-        }
+        this.setTutor(new Tutor(mentorshipDTO.getMentorUuid()));
+        this.setTutored(new Tutored(mentorshipDTO.getMenteeUuid()));
+        this.setSession(new Session(mentorshipDTO.getSessionUuid()));
+        this.setForm(new Form(mentorshipDTO.getFormUuid()));
+        this.setCabinet(new Cabinet(mentorshipDTO.getCabinetUuid()));
+        this.setDoor(new Door(mentorshipDTO.getDoorUuid()));
+        this.setEvaluationType(new EvaluationType(mentorshipDTO.getEvaluationTypeUuid()));
+        
         if(mentorshipDTO.getAnswers()!=null) {
-            List<Answer> answerList = new ArrayList<>();
-            for (AnswerDTO answerDTO: mentorshipDTO.getAnswers()) {
-                answerList.add(new Answer(answerDTO));
-            }
-            this.setAnswers(answerList);
+            this.setAnswers(Utilities.parse(mentorshipDTO.getAnswers(),Answer.class));
         }
     }
 

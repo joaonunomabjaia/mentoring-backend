@@ -83,6 +83,10 @@ public class Form extends BaseEntity {
 
     @Creator
     public Form(){}
+
+    public Form(String uuid) {
+        super(uuid);
+    }
     // Constructor to initialize entity from FormDTO
     public Form(QuestionDTO formDTO) {
         super(formDTO);

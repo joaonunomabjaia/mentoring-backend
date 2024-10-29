@@ -29,7 +29,7 @@ import java.util.List;
 public class FormSection extends BaseEntity {
 
     @NotNull
-    @ManyToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FORM_ID", nullable = false)
     private Form form;
 

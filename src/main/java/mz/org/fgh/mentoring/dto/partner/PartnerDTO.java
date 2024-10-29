@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.dto.partner;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -26,6 +28,7 @@ public class PartnerDTO extends BaseEntityDTO {
         this.setDescription(partner.getDescription());
     }
 
+    @JsonIgnore
     public Partner getPartner() {
         Partner partner = new Partner();
         partner.setId(this.getId());

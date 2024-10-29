@@ -37,6 +37,10 @@ public class EvaluationType extends BaseEntity {
 
     }
 
+    public EvaluationType(String uuid) {
+        super(uuid);
+    }
+    
     public EvaluationType(EvaluationTypeDTO evaluationTypeDTO) {
         super(evaluationTypeDTO);
         this.setCode(evaluationTypeDTO.getCode());
