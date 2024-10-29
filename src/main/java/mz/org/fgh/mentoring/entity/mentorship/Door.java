@@ -34,6 +34,10 @@ public class Door extends BaseEntity {
 
     }
 
+    public Door(String uuid) {
+        super(uuid);
+    }
+
     public Door(DoorDTO doorDTO) {
         super(doorDTO);
         this.setCode(doorDTO.getCode());

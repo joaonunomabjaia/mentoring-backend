@@ -60,6 +60,10 @@ public class FormSectionQuestion extends BaseEntity {
     public FormSectionQuestion() {
     }
 
+    public FormSectionQuestion(String uuid) {
+        super(uuid);
+    }
+
     public FormSectionQuestion(FormSectionQuestionDTO formQuestionDTO) {
         super(formQuestionDTO);
         this.setSequence(formQuestionDTO.getSequence());

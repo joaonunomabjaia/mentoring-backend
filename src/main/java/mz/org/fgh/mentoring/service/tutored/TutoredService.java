@@ -119,6 +119,25 @@ public class TutoredService {
         return tutoredDTO;
     }
 
+    public TutoredDTO update(TutoredDTO tutoredDTO, Long userId){
+        User user = this.userRepository.findById(userId).get();
+        Tutored tutored = new Tutored(tutoredDTO);
+        Optional<Tutored> t = tutoredRepository.findByUuid(tutored.getUuid());
+        if(t.isPresent()){
+            tutored.setCreatedAt(t.get().getCreatedAt());
+            tutored.setCreatedBy(t.get().getCreatedBy());
+            tutored.setLifeCycleStatus(t.get().getLifeCycleStatus());
+            tutored.setId(t.get().getId());
+            tutored.setEmployee(employeeService.getByUuid(tutored.getEmployee().getUuid()));
+        }
+
+        tutored.setUpdatedAt(DateUtils.getCurrentDate());
+        tutored.setUpdatedBy(user.getUuid());
+        this.tutoredRepository.update(tutored);
+
+        return tutoredDTO;
+    }
+
     public List<Tutored> getTutoredsByHealthFacilityUuids(final List<String> uuids, Long offset, Long limit){
         if (offset > 0) offset = offset/limit;
 

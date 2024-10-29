@@ -22,6 +22,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
+import mz.org.fgh.mentoring.api.RestAPIResponseImpl;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
@@ -141,5 +142,31 @@ public class TutoredController extends BaseController {
                     .message(e.getMessage()).build());
         }
     }
-
+    @Operation(summary = "Batch update tutoreds to database")
+    @ApiResponse(responseCode = "200", description = "Tutoreds updated successfully")
+    @ApiResponse(responseCode = "400", description = "Invalid data provided")
+    @Patch("/batch-update")
+    public HttpResponse<RestAPIResponse> updateTutoredBatch(
+            @Body List<TutoredDTO> tutoredDTOs, 
+            Authentication authentication) {
+        try {
+            Long userInfo = (Long) authentication.getAttributes().get("userInfo");
+    
+            // Loop through each TutoredDTO and update it
+            for (TutoredDTO dto : tutoredDTOs) {
+                tutoredService.update(dto, userInfo);
+            }
+    
+            return HttpResponse.ok(new RestAPIResponseImpl(
+                HttpStatus.OK.getCode(), 
+                "All tutoreds updated successfully"));
+        } catch (Exception e) {
+            LOGGER.error("Error during batch update of tutoreds: ", e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+    
 }
