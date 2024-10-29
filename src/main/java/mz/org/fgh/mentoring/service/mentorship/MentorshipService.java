@@ -9,6 +9,7 @@ import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
+import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.location.CabinetRepository;
 import mz.org.fgh.mentoring.repository.mentorship.DoorRepository;
 import mz.org.fgh.mentoring.repository.mentorship.MentorshipRepository;
@@ -41,6 +42,7 @@ public class MentorshipService extends BaseService {
     private final QuestionRepository questionRepository;
     private final AnswerRepository answerRepository;
     private final UserRepository userRepository;
+    private final FormSectionQuestionRepository formSectionQuestionRepository;
 
     @Inject
     public MentorshipService(MentorshipRepository mentorshipRepository, SessionRepository sessionRepository,
@@ -48,7 +50,7 @@ public class MentorshipService extends BaseService {
                              TutoredRepository tutoredRepository, CabinetRepository cabinetRepository,
                              EvaluationTypeRepository evaluationTypeRepository,
                              DoorRepository doorRepository, QuestionRepository questionRepository,
-                             AnswerRepository answerRepository, UserRepository userRepository) {
+                             AnswerRepository answerRepository, UserRepository userRepository, FormSectionQuestionRepository formSectionQuestionRepository) {
         this.mentorshipRepository = mentorshipRepository;
         this.sessionRepository = sessionRepository;
         this.formRepository = formRepository;
@@ -60,6 +62,7 @@ public class MentorshipService extends BaseService {
         this.questionRepository = questionRepository;
         this.answerRepository = answerRepository;
         this.userRepository = userRepository;
+        this.formSectionQuestionRepository = formSectionQuestionRepository;
     }
 
     @Transactional
@@ -93,6 +96,7 @@ public class MentorshipService extends BaseService {
             answer.setMentorship(mentorship);
             answer.setQuestion(questionRepository.findByUuid(answer.getQuestion().getUuid()).orElseThrow());
             answer.setForm(mentorship.getForm());
+            answer.setFormSectionQuestion(formSectionQuestionRepository.findByUuid(answer.getFormSectionQuestion().getUuid()).orElseThrow());
             addCreationAuditInfo(answer, user);
             answerRepository.save(answer);
             LOG.info("Saved answer: {}", answer);

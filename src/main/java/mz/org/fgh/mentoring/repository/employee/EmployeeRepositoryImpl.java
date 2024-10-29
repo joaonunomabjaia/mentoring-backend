@@ -76,7 +76,7 @@ public abstract class EmployeeRepositoryImpl implements EmployeeRepository{
 
     private Employee createEmployee(Employee employee, User user) {
         employee.setCreatedBy(user.getUuid());
-        employee.setUuid(UUID.randomUUID().toString());
+        if (!Utilities.stringHasValue(employee.getUuid())) employee.setUuid(UUID.randomUUID().toString());
         employee.setCreatedAt(DateUtils.getCurrentDate());
         employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         return save(employee);

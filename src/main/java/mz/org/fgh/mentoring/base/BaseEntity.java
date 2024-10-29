@@ -57,6 +57,10 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable, Compa
         }
     }
 
+    public BaseEntity(String uuid) {
+        this.uuid = uuid;
+    }
+
     // Automatically generate UUID if not provided
     @PrePersist
     public void prePersist() {

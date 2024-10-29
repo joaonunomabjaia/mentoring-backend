@@ -46,8 +46,14 @@ public class Tutored extends BaseEntity {
 
     }
 
+    public Tutored(String uuid) {
+        super(uuid);
+    }
+
     public Tutored(TutoredDTO tutoredDTO) {
         super(tutoredDTO);
+        this.setZeroEvaluationDone(tutoredDTO.isZeroEvaluationDone());
+        this.setZeroEvaluationScore(tutoredDTO.getZeroEvaluationScore());
         this.setEmployee(new Employee(tutoredDTO.getEmployeeDTO()));
     }
 

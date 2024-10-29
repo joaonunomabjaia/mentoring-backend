@@ -46,11 +46,12 @@ public class EmployeeService {
         this.locationRepository = locationRepository;
     }
 
-    public EmployeeDTO getById(Long id){
+    public Employee getById(Long id){
+        return this.employeeRepository.findById(id).get();
+    }
 
-        Employee employee = this.employeeRepository.findById(id).get();
-
-        return new EmployeeDTO(employee);
+    public Employee getByUuid(String uuid){
+        return this.employeeRepository.findByUuid(uuid).get();
     }
 
     public EmployeeDTO updade(EmployeeDTO employeeDTO){

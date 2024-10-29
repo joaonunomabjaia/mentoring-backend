@@ -48,6 +48,11 @@ public class Tutor extends BaseEntity {
 
     @Creator
     public Tutor() {}
+
+    public Tutor(String uuid) {
+        super(uuid);
+    }
+
     public Tutor(TutorDTO tutorDTO) {
         super(tutorDTO);
         if(tutorDTO.getEmployeeDTO()!=null) this.setEmployee(new Employee(tutorDTO.getEmployeeDTO()));

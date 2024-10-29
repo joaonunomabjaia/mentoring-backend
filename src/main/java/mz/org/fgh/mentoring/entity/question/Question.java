@@ -42,6 +42,9 @@ public class Question extends BaseEntity {
 
     @Creator
     public Question() {}
+    public Question(String uuid) {
+        super(uuid);
+    }
 
     public Question(QuestionDTO questionDTO) {
         super(questionDTO);

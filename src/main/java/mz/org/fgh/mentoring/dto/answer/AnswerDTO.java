@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.answer;
 
+import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
@@ -14,15 +15,18 @@ import mz.org.fgh.mentoring.util.Utilities;
 /**
  * @author Jose Julai Ritsure
  */
+@Data
 public class AnswerDTO extends BaseEntityDTO {
 
     private String value;
 
-    private FormDTO form;
+    private String formUuid;
 
-    private MentorshipDTO mentorship;
+    private String mentorshipUuid;
 
-    private QuestionDTO question;
+    private String questionUUid;
+
+    private String formSectionQuestionUuid;
 
     public AnswerDTO() {
 
@@ -31,71 +35,10 @@ public class AnswerDTO extends BaseEntityDTO {
     public AnswerDTO(Answer answer) {
         super(answer);
         this.setValue(answer.getValue());
-        if(answer.getMentorship()!=null) {
-            this.setMentorship(new MentorshipDTO());
-            this.getMentorship().setUuid(answer.getMentorship().getUuid());
-        }
-        if(answer.getForm()!=null) {
-            this.setForm(new FormDTO());
-            this.getForm().setUuid(answer.getForm().getUuid());
-        }
-        if(answer.getQuestion()!=null) {
-            this.setQuestion(new QuestionDTO());
-            this.getQuestion().setUuid(answer.getQuestion().getUuid());
-        }
-    }
-
-    public Answer getAnswer() {
-        Answer answer = new Answer();
-        answer.setUuid(this.getUuid());
-        answer.setId(this.getId());
-        answer.setCreatedAt(this.getCreatedAt());
-        answer.setUpdatedAt(this.getUpdatedAt());
-        answer.setValue(this.getValue());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) answer.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        answer.setValue(answer.getValue());
-        if(answer.getMentorship()!=null) {
-            answer.setMentorship(new Mentorship(this.getMentorship()));
-        }
-        if(answer.getForm()!=null) {
-            answer.setForm(new Form(this.getForm()));
-        }
-        if(answer.getQuestion()!=null) {
-            answer.setQuestion(new Question(this.getQuestion()));
-        }
-        return answer;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public FormDTO getForm() {
-        return form;
-    }
-
-    public void setForm(FormDTO form) {
-        this.form = form;
-    }
-
-    public MentorshipDTO getMentorship() {
-        return mentorship;
-    }
-
-    public void setMentorship(MentorshipDTO mentorship) {
-        this.mentorship = mentorship;
-    }
-
-    public QuestionDTO getQuestion() {
-        return question;
-    }
-
-    public void setQuestion(QuestionDTO question) {
-        this.question = question;
+        this.setMentorshipUuid(answer.getMentorship().getUuid());
+        this.setFormUuid(answer.getForm().getUuid());
+        this.setQuestionUUid(answer.getQuestion().getUuid());
+        this.setFormSectionQuestionUuid(answer.getFormSectionQuestion().getUuid());
     }
 
 }

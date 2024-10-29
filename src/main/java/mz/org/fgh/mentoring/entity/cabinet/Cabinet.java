@@ -16,13 +16,16 @@ import javax.validation.constraints.NotNull;
 @Table(name = "cabinets")
 @Data
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
-@AllArgsConstructor
 public class Cabinet extends BaseEntity {
 
     @NotNull
     @Column(name = "NAME", nullable = false, length = 50)
     private String name;
     public Cabinet() {
+    }
+
+    public Cabinet(String uuid) {
+        super(uuid);
     }
 
     public Cabinet(CabinetDTO dto) {
