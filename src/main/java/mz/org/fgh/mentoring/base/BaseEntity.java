@@ -51,6 +51,11 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable, Compa
     // Constructor to initialize from BaseEntityDTO
     public BaseEntity(BaseEntityDTO baseEntityDTO) {
         this.setId(baseEntityDTO.getId());
+        this.setCreatedBy(baseEntityDTO.getCreatedBy());
+        this.setCreatedAt(baseEntityDTO.getCreatedAt());
+        this.setUpdatedBy(baseEntityDTO.getUpdatedBy());
+        this.setUpdatedAt(baseEntityDTO.getUpdatedAt());
+
         this.setUuid(baseEntityDTO.getUuid() != null ? baseEntityDTO.getUuid() : UUID.randomUUID().toString());
         if (Utilities.stringHasValue(baseEntityDTO.getLifeCycleStatus())) {
             this.setLifeCycleStatus(LifeCycleStatus.valueOf(baseEntityDTO.getLifeCycleStatus()));

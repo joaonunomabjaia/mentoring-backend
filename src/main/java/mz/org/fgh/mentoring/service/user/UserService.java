@@ -200,4 +200,25 @@ public class UserService {
         Page<User> userPages = userRepository.search(name, nuit, userName, pageable);
         return userPages.map(UserDTO::new);
     }
+
+    public void updateUserPassword(User user, boolean encrypt) {
+        try {
+            User userDB = findByUuid(user.getUuid());
+
+            user.setId(userDB.getId());
+            user.setCreatedAt(userDB.getCreatedAt());
+            user.setCreatedBy(userDB.getCreatedBy());
+            user.setUpdatedBy(user.getUuid());
+            user.setEmployee(employeeService.getByUuid(user.getEmployee().getUuid()));
+
+            if (encrypt) {
+                user.setPassword(Utilities.encryptPassword(user.getPassword(), user.getSalt()));
+            }
+            userDB.setShouldResetPassword(false);
+            userRepository.update(user);
+        } catch (Exception e) {
+            LOG.error("Error resetting password", e);
+            throw new RuntimeException("Error resetting password", e);
+        }
+    }
 }
