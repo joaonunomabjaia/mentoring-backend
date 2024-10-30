@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <!-- Step 1: Rename original table to backup -->
+    <changeSet id="1" author="voloide">
+        <renameTable
+                oldTableName="answers"
+                newTableName="answers_backup"/>
+    </changeSet>
+
+    <!-- Step 2: Create new partitioned table -->
+    <changeSet id="2" author="voloide">
+        <sql>
+            CREATE TABLE answers (
+                                     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+                                     uuid CHAR(36) NOT NULL,
+                                     form_id INT NOT NULL,
+                                     mentorship_id INT NOT NULL,
+                                     question_id INT NOT NULL,
+                                     value VARCHAR(255),
+                                     created_by VARCHAR(50),
+                                     life_cycle_status VARCHAR(50),
+                                     updated_at TIMESTAMP NULL,
+                                     updated_by VARCHAR(50),
+                                     form_section_question_id INT NOT NULL,
+                                     PRIMARY KEY (mentorship_id, id)
+            ) PARTITION BY HASH(mentorship_id) PARTITIONS 32;
+        </sql>
+    </changeSet>
+
+    <!-- Step 3: Migrate data from backup table to new partitioned table -->
+    <changeSet id="3" author="voloide">
+        <sql>
+            INSERT INTO answers (uuid, form_id, mentorship_id, question_id, value,
+                                 created_by, life_cycle_status, updated_at,
+                                 updated_by, form_section_question_id)
+            SELECT uuid, form_id, mentorship_id, question_id, value,
+                   created_by, life_cycle_status, updated_at,
+                   updated_by, form_section_question_id
+            FROM answers_backup;
+        </sql>
+    </changeSet>
+
+    <!-- Step 4: Drop the backup table if data migration is successful -->
+    <changeSet id="4" author="voloide" runOnChange="true">
+        <dropTable tableName="answers_backup"/>
+    </changeSet>
+
+    <!-- Step 3: Create indexes for optimized querying -->
+    <changeSet id="5" author="voloide">
+        <createIndex tableName="answers" indexName="idx_form_id">
+            <column name="form_id"/>
+        </createIndex>
+
+        <createIndex tableName="answers" indexName="idx_question_id">
+            <column name="question_id"/>
+        </createIndex>
+
+        <createIndex tableName="answers" indexName="idx_created_by">
+            <column name="created_by"/>
+        </createIndex>
+
+        <createIndex tableName="answers" indexName="idx_life_cycle_status">
+            <column name="life_cycle_status"/>
+        </createIndex>
+
+        <createIndex tableName="answers" indexName="idx_updated_at">
+            <column name="updated_at"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>

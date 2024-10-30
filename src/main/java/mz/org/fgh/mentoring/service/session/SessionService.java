@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.service.session;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.base.BaseService;
+import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.setting.Setting;
@@ -78,7 +79,12 @@ public class SessionService extends BaseService {
             List<Session> sessionList = sessionRepository.findAllOfRonda(ronda.getId());
             for (Session session : sessionList) {
                 session.setMentorships(mentorshipRepository.fetchBySessionUuid(session.getUuid(), LifeCycleStatus.ACTIVE));
-                session.getMentorships().forEach(mentorship -> mentorship.setAnswers(answerRepository.fetchByMentorshipUuid(mentorship.getUuid(), LifeCycleStatus.ACTIVE)));
+                if (Utilities.listHasElements(session.getMentorships())) {
+                    for (Mentorship mentorship : session.getMentorships()) {
+                        mentorship.setAnswers(answerRepository.fetchByMentorshipUuid(mentorship.getUuid(), LifeCycleStatus.ACTIVE));
+                    }
+                }
+                //session.getMentorships().forEach(mentorship -> mentorship.setAnswers(answerRepository.fetchByMentorshipUuid(mentorship.getUuid(), LifeCycleStatus.ACTIVE)));
                 sessions.add(session);
             }
         }
