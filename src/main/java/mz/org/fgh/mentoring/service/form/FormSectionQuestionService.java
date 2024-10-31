@@ -6,10 +6,8 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
@@ -17,14 +15,15 @@ import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
+import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @Singleton
-public class FormQuestionService {
+public class FormSectionQuestionService {
 
-    FormSectionQuestionRepository formQuestionRepository;
+    FormSectionQuestionRepository formSectionQuestionRepository;
 
     private UserRepository userRepository;
 
@@ -33,31 +32,41 @@ public class FormQuestionService {
     @Inject
     private AnswerRepository answerRepository;
 
-    public FormQuestionService(FormSectionQuestionRepository formQuestionRepository, UserRepository userRepository, FormRepository formRepository) {
-        this.formQuestionRepository = formQuestionRepository;
+    public FormSectionQuestionService(FormSectionQuestionRepository formSectionQuestionRepository, UserRepository userRepository, FormRepository formRepository) {
+        this.formSectionQuestionRepository = formSectionQuestionRepository;
         this.userRepository = userRepository;
         this.formRepository = formRepository;
     }
 
     public Page<FormSectionQuestion> findAll(Pageable pageable) {
-        return formQuestionRepository.findAll(pageable);
+        return formSectionQuestionRepository.findAll(pageable);
     }
 
     public Optional<FormSectionQuestion> findById(Long id){
-        return this.formQuestionRepository.findById(id);
+        return this.formSectionQuestionRepository.findById(id);
     }
 
     public Page<FormSectionQuestionDTO> fetchByForm(final Long formId, Pageable pageable) {
         // Fetch paginated FormQuestions from the repository
-        Page<FormSectionQuestion> formQuestions = this.formQuestionRepository.fetchByForm(formId, pageable);
+        Page<FormSectionQuestion> formQuestions = this.formSectionQuestionRepository.fetchByForm(formId, pageable);
 
         // Convert the Page<FormQuestion> to Page<FormQuestionDTO> by mapping entities to DTOs
-        return formQuestions.map(FormSectionQuestionDTO::new);
+        return formQuestions.map(this::formSectionQuestionToDTO);
     }
+
+    public boolean existsInMentorShipOrAnswer(FormSectionQuestion formSectionQuestion){
+        boolean resp = this.formSectionQuestionRepository.existsInMentorShipOrAnswer(formSectionQuestion);
+
+        return resp;
+    };
+
+     public FormSectionQuestionDTO formSectionQuestionToDTO (FormSectionQuestion formSectionQuestion) {
+        return new FormSectionQuestionDTO(formSectionQuestion, existsInMentorShipOrAnswer(formSectionQuestion));
+     }
 
 
     public FormSectionQuestion create(FormSectionQuestion formSectionQuestion){
-        return this.formQuestionRepository.save(formSectionQuestion);
+        return this.formSectionQuestionRepository.save(formSectionQuestion);
     }
 
     public void inactivate(Long userId, Long formId, FormSectionQuestionDTO formQuestionDTO) {
@@ -66,14 +75,14 @@ public class FormQuestionService {
         formSectionQuestion.setUpdatedBy(user.getUuid());
         formSectionQuestion.setUpdatedAt(new Date());
         formSectionQuestion.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
-        this.formQuestionRepository.update(formSectionQuestion);
+        this.formSectionQuestionRepository.update(formSectionQuestion);
     }
 
     public List<FormSectionQuestion> fetchByFormsUuids(final List<String> formsUuids, Long offset, Long limit){
         if (offset > 0) offset = offset/limit;
 
         Pageable pageable = Pageable.from(Math.toIntExact(offset), Math.toIntExact(limit));
-        return formQuestionRepository.findByFormsUuids(formsUuids, pageable);
+        return formSectionQuestionRepository.findByFormsUuids(formsUuids, pageable);
     }
 
     public boolean doesQuestionHaveFormQuestions(Question question) {
@@ -84,6 +93,11 @@ public class FormQuestionService {
     public List<FormSectionQuestion> fetchByFormsUuidsAndPageAndSize(final List<String> formsUuids, Long page, Long size){
 
         Pageable pageable = Pageable.from(Math.toIntExact(page), Math.toIntExact(size));
-        return formQuestionRepository.findByFormsUuids(formsUuids, pageable);
+        return formSectionQuestionRepository.findByFormsUuids(formsUuids, pageable);
+    }
+
+    @Transactional
+    public void destroy(FormSectionQuestion formSectionQuestion) {
+        this.formSectionQuestionRepository.delete(formSectionQuestion);
     }
 }

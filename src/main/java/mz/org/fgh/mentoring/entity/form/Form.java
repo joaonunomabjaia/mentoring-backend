@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.QuestionDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.partner.Partner;
@@ -75,8 +75,10 @@ public class Form extends BaseEntity {
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "form", cascade = CascadeType.ALL)
     private List<Answer> answers;
 
-    
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "form", cascade = CascadeType.ALL)
+    // New relationship with FormSection
+    @ToString.Exclude
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "form", cascade = CascadeType.ALL)
     private List<FormSection> formSections;
 
     @Creator
@@ -86,7 +88,7 @@ public class Form extends BaseEntity {
         super(uuid);
     }
     // Constructor to initialize entity from FormDTO
-    public Form(FormDTO formDTO) {
+    public Form(QuestionDTO formDTO) {
         super(formDTO);
         this.setCode(formDTO.getCode());
         this.setDescription(formDTO.getDescription());

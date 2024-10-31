@@ -2,9 +2,8 @@ package mz.org.fgh.mentoring.dto.answer;
 
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.QuestionDTO;
 import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
-import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;

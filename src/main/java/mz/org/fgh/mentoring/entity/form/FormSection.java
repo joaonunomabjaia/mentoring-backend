@@ -43,7 +43,7 @@ public class FormSection extends BaseEntity {
     private Integer sequence;
 
     @JsonIgnore
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "formSection", cascade = CascadeType.ALL)
+    @OneToMany(fetch = FetchType.EAGER, mappedBy = "formSection", cascade = CascadeType.ALL)
     private List<FormSectionQuestion> formSectionQuestions;
 
     @Creator

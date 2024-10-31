@@ -6,6 +6,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.PageableRepository;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -69,4 +70,10 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
     List<FormSectionQuestion> findByFormsUuids(List<String> formsUuids, Pageable pageable);
 
     Optional<FormSectionQuestion> findByUuid(String uuid);
+
+    @Query("SELECT CASE WHEN COUNT(a) > 0 THEN true ELSE false END " +
+            "FROM Answer a " +
+            "WHERE a.formSectionQuestion = :formSectionQuestion")
+    boolean existsInMentorShipOrAnswer(FormSectionQuestion formSectionQuestion);
+
 }

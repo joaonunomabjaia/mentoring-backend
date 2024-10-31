@@ -13,7 +13,7 @@ import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.question.SectionRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.answer.AnswerService;
-import mz.org.fgh.mentoring.service.form.FormQuestionService;
+import mz.org.fgh.mentoring.service.form.FormSectionQuestionService;
 import mz.org.fgh.mentoring.service.program.ProgramService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -40,7 +40,7 @@ public class QuestionService {
     private AnswerService answerService;
 
     @Inject
-    private FormQuestionService formQuestionService ;
+    private FormSectionQuestionService formQuestionService ;
     @Inject
     private ProgramService programService;
 
@@ -163,6 +163,14 @@ public class QuestionService {
         return this.questionRepository.update(question);
     }
 
+    public Question updateLifeCycleStatus(Question question, Long userId) {
+        User user = this.userRepository.fetchByUserId(userId);
+            question.setUpdatedBy(user.getUuid());
+            question.setUpdatedAt(DateUtils.getCurrentDate());
+            this.questionRepository.update(question);
+            return question;
+    }
+
     @Transactional
     public Question delete(Question question, Long userId) {
         User user = userRepository.findById(userId).get();
@@ -197,6 +205,12 @@ public class QuestionService {
     }
 
     private QuestionDTO questionToDTO(Question question){
-        return new QuestionDTO(question);
+        return new QuestionDTO(question, this.existsInFormSectionQuestion(question));
     }
+
+    public boolean existsInFormSectionQuestion(Question question){
+        boolean resp = this.questionRepository.existsInFormSectionQuestion(question);
+
+        return resp;
+    };
 }

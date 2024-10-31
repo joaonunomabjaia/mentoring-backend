@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -23,7 +24,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class FormDTO extends BaseEntityDTO {
+public class QuestionDTO extends BaseEntityDTO {
 
     @NotEmpty(message = "Code cannot be empty")
     @Size(max = 50, message = "Code cannot be longer than 50 characters")
@@ -58,11 +59,11 @@ public class FormDTO extends BaseEntityDTO {
 
 
     @Creator
-    public FormDTO() {
+    public QuestionDTO() {
         super();
     }
 
-    public FormDTO(Form form) {
+    public QuestionDTO(Form form) {
         super(form);
         this.code = form.getCode();
         this.name = form.getName();
@@ -86,6 +87,20 @@ public class FormDTO extends BaseEntityDTO {
                 this.formSections.add(new FormSectionDTO(formSection));
             }
         }
+    }
+
+    public  Question toQuestion(){
+        Question question = new Question();
+        question.setUuid(this.getUuid());
+        question.setId(this.getId());
+        question.setCreatedAt(this.getCreatedAt());
+        question.setUpdatedAt(this.getUpdatedAt());
+
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
+            question.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        }
+
+        return question;
     }
 
     public Form toForm() {
@@ -114,8 +129,8 @@ public class FormDTO extends BaseEntityDTO {
             for (FormSectionDTO section : this.formSections) {
                 FormSection formSection = new FormSection(section);
                 formSection.setFormSectionQuestions(new ArrayList<>());
-                if (Utilities.listHasElements(section.getFormQuestionDTOList())) {
-                    for (FormSectionQuestionDTO question : section.getFormQuestionDTOList()) {
+                if (Utilities.listHasElements(section.getFormSectionQuestions())) {
+                    for (FormSectionQuestionDTO question : section.getFormSectionQuestions()) {
                         formSection.getFormSectionQuestions().add(new FormSectionQuestion(question));
                     }
                 }

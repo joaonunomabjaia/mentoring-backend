@@ -29,14 +29,12 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query(value = "SELECT q FROM Question q " +
             "INNER JOIN q.program qc " +
-            "WHERE q.lifeCycleStatus = 'ACTIVE' " +
-            "AND (:code IS NULL OR q.tableCode LIKE CONCAT('%', :code, '%')) " +
+            "WHERE  (:code IS NULL OR q.tableCode LIKE CONCAT('%', :code, '%')) " +
             "AND (:question IS NULL OR q.question LIKE CONCAT('%', :question, '%')) " +
             "AND (:programId IS NULL OR qc.id = :programId)",
             countQuery = "SELECT COUNT(q) FROM Question q " +
                     "INNER JOIN q.program qc " +
-                    "WHERE q.lifeCycleStatus = 'ACTIVE' " +
-                    "AND (:code IS NULL OR q.tableCode LIKE CONCAT('%', :code, '%')) " +
+                    "WHERE (:code IS NULL OR q.tableCode LIKE CONCAT('%', :code, '%')) " +
                     "AND (:question IS NULL OR q.question LIKE CONCAT('%', :question, '%')) " +
                     "AND (:programId IS NULL OR qc.id = :programId)")
     Page<Question> search(@Nullable String code, @Nullable String question, @Nullable Long programId, Pageable pageable);
@@ -50,5 +48,10 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
 
     @Query("SELECT q FROM Question q WHERE q.program = :program ORDER BY q.createdAt DESC")
     Optional<Question> findTopByProgramOrderByCreatedAtDesc(Program program);
+
+    @Query("SELECT CASE WHEN COUNT(fsq) > 0 THEN true ELSE false END " +
+            "FROM FormSectionQuestion fsq " +
+            "WHERE fsq.question = :question")
+    boolean existsInFormSectionQuestion(Question question);
 
 }
