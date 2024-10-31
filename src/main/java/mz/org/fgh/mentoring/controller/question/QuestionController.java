@@ -1,6 +1,5 @@
 package mz.org.fgh.mentoring.controller.question;
 
-import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
@@ -16,8 +15,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.dto.form.QuestionDTO;
-import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.error.MentoringAPIError;

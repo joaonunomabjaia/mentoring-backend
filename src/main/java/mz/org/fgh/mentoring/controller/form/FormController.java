@@ -23,7 +23,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.dto.form.QuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.form.FormService;
@@ -52,7 +52,7 @@ public class FormController {
     @Get("/form")
     public HttpResponse<?> getAll(@Nullable Pageable pageable) {
         try {
-            Page<QuestionDTO> forms = formService.findAll(pageable);
+            Page<FormDTO> forms = formService.findAll(pageable);
             return HttpResponse.ok(forms);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -95,7 +95,7 @@ public class FormController {
     ) {
 
         try {
-            Page<QuestionDTO> forms = formService.search(code, name, program, programmaticAreaCode, pageable);
+            Page<FormDTO> forms = formService.search(code, name, program, programmaticAreaCode, pageable);
             return HttpResponse.ok(forms);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -112,7 +112,7 @@ public class FormController {
     @Get("/programaticarea/{progrArea}")
     public HttpResponse<?> findFormByProgrammaticAreaUuid(@PathVariable("progrArea") String progrArea) {
         try {
-            List<QuestionDTO> forms = formService.findFormByProgrammaticAreaUuid(progrArea);
+            List<FormDTO> forms = formService.findFormByProgrammaticAreaUuid(progrArea);
             return HttpResponse.ok(forms);
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
@@ -131,7 +131,7 @@ public class FormController {
         try {
             List<Form> forms = formService.getByTutorUuid(tutorUuid);
             if (Utilities.listHasElements(forms)) {
-                return HttpResponse.ok(Utilities.parseList(forms, QuestionDTO.class));
+                return HttpResponse.ok(Utilities.parseList(forms, FormDTO.class));
             }
             return HttpResponse.ok(new ArrayList<>());
         } catch (Exception e) {
@@ -147,9 +147,9 @@ public class FormController {
     @ApiResponse(responseCode = "201", description = "Form saved or updated successfully")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @Post("/saveOrUpdate")
-    public HttpResponse<?> saveOrUpdate(@NonNull @Body QuestionDTO formDTO, Authentication authentication) {
+    public HttpResponse<?> saveOrUpdate(@NonNull @Body FormDTO formDTO, Authentication authentication) {
         try {
-            QuestionDTO savedForm = formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
+            FormDTO savedForm = formService.saveOrUpdate((Long) authentication.getAttributes().get("userInfo"), formDTO);
             LOG.info("Created form {}", savedForm);
             return HttpResponse.created(savedForm);
         } catch (Exception e) {
@@ -165,10 +165,10 @@ public class FormController {
     @ApiResponse(responseCode = "200", description = "Form status updated successfully")
     @ApiResponse(responseCode = "400", description = "Bad request")
     @Patch("/changeLifeCicleStatus")
-    public HttpResponse<?> changeLifeCicleStatus(@NonNull @Body QuestionDTO formDTO, Authentication authentication) {
+    public HttpResponse<?> changeLifeCicleStatus(@NonNull @Body FormDTO formDTO, Authentication authentication) {
         try {
             Form updatedForm = formService.updateLifeCycleStatus(formDTO.toForm(), (Long) authentication.getAttributes().get("userInfo"));
-            return HttpResponse.ok(new QuestionDTO(updatedForm));
+            return HttpResponse.ok(new FormDTO(updatedForm));
         } catch (Exception e) {
             LOG.error(e.getMessage(), e);
             return HttpResponse.badRequest().body(MentoringAPIError.builder()

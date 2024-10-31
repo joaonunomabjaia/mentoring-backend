@@ -4,7 +4,7 @@ import io.micronaut.core.annotation.Creator;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
-import mz.org.fgh.mentoring.dto.form.QuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.location.CabinetDTO;
 import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.session.SessionDTO;
@@ -24,7 +24,7 @@ public class MentorshipDTO extends BaseEntityDTO {
     private TutorDTO mentor;
     private TutoredDTO mentee;
     private SessionDTO session;
-    private QuestionDTO form;
+    private FormDTO form;
     private CabinetDTO cabinet;
     private DoorDTO door;
     private EvaluationTypeDTO evaluationType;
@@ -66,7 +66,7 @@ public class MentorshipDTO extends BaseEntityDTO {
             this.getSession().setUuid(mentorship.getSession().getUuid());
         }
         if(mentorship.getForm()!=null) {
-            this.setForm(new QuestionDTO());
+            this.setForm(new FormDTO());
             this.getForm().setUuid(mentorship.getForm().getUuid());
         }
         if(mentorship.getCabinet()!=null) {

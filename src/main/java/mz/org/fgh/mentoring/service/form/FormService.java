@@ -5,7 +5,7 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
-import mz.org.fgh.mentoring.dto.form.QuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
@@ -63,12 +63,12 @@ public class FormService {
         this.formQuestionRepository = formQuestionRepository;
     }
 
-    public Page<QuestionDTO> findAll(Pageable pageable) {
+    public Page<FormDTO> findAll(Pageable pageable) {
         // Fetch paginated forms from the repository
         Page<Form> formPage = this.formRepository.findAllWithFormSections(pageable);
 
         // Convert the Page<Form> to Page<FormDTO> by mapping the Form entities to DTOs
-        return formPage.map(QuestionDTO::new);
+        return formPage.map(FormDTO::new);
     }
 
 
@@ -77,30 +77,30 @@ public class FormService {
         return this.formRepository.findById(id);
     }
 
-    public List<QuestionDTO> findBySelectedFilter(final String code, String name, String programmaticAreaCode, String program){
-        List<QuestionDTO> formDTOS = new ArrayList<>();
+    public List<FormDTO> findBySelectedFilter(final String code, String name, String programmaticAreaCode, String program){
+        List<FormDTO> formDTOS = new ArrayList<>();
         List<Form> forms = this.formRepository.findBySelectedFilter(code, name, programmaticAreaCode, program);
         for(Form form : forms){
             List<FormSectionQuestion> formSectionQuestions = formQuestionRepository.fetchByForm(form.getId());
             //form.setFormQuestions(formSectionQuestions);
-            formDTOS.add(new QuestionDTO(form));
+            formDTOS.add(new FormDTO(form));
         }
         return formDTOS;
     }
 
-    public QuestionDTO findByCode(String code){
+    public FormDTO findByCode(String code){
         Form form = this.formRepository.findByCode(code);
-        return new QuestionDTO(form);
+        return new FormDTO(form);
     }
 
-    public List<QuestionDTO> findFormByProgrammaticAreaUuid(String programaticAreaUuid){
+    public List<FormDTO> findFormByProgrammaticAreaUuid(String programaticAreaUuid){
 
-        List<QuestionDTO> formDTOS = new ArrayList<>();
+        List<FormDTO> formDTOS = new ArrayList<>();
 
         List<Form> forms = this.formRepository.findFormByProgrammaticAreaUuid(programaticAreaUuid);
 
         for(Form form : forms){
-            formDTOS.add(new QuestionDTO(form));
+            formDTOS.add(new FormDTO(form));
         }
 
         return formDTOS;
@@ -113,15 +113,15 @@ public class FormService {
         return  this.formRepository.update(form);
     }
 
-    public Page<QuestionDTO> search(final String code, final String name, final String program, final String programmaticArea, Pageable pageable)    {
+    public Page<FormDTO> search(final String code, final String name, final String program, final String programmaticArea, Pageable pageable)    {
 
         Page<Form> pageForm = this.formRepository.search(code, name, program, programmaticArea, pageable);
 
         return pageForm.map(this::formToDTO);
     }
 
-    private QuestionDTO formToDTO(Form form){
-        return new QuestionDTO(form);
+    private FormDTO formToDTO(Form form){
+        return new FormDTO(form);
     }
 
     public Form updateLifeCycleStatus(Form form, Long userId) {
@@ -194,7 +194,7 @@ public class FormService {
     }
 
     @Transactional
-    public QuestionDTO saveOrUpdate(Long userId, QuestionDTO formDTO) {
+    public FormDTO saveOrUpdate(Long userId, FormDTO formDTO) {
         boolean isCreateStep = StringUtils.isEmpty(formDTO.getUuid());
         Optional<Form> formOpt;
         List<FormSection> formSections;
@@ -255,7 +255,7 @@ public class FormService {
             responseForm = this.formRepository.update(form);
         }
 
-         return new QuestionDTO(responseForm);
+         return new FormDTO(responseForm);
     }
 
     public boolean existsOnDB(@NotNull Section section) {

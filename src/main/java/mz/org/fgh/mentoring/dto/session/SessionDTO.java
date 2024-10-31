@@ -3,7 +3,7 @@ package mz.org.fgh.mentoring.dto.session;
 import io.micronaut.core.annotation.Creator;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.dto.form.QuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
@@ -22,7 +22,7 @@ public class SessionDTO extends BaseEntityDTO {
     private SessionStatusDTO sessionStatus;
     private RondaDTO ronda;
     private String reason;
-    private QuestionDTO form;
+    private FormDTO form;
     private TutoredDTO mentee;
     private String strongPoints;
     private String pointsToImprove;
@@ -48,7 +48,7 @@ public class SessionDTO extends BaseEntityDTO {
             this.setSessionStatus(new SessionStatusDTO(session.getStatus()));
         }
         if(session.getForm()!=null) {
-            this.setForm(new QuestionDTO());
+            this.setForm(new FormDTO());
             this.getForm().setUuid(session.getForm().getUuid());
         }
         if(session.getRonda()!=null) {
