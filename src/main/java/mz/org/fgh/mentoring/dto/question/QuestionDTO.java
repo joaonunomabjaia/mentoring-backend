@@ -35,6 +35,7 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
 
     @JsonProperty("used_in_form_section")
     private boolean usedInFormSection;
+
     @JsonProperty(value = "programUuid")
     private String programUuid;
 

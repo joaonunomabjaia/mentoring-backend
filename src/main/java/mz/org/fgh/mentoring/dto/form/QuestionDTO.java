@@ -129,8 +129,8 @@ public class QuestionDTO extends BaseEntityDTO {
             for (FormSectionDTO section : this.formSections) {
                 FormSection formSection = new FormSection(section);
                 formSection.setFormSectionQuestions(new ArrayList<>());
-                if (Utilities.listHasElements(section.getFormQuestionDTOList())) {
-                    for (FormSectionQuestionDTO question : section.getFormQuestionDTOList()) {
+                if (Utilities.listHasElements(section.getFormSectionQuestions())) {
+                    for (FormSectionQuestionDTO question : section.getFormSectionQuestions()) {
                         formSection.getFormSectionQuestions().add(new FormSectionQuestion(question));
                     }
                 }

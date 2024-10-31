@@ -8,13 +8,12 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.question.SectionRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.answer.AnswerService;
-import mz.org.fgh.mentoring.service.form.FormQuestionService;
+import mz.org.fgh.mentoring.service.form.FormSectionQuestionService;
 import mz.org.fgh.mentoring.service.program.ProgramService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -41,7 +40,7 @@ public class QuestionService {
     private AnswerService answerService;
 
     @Inject
-    private FormQuestionService formQuestionService ;
+    private FormSectionQuestionService formQuestionService ;
     @Inject
     private ProgramService programService;
 

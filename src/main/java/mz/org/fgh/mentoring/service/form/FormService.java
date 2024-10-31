@@ -4,16 +4,22 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.dto.form.QuestionDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.entity.question.EvaluationType;
+import mz.org.fgh.mentoring.entity.question.Question;
+import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
+import mz.org.fgh.mentoring.repository.form.FormSectionRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.question.SectionService;
@@ -46,6 +52,10 @@ public class FormService {
 
     @Inject
     private TutorRepository tutorRepository;
+    @Inject
+    private FormSectionQuestionRepository formSectionQuestionRepository;
+    @Inject
+    private FormSectionRepository formSectionRepository;
 
     public FormService(UserRepository userRepository, FormRepository formRepository, FormSectionQuestionRepository formQuestionRepository) {
         this.userRepository = userRepository;
@@ -127,14 +137,73 @@ public class FormService {
         return null;
     }
 
+    private List<FormSection> formSectionsDTOtoFormSections(List<FormSectionDTO> formSectionDTOS, Form form, User user){
+        List<FormSection> formSections = new ArrayList<>();
+
+        for (FormSectionDTO formSectionDTO : formSectionDTOS) {// Novas formSections e antigas
+            FormSection formSection = new FormSection(formSectionDTO);
+            formSection.setForm(form);
+
+            Optional<FormSection> optionalFormSection = formSectionRepository.findByUuid(formSection.getUuid());
+            if (optionalFormSection.isPresent()) {// formSection ja existia
+                formSection = optionalFormSection.get();
+                formSection.getSection().setUpdatedBy(user.getUuid());
+                formSection.getSection().setUpdatedAt(DateUtils.getCurrentDate());
+                formSection.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                formSectionRepository.update(formSection);
+            } else { // Nova formSection
+                formSection.setFormSectionQuestions(new ArrayList<>());
+                formSection.setUuid(Utilities.generateUUID());
+                formSection.setCreatedBy(user.getUuid());
+                formSection.setCreatedAt(DateUtils.getCurrentDate());
+                formSection.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                formSectionRepository.save(formSection); // Grava para posteriormente associar a Questions caso necessario
+            }
+
+            for (FormSectionQuestionDTO formSectionQuestionDTO : formSectionDTO.getFormSectionQuestions()) {
+                if (formSectionQuestionDTO == null) {
+                    continue;
+                }
+
+                Optional<FormSectionQuestion> formSectionQuestion = formSectionQuestionRepository.findByUuid(formSectionQuestionDTO.getUuid());
+                if(!formSectionQuestion.isPresent()){ // O formSectionQuestion e' novo
+                    FormSectionQuestion formSectionQuestionNew = new FormSectionQuestion(formSectionQuestionDTO);
+                    formSectionQuestionNew.setUuid(Utilities.generateUUID());
+                    formSectionQuestionNew.setCreatedBy(user.getUuid());
+                    formSectionQuestionNew.setCreatedAt(DateUtils.getCurrentDate());
+                    formSectionQuestionNew.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                    formSectionQuestionNew.setFormSection(formSection);
+                    formSectionQuestionNew.setQuestion(new Question(formSectionQuestionDTO.getQuestionDTO()));
+
+                    formSection.getFormSectionQuestions().add(formSectionQuestionRepository.save(formSectionQuestionNew));
+                } else { // O formSectionQuestion ja existia
+                    FormSectionQuestion formSectionQuestionOld = formSectionQuestion.get();
+                    formSectionQuestionOld.setSequence(formSectionQuestionDTO.getSequence());
+                    formSectionQuestionOld.setEvaluationType(new EvaluationType(formSectionQuestionDTO.getEvaluationType()));
+                    formSectionQuestionOld.setResponseType(new ResponseType(formSectionQuestionDTO.getResponseType()));
+                    formSectionQuestionOld.setUpdatedBy(user.getUuid());
+                    formSectionQuestionOld.setUpdatedAt(DateUtils.getCurrentDate());
+                    formSection.getFormSectionQuestions().add(formSectionQuestionRepository.update(formSectionQuestionOld));
+                }
+            }
+
+            formSections.add(formSection);
+        }
+
+        return formSections;
+    }
+
     @Transactional
     public QuestionDTO saveOrUpdate(Long userId, QuestionDTO formDTO) {
         boolean isCreateStep = StringUtils.isEmpty(formDTO.getUuid());
         Optional<Form> formOpt;
+        List<FormSection> formSections;
         Form form;
         Form responseForm;
+
         User user = this.userRepository.fetchByUserId(userId);
         Partner partner = user.getEmployee().getPartner();
+
         List<FormSectionQuestionDTO> formQuestions = formDTO.getFormQuestions();
 
         if(isCreateStep) { // Trata-se de create
@@ -151,10 +220,14 @@ public class FormService {
             form.setUpdatedAt(DateUtils.getCurrentDate());
         }
 
-        form.setDescription(formDTO.getName());
-        form.setPartner(partner);
+        form.setName(formDTO.getName());
+        form.setDescription(formDTO.getDescription());
+        form.setTargetPatient(formDTO.getTargetPatient());
+        form.setTargetFile(formDTO.getTargetFile());
+        form.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
 
-        if(isCreateStep) { // Trata-se de create
+        form.setPartner(partner);
+        if (isCreateStep) { // Trata-se de create
             for (FormSection fs : form.getFormSections()) {
                 fs.setForm(form);
                 fs.setCreatedBy(user.getUuid());
@@ -177,30 +250,12 @@ public class FormService {
 
             responseForm = this.formRepository.save(form);
         } else { // Trata-se de Edit
-            for (FormSection fs : form.getFormSections()) {
-                fs.setForm(form);
-                fs.setUpdatedBy(user.getUuid());
-                fs.setUpdatedAt(DateUtils.getCurrentDate());
-                fs.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-                if (!existsOnDB(fs.getSection())) {
-                    fs.getSection().setUpdatedBy(user.getUuid());
-                    fs.getSection().setUpdatedAt(DateUtils.getCurrentDate());
-                    fs.getSection().setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-                }
-                if (Utilities.listHasElements(fs.getFormSectionQuestions())) {
-                    for (FormSectionQuestion fq : fs.getFormSectionQuestions()) {
-                        fq.setFormSection(fs);
-                        fq.setUpdatedBy(user.getUuid());
-                        fq.setUpdatedAt(DateUtils.getCurrentDate());
-                        fq.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-                    }
-                }
-            }
+            form.setFormSections(formSectionsDTOtoFormSections(formDTO.getFormSections(), form, user));
 
             responseForm = this.formRepository.update(form);
         }
 
-        return new QuestionDTO(responseForm);
+         return new QuestionDTO(responseForm);
     }
 
     public boolean existsOnDB(@NotNull Section section) {

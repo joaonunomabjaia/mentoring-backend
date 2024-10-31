@@ -67,7 +67,7 @@ public class FormSectionQuestion extends BaseEntity {
     public FormSectionQuestion(FormSectionQuestionDTO formQuestionDTO) {
         super(formQuestionDTO);
         this.setSequence(formQuestionDTO.getSequence());
-        if(formQuestionDTO.getQuestion()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestion()));
+        if(formQuestionDTO.getQuestionDTO()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestionDTO()));
         if(formQuestionDTO.getEvaluationType()!=null) this.setEvaluationType(new EvaluationType(formQuestionDTO.getEvaluationType()));
         if(formQuestionDTO.getResponseType()!=null) this.setResponseType(new ResponseType(formQuestionDTO.getResponseType()));
 

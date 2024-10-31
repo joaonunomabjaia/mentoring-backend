@@ -17,13 +17,16 @@ public class FormSectionQuestionDTO extends BaseEntityDTO {
     private Long formSectionId;
 
     @JsonProperty(value = "questionDTO")
-    private QuestionDTO question;
+    private QuestionDTO questionDTO;
 
     @JsonProperty(value = "evaluationType")
     private EvaluationTypeDTO evaluationType;
 
     @JsonProperty(value = "responseType")
     private ResponseTypeDTO responseType;
+
+    @JsonProperty("in_use")
+    private boolean inUse;
 
     private Integer sequence;
 
@@ -47,7 +50,29 @@ public class FormSectionQuestionDTO extends BaseEntityDTO {
         this.setFormSectionId(formSectionQuestion.getFormSection().getId());
         this.setSequence(formSectionQuestion.getSequence());
         if(formSectionQuestion.getQuestion()!=null) {
-            this.setQuestion(new QuestionDTO(formSectionQuestion.getQuestion()));
+            this.setQuestionDTO(new QuestionDTO(formSectionQuestion.getQuestion()));
+            this.setQuestionUuid(formSectionQuestion.getQuestion().getUuid());
+        }
+        if(formSectionQuestion.getEvaluationType()!=null) {
+            this.setEvaluationType(new EvaluationTypeDTO(formSectionQuestion.getEvaluationType()));
+            this.setEvaluationTypeUuid(formSectionQuestion.getEvaluationType().getUuid());
+        }
+        if(formSectionQuestion.getResponseType()!=null) {
+            this.setResponseType(new ResponseTypeDTO(formSectionQuestion.getResponseType()));
+            this.setResponseTypeUuid(formSectionQuestion.getResponseType().getUuid());
+        }
+        this.setFormSectionUuid(formSectionQuestion.getFormSection().getUuid());
+    }
+
+    public FormSectionQuestionDTO(FormSectionQuestion formSectionQuestion, boolean inUse) {
+        super(formSectionQuestion);
+        this.setFormSectionId(formSectionQuestion.getFormSection().getId());
+        this.setSequence(formSectionQuestion.getSequence());
+
+        this.setInUse(inUse);
+
+        if(formSectionQuestion.getQuestion()!=null) {
+            this.setQuestionDTO(new QuestionDTO(formSectionQuestion.getQuestion()));
             this.setQuestionUuid(formSectionQuestion.getQuestion().getUuid());
         }
         if(formSectionQuestion.getEvaluationType()!=null) {
