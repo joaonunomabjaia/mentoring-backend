@@ -8,7 +8,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.dto.form.QuestionDTO;
+import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
 import mz.org.fgh.mentoring.entity.partner.Partner;
@@ -88,7 +88,7 @@ public class Form extends BaseEntity {
         super(uuid);
     }
     // Constructor to initialize entity from FormDTO
-    public Form(QuestionDTO formDTO) {
+    public Form(FormDTO formDTO) {
         super(formDTO);
         this.setCode(formDTO.getCode());
         this.setDescription(formDTO.getDescription());

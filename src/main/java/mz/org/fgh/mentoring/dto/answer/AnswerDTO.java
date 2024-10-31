@@ -2,14 +2,7 @@ package mz.org.fgh.mentoring.dto.answer;
 
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.dto.form.QuestionDTO;
-import mz.org.fgh.mentoring.dto.mentorship.MentorshipDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
-import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
-import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import mz.org.fgh.mentoring.util.Utilities;
 
 /**
  * @author Jose Julai Ritsure

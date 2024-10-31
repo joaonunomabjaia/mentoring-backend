@@ -24,7 +24,7 @@ import java.util.List;
 
 @Data
 @AllArgsConstructor
-public class QuestionDTO extends BaseEntityDTO {
+public class FormDTO extends BaseEntityDTO {
 
     @NotEmpty(message = "Code cannot be empty")
     @Size(max = 50, message = "Code cannot be longer than 50 characters")
@@ -59,11 +59,11 @@ public class QuestionDTO extends BaseEntityDTO {
 
 
     @Creator
-    public QuestionDTO() {
+    public FormDTO() {
         super();
     }
 
-    public QuestionDTO(Form form) {
+    public FormDTO(Form form) {
         super(form);
         this.code = form.getCode();
         this.name = form.getName();
@@ -87,20 +87,6 @@ public class QuestionDTO extends BaseEntityDTO {
                 this.formSections.add(new FormSectionDTO(formSection));
             }
         }
-    }
-
-    public  Question toQuestion(){
-        Question question = new Question();
-        question.setUuid(this.getUuid());
-        question.setId(this.getId());
-        question.setCreatedAt(this.getCreatedAt());
-        question.setUpdatedAt(this.getUpdatedAt());
-
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
-            question.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        }
-
-        return question;
     }
 
     public Form toForm() {
