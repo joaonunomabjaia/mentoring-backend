@@ -15,31 +15,40 @@
     <changeSet id="2" author="voloide">
         <sql>
             CREATE TABLE answers (
-                                     id BIGINT NOT NULL AUTO_INCREMENT PRIMARY KEY,
-                                     uuid CHAR(36) NOT NULL,
-                                     form_id INT NOT NULL,
-                                     mentorship_id INT NOT NULL,
-                                     question_id INT NOT NULL,
-                                     value VARCHAR(255),
-                                     created_by VARCHAR(50),
-                                     life_cycle_status VARCHAR(50),
-                                     updated_at TIMESTAMP NULL,
-                                     updated_by VARCHAR(50),
-                                     form_section_question_id INT NOT NULL,
-                                     PRIMARY KEY (mentorship_id, id)
-            ) PARTITION BY HASH(mentorship_id) PARTITIONS 32;
+                                           `ID` bigint(20) NOT NULL AUTO_INCREMENT,
+                                           `CREATED_AT` datetime NOT NULL DEFAULT current_timestamp(),
+                                           `CREATED_BY` varchar(50) NOT NULL,
+                                           `LIFE_CYCLE_STATUS` varchar(100) NOT NULL,
+                                           `UPDATED_AT` datetime DEFAULT NULL,
+                                           `UPDATED_BY` varchar(50) DEFAULT NULL,
+                                           `UUID` varchar(50) DEFAULT NULL,
+                                           `VALUE` varchar(180) NOT NULL,
+                                           `FORM_ID` bigint(20) NOT NULL,
+                                           `MENTORSHIP_ID` bigint(20) NOT NULL,
+                                           `QUESTION_ID` bigint(20) NOT NULL,
+                                           form_section_question_id INT NOT NULL,
+                                           PRIMARY KEY (`ID`),
+                                           UNIQUE KEY `UUID` (`UUID`),
+                                           KEY `FK_8n7n313s9gw943qs6rhr7tb9c` (`FORM_ID`),
+                                           KEY `FK_roww60bo2ki27wdeus9fc4kt` (`MENTORSHIP_ID`),
+                                           KEY `FK_d9vax6lqppjc9upau668njk19` (`QUESTION_ID`),
+                                           CONSTRAINT `FK_8n7n313s9gw943qs6rhr7tb9c` FOREIGN KEY (`FORM_ID`) REFERENCES `forms` (`ID`),
+                                           CONSTRAINT `FK_d9vax6lqppjc9upau668njk19` FOREIGN KEY (`QUESTION_ID`) REFERENCES `questions` (`ID`),
+                                           CONSTRAINT `FK_roww60bo2ki27wdeus9fc4kt` FOREIGN KEY (`MENTORSHIP_ID`) REFERENCES `mentorships` (`ID`)
+            ) ENGINE=InnoDB AUTO_INCREMENT=10783704 DEFAULT CHARSET=utf8mb3 COLLATE=utf8mb3_general_ci;
+
         </sql>
     </changeSet>
 
     <!-- Step 3: Migrate data from backup table to new partitioned table -->
     <changeSet id="3" author="voloide">
         <sql>
-            INSERT INTO answers (uuid, form_id, mentorship_id, question_id, value,
-                                 created_by, life_cycle_status, updated_at,
-                                 updated_by, form_section_question_id)
-            SELECT uuid, form_id, mentorship_id, question_id, value,
-                   created_by, life_cycle_status, updated_at,
-                   updated_by, form_section_question_id
+            INSERT INTO answers (ID, CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT,
+                                 UPDATED_BY, UUID, VALUE, FORM_ID, MENTORSHIP_ID, QUESTION_ID,
+                                 form_section_question_id)
+            SELECT ID, CREATED_AT, CREATED_BY, LIFE_CYCLE_STATUS, UPDATED_AT,
+                   UPDATED_BY, UUID, VALUE, FORM_ID, MENTORSHIP_ID, QUESTION_ID,
+                   form_section_question_id
             FROM answers_backup;
         </sql>
     </changeSet>
@@ -49,7 +58,7 @@
         <dropTable tableName="answers_backup"/>
     </changeSet>
 
-    <!-- Step 3: Create indexes for optimized querying -->
+    <!-- Step 3: Create indexes for optimized querying
     <changeSet id="5" author="voloide">
         <createIndex tableName="answers" indexName="idx_form_id">
             <column name="form_id"/>
@@ -70,6 +79,6 @@
         <createIndex tableName="answers" indexName="idx_updated_at">
             <column name="updated_at"/>
         </createIndex>
-    </changeSet>
+    </changeSet>-->
 
 </databaseChangeLog>
