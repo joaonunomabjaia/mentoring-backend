@@ -107,6 +107,18 @@ public class UserController extends BaseController {
         return HttpResponse.ok().body(new UserDTO(user));
     }
 
+    @Operation(summary = "User Password Reset to database from mobile")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Patch("/password-update")
+    public HttpResponse<RestAPIResponse> updatePassword (@Body UserDTO userDTO, Authentication authentication) {
+        userService.updateUserPassword(new User(userDTO), false);
+
+        LOG.info("updated User {}", userDTO);
+
+        return HttpResponse.ok().body(userDTO);
+    }
+
     @Operation(summary = "Destroy User from database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "User")
