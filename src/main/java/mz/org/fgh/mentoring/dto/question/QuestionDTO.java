@@ -48,6 +48,7 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         this.setTableCode(question.getTableCode());
         this.setQuestion(question.getQuestion());
         this.usedInFormSection = usedInFormSection;
+        this.setProgramUuid(question.getProgram().getUuid());
         if (question.getProgram() != null) {
             this.setProgramDTO(new ProgramDTO(question.getProgram()));
         }

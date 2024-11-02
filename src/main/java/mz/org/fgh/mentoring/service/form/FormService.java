@@ -4,24 +4,24 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
-import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.question.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.entity.question.Section;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
+import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormSectionRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.partner.PartnerService;
 import mz.org.fgh.mentoring.service.question.SectionService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -56,6 +56,8 @@ public class FormService {
     private FormSectionQuestionRepository formSectionQuestionRepository;
     @Inject
     private FormSectionRepository formSectionRepository;
+    @Inject
+    private PartnerService partnerService;
 
     public FormService(UserRepository userRepository, FormRepository formRepository, FormSectionQuestionRepository formQuestionRepository) {
         this.userRepository = userRepository;
@@ -197,14 +199,10 @@ public class FormService {
     public FormDTO saveOrUpdate(Long userId, FormDTO formDTO) {
         boolean isCreateStep = StringUtils.isEmpty(formDTO.getUuid());
         Optional<Form> formOpt;
-        List<FormSection> formSections;
         Form form;
         Form responseForm;
 
         User user = this.userRepository.fetchByUserId(userId);
-        Partner partner = user.getEmployee().getPartner();
-
-        List<FormSectionQuestionDTO> formQuestions = formDTO.getFormQuestions();
 
         if(isCreateStep) { // Trata-se de create
             form = formDTO.toForm();
@@ -212,12 +210,16 @@ public class FormService {
             form.setCreatedBy(user.getUuid());
             form.setCreatedAt(DateUtils.getCurrentDate());
             form.setCode(generateFormCode(form));
-            form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            determineLifeCycleStatus(form);
+
         } else { // Trata-se de Edit
             formOpt = formRepository.findById(formDTO.getId());
             form = formOpt.get();
             form.setUpdatedBy(user.getUuid());
             form.setUpdatedAt(DateUtils.getCurrentDate());
+            if (form.getLifeCycleStatus().equals(LifeCycleStatus.INACTIVE)) {
+                determineLifeCycleStatus(form);
+            }
         }
 
         form.setName(formDTO.getName());
@@ -226,7 +228,7 @@ public class FormService {
         form.setTargetFile(formDTO.getTargetFile());
         form.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
 
-        form.setPartner(partner);
+        form.setPartner(partnerService.getMISAU());
         if (isCreateStep) { // Trata-se de create
             for (FormSection fs : form.getFormSections()) {
                 fs.setForm(form);
@@ -256,6 +258,21 @@ public class FormService {
         }
 
          return new FormDTO(responseForm);
+    }
+
+    private void determineLifeCycleStatus(Form form) {
+        if (allSectionsHaveQuestions(form)) {
+            form.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        } else {
+            form.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
+        }
+    }
+
+    private boolean allSectionsHaveQuestions(Form form) {
+        for (FormSection formSection : form.getFormSections()) {
+            if (!Utilities.listHasElements(formSection.getFormSectionQuestions())) return false;
+        }
+        return true;
     }
 
     public boolean existsOnDB(@NotNull Section section) {
