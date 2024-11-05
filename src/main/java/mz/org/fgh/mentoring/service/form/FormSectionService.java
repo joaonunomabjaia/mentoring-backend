@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
+import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.repository.form.FormSectionRepository;
 
 import javax.transaction.Transactional;
@@ -16,8 +17,12 @@ import java.util.Optional;
 @Singleton
 public class FormSectionService {
 
+    private final FormSectionRepository formSectionRepository;
+
     @Inject
-    private FormSectionRepository formSectionRepository;
+    public FormSectionService(FormSectionRepository formSectionRepository) {
+        this.formSectionRepository = formSectionRepository;
+    }
 
     @Transactional
     public FormSection createFormSection(FormSection formSection) {
@@ -52,5 +57,18 @@ public class FormSectionService {
 
     public List<FormSection> getByForm(Form form) {
         return formSectionRepository.findByForm(form);
+    }
+
+    public boolean formSectionInUse(FormSection formSection){
+        boolean resp = this.formSectionRepository.formSectionInUse(formSection);
+        return resp;
+    };
+
+    public Optional<FormSection> findById(Long id) {
+        return formSectionRepository.findById(id);
+    }
+
+    public void destroy(FormSection formSection) {
+        this.formSectionRepository.delete(formSection);
     }
 }

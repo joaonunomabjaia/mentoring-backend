@@ -68,9 +68,12 @@ public class FormService {
         Page<Form> formPage = this.formRepository.findAllWithFormSections(pageable);
 
         // Convert the Page<Form> to Page<FormDTO> by mapping the Form entities to DTOs
-        return formPage.map(FormDTO::new);
+        return formPage.map(this::newFormDTO);
     }
 
+    public FormDTO newFormDTO(Form form) {
+        return new FormDTO(form);
+    }
 
     public Optional<Form> findById(Long id){
 
@@ -116,12 +119,20 @@ public class FormService {
     public Page<FormDTO> search(final String code, final String name, final String program, final String programmaticArea, Pageable pageable)    {
 
         Page<Form> pageForm = this.formRepository.search(code, name, program, programmaticArea, pageable);
-
         return pageForm.map(this::formToDTO);
     }
 
     private FormDTO formToDTO(Form form){
-        return new FormDTO(form);
+        FormDTO formDTO = new FormDTO(form);
+        for (FormSectionDTO formSectionDTO : formDTO.getFormSections()) {
+            if (formSectionService.formSectionInUse(new FormSection(formSectionDTO))){
+                formSectionDTO.setInUse(true);
+            } else {
+                formSectionDTO.setInUse(false);
+            }
+        }
+
+        return formDTO;
     }
 
     public Form updateLifeCycleStatus(Form form, Long userId) {
