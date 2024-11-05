@@ -19,7 +19,7 @@ micronaut:
         mapping: /swagger/**
     versioning:
       enabled: true
-      default-version: 1
+      default-version: 1.3
       header:
         enabled: true
         names:

@@ -204,15 +204,14 @@ public class FormService {
 
         User user = this.userRepository.fetchByUserId(userId);
 
-        if(isCreateStep) { // Trata-se de create
+        if (isCreateStep) { // Create operation
             form = formDTO.toForm();
             form.setUuid(Utilities.generateUUID());
             form.setCreatedBy(user.getUuid());
             form.setCreatedAt(DateUtils.getCurrentDate());
             form.setCode(generateFormCode(form));
             determineLifeCycleStatus(form);
-
-        } else { // Trata-se de Edit
+        } else { // Edit operation
             formOpt = formRepository.findById(formDTO.getId());
             form = formOpt.get();
             form.setUpdatedBy(user.getUuid());
@@ -227,38 +226,45 @@ public class FormService {
         form.setTargetPatient(formDTO.getTargetPatient());
         form.setTargetFile(formDTO.getTargetFile());
         form.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
-
         form.setPartner(partnerService.getMISAU());
-        if (isCreateStep) { // Trata-se de create
+
+        if (isCreateStep) {
             for (FormSection fs : form.getFormSections()) {
+                // Load or persist the `Section` if necessary
+                Section section = fs.getSection();
                 fs.setForm(form);
+                if (!existsOnDB(section)) {
+                    section.setCreatedBy(user.getUuid());
+                    section.setCreatedAt(DateUtils.getCurrentDate());
+                    section.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                    fs.setSection(sectionService.save(section)); // Explicitly save the `Section`
+                }
+                fs.setSection(section);// Associate `Form` with `FormSection`
                 fs.setCreatedBy(user.getUuid());
                 fs.setCreatedAt(DateUtils.getCurrentDate());
                 fs.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-                if (!existsOnDB(fs.getSection())) {
-                    fs.getSection().setCreatedBy(user.getUuid());
-                    fs.getSection().setCreatedAt(DateUtils.getCurrentDate());
-                    fs.getSection().setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-                }
+
                 if (Utilities.listHasElements(fs.getFormSectionQuestions())) {
                     for (FormSectionQuestion fq : fs.getFormSectionQuestions()) {
-                        fq.setFormSection(fs);
+                        fq.setFormSection(fs); // Associate `FormSection` with `FormSectionQuestion`
                         fq.setCreatedBy(user.getUuid());
                         fq.setCreatedAt(DateUtils.getCurrentDate());
                         fq.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
                     }
                 }
             }
+            responseForm = this.formRepository.save(form); // Persist the `Form` first
 
-            responseForm = this.formRepository.save(form);
-        } else { // Trata-se de Edit
+        } else { // Edit operation
             form.setFormSections(formSectionsDTOtoFormSections(formDTO.getFormSections(), form, user));
-
             responseForm = this.formRepository.update(form);
         }
 
-         return new FormDTO(responseForm);
+        return new FormDTO(responseForm);
     }
+
+
+
 
     private void determineLifeCycleStatus(Form form) {
         if (allSectionsHaveQuestions(form)) {
