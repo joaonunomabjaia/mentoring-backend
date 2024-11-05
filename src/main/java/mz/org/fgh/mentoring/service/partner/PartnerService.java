@@ -103,4 +103,8 @@ public class PartnerService {
             partnerRepository.delete(partner);
         }
     }
+
+    public @NotNull Partner getMISAU() {
+        return partnerRepository.findByUuid("398f0ffeb8fe11edafa10242ac120002");
+    }
 }
