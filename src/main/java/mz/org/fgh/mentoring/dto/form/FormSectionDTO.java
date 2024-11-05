@@ -27,6 +27,9 @@ public class FormSectionDTO extends BaseEntityDTO {
 
     private String sectionUuid;
 
+    @JsonProperty("in_use")
+    private boolean inUse;
+
     private Integer sequence;
 
     @JsonProperty(value = "formSectionQuestions")
@@ -42,6 +45,21 @@ public class FormSectionDTO extends BaseEntityDTO {
         this.section = new SectionDTO(formSection.getSection());
         this.sectionUuid = formSection.getSection().getUuid();
         this.sequence = formSection.getSequence();
+        if (Utilities.listHasElements(formSection.getFormSectionQuestions())) {
+            this.formSectionQuestions = new ArrayList<>();
+            for (FormSectionQuestion fsq : formSection.getFormSectionQuestions()) {
+                this.formSectionQuestions.add(new FormSectionQuestionDTO(fsq));
+            }
+        }
+    }
+    public FormSectionDTO(FormSection formSection, boolean inUse) {
+        super(formSection);
+        this.formId = formSection.getForm().getId();
+        this.formUuid = formSection.getForm().getUuid();
+        this.section = new SectionDTO(formSection.getSection());
+        this.sectionUuid = formSection.getSection().getUuid();
+        this.sequence = formSection.getSequence();
+        this.setInUse(inUse);
         if (Utilities.listHasElements(formSection.getFormSectionQuestions())) {
             this.formSectionQuestions = new ArrayList<>();
             for (FormSectionQuestion fsq : formSection.getFormSectionQuestions()) {

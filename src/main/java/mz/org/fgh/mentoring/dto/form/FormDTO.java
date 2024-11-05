@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.dto.form;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Creator;
+import jakarta.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
@@ -13,6 +14,7 @@ import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.question.Question;
+import mz.org.fgh.mentoring.service.form.FormSectionService;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -63,6 +65,8 @@ public class FormDTO extends BaseEntityDTO {
         super();
     }
 
+    // Novo construtor para injeção de dependência do serviço
+    @Inject
     public FormDTO(Form form) {
         super(form);
         this.code = form.getCode();
@@ -72,7 +76,9 @@ public class FormDTO extends BaseEntityDTO {
         this.createdBy = form.getCreatedBy();
         this.targetPatient = form.getTargetPatient();
         this.targetFile = form.getTargetFile();
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+
+        if (Utilities.stringHasValue(this.getLifeCycleStatus()))
+            form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
 
         if (form.getPartner() != null) {
             this.partnerDTO = new PartnerDTO(form.getPartner());

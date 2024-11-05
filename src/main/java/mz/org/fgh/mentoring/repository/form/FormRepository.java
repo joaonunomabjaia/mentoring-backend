@@ -51,7 +51,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     @Query(value = "select * from forms limit :lim offset :of ", nativeQuery = true)
     List<Form> findFormWithLimit(long lim, long of);
 
-    @Query(value = "SELECT f FROM Form f " +
+    @Query(value = "SELECT DISTINCT f FROM Form f " +
             "INNER JOIN f.programmaticArea pa " +
             "INNER JOIN pa.program p " +
             "LEFT JOIN f.formSections fs " +
@@ -60,7 +60,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             "AND (:name IS NULL OR f.name LIKE CONCAT('%', :name, '%')) " +
             "AND (:program IS NULL OR p.name LIKE CONCAT('%', :program, '%')) " +
             "AND (:programmaticArea IS NULL OR pa.name LIKE CONCAT('%', :programmaticArea, '%'))",
-            countQuery = "SELECT COUNT(f) FROM Form f " +
+            countQuery = "SELECT COUNT(DISTINCT f) FROM Form f " +
                     "INNER JOIN f.programmaticArea pa " +
                     "INNER JOIN pa.program p " +
                     "LEFT JOIN f.formSections fs " +
