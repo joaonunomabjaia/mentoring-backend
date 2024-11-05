@@ -21,18 +21,23 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
 
     Optional<FormSectionQuestion> findById(@NotNull Long id);
 
-    @Query(value = "FROM FormSectionQuestion fq " +
-            "INNER JOIN FETCH fq.formSection fs " +
-            "INNER JOIN FETCH fs.form f " +
-            "INNER JOIN FETCH fq.question q " +
-            "INNER JOIN FETCH fq.evaluationType et " +
-            "INNER JOIN FETCH fq.responseType rt " +
-            "INNER JOIN FETCH q.program " +
-            "WHERE f.id = :formId AND fq.lifeCycleStatus = 'ACTIVE'",
+    @Query(
+            value = "FROM FormSectionQuestion fq " +
+                    "INNER JOIN FETCH fq.formSection fs " +
+                    "INNER JOIN FETCH fs.form f " +
+                    "INNER JOIN FETCH fq.question q " +
+                    "INNER JOIN FETCH fq.evaluationType et " +
+                    "INNER JOIN FETCH fq.responseType rt " +
+                    "INNER JOIN FETCH q.program " +
+                    "WHERE f.id = :formId AND fq.lifeCycleStatus = 'ACTIVE'",
 
             countQuery = "SELECT COUNT(fq) FROM FormSectionQuestion fq " +
-                    "WHERE fq.form.id = :formId AND fq.lifeCycleStatus = 'ACTIVE'")
+                    "INNER JOIN fq.formSection fs " +
+                    "INNER JOIN fs.form f " +
+                    "WHERE f.id = :formId AND fq.lifeCycleStatus = 'ACTIVE'"
+    )
     Page<FormSectionQuestion> fetchByForm(Long formId, Pageable pageable);
+
 
 
     @Query("FROM FormSectionQuestion fq " +

@@ -20,5 +20,8 @@ public interface FormSectionRepository extends JpaRepository<FormSection, Long> 
     @Query("SELECT fs FROM FormSection fs JOIN FETCH fs.formSectionQuestions WHERE fs.form.id = :formId")
     List<FormSection> findByFormWithQuestions(Long formId);
 
-
+    @Query("SELECT CASE WHEN COUNT(fsq) > 0 THEN true ELSE false END " +
+            "FROM FormSectionQuestion fsq " +
+            "WHERE fsq.formSection = :formSection")
+    boolean formSectionInUse(FormSection formSection);
 }

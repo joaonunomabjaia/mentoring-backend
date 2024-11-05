@@ -7,13 +7,7 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Patch;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -24,8 +18,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
+import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.form.FormSection;
+import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
+import mz.org.fgh.mentoring.service.form.FormSectionService;
 import mz.org.fgh.mentoring.service.form.FormService;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
@@ -42,6 +40,10 @@ public class FormController {
 
     @Inject
     FormService formService;
+    @Inject
+    private FormSectionService formSectionService;
+
+
     public FormController() {}
 
     public static final Logger LOG = LoggerFactory.getLogger(FormController.class);
@@ -105,6 +107,8 @@ public class FormController {
                     .message(e.getMessage()).build());
         }
     }
+
+//    public verifyAndSetFormSectionUsage(FormSectionDTO)
 
     @Operation(summary = "Find forms by programmatic area UUID", description = "Retrieves forms associated with the given programmatic area UUID.")
     @ApiResponse(responseCode = "200", description = "Forms retrieved successfully")
@@ -175,6 +179,34 @@ public class FormController {
                     .status(HttpStatus.BAD_REQUEST.getCode())
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
+        }
+    }
+
+
+
+    @Operation(summary = "Delete a formSection")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "FormSection")
+    @Delete("/{id}")
+    public HttpResponse<?> deleteFormSection(@PathVariable("id") Long id) {
+        try {
+            Optional<FormSection> optionalFormSection = formSectionService.findById(id);
+            if (optionalFormSection.isPresent()) {
+                formSectionService.destroy(optionalFormSection.get());
+                LOG.info("Deleted FormSection with ID {}", id);
+                return HttpResponse.ok();
+            } else {
+                return HttpResponse.notFound();
+            }
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(
+                    MentoringAPIError.builder()
+                            .status(HttpStatus.BAD_REQUEST.getCode())
+                            .error(e.getLocalizedMessage())
+                            .message(e.getMessage())
+                            .build()
+            );
         }
     }
 }
