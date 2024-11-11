@@ -2,6 +2,10 @@ package mz.org.fgh.mentoring.controller.partner;
 
 import java.util.List;
 
+import io.micronaut.data.model.Pageable;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,15 +47,28 @@ public class PartnerController extends BaseController {
     @Tag(name = "Partner")
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Get("getall")
-    public List<PartnerDTO> getAll() {
-        return this.partnerService.getAll();
+    public HttpResponse<?> getAll(
+            Pageable pageable
+    ) {
+        try {
+            return HttpResponse.ok(partnerService.findAllPartners(pageable));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(
+                    MentoringAPIError.builder()
+                            .status(HttpStatus.BAD_REQUEST.getCode())
+                            .error(e.getLocalizedMessage())
+                            .message(e.getMessage())
+                            .build()
+            );
+        }
     }
 
-    @Get
-    public List<Partner> getAll1() {
-        LOG.debug("Searching tutors version 2");
-        return this.partnerService.findAllPartners();
-    }
+//    @Get
+//    public List<Partner> getAll1() {
+//        LOG.debug("Searching tutors version 2");
+//        return this.partnerService.findAllPartners();
+//    }
 
     @Post(
             consumes = MediaType.APPLICATION_JSON,

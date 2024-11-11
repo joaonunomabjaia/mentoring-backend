@@ -29,7 +29,9 @@ public class UserDTO extends BaseEntityDTO {
     private EmployeeDTO employeeDTO;
 
     private List<UserRoleDTO> userRoleDTOS;
-    
+
+    private List<Long> roleIds;
+
     @Creator
     public UserDTO() {}
 

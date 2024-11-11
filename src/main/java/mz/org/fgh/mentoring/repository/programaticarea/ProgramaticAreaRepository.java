@@ -2,6 +2,8 @@ package mz.org.fgh.mentoring.repository.programaticarea;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -26,8 +28,12 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
     @Query("select pa from ProgrammaticArea pa inner join fetch pa.program p where p.id =:programId")
     List<ProgrammaticArea> findProgrammaticAreasByProgramId(final Long programId);
 
-    @Query("select p from ProgrammaticArea p inner join fetch p.program where p.lifeCycleStatus =:lifeCycleStatus")
-    List<ProgrammaticArea> fetchAll(final LifeCycleStatus lifeCycleStatus);
+    @Query(value = "select DISTINCT(p) from ProgrammaticArea p " +
+            "inner join fetch p.program where p.lifeCycleStatus = :lifeCycleStatus",
+            countQuery = "select count(DISTINCT p) from ProgrammaticArea p " +
+                    "where p.lifeCycleStatus = :lifeCycleStatus")
+    Page<ProgrammaticArea> fetchAll(LifeCycleStatus lifeCycleStatus, Pageable pageable);
+
 
     @Query("SELECT p FROM ProgrammaticArea p JOIN FETCH p.program WHERE p.id = :id")
     ProgrammaticArea getById(Long id);

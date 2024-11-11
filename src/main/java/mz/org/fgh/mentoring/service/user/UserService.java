@@ -7,6 +7,7 @@ import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
+import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
@@ -24,8 +25,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.transaction.Transactional;
-import java.util.NoSuchElementException;
-import java.util.UUID;
+import java.util.*;
 
 @Singleton
 public class UserService {
@@ -40,6 +40,7 @@ public class UserService {
     private final RoleService roleService;
     private final EmailSender emailSender;
     private final SettingsRepository settingsRepository;
+    private final UserRoleService userRoleService;
 
     public UserService(UserRepository userRepository,
                        EmployeeService employeeService,
@@ -48,7 +49,7 @@ public class UserService {
                        RondaService rondaService,
                        RoleService roleService,
                        EmailSender emailSender,
-                       SettingsRepository settingsRepository) {
+                       SettingsRepository settingsRepository, UserRoleService userRoleService) {
         this.userRepository = userRepository;
         this.employeeService = employeeService;
         this.professionalCategoryRepository = professionalCategoryRepository;
@@ -57,6 +58,7 @@ public class UserService {
         this.roleService = roleService;
         this.emailSender = emailSender;
         this.settingsRepository = settingsRepository;
+        this.userRoleService = userRoleService;
     }
 
     public UserDTO getByCredentials(User user) {
@@ -131,9 +133,27 @@ public class UserService {
         userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
         userDB.setUsername(userDTO.getUsername());
 
+        upDateUserRoles(userDTO, authUser);
+
         updateEmployee(userDTO, authUser);
 
         return userRepository.update(userDB);
+    }
+
+    @Transactional
+    public void upDateUserRoles(UserDTO userDTO, User authUser) {
+        Long userId = userDTO.getId();
+        List<Long> rolesIds = userDTO.getRoleIds();
+        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+
+        for (UserRole userRole : user.getUserRoles()) {
+            userRoleService.deleteUserRole(userRole.getId());
+        }
+
+        for (Long roleId : rolesIds) {
+            userRoleService.create(userId, roleId, authUser.getId());
+        }
+
     }
 
     private void updateEmployee(UserDTO userDTO, User authUser) {

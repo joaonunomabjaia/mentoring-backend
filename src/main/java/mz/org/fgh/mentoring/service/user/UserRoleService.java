@@ -38,6 +38,15 @@ public class UserRoleService {
         return userRoleDTOS;
     }
 
+    public void deleteUserRole(Long userRoleId) {
+
+        this.userRoleRepository.deleteById(userRoleId);
+    }
+
+    public UserRole findByUserIdAndRoleId(Long userId,Long roleId){
+        return this.userRoleRepository.findByUserIdAndRoleId(userId, roleId);
+    };
+
     @Transactional
     public UserRole mergeUserRole(Long userId,Long roleId, Long authUserId) {
         User authUser = userRepository.findById(authUserId).get();
@@ -63,5 +72,24 @@ public class UserRoleService {
             return this.userRoleRepository.save(userRole);
         }
 
+    }
+
+    @Transactional
+    public UserRole create(Long userId,Long roleId, Long authUserId) {
+        User authUser = userRepository.findById(authUserId).get();
+        Role roleDB = roleRepository.findById(roleId).get();
+        User userDB = userRepository.findById(userId).get();
+
+        UserRole userRole = new UserRole();
+
+        userRole.setCreatedBy(authUser.getUuid());
+        userRole.setUuid(UUID.randomUUID().toString());
+        userRole.setCreatedAt(DateUtils.getCurrentDate());
+        userRole.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+
+        userRole.setUser(userDB);
+        userRole.setRole(roleDB);
+
+        return this.userRoleRepository.save(userRole);
     }
 }
