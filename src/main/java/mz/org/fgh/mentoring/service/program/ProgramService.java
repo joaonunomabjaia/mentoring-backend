@@ -1,5 +1,7 @@
 package mz.org.fgh.mentoring.service.program;
 
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
@@ -31,14 +33,14 @@ public class ProgramService {
         this.programRepository = programRepository;
         this.userRepository = userRepository;
     }
-    public List<ProgramDTO> findAllPrograms() {
-        List<Program> programList = this.programRepository.findAll();
-        List<ProgramDTO> programs = new ArrayList<ProgramDTO>();
-        for (Program program: programList) {
-            ProgramDTO programDTO = new ProgramDTO(program);
-            programs.add(programDTO);
-        }
-        return programs;
+    public Page findAllPrograms(Pageable pageable) {
+        Page<Program> programList = this.programRepository.findAll(pageable);
+
+        return programList.map(this::programDTO);
+    }
+
+    private ProgramDTO programDTO(Program program){
+        return new ProgramDTO(program);
     }
 
     @Transactional

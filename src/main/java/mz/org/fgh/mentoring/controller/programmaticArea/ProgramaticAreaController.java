@@ -1,5 +1,8 @@
 package mz.org.fgh.mentoring.controller.programmaticArea;
 
+import io.micronaut.data.model.Pageable;
+import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
 import io.micronaut.http.annotation.Body;
 import io.micronaut.http.annotation.Controller;
@@ -20,6 +23,7 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,9 +46,21 @@ public class ProgramaticAreaController extends BaseController {
     @Tag(name = "ProgramaticArea")
     @Get("/getAll")
     @Secured(SecurityRule.IS_ANONYMOUS)
-    public List<ProgrammaticAreaDTO> getAll() {
-        LOG.debug("Searching tutors version 2");
-        return programaticAreaService.fetchAllProgrammaticAreas();
+    public HttpResponse<?> getAll(
+            Pageable pageable
+    ) {
+        try {
+            return HttpResponse.ok(programaticAreaService.fetchAllProgrammaticAreas(pageable));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(
+                    MentoringAPIError.builder()
+                            .status(HttpStatus.BAD_REQUEST.getCode())
+                            .error(e.getLocalizedMessage())
+                            .message(e.getMessage())
+                            .build()
+            );
+        }
     }
 
     @Get

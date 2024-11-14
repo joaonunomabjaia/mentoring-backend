@@ -1,12 +1,14 @@
 package mz.org.fgh.mentoring.service.role;
 
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.role.Role;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.dto.role.RoleDTO;
 import mz.org.fgh.mentoring.repository.role.RoleRepository;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Singleton
 public class RoleService {
@@ -15,6 +17,10 @@ public class RoleService {
 
     public RoleService(RoleRepository roleRepository) {
         this.roleRepository = roleRepository;
+    }
+
+    public Optional<Role> findById(Long id){
+        return this.roleRepository.findById(id);
     }
 
     public List<RoleDTO> findAllRoles() {

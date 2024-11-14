@@ -1,7 +1,10 @@
 package mz.org.fgh.mentoring.controller.program;
 
 import java.util.List;
-
+import io.micronaut.data.model.Pageable;
+import io.micronaut.data.model.Page;
+import io.micronaut.http.HttpStatus;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,8 +49,21 @@ public class ProgramController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Program")
     @Get("/getAll")
-    public List<ProgramDTO> getAll() {
-        return programService.findAllPrograms();
+    public HttpResponse<?> getAll(
+            Pageable pageable
+    ) {
+        try {
+            return HttpResponse.ok(programService.findAllPrograms(pageable));
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(
+                    MentoringAPIError.builder()
+                            .status(HttpStatus.BAD_REQUEST.getCode())
+                            .error(e.getLocalizedMessage())
+                            .message(e.getMessage())
+                            .build()
+            );
+        }
     }
 
     @Operation(summary = "Save Program to database")
