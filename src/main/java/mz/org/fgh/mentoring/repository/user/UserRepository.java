@@ -21,8 +21,21 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUuid(String uuid);
 
-    @Query(value = "SELECT u FROM User u INNER JOIN u.employee e WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%'))",
-            countQuery = "SELECT COUNT(u) FROM User u INNER JOIN u.employee e WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%'))")
+    @Query(value = "SELECT DISTINCT u FROM User u " +
+            "INNER JOIN u.employee e " +
+            "INNER JOIN u.userRoles ur " +
+            "WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) " +
+            "AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) " +
+            "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) " +
+            "AND (u.id = ur.user.id)",
+            countQuery = "SELECT COUNT(DISTINCT u) FROM User u " +
+                    "INNER JOIN u.employee e " +
+                    "INNER JOIN u.userRoles ur " +
+                    "WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) " +
+                    "AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) " +
+                    "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) " +
+                    "AND (u.id = ur.user.id)"
+    )
     Page<User> search(@Nullable String name,@Nullable String nuit,@Nullable String username, Pageable pageable);
 
 

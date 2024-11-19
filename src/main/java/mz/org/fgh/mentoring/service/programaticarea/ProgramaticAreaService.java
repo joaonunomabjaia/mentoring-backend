@@ -1,9 +1,13 @@
 package mz.org.fgh.mentoring.service.programaticarea;
 
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
+import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
@@ -125,17 +129,15 @@ public class ProgramaticAreaService {
         return programmaticAreas;
     }
 
-    public List<ProgrammaticAreaDTO> fetchAllProgrammaticAreas(){
+    public Page fetchAllProgrammaticAreas(Pageable pageable){
 
-        List<ProgrammaticAreaDTO> programmaticAreas = new ArrayList<>();
+        Page<ProgrammaticArea> programmaticAreaList = this.programaticAreaRepository.fetchAll(LifeCycleStatus.ACTIVE, pageable);
 
-        List<ProgrammaticArea> programmaticAreaList = this.programaticAreaRepository.fetchAll(LifeCycleStatus.ACTIVE);
+        return programmaticAreaList.map(this::programmaticAreaDTO);
+    }
 
-        for (ProgrammaticArea programmaticArea : programmaticAreaList){
-            programmaticAreas.add(new ProgrammaticAreaDTO(programmaticArea));
-        }
-
-        return programmaticAreas;
+    private ProgrammaticAreaDTO programmaticAreaDTO(ProgrammaticArea programmaticArea){
+        return new ProgrammaticAreaDTO(programmaticArea);
     }
 
     public ProgrammaticArea getProgrammaticAreaById(Long id) {

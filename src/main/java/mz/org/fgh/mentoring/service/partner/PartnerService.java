@@ -1,10 +1,13 @@
 package mz.org.fgh.mentoring.service.partner;
 
+import io.micronaut.data.model.Page;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
+import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
@@ -17,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
+import io.micronaut.data.model.Pageable;
 import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 import java.util.Optional;
@@ -57,8 +61,13 @@ public class PartnerService {
         return optPartner.get();
     }
 
-    public List<Partner> findAllPartners(){
-        return partnerRepository.findAll();
+    public Page findAllPartners(Pageable pageable){
+        Page<Partner> partnerList = this.partnerRepository.findAll(pageable);
+        return partnerList.map(this::partnerDTO);
+    }
+
+    private PartnerDTO partnerDTO(Partner partner){
+        return new PartnerDTO(partner);
     }
 
     public Partner updatePartner(final Partner partner, Long userId){
@@ -71,14 +80,14 @@ public class PartnerService {
         return this.partnerRepository.update(partnerDB);
     }
 
-    public List<PartnerDTO> getAll() {
-        try {
-            return Utilities.parseList(this.partnerRepository.findAll(), PartnerDTO.class);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
-
-    }
+//    public List<PartnerDTO> getAll() {
+//        try {
+//            return Utilities.parseList(this.partnerRepository.findAll(), PartnerDTO.class);
+//        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
+//            throw new RuntimeException(e);
+//        }
+//
+//    }
 
     public Partner getById(Long id){
        return this.partnerRepository.findById(id).get();
