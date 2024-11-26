@@ -51,19 +51,24 @@ public class AuthController {
     @Produces(MediaType.APPLICATION_JSON)
     public Publisher<AccessRefreshToken> refreshAccessToken(@Body String body) {
         return Flux.create(emitter -> {
-            String refreshToken = null;
+            String refreshToken;
             try {
                 JsonNode jsonNode = objectMapper.readTree(body);
                 refreshToken = jsonNode.get("refresh_token").asText();
             } catch (JsonProcessingException e) {
-                throw new RuntimeException(e);
+                emitter.error(new HttpStatusException(HttpStatus.BAD_REQUEST, "Invalid refresh token format"));
+                return;
             }
 
             Optional<RefreshTokenEntity> tokenEntity = refreshTokenRepository.findByRefreshToken(refreshToken);
             if (tokenEntity.isPresent()) {
                 Authentication authentication = Authentication.build(tokenEntity.get().getUsername());
-
                 Optional<User> user = userRepository.findByUsername(authentication.getName());
+
+                if (user.isEmpty()) {
+                    emitter.error(new HttpStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+                    return;
+                }
 
                 String username = tokenEntity.get().getUsername();
                 Map<String, Object> attributes = new HashMap<>();
@@ -77,18 +82,29 @@ public class AuthController {
                 refreshTokenAttributes.put("time", DateUtils.getCurrentDate());
                 String newRefreshToken = jwtTokenGenerator.generateToken(refreshTokenAttributes).get();
 
-                // Save the new refresh token to the database
-                RefreshTokenEntity newTokenEntity = new RefreshTokenEntity();
-                newTokenEntity.setUsername(tokenEntity.get().getUsername());
-                newTokenEntity.setRefreshToken(newRefreshToken);
-                newTokenEntity.setDateCreated(DateUtils.getCurrentDate().toInstant());
-                newTokenEntity.setRevoked(false);
-
+                // Mark old token as revoked
                 RefreshTokenEntity oldToken = tokenEntity.get();
                 oldToken.setRevoked(true);
                 refreshTokenRepository.update(oldToken);
 
-                refreshTokenRepository.save(newTokenEntity);
+                // Check if the new refresh token already exists
+                Optional<RefreshTokenEntity> existingToken = refreshTokenRepository.findByRefreshToken(newRefreshToken);
+                if (existingToken.isPresent()) {
+                    // Update the existing token instead of inserting a new one
+                    RefreshTokenEntity existing = existingToken.get();
+                    existing.setDateCreated(DateUtils.getCurrentDate().toInstant());
+                    existing.setRevoked(false);
+                    refreshTokenRepository.update(existing);
+                } else {
+                    // Save the new refresh token
+                    RefreshTokenEntity newTokenEntity = new RefreshTokenEntity();
+                    newTokenEntity.setUsername(username);
+                    newTokenEntity.setRefreshToken(newRefreshToken);
+                    newTokenEntity.setDateCreated(DateUtils.getCurrentDate().toInstant());
+                    newTokenEntity.setRevoked(false);
+
+                    refreshTokenRepository.save(newTokenEntity);
+                }
 
                 emitter.next(new AccessRefreshToken(newAccessToken, newRefreshToken, "Bearer"));
                 emitter.complete();
@@ -97,6 +113,7 @@ public class AuthController {
             }
         });
     }
+
 
 
     private boolean validateRefreshToken(String refreshToken) {

@@ -80,5 +80,8 @@
             <column name="updated_at"/>
         </createIndex>
     </changeSet>-->
+    <changeSet id="add-unique-constraint-refresh-token" author="voloide">
+        <addUniqueConstraint columnNames="refresh_token" tableName="refresh_token" constraintName="unique_refresh_token"/>
+    </changeSet>
 
 </databaseChangeLog>
