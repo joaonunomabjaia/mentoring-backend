@@ -5,22 +5,10 @@ import io.micronaut.data.annotation.DateCreated;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.EqualsAndHashCode;
 import lombok.NoArgsConstructor;
-
-
-import io.micronaut.core.annotation.NonNull;
-import io.micronaut.data.annotation.DateCreated;
-import io.micronaut.data.annotation.MappedEntity;
 import lombok.ToString;
 
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.Instant;
@@ -53,7 +41,7 @@ public class RefreshTokenEntity {
 
     @NonNull
     @NotBlank
-    @Column(name = "REFRESH_TOKEN", nullable = false, length = 500)
+    @Column(name = "REFRESH_TOKEN", nullable = false, length = 500, unique = true)
     private String refreshToken;
 
     @NonNull

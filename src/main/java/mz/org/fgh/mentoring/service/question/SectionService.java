@@ -42,4 +42,8 @@ public class SectionService {
     public Optional<Section> getByUUID(String uuid) {
         return sectionRepository.findByUuid(uuid);
     }
+
+    public Section save(Section section) {
+        return sectionRepository.save(section);
+    }
 }
