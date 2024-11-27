@@ -139,16 +139,35 @@ public class FormService {
 
     public Form updateLifeCycleStatus(Form form, Long userId) {
         User user = this.userRepository.fetchByUserId(userId);
-        Optional<Form> f =  this.formRepository.findByUuid(form.getUuid());
-        if (f.isPresent()) {
-            f.get().setLifeCycleStatus(form.getLifeCycleStatus());
-            f.get().setUpdatedBy(user.getUuid());
-            f.get().setUpdatedAt(DateUtils.getCurrentDate());
-            this.formRepository.update(f.get());
-            return f.get();
+        Optional<Form> formOpt = this.formRepository.findByUuid(form.getUuid());
+
+        if (formOpt.isPresent()) {
+            Form existingForm = formOpt.get();
+
+            // Check if all form sections have associated form section questions
+            boolean allSectionsValid = existingForm.getFormSections().stream()
+                    .allMatch(section -> section.getFormSectionQuestions() != null
+                            && !section.getFormSectionQuestions().isEmpty());
+
+            if (allSectionsValid) {
+                // Update the lifecycle status to ACTIVE
+                existingForm.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                existingForm.setUpdatedBy(user.getUuid());
+                existingForm.setUpdatedAt(DateUtils.getCurrentDate());
+                this.formRepository.update(existingForm);
+
+                return existingForm;
+            } else {
+                // Emit a message for the user
+                throw new IllegalStateException(
+                        "A tabela não pode ser ativada. Todas as seções do devem ter competências associadas."
+                );
+            }
         }
-        return null;
+
+        throw new EntityNotFoundException("Tabela não encontrada com o UUID: " + form.getUuid());
     }
+
 
     private List<FormSection> formSectionsDTOtoFormSections(List<FormSectionDTO> formSectionDTOS, Form form, User user){
         List<FormSection> formSections = new ArrayList<>();
@@ -156,6 +175,13 @@ public class FormService {
         for (FormSectionDTO formSectionDTO : formSectionDTOS) {// Novas formSections e antigas
             FormSection formSection = new FormSection(formSectionDTO);
             formSection.setForm(form);
+
+            if (!existsOnDB(formSection.getSection())) {
+                formSection.getSection().setCreatedBy(user.getUuid());
+                formSection.getSection().setCreatedAt(DateUtils.getCurrentDate());
+                formSection.getSection().setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                formSection.setSection(sectionService.save(formSection.getSection())); // Explicitly save the `Section`
+            }
 
             Optional<FormSection> optionalFormSection = formSectionRepository.findByUuid(formSection.getUuid());
             if (optionalFormSection.isPresent()) {// formSection ja existia
