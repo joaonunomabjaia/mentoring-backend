@@ -9,7 +9,7 @@ import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.FormSection;
-import mz.org.fgh.mentoring.entity.question.EvaluationType;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 

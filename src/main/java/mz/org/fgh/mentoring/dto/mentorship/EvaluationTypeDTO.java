@@ -1,12 +1,10 @@
-package mz.org.fgh.mentoring.dto.question;
+package mz.org.fgh.mentoring.dto.mentorship;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.entity.question.EvaluationType;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import mz.org.fgh.mentoring.util.Utilities;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 
 import java.io.Serializable;
 
