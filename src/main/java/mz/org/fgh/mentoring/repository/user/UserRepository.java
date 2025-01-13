@@ -23,20 +23,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     @Query(value = "SELECT DISTINCT u FROM User u " +
             "INNER JOIN u.employee e " +
-            "INNER JOIN u.userRoles ur " +
             "WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) " +
             "AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) " +
-            "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) " +
-            "AND (u.id = ur.user.id)",
+            "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) ",
             countQuery = "SELECT COUNT(DISTINCT u) FROM User u " +
                     "INNER JOIN u.employee e " +
-                    "INNER JOIN u.userRoles ur " +
                     "WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) " +
                     "AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) " +
-                    "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) " +
-                    "AND (u.id = ur.user.id)"
+                    "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) "
     )
     Page<User> search(@Nullable String name,@Nullable String nuit,@Nullable String username, Pageable pageable);
-
 
 }

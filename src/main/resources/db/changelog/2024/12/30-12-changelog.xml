@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.18.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+    <changeSet id="1735541612743-8" author="voloide">
+        <createTable tableName="evaluation_location">
+            <column autoIncrement="true" name="ID" type="BIGINT">
+                <constraints nullable="false" primaryKey="true" primaryKeyName="pk_evaluation_location"/>
+            </column>
+            <column name="UUID" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_BY" type="VARCHAR(50)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="CREATED_AT" type="DATETIME">
+                <constraints nullable="false"/>
+            </column>
+            <column name="UPDATED_BY" type="VARCHAR(50)"/>
+            <column name="UPDATED_AT" type="DATETIME"/>
+            <column name="LIFE_CYCLE_STATUS" type="VARCHAR(100)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="code" type="VARCHAR(255)">
+                <constraints nullable="false"/>
+            </column>
+        </createTable>
+    </changeSet>
+    <changeSet id="1735541612743-9" author="voloide">
+        <addColumn tableName="mentorships">
+            <column name="EVALUATION_LOCATION_ID" type="BIGINT" defaultValueComputed="NULL"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1735541612743-10" author="voloide">
+        <addUniqueConstraint columnNames="UUID" constraintName="uc_evaluation_location_uuid"
+                             tableName="evaluation_location"/>
+    </changeSet>
+    <changeSet id="1735541612743-11" author="voloide">
+        <addForeignKeyConstraint baseColumnNames="EVALUATION_LOCATION_ID" baseTableName="mentorships"
+                                 constraintName="FK_MENTORSHIPS_ON_EVALUATION_LOCATION" referencedColumnNames="ID"
+                                 referencedTableName="evaluation_location"/>
+    </changeSet>
+    <changeSet id="1735541612744-10" author="voloide">
+        <insert tableName="evaluation_location">
+            <column name="ID" value="1"/>
+            <column name="UUID" value="123e4567-e89b-12d3-a456-426614174000"/>
+            <column name="CREATED_BY" value="system"/>
+            <column name="CREATED_AT" valueDate="2024-12-30T00:00:00"/>
+            <column name="LIFE_CYCLE_STATUS" value="ACTIVE"/>
+            <column name="description" value="Unidade Sanitária"/>
+            <column name="code" value="HEALTH_FACILITY"/>
+        </insert>
+        <insert tableName="evaluation_location">
+            <column name="ID" value="2"/>
+            <column name="UUID" value="123e4567-e89b-12d3-a456-426614174001"/>
+            <column name="CREATED_BY" value="system"/>
+            <column name="CREATED_AT" valueDate="2024-12-30T00:00:00"/>
+            <column name="LIFE_CYCLE_STATUS" value="ACTIVE"/>
+            <column name="description" value="Comunidade"/>
+            <column name="code" value="COMMUNITY"/>
+        </insert>
+    </changeSet>
+
+</databaseChangeLog>

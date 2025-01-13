@@ -55,6 +55,7 @@ public class RESTAPIMapping {
     public final static String RONDA_TYPE = "rondaTypes";
 
     public final static String MENTORSHIP = "mentorships";
+    public final static String EVALUATION_LOCATION = "evaluation-locations";
 
     public final static String RESOURCE = "resources";
     public final static String SESSION_STATUS = "sessionStatuses";

@@ -1,11 +1,11 @@
-package mz.org.fgh.mentoring.entity.question;
+package mz.org.fgh.mentoring.entity.mentorship;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
-import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
+import mz.org.fgh.mentoring.dto.mentorship.EvaluationTypeDTO;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

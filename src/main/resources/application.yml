@@ -62,6 +62,13 @@ micronaut:
 #tag::security[]
 micronaut:
   security:
+    intercept-url-map:
+      - pattern: /swagger-ui/**
+        access:
+          - isAnonymous()
+      - pattern: /swagger/**
+        access:
+          - isAnonymous()
     authentication: bearer # <1>
     token:
       jwt:

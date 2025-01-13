@@ -6,7 +6,6 @@ import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.answer.AnswerDTO;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.location.CabinetDTO;
-import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.session.SessionDTO;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
@@ -32,6 +31,7 @@ public class MentorshipDTO extends BaseEntityDTO {
     private boolean demonstration;
     private String demonstrationDetails;
     private Date performedDate;
+    private EvaluationLocationDTO evaluationLocationDTO;
 
     private String mentorUuid;
     private String menteeUuid;
@@ -40,6 +40,7 @@ public class MentorshipDTO extends BaseEntityDTO {
     private String cabinetUuid;
     private String doorUuid;
     private String evaluationTypeUuid;
+    private String evaluationLocationUuid;
 
     @Creator
     public MentorshipDTO() {
