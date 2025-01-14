@@ -11,7 +11,7 @@ import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
-import mz.org.fgh.mentoring.entity.question.EvaluationType;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.entity.question.Section;

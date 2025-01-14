@@ -5,8 +5,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.entity.mentorship.IterationType;
-import mz.org.fgh.mentoring.entity.question.EvaluationType;
-import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.io.Serializable;
 

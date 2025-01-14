@@ -142,8 +142,8 @@ public class TutoredController extends BaseController {
                     .message(e.getMessage()).build());
         }
     }
-    @Operation(summary = "Batch update tutoreds to database")
-    @ApiResponse(responseCode = "200", description = "Tutoreds updated successfully")
+    @Operation(summary = "Batch update mentees to database")
+    @ApiResponse(responseCode = "200", description = "Mentee updated successfully")
     @ApiResponse(responseCode = "400", description = "Invalid data provided")
     @Patch("/batch-update")
     public HttpResponse<RestAPIResponse> updateTutoredBatch(

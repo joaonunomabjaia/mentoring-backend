@@ -55,15 +55,16 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             "INNER JOIN f.programmaticArea pa " +
             "INNER JOIN pa.program p " +
             "LEFT JOIN f.formSections fs " +
-            "WHERE  (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
+            "WHERE (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
             "AND (:name IS NULL OR f.name LIKE CONCAT('%', :name, '%')) " +
             "AND (:program IS NULL OR p.name LIKE CONCAT('%', :program, '%')) " +
-            "AND (:programmaticArea IS NULL OR pa.name LIKE CONCAT('%', :programmaticArea, '%'))",
+            "AND (:programmaticArea IS NULL OR pa.name LIKE CONCAT('%', :programmaticArea, '%')) " +
+            "ORDER BY fs.sequence ASC",
             countQuery = "SELECT COUNT(DISTINCT f) FROM Form f " +
                     "INNER JOIN f.programmaticArea pa " +
                     "INNER JOIN pa.program p " +
                     "LEFT JOIN f.formSections fs " +
-                    "WHERE  (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
+                    "WHERE (:code IS NULL OR f.code LIKE CONCAT('%', :code, '%')) " +
                     "AND (:name IS NULL OR f.name LIKE CONCAT('%', :name, '%')) " +
                     "AND (:program IS NULL OR p.name LIKE CONCAT('%', :program, '%')) " +
                     "AND (:programmaticArea IS NULL OR pa.name LIKE CONCAT('%', :programmaticArea, '%'))")
@@ -73,6 +74,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             @Nullable String program,
             @Nullable String programmaticArea,
             Pageable pageable);
+
 
 
 

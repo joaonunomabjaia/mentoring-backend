@@ -5,7 +5,7 @@ import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
+import mz.org.fgh.mentoring.dto.mentorship.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 

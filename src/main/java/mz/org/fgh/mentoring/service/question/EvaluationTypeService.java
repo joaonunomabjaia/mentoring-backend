@@ -2,8 +2,8 @@ package mz.org.fgh.mentoring.service.question;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
-import mz.org.fgh.mentoring.entity.question.EvaluationType;
+import mz.org.fgh.mentoring.dto.mentorship.EvaluationTypeDTO;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.repository.question.EvaluationTypeRepository;
 
 import java.util.ArrayList;
