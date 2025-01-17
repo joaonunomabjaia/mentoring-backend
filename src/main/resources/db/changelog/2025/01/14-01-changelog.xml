@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-evaluation-location-id-to-forms" author="Joao Nuno Mabjaia">
+        <!-- Adiciona a coluna EVALUATION_LOCATION_ID na tabela forms -->
+        <addColumn tableName="forms">
+            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="3">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Define a chave estrangeira entre forms.EVALUATION_LOCATION_ID e evaluation_location.ID -->
+        <addForeignKeyConstraint baseTableName="forms"
+                                 baseColumnNames="EVALUATION_LOCATION_ID"
+                                 referencedTableName="evaluation_location"
+                                 referencedColumnNames="ID"
+                                 constraintName="fk_forms_evaluation_location"/>
+    </changeSet>
+
+    <changeSet id="add-evaluation-location-id-to-questions" author="Joao Nuno Mabjaia">
+        <!-- Adiciona a coluna EVALUATION_LOCATION_ID na tabela questions -->
+        <addColumn tableName="questions">
+            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="3">
+                <constraints nullable="true"/>
+            </column>
+        </addColumn>
+
+        <!-- Define a chave estrangeira entre questions.EVALUATION_LOCATION_ID e evaluation_location.ID -->
+        <addForeignKeyConstraint baseTableName="questions"
+                                 baseColumnNames="EVALUATION_LOCATION_ID"
+                                 referencedTableName="evaluation_location"
+                                 referencedColumnNames="ID"
+                                 constraintName="fk_questions_evaluation_location"/>
+    </changeSet>
+</databaseChangeLog>

@@ -9,6 +9,7 @@ import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.mentorship.EvaluationLocationRepository;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 import mz.org.fgh.mentoring.repository.question.SectionRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
@@ -40,6 +41,9 @@ public class QuestionService {
     private AnswerService answerService;
 
     @Inject
+    private EvaluationLocationRepository evaluationLocationRepository;
+
+    @Inject
     private FormSectionQuestionService formQuestionService ;
     @Inject
     private ProgramService programService;
@@ -47,15 +51,17 @@ public class QuestionService {
     @Creator
     public QuestionService(){}
 
-    public QuestionService(QuestionRepository questionRepository, SectionRepository sectionRepository) {
+    public QuestionService(QuestionRepository questionRepository, SectionRepository sectionRepository, EvaluationLocationRepository evaluationLocationRepository) {
         this.questionRepository = questionRepository;
         this.questionCategoryRepository = sectionRepository;
+        this.evaluationLocationRepository = evaluationLocationRepository;
     }
 
 
-    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository) {
+    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository, EvaluationLocationRepository evaluationLocationRepository) {
         this.questionRepository = questionRepository;
         this.userRepository = userRepository;
+        this.evaluationLocationRepository = evaluationLocationRepository;
     }
 
     public List<Question> getQuestionsByFormCode(String formCode) {
@@ -104,6 +110,8 @@ public class QuestionService {
         question.setCreatedAt(DateUtils.getCurrentDate());
         question.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         question.setCode(generateQuestionCode(question));
+
+        question.setEvaluationLocation(evaluationLocationRepository.findByUuid(question.getEvaluationLocation().getUuid()).get());
 
         return this.questionRepository.save(question);
     }
@@ -155,8 +163,11 @@ public class QuestionService {
     @Transactional
     public Question update(Question question, Long userId) {
         User user = userRepository.findById(userId).get();
+
+//        Question question = questionRepository.findById(questionDTO.getId()).get();
         question.setUpdatedBy(user.getUuid());
         question.setUpdatedAt(DateUtils.getCurrentDate());
+
 //        question.setQuestion(question.getQuestion());
 //        question.setProgram(question.getProgram());
 

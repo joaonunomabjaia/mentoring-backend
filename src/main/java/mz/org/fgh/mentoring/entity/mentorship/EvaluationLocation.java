@@ -21,6 +21,7 @@ public class EvaluationLocation extends BaseEntity {
 
     public static final String HEALTH_FACILITY = "HEALTH_FACILITY";
     public static final String COMMUNITY = "COMMUNITY";
+    public static final String AMBOS = "AMBOS";
 
     @NotEmpty
     @Column(name = "description", nullable = false)
@@ -28,7 +29,7 @@ public class EvaluationLocation extends BaseEntity {
 
     @NotEmpty
     @Column(name = "code", nullable = false)
-    private  String code;
+    private String code;
 
     public EvaluationLocation() {
     }
@@ -45,11 +46,16 @@ public class EvaluationLocation extends BaseEntity {
 
     @JsonIgnore
     public boolean isComumunityEvaluation() {
-        return HEALTH_FACILITY.equals(code);
+        return COMMUNITY.equals(code);
     }
 
     @JsonIgnore
     public boolean isHealthFacilityEvaluation() {
         return HEALTH_FACILITY.equals(code);
+    }
+
+    @JsonIgnore
+    public boolean isAmbosEvaluation() {
+        return AMBOS.equals(code);
     }
 }

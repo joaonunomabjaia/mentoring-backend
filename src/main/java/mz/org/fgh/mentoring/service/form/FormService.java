@@ -10,6 +10,7 @@ import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -19,6 +20,7 @@ import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormSectionRepository;
+import mz.org.fgh.mentoring.repository.mentorship.EvaluationLocationRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.partner.PartnerService;
@@ -58,11 +60,15 @@ public class FormService {
     private FormSectionRepository formSectionRepository;
     @Inject
     private PartnerService partnerService;
+    @Inject
+    private final EvaluationLocationRepository evaluationLocationRepository;
 
-    public FormService(UserRepository userRepository, FormRepository formRepository, FormSectionQuestionRepository formQuestionRepository) {
+
+    public FormService(UserRepository userRepository, FormRepository formRepository, FormSectionQuestionRepository formQuestionRepository, EvaluationLocationRepository evaluationLocationRepository) {
         this.userRepository = userRepository;
         this.formRepository = formRepository;
         this.formQuestionRepository = formQuestionRepository;
+        this.evaluationLocationRepository = evaluationLocationRepository;
     }
 
     public Page<FormDTO> findAll(Pageable pageable) {
@@ -248,6 +254,7 @@ public class FormService {
             form.setCreatedAt(DateUtils.getCurrentDate());
             form.setCode(generateFormCode(form));
             determineLifeCycleStatus(form);
+            form.setEvaluationLocation(evaluationLocationRepository.findByUuid(formDTO.getEvaluationLocationDTO().getUuid()).get());
         } else { // Edit operation
             formOpt = formRepository.findById(formDTO.getId());
             form = formOpt.get();
@@ -264,6 +271,7 @@ public class FormService {
         form.setTargetFile(formDTO.getTargetFile());
         form.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
         form.setPartner(partnerService.getMISAU());
+        form.setEvaluationLocation(evaluationLocationRepository.findByUuid(formDTO.getEvaluationLocationDTO().getUuid()).get());
 
         if (isCreateStep) {
             for (FormSection fs : form.getFormSections()) {
