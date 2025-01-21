@@ -11,6 +11,7 @@ import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
 import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
 import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -81,6 +82,10 @@ public class Form extends BaseEntity {
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "form", cascade = CascadeType.ALL)
     private List<FormSection> formSections;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "EVALUATION_LOCATION_ID")
+    private EvaluationLocation evaluationLocation;
+
     @Creator
     public Form(){}
 
@@ -95,6 +100,10 @@ public class Form extends BaseEntity {
         this.setName(formDTO.getName());
         this.setTargetFile(formDTO.getTargetFile());
         this.setTargetPatient(formDTO.getTargetPatient());
+        this.setEvaluationLocation(new EvaluationLocation(formDTO.getEvaluationLocationUuid()));
+        if (formDTO.getPartnerDTO() != null) {
+            this.setPartner(new Partner(formDTO.getPartnerDTO()));
+        }
         if (formDTO.getPartnerDTO() != null) {
             this.setPartner(new Partner(formDTO.getPartnerDTO()));
         }
@@ -121,7 +130,7 @@ public class Form extends BaseEntity {
                 ", name='" + name + '\'' +
                 ", description='" + description + '\'' +
                 ", targetPatient=" + targetPatient +
-                ", targetFile=" + targetFile +
+                ", targetFile='" + targetFile + '\'' +
                 '}';
     }
 }

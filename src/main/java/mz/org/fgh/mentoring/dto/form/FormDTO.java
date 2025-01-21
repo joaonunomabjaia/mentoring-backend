@@ -6,6 +6,7 @@ import jakarta.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
+import mz.org.fgh.mentoring.dto.mentorship.EvaluationLocationDTO;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
@@ -55,6 +56,10 @@ public class FormDTO extends BaseEntityDTO {
 
     private Integer targetFile;
 
+    private EvaluationLocationDTO evaluationLocationDTO;
+
+    private String evaluationLocationUuid;
+
     private Date createdAt;
 
     private String createdBy;
@@ -76,6 +81,8 @@ public class FormDTO extends BaseEntityDTO {
         this.createdBy = form.getCreatedBy();
         this.targetPatient = form.getTargetPatient();
         this.targetFile = form.getTargetFile();
+        this.evaluationLocationDTO = new EvaluationLocationDTO(form.getEvaluationLocation());
+        this.evaluationLocationUuid = form.getEvaluationLocation().getUuid();
 
         if (Utilities.stringHasValue(this.getLifeCycleStatus()))
             form.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));

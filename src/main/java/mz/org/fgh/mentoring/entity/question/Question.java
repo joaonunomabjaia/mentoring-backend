@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
 import mz.org.fgh.mentoring.entity.program.Program;
 
 import javax.persistence.*;
@@ -40,6 +41,10 @@ public class Question extends BaseEntity {
     @JoinColumn(name = "PROGRAM_ID", nullable = false)
     private Program program;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "EVALUATION_LOCATION_ID")
+    private EvaluationLocation evaluationLocation;
+
     @Creator
     public Question() {}
     public Question(String uuid) {
@@ -51,6 +56,7 @@ public class Question extends BaseEntity {
         this.setCode(questionDTO.getCode());
         this.setTableCode(questionDTO.getTableCode());
         this.setQuestion(questionDTO.getQuestion());
+        this.setEvaluationLocation(new EvaluationLocation(questionDTO.getEvaluationLocationDTO()));
         if (questionDTO.getProgramDTO() != null) this.setProgram(new Program(questionDTO.getProgramDTO()));
     }
 
