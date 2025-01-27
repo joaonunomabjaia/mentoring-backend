@@ -6,7 +6,6 @@ import jakarta.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.dto.mentorship.EvaluationLocationDTO;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
@@ -40,10 +39,6 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
     @JsonProperty(value = "programUuid")
     private String programUuid;
 
-    private EvaluationLocationDTO evaluationLocationDTO;
-
-    private String evaluationLocationUuid;
-
 
     @Creator
     public QuestionDTO() {}
@@ -55,8 +50,6 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         this.setQuestion(question.getQuestion());
         this.usedInFormSection = usedInFormSection;
         this.setProgramUuid(question.getProgram().getUuid());
-        this.evaluationLocationDTO = new EvaluationLocationDTO(question.getEvaluationLocation());
-        this.evaluationLocationUuid = question.getEvaluationLocation().getUuid();
         if (question.getProgram() != null) {
             this.setProgramDTO(new ProgramDTO(question.getProgram()));
         }
@@ -69,8 +62,6 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         this.setQuestion(question.getQuestion());
         this.usedInFormSection = usedInFormSection;
         this.setProgramUuid(question.getProgram().getUuid());
-        this.evaluationLocationDTO = new EvaluationLocationDTO(question.getEvaluationLocation());
-        this.evaluationLocationUuid = question.getEvaluationLocation().getUuid();
         if (question.getProgram() != null) {
             this.setProgramDTO(new ProgramDTO(question.getProgram()));
         }

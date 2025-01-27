@@ -271,7 +271,6 @@ public class FormService {
         form.setTargetFile(formDTO.getTargetFile());
         form.setProgrammaticArea(new ProgrammaticArea(formDTO.getProgrammaticAreaDTO()));
         form.setPartner(partnerService.getMISAU());
-        form.setEvaluationLocation(evaluationLocationRepository.findByUuid(formDTO.getEvaluationLocationDTO().getUuid()).get());
 
         if (isCreateStep) {
             for (FormSection fs : form.getFormSections()) {
@@ -292,6 +291,7 @@ public class FormService {
                 if (Utilities.listHasElements(fs.getFormSectionQuestions())) {
                     for (FormSectionQuestion fq : fs.getFormSectionQuestions()) {
                         fq.setFormSection(fs); // Associate `FormSection` with `FormSectionQuestion`
+                        fq.setEvaluationLocation(evaluationLocationRepository.findByUuid(formDTO.getEvaluationLocationDTO().getUuid()).get());
                         fq.setCreatedBy(user.getUuid());
                         fq.setCreatedAt(DateUtils.getCurrentDate());
                         fq.setLifeCycleStatus(LifeCycleStatus.ACTIVE);

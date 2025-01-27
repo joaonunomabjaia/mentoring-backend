@@ -22,17 +22,17 @@
 
     <changeSet id="add-evaluation-location-id-to-questions" author="Joao Nuno Mabjaia">
         <!-- Adiciona a coluna EVALUATION_LOCATION_ID na tabela questions -->
-        <addColumn tableName="questions">
+        <addColumn tableName="form_section_questions">
             <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="3">
                 <constraints nullable="true"/>
             </column>
         </addColumn>
 
-        <!-- Define a chave estrangeira entre questions.EVALUATION_LOCATION_ID e evaluation_location.ID -->
-        <addForeignKeyConstraint baseTableName="questions"
+        <!-- Define a chave estrangeira entre form_section_questions.EVALUATION_LOCATION_ID e evaluation_location.ID -->
+        <addForeignKeyConstraint baseTableName="form_section_questions"
                                  baseColumnNames="EVALUATION_LOCATION_ID"
                                  referencedTableName="evaluation_location"
                                  referencedColumnNames="ID"
-                                 constraintName="fk_questions_evaluation_location"/>
+                                 constraintName="fk_form_section_questions_evaluation_location"/>
     </changeSet>
 </databaseChangeLog>

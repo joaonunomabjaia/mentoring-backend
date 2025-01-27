@@ -111,8 +111,6 @@ public class QuestionService {
         question.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         question.setCode(generateQuestionCode(question));
 
-        question.setEvaluationLocation(evaluationLocationRepository.findByUuid(question.getEvaluationLocation().getUuid()).get());
-
         return this.questionRepository.save(question);
     }
 

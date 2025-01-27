@@ -116,7 +116,7 @@ jackson:
 # DB sources
 datasources:
   default:
-    url: jdbc:mariadb://${MENTORING_DB_HOST}:${MENTORING_DB_PORT}/mentoring
+    url: jdbc:mariadb://${MENTORING_DB_HOST}:${MENTORING_DB_PORT}/mentoring2
     username: ${MENTORING_DB_USERNAME}
     password: ${MENTORING_DB_PASSWORD}
     schema-generate: NONE

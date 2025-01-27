@@ -5,11 +5,11 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <!-- Step 1: Rename original table to backup -->
-    <changeSet id="1" author="voloide">
-        <renameTable
-                oldTableName="answers"
-                newTableName="answers_backup"/>
-    </changeSet>
+<!--    <changeSet id="1" author="voloide">-->
+<!--        <renameTable-->
+<!--                oldTableName="answers"-->
+<!--                newTableName="answers_backup"/>-->
+<!--    </changeSet>-->
 
     <!-- Step 2: Create new partitioned table -->
     <changeSet id="2" author="voloide">

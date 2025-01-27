@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
+import mz.org.fgh.mentoring.repository.mentorship.EvaluationLocationRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
@@ -32,10 +33,14 @@ public class FormSectionQuestionService {
     @Inject
     private AnswerRepository answerRepository;
 
-    public FormSectionQuestionService(FormSectionQuestionRepository formSectionQuestionRepository, UserRepository userRepository, FormRepository formRepository) {
+    @Inject
+    private final EvaluationLocationRepository evaluationLocationRepository;
+
+    public FormSectionQuestionService(FormSectionQuestionRepository formSectionQuestionRepository, UserRepository userRepository, FormRepository formRepository, EvaluationLocationRepository evaluationLocationRepository) {
         this.formSectionQuestionRepository = formSectionQuestionRepository;
         this.userRepository = userRepository;
         this.formRepository = formRepository;
+        this.evaluationLocationRepository = evaluationLocationRepository;
     }
 
     public Page<FormSectionQuestion> findAll(Pageable pageable) {

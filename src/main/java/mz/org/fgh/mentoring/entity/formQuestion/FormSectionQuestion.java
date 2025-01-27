@@ -9,6 +9,7 @@ import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.FormSection;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
 import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
@@ -57,6 +58,10 @@ public class FormSectionQuestion extends BaseEntity {
     @Column( name ="SEQUENCE" )
     private Integer sequence;
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "EVALUATION_LOCATION_ID")
+    private EvaluationLocation evaluationLocation;
+
     public FormSectionQuestion() {
     }
 
@@ -67,6 +72,7 @@ public class FormSectionQuestion extends BaseEntity {
     public FormSectionQuestion(FormSectionQuestionDTO formQuestionDTO) {
         super(formQuestionDTO);
         this.setSequence(formQuestionDTO.getSequence());
+        this.setEvaluationLocation(new EvaluationLocation(formQuestionDTO.getEvaluationLocationUuid()));
         if(formQuestionDTO.getQuestionDTO()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestionDTO()));
         if(formQuestionDTO.getEvaluationType()!=null) this.setEvaluationType(new EvaluationType(formQuestionDTO.getEvaluationType()));
         if(formQuestionDTO.getResponseType()!=null) this.setResponseType(new ResponseType(formQuestionDTO.getResponseType()));
