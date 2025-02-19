@@ -1,22 +1,10 @@
 package mz.org.fgh.mentoring.controller.partner;
 
-import java.util.List;
-
 import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
-import mz.org.fgh.mentoring.error.MentoringAPIError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Delete;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Patch;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -28,7 +16,10 @@ import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.entity.partner.Partner;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.partner.PartnerService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.PARTNER)
@@ -64,11 +55,6 @@ public class PartnerController extends BaseController {
         }
     }
 
-//    @Get
-//    public List<Partner> getAll1() {
-//        LOG.debug("Searching tutors version 2");
-//        return this.partnerService.findAllPartners();
-//    }
 
     @Post(
             consumes = MediaType.APPLICATION_JSON,

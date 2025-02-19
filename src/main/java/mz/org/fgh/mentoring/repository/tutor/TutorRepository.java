@@ -33,9 +33,4 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
 
     Tutor findByEmployee(Employee employee);
 
-
-/*
-    @Query("From Tutor t inner join fetch t.user u where u.uuid = :userUUID ")
-    Tutor findTutorByUserUuid(String userUUID);*/
-
 }

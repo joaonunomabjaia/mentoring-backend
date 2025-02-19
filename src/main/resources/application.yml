@@ -62,13 +62,6 @@ micronaut:
 #tag::security[]
 micronaut:
   security:
-    intercept-url-map:
-      - pattern: /swagger-ui/**
-        access:
-          - isAnonymous()
-      - pattern: /swagger/**
-        access:
-          - isAnonymous()
     authentication: bearer # <1>
     token:
       jwt:
@@ -116,7 +109,7 @@ jackson:
 # DB sources
 datasources:
   default:
-    url: jdbc:mariadb://${MENTORING_DB_HOST}:${MENTORING_DB_PORT}/mentoring
+    url: jdbc:mariadb://${MENTORING_DB_HOST}:${MENTORING_DB_PORT}/mentoring_test
     username: ${MENTORING_DB_USERNAME}
     password: ${MENTORING_DB_PASSWORD}
     schema-generate: NONE

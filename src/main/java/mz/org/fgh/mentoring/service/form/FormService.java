@@ -10,9 +10,8 @@ import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
-import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
-import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 import mz.org.fgh.mentoring.entity.question.Section;
@@ -372,22 +371,25 @@ public class FormService {
 
 
     public List<Form> getByTutorUuid(String tutorUuid) {
-    // Check if tutorUuid is valid
-    if (tutorUuid == null || tutorUuid.isEmpty()) {
-        throw new IllegalArgumentException("Tutor UUID cannot be null or empty");
+        // Check if tutorUuid is valid
+        if (tutorUuid == null || tutorUuid.isEmpty()) {
+            throw new IllegalArgumentException("Tutor UUID cannot be null or empty");
+        }
+
+        // Retrieve the tutor by UUID
+        return tutorRepository.findByUuid(tutorUuid)
+            .map(tutor -> {
+                // Retrieve all forms related to the tutor
+                List<Form> forms = formRepository.findFormsByTutorId(tutor.getId());
+                // For each form, fetch and set the related form sections
+                forms.forEach(form -> form.setFormSections(formSectionService.getByForm(form)));
+                return forms;
+            })
+            // Handle the case when the tutor is not found
+            .orElseThrow(() -> new EntityNotFoundException("Tutor not found for UUID: " + tutorUuid));
     }
 
-    // Retrieve the tutor by UUID
-    return tutorRepository.findByUuid(tutorUuid)
-        .map(tutor -> {
-            // Retrieve all forms related to the tutor
-            List<Form> forms = formRepository.getAllOfTutor(tutor);
-            // For each form, fetch and set the related form sections
-            forms.forEach(form -> form.setFormSections(formSectionService.getByForm(form)));
-            return forms;
-        })
-        // Handle the case when the tutor is not found
-        .orElseThrow(() -> new EntityNotFoundException("Tutor not found for UUID: " + tutorUuid));
-}
-
+    public List<Form> getAllOfTutors(List<String> tutorUuids) {
+        return formRepository.findFormsByTutorUuids(tutorUuids);
+    }
 }

@@ -15,7 +15,6 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
@@ -140,7 +139,6 @@ public class QuestionController {
                 question.setTableCode(questionDTO.getTableCode());
                 question.setQuestion(questionDTO.getQuestion());
                 question.setProgram(new Program(questionDTO.getProgramDTO()));
-                question.setEvaluationLocation(new EvaluationLocation(questionDTO.getEvaluationLocationDTO()));
                 question = questionService.update(question, (Long) authentication.getAttributes().get("userInfo"));
                 LOG.info("Updated question {}", question);
                 return HttpResponse.ok(new mz.org.fgh.mentoring.dto.question.QuestionDTO(question));

@@ -24,4 +24,10 @@ public interface TutorProgrammaticAreaRepository extends CrudRepository<TutorPro
 
     @Query(value = "select t from TutorProgrammaticArea t join fetch t.programmaticArea pa where pa.id = :programmaticAreaId ")
     List<TutorProgrammaticArea>findByProgrammaticAreaId(Long programmaticAreaId);
+
+    @Query("SELECT tpa FROM TutorProgrammaticArea tpa " +
+            "INNER JOIN FETCH tpa.tutor t " +
+            "WHERE t.uuid IN (:tutorUuids)")
+    List<TutorProgrammaticArea> findByTutorUuidIn(List<String> tutorUuids);
+
 }

@@ -5,6 +5,7 @@ import io.micronaut.core.annotation.Creator;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
+import mz.org.fgh.mentoring.dto.mentorship.EvaluationLocationDTO;
 import mz.org.fgh.mentoring.dto.mentorship.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
@@ -22,6 +23,9 @@ public class FormSectionQuestionDTO extends BaseEntityDTO {
     @JsonProperty(value = "evaluationType")
     private EvaluationTypeDTO evaluationType;
 
+    @JsonProperty(value = "evaluationLocation")
+    private EvaluationLocationDTO evaluationLocation;
+
     @JsonProperty(value = "responseType")
     private ResponseTypeDTO responseType;
 
@@ -35,6 +39,8 @@ public class FormSectionQuestionDTO extends BaseEntityDTO {
     private String questionUuid;
 
     private String evaluationTypeUuid;
+
+    private String evaluationLocationUuid;
 
     private String responseTypeUuid;
 
@@ -56,6 +62,10 @@ public class FormSectionQuestionDTO extends BaseEntityDTO {
         if(formSectionQuestion.getEvaluationType()!=null) {
             this.setEvaluationType(new EvaluationTypeDTO(formSectionQuestion.getEvaluationType()));
             this.setEvaluationTypeUuid(formSectionQuestion.getEvaluationType().getUuid());
+        }
+        if(formSectionQuestion.getEvaluationLocation()!=null) {
+            this.setEvaluationLocation(new EvaluationLocationDTO(formSectionQuestion.getEvaluationLocation()));
+            this.setEvaluationLocationUuid(formSectionQuestion.getEvaluationLocation().getUuid());
         }
         if(formSectionQuestion.getResponseType()!=null) {
             this.setResponseType(new ResponseTypeDTO(formSectionQuestion.getResponseType()));

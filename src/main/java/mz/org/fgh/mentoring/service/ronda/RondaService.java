@@ -37,13 +37,7 @@ import mz.org.fgh.mentoring.util.Utilities;
 import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Singleton
 public class RondaService extends BaseService {
@@ -161,7 +155,7 @@ public class RondaService extends BaseService {
         Ronda ronda = rondaDTO.getRonda();
         User user = userRepository.findById(userId).get();
         HealthFacility healthFacility = healthFacilityRepository.findByUuid(ronda.getHealthFacility().getUuid()).get();
-        Tutor mentor = tutorRepository.findByUuid(ronda.getRondaMentors().get(0).getMentor().getUuid()).get();
+        Tutor mentor = tutorRepository.findByUuid(ronda.getActiveMentor().getUuid()).get();
         RondaType rondaType = rondaTypeRepository.findByUuid(ronda.getRondaType().getUuid()).get();
         //if (isOnActiveRonda(mentor)) throw new RuntimeException("O mentor encontra-se em uma ronda activa, não é possível criar nova.");
 
@@ -171,9 +165,9 @@ public class RondaService extends BaseService {
         ronda.setHealthFacility(healthFacility);
         ronda.setRondaType(rondaType);
         Ronda createdRonda = this.rondaRepository.save(ronda);
-        if(Utilities.listHasElements(rondaDTO.getRondaMentors())) {
-            List<RondaMentor> rondaMentors = ronda.getRondaMentors();
-            List<RondaMentor> savedRondaMentors = new ArrayList<>();
+        if(Utilities.hasElements(rondaDTO.getRondaMentors())) {
+            Set<RondaMentor> rondaMentors = ronda.getRondaMentors();
+            Set<RondaMentor> savedRondaMentors = new HashSet<>();
             for (RondaMentor rondaMentor: rondaMentors) {
                 rondaMentor.setRonda(createdRonda);
                 rondaMentor.setMentor(mentor);
@@ -185,9 +179,9 @@ public class RondaService extends BaseService {
             }
             createdRonda.setRondaMentors(savedRondaMentors);
         }
-        if(Utilities.listHasElements(rondaDTO.getRondaMentees())) {
-            List<RondaMentee> rondaMentees = ronda.getRondaMentees();
-            List<RondaMentee> savedRondaMentees = new ArrayList<>();
+        if(Utilities.hasElements(rondaDTO.getRondaMentees())) {
+            Set<RondaMentee> rondaMentees = ronda.getRondaMentees();
+            Set<RondaMentee> savedRondaMentees = new HashSet<>();
             for (RondaMentee rondaMentee: rondaMentees) {
                 rondaMentee.setRonda(createdRonda);
                 Tutored mentee = tutoredRepository.findByUuid(rondaMentee.getTutored().getUuid()).get();
@@ -201,19 +195,6 @@ public class RondaService extends BaseService {
             createdRonda.setRondaMentees(savedRondaMentees);
         }
         return new RondaDTO(createdRonda);
-    }
-
-    private boolean isOnActiveRonda(Tutor mentor) {
-        List<Ronda> rondas = getAllOfMentor(mentor.getUuid());
-        if (!Utilities.listHasElements(rondas)) { return false;}
-        for (Ronda ronda: rondas) {
-            if (!ronda.isComplete()) return false;
-        }
-        return true;
-    }
-
-    public List<Ronda> getAllOfMentor(String mentorUuid) {
-        return this.rondaRepository.getAllOfMentor(mentorUuid);
     }
 
     public boolean doesUserHaveRondas(User user) {
@@ -275,7 +256,7 @@ public class RondaService extends BaseService {
 
         this.rondaMenteeRepository.deleteByRonda(ronda);
 
-        if(Utilities.listHasElements(ronda.getRondaMentees())) {
+        if(Utilities.hasElements(ronda.getRondaMentees())) {
             for (RondaMentee rondaMentee: ronda.getRondaMentees()) {
                 rondaMentee.setRonda(createdRonda);
                 rondaMentee.setTutored(tutoredRepository.findByUuid(rondaMentee.getTutored().getUuid()).get());
@@ -451,4 +432,19 @@ public class RondaService extends BaseService {
         }
         return updatedRondas;
     }
+
+    public List<Ronda> getAllOfMentors(List<String> mentorUuids) {
+        List<Ronda> rondas = rondaRepository.findByMentorUuidIn(mentorUuids);
+
+        if (!rondas.isEmpty()) {
+            for (Ronda ronda : rondas) {
+                ronda.setRondaMentors(rondaMentorRepository.findMentorsForRondas(ronda.getId()));
+                ronda.setRondaMentees(rondaMenteeRepository.findMenteesForRondas(ronda.getId()));
+            }
+
+        }
+        return rondas;
+    }
+
+
 }

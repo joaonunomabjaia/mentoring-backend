@@ -67,5 +67,16 @@
             <column name="code" value="COMMUNITY"/>
         </insert>
     </changeSet>
+    <changeSet id="1735541612746-10" author="voloide">
+        <insert tableName="evaluation_location">
+            <column name="ID" value="3"/>
+            <column name="UUID" value="123e4567-e89b-12d3-a456-426614174011"/>
+            <column name="CREATED_BY" value="system"/>
+            <column name="CREATED_AT" valueDate="2024-12-30T00:00:00"/>
+            <column name="LIFE_CYCLE_STATUS" value="ACTIVE"/>
+            <column name="description" value="Ambos"/>
+            <column name="code" value="BOTH"/>
+        </insert>
+    </changeSet>
 
 </databaseChangeLog>

@@ -9,6 +9,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import mz.org.fgh.mentoring.entity.user.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -34,4 +35,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
     )
     Page<User> search(@Nullable String name,@Nullable String nuit,@Nullable String username, Pageable pageable);
 
+    List<User> findByUuidIn(List<String> uuids);
 }
+

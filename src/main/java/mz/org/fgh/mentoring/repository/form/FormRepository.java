@@ -2,18 +2,19 @@ package mz.org.fgh.mentoring.repository.form;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
+import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.program.Program;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface FormRepository extends CrudRepository<Form, Long> {
 
     @Override
@@ -42,7 +43,7 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             "and pa.code like concat(concat('%',:programmaticAreaCode) ,'%') and p.uuid like concat(concat('%',:program) ,'%') ")
     List<Form> findBySelectedFilter(final String code, final String name, final String programmaticAreaCode, String program);
 
-    @Query("select f FROM Form f INNER JOIN FETCH f.programmaticArea pa INNER JOIN FETCH f.formType  where pa.uuid = :programmaticAreaUuid")
+    @Query("select f FROM Form f INNER JOIN FETCH f.programmaticArea pa where pa.uuid = :programmaticAreaUuid")
     List<Form> findFormByProgrammaticAreaUuid(final String programmaticAreaUuid);
 
     @Query("select f FROM Form f INNER JOIN FETCH f.programmaticArea pa  where pa.id = :programmaticAreaId")
@@ -85,12 +86,24 @@ public interface FormRepository extends CrudRepository<Form, Long> {
             "where pt.id = :partnerId ")
     List<Form> fetchByPartnerId(final Long partnerId);
 
-
-    List<Form> getAllOfTutor(final Tutor tutor);
-
     @Query("SELECT f FROM Form f " +
             "WHERE f.programmaticArea.program = :program " +
             "ORDER BY f.createdAt DESC")
     Optional<Form> findTopByProgramOrderByCreatedAtDesc(Program program);
+
+    @Query("SELECT f FROM Form f " +
+            "INNER JOIN FETCH f.programmaticArea pa " +
+            "INNER JOIN pa.tutorProgrammaticAreas tpa " +
+            "INNER JOIN tpa.tutor t " +
+            "WHERE t.uuid IN (:tutorUuids)")
+    List<Form> findFormsByTutorUuids(List<String> tutorUuids);
+
+    @Query("SELECT f FROM Form f " +
+            "INNER JOIN FETCH f.programmaticArea pa " +
+            "INNER JOIN pa.tutorProgrammaticAreas tpa " +
+            "INNER JOIN tpa.tutor t " +
+            "WHERE t.id = :tutorId")
+    List<Form> findFormsByTutorId(Long tutorId);
+
 
 }
