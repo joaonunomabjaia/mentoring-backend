@@ -7,6 +7,7 @@ import mz.org.fgh.mentoring.entity.session.Session;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 
 public interface SessionRepository extends CrudRepository<Session, Long> {
@@ -48,5 +49,5 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
             "INNER JOIN FETCH s.ronda r " +
             "INNER JOIN FETCH s.status st " +
             "WHERE r.id = :rondaId ")
-    List<Session> findAllOfRonda(Long rondaId);
+    Set<Session> findAllOfRonda(Long rondaId);
 }

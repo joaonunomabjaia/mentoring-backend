@@ -1,19 +1,17 @@
 package mz.org.fgh.mentoring.dto.ronda;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
-import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
-import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Data
@@ -33,9 +31,9 @@ public class RondaDTO extends BaseEntityDTO {
 
     private HealthFacilityDTO healthFacility;
 
-    private List<RondaMenteeDTO> rondaMentees;
+    private Set<RondaMenteeDTO> rondaMentees;
 
-    private List<RondaMentorDTO> rondaMentors;
+    private Set<RondaMentorDTO> rondaMentors;
 
     public RondaDTO() {
     }
@@ -46,27 +44,27 @@ public class RondaDTO extends BaseEntityDTO {
         this.setStartDate(ronda.getStartDate());
         this.setMentorType(ronda.getMentorType());
         this.setEndDate(ronda.getEndDate());
-        if(ronda.getEndDate()!=null) {
-            this.setEndDate(ronda.getEndDate());
-        }
-        if(ronda.getRondaType()!=null) {
-            this.setRondaType(new RondaTypeDTO(ronda.getRondaType()));
-        }
+        if(ronda.getEndDate()!=null) { this.setEndDate(ronda.getEndDate()); }
+        if(ronda.getRondaType()!=null) { this.setRondaType(new RondaTypeDTO(ronda.getRondaType())); }
         if(ronda.getHealthFacility()!=null) this.setHealthFacility(new HealthFacilityDTO(ronda.getHealthFacility()));
-        if (Utilities.listHasElements(ronda.getRondaMentees())) {
-            List<RondaMenteeDTO> rondaMenteeDTOS = ronda.getRondaMentees().stream()
+        if (Utilities.hasElements(ronda.getRondaMentees())) {
+            this.setRondaMentees(ronda.getRondaMentees()
+                    .stream()
                     .map(RondaMenteeDTO::new)
-                    .collect(Collectors.toList());
-            this.setRondaMentees(rondaMenteeDTOS);
+                    .collect(Collectors.toSet()) // Use Set instead of List to prevent MultipleBagFetchException
+            );
         }
-        if (Utilities.listHasElements(ronda.getRondaMentors())) {
-            List<RondaMentorDTO> rondaMentorDTOS = ronda.getRondaMentors().stream()
+
+        if (Utilities.hasElements(ronda.getRondaMentors())) {
+            this.setRondaMentors(ronda.getRondaMentors()
+                    .stream()
                     .map(RondaMentorDTO::new)
-                    .collect(Collectors.toList());
-            this.setRondaMentors(rondaMentorDTOS);
+                    .collect(Collectors.toSet()) // Use Set instead of List
+            );
         }
     }
 
+    @JsonIgnore
     public Ronda getRonda() {
         Ronda ronda = new Ronda();
         ronda.setId(this.getId());
@@ -77,29 +75,38 @@ public class RondaDTO extends BaseEntityDTO {
         ronda.setEndDate(this.getEndDate());
         ronda.setCreatedAt(this.getCreatedAt());
         ronda.setUpdatedAt(this.getUpdatedAt());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) ronda.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
-        if(this.getHealthFacility()!=null) {
+
+        if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
+            ronda.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        }
+
+        if (this.getHealthFacility() != null) {
             ronda.setHealthFacility(this.getHealthFacility().getHealthFacilityObj());
         }
-        if(this.getRondaType()!=null) {
+
+        if (this.getRondaType() != null) {
             ronda.setRondaType(this.getRondaType().getRondaType());
         }
-        if(Utilities.listHasElements(this.getRondaMentors())) {
-            List<RondaMentor> rondaMentors = new ArrayList<>();
-            for (RondaMentorDTO rondaMentorDTO: this.getRondaMentors()) {
-                RondaMentor rondaMentor = rondaMentorDTO.getRondaMentor();
-                rondaMentors.add(rondaMentor);
-            }
-            ronda.setRondaMentors(rondaMentors);
+
+        // Convert RondaMentors using Streams
+        if (Utilities.hasElements(this.getRondaMentors())) {
+            ronda.setRondaMentors(this.getRondaMentors()
+                    .stream()
+                    .map(RondaMentorDTO::getRondaMentor)
+                    .collect(Collectors.toSet()) // Use Set instead of List to avoid Hibernate MultipleBagFetchException
+            );
         }
-        if(Utilities.listHasElements(this.getRondaMentees())) {
-            List<RondaMentee> rondaMentees = new ArrayList<>();
-            for (RondaMenteeDTO rondaMenteeDTO: this.getRondaMentees()) {
-                RondaMentee rondaMentee = rondaMenteeDTO.getRondaMentee();
-                rondaMentees.add(rondaMentee);
-            }
-            ronda.setRondaMentees(rondaMentees);
+
+        // Convert RondaMentees using Streams
+        if (Utilities.hasElements(this.getRondaMentees())) {
+            ronda.setRondaMentees(this.getRondaMentees()
+                    .stream()
+                    .map(RondaMenteeDTO::getRondaMentee)
+                    .collect(Collectors.toSet()) // Use Set instead of List
+            );
         }
+
         return ronda;
     }
+
 }

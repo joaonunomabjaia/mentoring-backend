@@ -83,4 +83,9 @@ public class TutorProgrammaticAreaService {
         Optional<Tutor> t = tutorRepository.findByUuid(tutorUuid);
         return this.tutorProgrammaticAreaRepository.getAllByTutorId(t.get().getId());
     }
+
+    public List<TutorProgrammaticArea> getByTutorUuids(List<String> tutorUuids) {
+        return tutorProgrammaticAreaRepository.findByTutorUuidIn(tutorUuids);
+    }
+
 }

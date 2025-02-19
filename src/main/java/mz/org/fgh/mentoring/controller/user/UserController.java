@@ -26,12 +26,13 @@ import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.service.role.RoleService;
 import mz.org.fgh.mentoring.service.user.UserRoleService;
 import mz.org.fgh.mentoring.service.user.UserService;
+import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Secured(SecurityRule.IS_ANONYMOUS)
 @Controller(RESTAPIMapping.USER_CONTROLLER)
@@ -143,6 +144,24 @@ public class UserController extends BaseController {
         return HttpResponse.ok().body(userDTO);
     }
 
+    @Operation(summary = "Batch User Password Reset from mobile")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Patch("/password-update-batch")
+    public HttpResponse<RestAPIResponse> updatePasswords(@Body List<UserDTO> userDTOs, Authentication authentication) {
+        try {
+            userService.updateUserPasswords(Utilities.parseList(userDTOs, User.class), false);
+
+            LOG.info("Updated passwords for {} users", userDTOs.size());
+
+            return HttpResponse.ok();
+        } catch (Exception e) {
+            LOG.error("Error updating passwords: {}", e.getMessage(), e);
+            return HttpResponse.badRequest();
+        }
+    }
+
+
     @Operation(summary = "Destroy User from database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "User")
@@ -164,6 +183,16 @@ public class UserController extends BaseController {
         User user = this.userService.findByUuid(uuid);
         return new UserDTO(user);
     }
+
+    @Operation(summary = "Get Users from database by UUID list")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Get("/getByUuids")
+    public List<UserDTO> getByUuids(@QueryValue List<String> uuids) {
+        List<User> users = this.userService.findByUuids(uuids);
+        return users.stream().map(UserDTO::new).collect(Collectors.toList());
+    }
+
 
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "User")

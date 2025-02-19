@@ -241,4 +241,14 @@ public class UserService {
             throw new RuntimeException("Error resetting password", e);
         }
     }
+
+    public List<User> findByUuids(List<String> uuids) {
+        return userRepository.findByUuidIn(uuids);
+    }
+
+    public void updateUserPasswords(List<User> userDTOs, boolean b) {
+        for (User user : userDTOs) {
+            updateUserPassword(user, b);
+        }
+    }
 }

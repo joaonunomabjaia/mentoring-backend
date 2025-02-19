@@ -27,13 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Singleton
 public class SessionService extends BaseService {
@@ -76,7 +70,7 @@ public class SessionService extends BaseService {
         List<Ronda> rondas = rondaRepository.findRondasByUuids(rondasUuids);
         List<Session> sessions = new ArrayList<>();
         for (Ronda ronda : rondas) {
-            List<Session> sessionList = sessionRepository.findAllOfRonda(ronda.getId());
+            Set<Session> sessionList = sessionRepository.findAllOfRonda(ronda.getId());
             for (Session session : sessionList) {
                 session.setMentorships(mentorshipRepository.fetchBySessionUuid(session.getUuid(), LifeCycleStatus.ACTIVE));
                 if (Utilities.listHasElements(session.getMentorships())) {

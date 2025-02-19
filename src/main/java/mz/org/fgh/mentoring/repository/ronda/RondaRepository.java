@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.ronda;
 
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
+import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -11,6 +12,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
+@Repository
 public interface RondaRepository extends CrudRepository<Ronda, Long> {
 
     @Override
@@ -29,8 +31,6 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
             "INNER JOIN FETCH pa.rondaType rt " +
             "where rm.id =: mentorId AND rm.lifeCycleStatus = :lifeCycleStatus AND r.lifeCycleStatus = :lifeCycleStatus ")
     List<Ronda> getAllRondasOfMentor(Long mentorId, LifeCycleStatus lifeCycleStatus);
-
-    List<Ronda> getAllOfMentor(String mentorUuid);
 
     @Query("select r from Ronda r where r.createdBy = :userUuid")
     List<Ronda> getByUserUuid(String userUuid);
@@ -62,5 +62,11 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
 
     @Query("select r from Ronda r where r.endDate IS NULL and r.uuid IN (:rondasUuids)")
     List<Ronda> findRondasByUuids(List<String> rondasUuids);
+
+    @Query("SELECT r FROM Ronda r " +
+            "INNER JOIN FETCH r.healthFacility hf " +
+            "INNER JOIN FETCH r.rondaType rt " +
+            "WHERE r.id IN (SELECT rm.ronda.id FROM RondaMentor rm WHERE rm.mentor.uuid IN (:mentorUuids))")
+    List<Ronda> findByMentorUuidIn(List<String> mentorUuids);
 
 }

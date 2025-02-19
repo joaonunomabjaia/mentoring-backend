@@ -5,14 +5,20 @@
                    https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <changeSet id="add-evaluation-location-id-to-forms" author="Joao Nuno Mabjaia">
-        <!-- Adiciona a coluna EVALUATION_LOCATION_ID na tabela forms -->
+        <!-- Check if the column EVALUATION_LOCATION_ID already exists in the forms table -->
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="forms" columnName="EVALUATION_LOCATION_ID"/>
+            </not>
+        </preConditions>
+
+        <!-- Add the column EVALUATION_LOCATION_ID to the forms table -->
         <addColumn tableName="forms">
-            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="3">
-                <constraints nullable="true"/>
+            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="1">
             </column>
         </addColumn>
 
-        <!-- Define a chave estrangeira entre forms.EVALUATION_LOCATION_ID e evaluation_location.ID -->
+        <!-- Define the foreign key between forms.EVALUATION_LOCATION_ID and evaluation_location.ID -->
         <addForeignKeyConstraint baseTableName="forms"
                                  baseColumnNames="EVALUATION_LOCATION_ID"
                                  referencedTableName="evaluation_location"
@@ -20,16 +26,22 @@
                                  constraintName="fk_forms_evaluation_location"/>
     </changeSet>
 
-    <changeSet id="add-evaluation-location-id-to-questions" author="Joao Nuno Mabjaia">
-        <!-- Adiciona a coluna EVALUATION_LOCATION_ID na tabela questions -->
-        <addColumn tableName="questions">
-            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="3">
-                <constraints nullable="true"/>
+    <changeSet id="add-evaluation-location-id-to-form_section_questions" author="Joao Nuno Mabjaia">
+        <!-- Check if the column EVALUATION_LOCATION_ID already exists in the form_section_questions table -->
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="form_section_questions" columnName="EVALUATION_LOCATION_ID"/>
+            </not>
+        </preConditions>
+
+        <!-- Add the column EVALUATION_LOCATION_ID to the form_section_questions table -->
+        <addColumn tableName="form_section_questions">
+            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="1">
             </column>
         </addColumn>
 
-        <!-- Define a chave estrangeira entre questions.EVALUATION_LOCATION_ID e evaluation_location.ID -->
-        <addForeignKeyConstraint baseTableName="questions"
+        <!-- Define the foreign key between form_section_questions.EVALUATION_LOCATION_ID and evaluation_location.ID -->
+        <addForeignKeyConstraint baseTableName="form_section_questions"
                                  baseColumnNames="EVALUATION_LOCATION_ID"
                                  referencedTableName="evaluation_location"
                                  referencedColumnNames="ID"

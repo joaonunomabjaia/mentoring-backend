@@ -24,6 +24,8 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
 
     private Long mentorId;
 
+    private String tutoruuid;
+
     @Creator
     public TutorProgrammaticAreaDTO() {
         super();
@@ -31,6 +33,7 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
 
     public TutorProgrammaticAreaDTO(TutorProgrammaticArea tutorProgrammaticArea) {
         super(tutorProgrammaticArea);
+        this.tutoruuid = tutorProgrammaticArea.getTutor().getUuid();
         if(tutorProgrammaticArea.getProgrammaticArea()!=null) {
             this.setProgrammaticAreaDTO(new ProgrammaticAreaDTO(tutorProgrammaticArea.getProgrammaticArea()));
         }

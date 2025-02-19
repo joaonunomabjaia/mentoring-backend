@@ -18,10 +18,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.dto.form.FormDTO;
-import mz.org.fgh.mentoring.dto.form.FormSectionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
-import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.form.FormSectionService;
 import mz.org.fgh.mentoring.service.form.FormService;
@@ -64,6 +62,7 @@ public class FormController {
                     .message(e.getMessage()).build());
         }
     }
+
 
 
     @Operation(summary = "Find form by ID", description = "Retrieves a specific form by its ID.")
@@ -146,6 +145,27 @@ public class FormController {
                     .message(e.getMessage()).build());
         }
     }
+
+    @Operation(summary = "Find forms by a list of tutor UUIDs", description = "Retrieves forms associated with the given list of tutor UUIDs.")
+    @ApiResponse(responseCode = "200", description = "Forms retrieved successfully")
+    @ApiResponse(responseCode = "400", description = "Bad request")
+    @Get("/getByTutorUuids")
+    public HttpResponse<?> getByTutorUuids(@QueryValue List<String> tutorUuids) {
+        try {
+            List<Form> forms = formService.getAllOfTutors(tutorUuids);
+            if (Utilities.listHasElements(forms)) {
+                return HttpResponse.ok(Utilities.parseList(forms, FormDTO.class));
+            }
+            return HttpResponse.ok(new ArrayList<>());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
 
     @Operation(summary = "Save or update a form", description = "Saves a new form or updates an existing one.")
     @ApiResponse(responseCode = "201", description = "Form saved or updated successfully")
