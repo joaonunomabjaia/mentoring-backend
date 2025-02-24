@@ -93,6 +93,10 @@ public class FormSectionQuestionDTO extends BaseEntityDTO {
             this.setResponseType(new ResponseTypeDTO(formSectionQuestion.getResponseType()));
             this.setResponseTypeUuid(formSectionQuestion.getResponseType().getUuid());
         }
+        if(formSectionQuestion.getEvaluationLocation()!=null) {
+            this.setEvaluationLocation(new EvaluationLocationDTO(formSectionQuestion.getEvaluationLocation()));
+            this.setEvaluationLocationUuid(formSectionQuestion.getEvaluationLocation().getUuid());
+        }
         this.setFormSectionUuid(formSectionQuestion.getFormSection().getUuid());
     }
 

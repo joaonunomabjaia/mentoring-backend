@@ -10,6 +10,7 @@ import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.form.FormSection;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
 import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.question.Question;
@@ -224,6 +225,7 @@ public class FormService {
                     FormSectionQuestion formSectionQuestionOld = formSectionQuestion.get();
                     formSectionQuestionOld.setSequence(formSectionQuestionDTO.getSequence());
                     formSectionQuestionOld.setEvaluationType(new EvaluationType(formSectionQuestionDTO.getEvaluationType()));
+                    formSectionQuestionOld.setEvaluationLocation(new EvaluationLocation(formSectionQuestionDTO.getEvaluationLocation()));
                     formSectionQuestionOld.setResponseType(new ResponseType(formSectionQuestionDTO.getResponseType()));
                     formSectionQuestionOld.setUpdatedBy(user.getUuid());
                     formSectionQuestionOld.setUpdatedAt(DateUtils.getCurrentDate());
