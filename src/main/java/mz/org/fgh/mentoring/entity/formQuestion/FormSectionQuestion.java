@@ -55,6 +55,7 @@ public class FormSectionQuestion extends BaseEntity {
     @JoinColumn(name = "EVALUATION_TYPE_ID")
     private EvaluationType evaluationType;
 
+    @NotNull
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "EVALUATION_LOCATION_ID")
     private EvaluationLocation evaluationLocation;
