@@ -33,6 +33,7 @@ public interface MentorshipRepository extends CrudRepository<Mentorship, Long> {
             "INNER JOIN FETCH m.form f " +
             "INNER JOIN FETCH m.cabinet c " +
             "INNER JOIN FETCH m.evaluationType et " +
+            "INNER JOIN FETCH m.evaluationLocation el " +
             "INNER JOIN FETCH m.door d " +
             "INNER JOIN FETCH m.session s " +
             "WHERE s.uuid = :sessionUuid ")
