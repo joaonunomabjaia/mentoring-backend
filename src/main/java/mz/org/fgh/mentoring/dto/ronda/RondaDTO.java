@@ -7,10 +7,13 @@ import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.healthFacility.HealthFacilityDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -99,11 +102,12 @@ public class RondaDTO extends BaseEntityDTO {
 
         // Convert RondaMentees using Streams
         if (Utilities.hasElements(this.getRondaMentees())) {
-            ronda.setRondaMentees(this.getRondaMentees()
+
+            List<RondaMentee> mentees = this.getRondaMentees()
                     .stream()
                     .map(RondaMenteeDTO::getRondaMentee)
-                    .collect(Collectors.toSet()) // Use Set instead of List
-            );
+                    .toList();
+            ronda.setRondaMentees(new HashSet<>(mentees)); // Converte para Set depois
         }
 
         return ronda;
