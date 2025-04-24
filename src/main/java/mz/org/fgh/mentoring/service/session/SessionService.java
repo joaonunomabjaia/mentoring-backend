@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.service.session;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.base.BaseService;
+import mz.org.fgh.mentoring.dto.session.SessionReportDTO;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.session.Session;
@@ -159,4 +160,13 @@ public class SessionService extends BaseService {
             }
         }
     }
+
+    public SessionReportDTO getSessionReport() {
+        long totalSessions = sessionRepository.countAllActiveSessions();
+        long totalInternal = sessionRepository.countActiveSessionsByRondaTypeCode("MENTORIA_INTERNA");
+        long totalExternal = sessionRepository.countActiveSessionsByRondaTypeCode("MENTORIA_EXTERNA");
+
+        return new SessionReportDTO(totalSessions, totalInternal, totalExternal);
+    }
+
 }
