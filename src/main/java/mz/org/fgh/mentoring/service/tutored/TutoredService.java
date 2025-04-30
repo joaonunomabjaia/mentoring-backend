@@ -145,7 +145,7 @@ public class TutoredService {
         List<Tutored> tutoreds = tutoredRepository.getTutoredsByHealthFacilityUuids(uuids, pageable);
         if (Utilities.listHasElements(tutoreds)) {
             for (Tutored tutored : tutoreds) {
-                tutored.setZeroEvaluationDone(checkZeroEvaluation(tutored));
+                tutored.setZeroEvaluationDone(tutored.getZeroEvaluationScore() != null && tutored.getZeroEvaluationScore() > 0);
             }
         }
         return tutoreds;

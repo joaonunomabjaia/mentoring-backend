@@ -66,7 +66,7 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
     @Query("SELECT r FROM Ronda r " +
             "INNER JOIN FETCH r.healthFacility hf " +
             "INNER JOIN FETCH r.rondaType rt " +
-            "WHERE r.id IN (SELECT rm.ronda.id FROM RondaMentor rm WHERE rm.mentor.uuid IN (:mentorUuids))")
+            "WHERE r.endDate is null and r.id IN (SELECT rm.ronda.id FROM RondaMentor rm WHERE rm.mentor.uuid IN (:mentorUuids))")
     List<Ronda> findByMentorUuidIn(List<String> mentorUuids);
 
 }

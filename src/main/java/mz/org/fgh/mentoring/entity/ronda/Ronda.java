@@ -11,7 +11,6 @@ import mz.org.fgh.mentoring.dto.ronda.RondaMentorDTO;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
@@ -64,6 +63,7 @@ public class Ronda extends BaseEntity {
         this.setDescription(rondaDTO.getDescription());
         this.setStartDate(rondaDTO.getStartDate());
         this.setEndDate(rondaDTO.getEndDate());
+        this.setMentorType(rondaDTO.getMentorType());
 
         if (rondaDTO.getRondaType() != null) {
             this.setRondaType(new RondaType(rondaDTO.getRondaType()));
@@ -74,7 +74,7 @@ public class Ronda extends BaseEntity {
         }
 
         // Convert RondaMentors properly
-        if (Utilities.listHasElements(rondaDTO.getRondaMentors().stream().toList())) {
+        if (rondaDTO.getRondaMentors() != null && !rondaDTO.getRondaMentors().isEmpty()) {
             Set<RondaMentor> rondaMentors = rondaDTO.getRondaMentors()
                     .stream()
                     .map(RondaMentorDTO::getRondaMentor) // Ensure RondaMentorDTO has getRondaMentor() method
@@ -83,8 +83,9 @@ public class Ronda extends BaseEntity {
             this.setRondaMentors(rondaMentors);
         }
 
+
         // Convert RondaMentees properly
-        if (Utilities.listHasElements(rondaDTO.getRondaMentees().stream().toList())) {
+        if (rondaDTO.getRondaMentees() != null && !rondaDTO.getRondaMentees().isEmpty()) {
             Set<RondaMentee> rondaMentees = rondaDTO.getRondaMentees()
                     .stream()
                     .map(RondaMenteeDTO::getRondaMentee) // Ensure RondaMenteeDTO has getRondaMentee() method
