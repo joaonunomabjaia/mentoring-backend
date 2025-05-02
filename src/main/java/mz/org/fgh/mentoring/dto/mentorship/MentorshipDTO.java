@@ -78,6 +78,11 @@ public class MentorshipDTO extends BaseEntityDTO {
         }
         if(mentorship.getEvaluationType()!=null) {
             this.setEvaluationType(new EvaluationTypeDTO(mentorship.getEvaluationType()));
+            this.evaluationTypeUuid = mentorship.getEvaluationType().getUuid();
+        }
+        if(mentorship.getEvaluationLocation()!=null) {
+            this.evaluationLocationDTO = new EvaluationLocationDTO(mentorship.getEvaluationLocation());
+            this.evaluationLocationUuid = mentorship.getEvaluationLocation().getUuid();
         }
         if(mentorship.getAnswers()!=null) {
             List<AnswerDTO> answerDTOS = Utilities.parse(mentorship.getAnswers(), AnswerDTO.class);
