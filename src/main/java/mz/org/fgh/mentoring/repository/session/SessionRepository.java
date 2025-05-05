@@ -50,4 +50,14 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
             "INNER JOIN FETCH s.status st " +
             "WHERE r.id = :rondaId ")
     Set<Session> findAllOfRonda(Long rondaId);
+
+    @Query("SELECT COUNT(s) FROM Session s " )
+    long countAllActiveSessions();
+
+    @Query("SELECT COUNT(s) FROM Session s " +
+            "JOIN s.ronda r " +
+            "JOIN r.rondaType rt " +
+            "WHERE rt.code = :code")
+    long countActiveSessionsByRondaTypeCode(String code);
+
 }

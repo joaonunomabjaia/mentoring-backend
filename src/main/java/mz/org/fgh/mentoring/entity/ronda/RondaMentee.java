@@ -22,6 +22,9 @@ import java.util.Date;
 @AllArgsConstructor
 public class RondaMentee extends BaseEntity {
 
+    @EqualsAndHashCode.Include
+    private String uuid;
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "RONDA_ID")
     private Ronda ronda;
@@ -54,8 +57,24 @@ public class RondaMentee extends BaseEntity {
     @Override
     public String toString() {
         return "RondaMentee{" +
+                "uuid=" + uuid +
+                ", menteeUuid=" + (tutored != null ? tutored.getUuid() : "null") +
                 ", startDate=" + startDate +
                 ", endDate=" + endDate +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (!(o instanceof RondaMentee)) return false;
+        RondaMentee that = (RondaMentee) o;
+        return (tutored != null && tutored.getUuid().equals(that.tutored.getUuid()));
+    }
+
+    @Override
+    public int hashCode() {
+        return java.util.Objects.hash(uuid, tutored != null ? tutored.getUuid() : null);
+    }
+
 }

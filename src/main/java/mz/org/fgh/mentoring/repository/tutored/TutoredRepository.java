@@ -40,4 +40,5 @@ public interface TutoredRepository extends CrudRepository<Tutored, Long> {
             "and hf.lifeCycleStatus = 'ACTIVE' " +
             "and hf.uuid IN (:uuids)")
     List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids, Pageable pageable);
+
 }

@@ -152,7 +152,7 @@ public class TutoredService {
     }
 
     private boolean checkZeroEvaluation(Tutored tutored) {
-        return this.sessionRepository.getTutoredZeroSession(tutored.getId()).isPresent();
+        return tutored.getZeroEvaluationScore() != null;
     }
 
     /*public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {
