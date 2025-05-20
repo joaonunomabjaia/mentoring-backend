@@ -57,4 +57,13 @@ public class SessionController extends BaseController {
     public SessionReportDTO getSessionReport() {
         return sessionService.getSessionReport();
     }
+    /*@Operation(summary = "Gerar resumo em linguagem natural com foco nos pontos fracos do mentorado")
+    @ApiResponse(content = @Content(mediaType = MediaType.TEXT_PLAIN))
+    @Tag(name = "Session AI")
+    @Get("/ai-summary")
+    public String getWeakPointsSummary(@QueryValue("menteeId") Long menteeId) {
+        return sessionService.generateWeakPointsSummary(menteeId);
+    }*/
+
+
 }

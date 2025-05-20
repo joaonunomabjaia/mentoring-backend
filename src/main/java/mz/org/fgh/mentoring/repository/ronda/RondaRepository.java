@@ -5,6 +5,7 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.entity.ronda.RondaType;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -66,7 +67,10 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
     @Query("SELECT r FROM Ronda r " +
             "INNER JOIN FETCH r.healthFacility hf " +
             "INNER JOIN FETCH r.rondaType rt " +
-            "WHERE r.endDate is null and r.id IN (SELECT rm.ronda.id FROM RondaMentor rm WHERE rm.mentor.uuid IN (:mentorUuids))")
+            "WHERE r.endDate is null and r.id IN (SELECT rm.ronda.id FROM RondaMentor rm WHERE rm.mentor.uuid IN (:mentorUuids) AND rm.endDate IS NULL) ")
     List<Ronda> findByMentorUuidIn(List<String> mentorUuids);
+
+    @Query("SELECT r.id FROM Ronda r WHERE r.rondaType = :rondaType")
+    List<Long> findAllRondaIds(RondaType rondaType);
 
 }

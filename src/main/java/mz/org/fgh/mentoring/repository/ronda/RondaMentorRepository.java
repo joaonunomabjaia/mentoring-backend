@@ -31,6 +31,6 @@ public interface RondaMentorRepository extends CrudRepository<RondaMentor, Long>
     @Query("SELECT DISTINCT rm FROM RondaMentor rm " +
             "JOIN FETCH rm.mentor " +
             "JOIN FETCH rm.ronda r " +
-            "WHERE r.id = :rondaId")
+            "WHERE r.id = :rondaId and rm.endDate is null ")
     Set<RondaMentor> findMentorsForRondas(Long rondaId);
 }

@@ -79,6 +79,14 @@ public class Session extends BaseEntity {
     @OneToMany(mappedBy = "session")
     private List<SessionRecommendedResource> recommendedResources;
 
+    @Column(name = "SESSION_SUMMARY", columnDefinition = "TEXT")
+    private String sessionSummary;
+
+    @Column(name = "PERFORMANCE_RISK", columnDefinition = "TEXT")
+    private String performanceRisk;
+
+
+
     public Session() {
     }
 
@@ -130,4 +138,5 @@ public class Session extends BaseEntity {
                 ", observations='" + observations + '\'' +
                 '}';
     }
+
 }

@@ -4,7 +4,6 @@ import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.setting.Setting;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -26,4 +25,5 @@ public interface SettingsRepository extends CrudRepository<Setting, Long> {
     List<Setting> findSettingWithLimit(long lim, long of);
 
     Optional<Setting> findByDesignation(@NotNull String designation);
+
 }
