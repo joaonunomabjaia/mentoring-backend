@@ -24,6 +24,7 @@ public abstract class BaseEntity implements RestAPIResponse, Serializable, Compa
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @EqualsAndHashCode.Include
     @Column(name = "ID", nullable = false)
     private Long id;
 

@@ -1,4 +1,7 @@
 micronaut:
+  http:
+    client:
+      read-timeout: 3m
   application:
     name: mentoringBackend
   scheduling:
@@ -143,3 +146,12 @@ custom:
   app:
     env: ${ENV}
     base-url: ${BASE_URL_BACKEND}
+micronaut:
+  http:
+    services:
+      ollama:
+        url: http://localhost:11434
+        read-timeout: 300s
+        connect-timeout: 30s
+
+

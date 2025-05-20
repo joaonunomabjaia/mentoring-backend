@@ -56,7 +56,7 @@ public class RondaController extends BaseController {
     @Inject
     private UserRepository userRepository;
 
-    public static final Logger LOG = LoggerFactory.getLogger(RondaController.class);
+    public static final Logger LOG = LoggerFactory.getLogger(RondaController.class.getSimpleName());
     public RondaController() {
     }
 

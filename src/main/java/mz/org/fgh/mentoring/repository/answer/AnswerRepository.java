@@ -25,4 +25,27 @@ public interface AnswerRepository extends CrudRepository<Answer, Long> {
     List<Answer> getByQuestionId(Long questionId);
 
     List<Answer> findByMentorship(Mentorship mentorship);
+
+    @Query("SELECT a FROM Answer a " +
+            "JOIN FETCH a.question q " +
+            "JOIN FETCH a.mentorship m " +
+            "JOIN FETCH m.tutored t " +
+            "JOIN FETCH t.employee e " +
+            "WHERE m.tutored.id = :menteeId AND a.value = 'NAO' AND m.id = 400378 " +
+            "ORDER BY a.createdAt DESC")
+    List<Answer> findWeakAnswersByMenteeId(Long menteeId);
+
+    @Query("SELECT a FROM Answer a " +
+            "JOIN FETCH a.question q " +
+            "JOIN FETCH a.mentorship m " +
+            "JOIN FETCH m.session s " +
+            "JOIN FETCH m.form f " +
+            "JOIN FETCH f.programmaticArea pa " +
+            "JOIN FETCH pa.program pr " +
+            "JOIN FETCH m.tutored t " +
+            "JOIN FETCH t.employee e " +
+            "WHERE a.value = 'NAO' AND m.id = :mentorshipId " +
+            "ORDER BY a.createdAt DESC")
+    List<Answer> findWeakAnswersByMentorshipId(Long mentorshipId);
+
 }

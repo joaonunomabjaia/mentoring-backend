@@ -4,7 +4,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.setting.SettingDTO;
@@ -13,8 +12,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.time.LocalDateTime;
 
 
 @Schema(name = "settings", description = "Represent the system settings")
@@ -25,6 +22,8 @@ import java.time.LocalDateTime;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 @ToString
 public class Setting extends BaseEntity {
+
+    public static final String AI_SESSION_SUMMARY_GENERATION = "AI_SESSION_SUMMARY_GENERATION";
 
     @NotNull
     @Column(name = "DESIGNATION", nullable = false)

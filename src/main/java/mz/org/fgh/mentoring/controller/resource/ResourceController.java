@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import liquibase.util.FileUtil;
 import lombok.NonNull;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
@@ -27,24 +26,20 @@ import mz.org.fgh.mentoring.repository.resource.ResourceRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRecommendedResourceRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.resource.ResourceService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.awt.*;
-import java.io.*;
+import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
+import java.util.*;
 import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
 
 /**
  * @author Joao Nuno Mabjaia
@@ -56,14 +51,16 @@ public class ResourceController extends BaseController {
     private ResourceRepository resourceRepository;
     private SettingsRepository settingsRepository;
     private final UserRepository userRepository;
+    private final ResourceService resourceService;
 
     private SessionRecommendedResourceRepository sessionRecommendedResourceRepository;
     public static final Logger LOG = LoggerFactory.getLogger(ResourceController.class);
 
-    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, SettingsRepository settingsRepository, SessionRecommendedResourceRepository sessionRecommendedResourceRepository) {
+    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, SettingsRepository settingsRepository, ResourceService resourceService, SessionRecommendedResourceRepository sessionRecommendedResourceRepository) {
         this.resourceRepository = resourceRepository;
         this.userRepository = userRepository;
         this.settingsRepository = settingsRepository;
+        this.resourceService = resourceService;
         this.sessionRecommendedResourceRepository = sessionRecommendedResourceRepository;
     }
 
@@ -303,5 +300,15 @@ public class ResourceController extends BaseController {
 
         }
     }
+
+    /*@Secured(SecurityRule.IS_AUTHENTICATED)
+    @Operation(summary = "Extrai nome e descrição de todos os recursos do JSON")
+    @Get("/summaries/from-json")
+    @Tag(name = "Resource")
+    public HttpResponse<List<Map<String, String>>> getJsonResourceSummaries() {
+        List<Map<String, String>> summaries = resourceService.extractResourceSummariesFromJson();
+        return HttpResponse.ok(summaries);
+    }*/
+
 
 }
