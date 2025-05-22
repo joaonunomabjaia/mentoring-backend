@@ -124,17 +124,26 @@ public class RondaController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
     @Post("/changeMentor/{rondaId}/{newMentorId}")
-    public HttpResponse<RondaDTO> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
+    public HttpResponse<?> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
     {
-        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).get();
+        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).orElse(null);
+
+        if (user == null) {
+            return HttpResponse.unauthorized();
+        }
+
         try {
             RondaDTO updatedRonda = rondaService.changeMentor(rondaId, newMentorId, user);
             return HttpResponse.ok(updatedRonda);
+        } catch (RuntimeException e) {
+            // Retorna a mensagem da exceção com status 400
+            return HttpResponse.badRequest(Collections.singletonMap("error", e.getMessage()));
         } catch (Exception e) {
-            // Handle any exceptions or errors
-            return HttpResponse.serverError();
+            // Outros erros inesperados
+            return HttpResponse.serverError(Collections.singletonMap("error", "Erro interno ao trocar o mentor."));
         }
     }
+
 
 
     @Get("/{id}")
