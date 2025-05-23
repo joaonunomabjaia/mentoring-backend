@@ -20,6 +20,7 @@ import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.error.NotMatchingProgrammaticArea;
 import mz.org.fgh.mentoring.report.RondaSummary;
 import mz.org.fgh.mentoring.report.SessionSummary;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
@@ -238,7 +239,7 @@ public class RondaService extends BaseService {
         // Valida compatibilidade das áreas programáticas
         for (ProgrammaticArea rondaArea : rondaAreas) {
             if (!mentorAreas.contains(rondaArea)) {
-                throw new RuntimeException(
+                throw new NotMatchingProgrammaticArea(
                         String.format("O mentor selecionado não possui a área programática: %s", rondaArea.getName())
                 );
             }

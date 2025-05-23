@@ -124,7 +124,7 @@ public class RondaController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
     @Post("/changeMentor/{rondaId}/{newMentorId}")
-    public HttpResponse<?> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
+    public HttpResponse<RestAPIResponse> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
     {
         User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).orElse(null);
 
@@ -135,12 +135,12 @@ public class RondaController extends BaseController {
         try {
             RondaDTO updatedRonda = rondaService.changeMentor(rondaId, newMentorId, user);
             return HttpResponse.ok(updatedRonda);
-        } catch (RuntimeException e) {
-            // Retorna a mensagem da exceção com status 400
-            return HttpResponse.badRequest(Collections.singletonMap("error", e.getMessage()));
         } catch (Exception e) {
-            // Outros erros inesperados
-            return HttpResponse.serverError(Collections.singletonMap("error", "Erro interno ao trocar o mentor."));
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                .status(HttpStatus.BAD_REQUEST.getCode())
+                .error(e.getLocalizedMessage())
+                .message(e.getMessage()).build());
         }
     }
 
