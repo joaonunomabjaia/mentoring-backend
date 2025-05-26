@@ -124,17 +124,26 @@ public class RondaController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
     @Post("/changeMentor/{rondaId}/{newMentorId}")
-    public HttpResponse<RondaDTO> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
+    public HttpResponse<RestAPIResponse> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
     {
-        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).get();
+        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).orElse(null);
+
+        if (user == null) {
+            return HttpResponse.unauthorized();
+        }
+
         try {
             RondaDTO updatedRonda = rondaService.changeMentor(rondaId, newMentorId, user);
             return HttpResponse.ok(updatedRonda);
         } catch (Exception e) {
-            // Handle any exceptions or errors
-            return HttpResponse.serverError();
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                .status(HttpStatus.BAD_REQUEST.getCode())
+                .error(e.getLocalizedMessage())
+                .message(e.getMessage()).build());
         }
     }
+
 
 
     @Get("/{id}")

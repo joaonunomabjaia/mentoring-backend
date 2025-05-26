@@ -48,6 +48,8 @@ public interface SessionRepository extends CrudRepository<Session, Long> {
     @Query("SELECT DISTINCT s FROM Session s " +
             "INNER JOIN FETCH s.ronda r " +
             "INNER JOIN FETCH s.status st " +
+            "INNER JOIN FETCH s.form f " +
+            "INNER JOIN FETCH f.programmaticArea pa " +
             "WHERE r.id = :rondaId")
     Set<Session> findAllOfRonda(Long rondaId);
 

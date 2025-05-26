@@ -7,8 +7,10 @@ import mz.org.fgh.mentoring.base.BaseService;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaReportDTO;
 import mz.org.fgh.mentoring.entity.answer.Answer;
+import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
@@ -16,7 +18,9 @@ import mz.org.fgh.mentoring.entity.ronda.RondaType;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.error.NotMatchingProgrammaticArea;
 import mz.org.fgh.mentoring.report.RondaSummary;
 import mz.org.fgh.mentoring.report.SessionSummary;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
@@ -30,6 +34,7 @@ import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.mentorship.MentorshipService;
+import mz.org.fgh.mentoring.service.session.SessionService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -38,6 +43,7 @@ import javax.transaction.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @Singleton
 public class RondaService extends BaseService {
@@ -54,6 +60,8 @@ public class RondaService extends BaseService {
     private final AnswerRepository answerRepository;
     @Inject
     MentorshipService mentorshipService;
+    @Inject
+    private SessionService sessionService;
 
     public RondaService(RondaRepository rondaRepository, RondaMentorRepository rondaMentorRepository,
                         RondaMenteeRepository rondaMenteeRepository, UserRepository userRepository,
@@ -208,33 +216,148 @@ public class RondaService extends BaseService {
     }
 
     public RondaDTO changeMentor(Long rondaId, Long newMentorId, User user) {
-        Ronda ronda = rondaRepository.findById(rondaId).get();
-        Tutor mentor = tutorRepository.findById(newMentorId).get();
+        Ronda ronda = rondaRepository.findById(rondaId)
+                .orElseThrow(() -> new RuntimeException("Ronda não encontrada"));
 
-        RondaMentor rondaMentor = new RondaMentor();
+        Tutor mentor = tutorRepository.findByIdDetailed(newMentorId)
+                .orElseThrow(() -> new RuntimeException("Mentor não encontrado"));
 
-        rondaMentor.setCreatedAt(new Date());
-        rondaMentor.setMentor(mentor);
-        rondaMentor.setCreatedBy(user.getUuid());
-        rondaMentor.setStartDate(new Date());
-        rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        rondaMentor.setUuid(Utilities.generateUUID().toString());
-        rondaMentor.setRonda(ronda);
+        // Coleta áreas programáticas da Ronda
+        Set<ProgrammaticArea> rondaAreas = sessionRepository.findAllOfRonda(ronda.getId()).stream()
+                .map(Session::getForm)
+                .filter(Objects::nonNull)
+                .map(Form::getProgrammaticArea)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
 
-        ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
-        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+        // Coleta áreas programáticas do Mentor
+        Set<ProgrammaticArea> mentorAreas = tutorRepository.findByIdDetailed(mentor.getId()).get().getTutorProgrammaticAreas().stream()
+                .map(TutorProgrammaticArea::getProgrammaticArea)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
 
-        for(RondaMentor rondaMentor1: ronda.getRondaMentors()){
-            if(rondaMentor1.getEndDate() == null) {
-                rondaMentor1.setEndDate(new Date());
-                rondaMentorRepository.update(rondaMentor1);
+        // Valida compatibilidade das áreas programáticas
+        for (ProgrammaticArea rondaArea : rondaAreas) {
+            if (!mentorAreas.contains(rondaArea)) {
+                throw new NotMatchingProgrammaticArea(
+                        String.format("O mentor selecionado não possui a área programática: %s", rondaArea.getName())
+                );
             }
         }
 
-        rondaMentorRepository.save(rondaMentor);
+        // Finaliza vínculo anterior ativo (se houver)
+        Set<RondaMentor> existingMentors = rondaMentorRepository.findByRonda(rondaId);
+        for (RondaMentor existing : existingMentors) {
+            if (existing.getEndDate() == null) {
+                existing.setEndDate(new Date());
+                rondaMentorRepository.update(existing);
+            }
+        }
+
+        // Cria novo vínculo RondaMentor
+        RondaMentor newRondaMentor = new RondaMentor();
+        newRondaMentor.setCreatedAt(new Date());
+        newRondaMentor.setStartDate(new Date());
+        newRondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        newRondaMentor.setCreatedBy(user.getUuid());
+        newRondaMentor.setUuid(Utilities.generateUUID().toString());
+        newRondaMentor.setMentor(mentor);
+        newRondaMentor.setRonda(ronda);
+        rondaMentorRepository.save(newRondaMentor);
+
+        // Atualiza lista de mentores e mentees da Ronda
+        ronda.setRondaMentors(rondaMentorRepository.findByRonda(rondaId));
+        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(rondaId));
 
         return new RondaDTO(ronda);
     }
+
+
+//    public RondaDTO changeMentor(Long rondaId, Long newMentorId, User user) {
+//        Ronda ronda = rondaRepository.findById(rondaId)
+//                .orElseThrow(() -> new RuntimeException("Ronda não encontrada"));
+//
+//        Tutor mentor = tutorRepository.findById(newMentorId)
+//                .orElseThrow(() -> new RuntimeException("Mentor não encontrado"));
+//
+//        Set<ProgrammaticArea> rondaAreas = new HashSet<>();
+//        Set<ProgrammaticArea> mentorAreas = new HashSet<>();
+//        Set<Session> sessionsOfRonda = sessionRepository.findAllOfRonda(ronda.getId());
+//
+//        for (Session session : sessionsOfRonda) {
+//            rondaAreas.add(session.getForm().getProgrammaticArea());
+//        }
+//
+//        for (TutorProgrammaticArea tpa : tutorRepository.findByIdDetailed(mentor.getId()).get().getTutorProgrammaticAreas()) {
+//            mentorAreas.add(tpa.getProgrammaticArea());
+//        }
+//
+//        for (ProgrammaticArea rondaArea : rondaAreas) {
+//            if (!mentorAreas.contains(rondaArea)) {
+//                throw new RuntimeException("O mentor selecionado não possui a área programática: " + rondaArea.getName());
+//            }
+//        }
+//
+//        // Criar novo RondaMentor
+//        RondaMentor rondaMentor = new RondaMentor();
+//        rondaMentor.setCreatedAt(new Date());
+//        rondaMentor.setMentor(mentor);
+//        rondaMentor.setCreatedBy(user.getUuid());
+//        rondaMentor.setStartDate(new Date());
+//        rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+//        rondaMentor.setUuid(Utilities.generateUUID().toString());
+//        rondaMentor.setRonda(ronda);
+//
+//        // Carrega os mentores e mentees da ronda
+//        ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
+//        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+//
+//        // Finaliza vínculo anterior (se houver)
+//        for (RondaMentor activeMentor : ronda.getRondaMentors()) {
+//            if (activeMentor.getEndDate() == null) {
+//                activeMentor.setEndDate(new Date());
+//                rondaMentorRepository.update(activeMentor);
+//            }
+//        }
+//
+//        rondaMentorRepository.save(rondaMentor);
+//
+//        return new RondaDTO(ronda);
+//    }
+
+
+//    public RondaDTO changeMentor(Long rondaId, Long newMentorId, User user) {
+//        Ronda ronda = rondaRepository.findById(rondaId).get();
+//        Tutor mentor = tutorRepository.findById(newMentorId).get();
+//
+//        // A ronda tem Sessions, cada session tem form e esta tem programaticArea
+//        // O Tutor tem tutorProgrammaticAreas
+//        // o que e garantir que as ProgrammaticAreas da ronda estejam presentes nas do tutor, caso contrario devolvemos uma exception com mensagem
+//
+//        RondaMentor rondaMentor = new RondaMentor();
+//
+//        rondaMentor.setCreatedAt(new Date());
+//        rondaMentor.setMentor(mentor);
+//        rondaMentor.setCreatedBy(user.getUuid());
+//        rondaMentor.setStartDate(new Date());
+//        rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+//        rondaMentor.setUuid(Utilities.generateUUID().toString());
+//        rondaMentor.setRonda(ronda);
+//
+//        ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
+//        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
+//
+//        for(RondaMentor rondaMentor1: ronda.getRondaMentors()){
+//            if(rondaMentor1.getEndDate() == null) {
+//                rondaMentor1.setEndDate(new Date());
+//                rondaMentorRepository.update(rondaMentor1);
+//            }
+//        }
+//
+//        rondaMentorRepository.save(rondaMentor);
+//
+//        return new RondaDTO(ronda);
+//    }
 
     @Transactional
     public Ronda update(Ronda ronda, Long userId) {
@@ -309,12 +432,14 @@ public class RondaService extends BaseService {
                 }
             }
             sessions.sort(Comparator.comparing(Session::getStartDate));
+
             rondaSummary.setSummaryDetails(new HashMap<>());
             int i = 1;
             for (Session session : sessions){
-                //rondaSummary.getSummaryDetails().put(i, generateSessionSummary(session));
+                rondaSummary.getSummaryDetails().put(i, generateSessionSummary(session));
                 i++;
             }
+
             rondaSummary.setSession1(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(1))).doubleValue());
             rondaSummary.setSession2(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(2))).doubleValue());
             rondaSummary.setSession3(Utilities.roundToOneDecimalPlace(determineSessionScore(rondaSummary.getSummaryDetails().get(3))).doubleValue());
@@ -347,7 +472,7 @@ public class RondaService extends BaseService {
         for (Mentorship mentorship : session.getMentorships()) {
             if (mentorship.isPatientEvaluation()) {
                 for (Answer answer : mentorship.getAnswers()) {
-                    String cat = null; //answer.getQuestion().getSection().getCategory();
+                    String cat = answer.getFormSectionQuestion().getFormSection().getSection().getDescription(); //answer.getQuestion().getSection().getCategory();
                     if (categoryAlreadyExists(cat, summaries)){
                         doCountInCategory(cat, summaries, answer);
                     } else {
@@ -373,7 +498,8 @@ public class RondaService extends BaseService {
     }
     private boolean categoryAlreadyExists(String cat, List<SessionSummary> summaries) {
         for (SessionSummary sessionSummary : summaries) {
-            if (sessionSummary.getTitle().equals(cat)) {
+
+            if (Utilities.stringHasValue(sessionSummary.getTitle()) && sessionSummary.getTitle().equals(cat)) {
                 return true;
             }
         }
@@ -383,6 +509,7 @@ public class RondaService extends BaseService {
     private SessionSummary initSessionSummary(Answer answer) {
         SessionSummary sessionSummary = new SessionSummary();
         //sessionSummary.setTitle(answer.getQuestion().getSection().getCategory());
+        sessionSummary.setTitle(answer.getFormSectionQuestion().getFormSection().getSection().getDescription());
 
         if (answer.getValue().equals("SIM")) {
             sessionSummary.setSimCount(sessionSummary.getSimCount() + 1);
