@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.repository.healthFacility;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.jpa.repository.JpaRepository;
+import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 
@@ -32,4 +33,6 @@ public interface HealthFacilityRepository extends JpaRepository<HealthFacility, 
 
     @Query(value = "select * from health_facilities where LIFE_CYCLE_STATUS = 'ACTIVE' ", nativeQuery = true)
     List<HealthFacility> findHealthFacilitiesByPage(Pageable pageable);
+
+    Page<HealthFacility> findByHealthFacilityIlike(String s, Pageable pageable);
 }

@@ -110,12 +110,19 @@ public class UserService {
         employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
 
         employee.setProfessionalCategory(
-                professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()));
-        employee.setPartner(partnerRepository.findByUuid(employee.getPartner().getUuid()));
+                professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid())
+                        .orElseThrow(() -> new RuntimeException("Categoria profissional não encontrada"))
+        );
+
+        employee.setPartner(
+                partnerRepository.findByUuid(employee.getPartner().getUuid())
+                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
+        );
 
         employeeService.createOrUpdate(employee, authUser);
         user.setEmployee(employee);
     }
+
 
     private String getSettingValue(String designation) {
         return settingsRepository.findByDesignation(designation)

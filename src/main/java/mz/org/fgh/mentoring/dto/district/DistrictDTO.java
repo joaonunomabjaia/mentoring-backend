@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.district;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -23,6 +24,7 @@ public class DistrictDTO extends BaseEntityDTO {
         if (district.getProvince() != null) this.setProvinceDTO(new ProvinceDTO(district.getProvince()));
     }
 
+    @JsonIgnore
     public District getDistrict() {
         District district = new District();
         district.setUuid(this.getUuid());

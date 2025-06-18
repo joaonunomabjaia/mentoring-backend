@@ -1,5 +1,8 @@
 package mz.org.fgh.mentoring.service.district;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.district.DistrictDTO;
 import mz.org.fgh.mentoring.entity.location.District;
@@ -63,5 +66,13 @@ public class DistrictService {
         District district = this.districtRepository.findById(id).get();
 
         return district;
+    }
+
+    public Page<District> findAll(@Nullable Pageable pageable) {
+        return districtRepository.findAll(pageable);
+    }
+
+    public Page<District> searchByName(String name, Pageable pageable) {
+        return districtRepository.findByDescriptionIlike("%" + name + "%", pageable);
     }
 }
