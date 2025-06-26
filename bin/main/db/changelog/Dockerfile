@@ -10,10 +10,10 @@ RUN mkdir -p /his/mentoring/backend/log /his/mentoring/backend/ea_resources
 # Define volumes for logs and resources
 VOLUME ["/his/mentoring/backend/log", "/his/mentoring/backend/ea_resources"]
 # Copy the jar file into the container
-COPY mentoring-backend-1.2.4-all.jar /his/mentoring/backend/mentoring-backend-1.2.4-all.jar
+COPY mentoring-backend-1.2.7-all.jar /his/mentoring/backend/mentoring-backend-1.2.7-all.jar
 
 # Expose the port that the application will run on
 EXPOSE 8087
 
 # Command to run the jar file
-CMD ["java", "-jar", "/his/mentoring/backend/mentoring-backend-1.2.4-all.jar"]
+CMD ["java", "-jar", "/his/mentoring/backend/mentoring-backend-1.2.7-all.jar"]

@@ -13,20 +13,15 @@ import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.location.District;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.location.Province;
+import mz.org.fgh.mentoring.entity.role.Role;
 import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Jose Julai Ritsure
@@ -73,6 +68,11 @@ public class User extends BaseEntity {
         this.shouldResetPassword = userDTO.isShouldResetPassword();
         this.salt = userDTO.getSalt();
         this.employee = new Employee(userDTO.getEmployeeDTO());
+        if (userDTO.getUserRoleDTOS() != null && !userDTO.getUserRoleDTOS().isEmpty()) {
+            this.userRoles = userDTO.getUserRoleDTOS().stream()
+                    .map(dto -> new UserRole(this, new Role(dto.getRoleDTO())))
+                    .collect(Collectors.toList());
+        }
     }
     public User(String username, String password) {
         this.username = username;
