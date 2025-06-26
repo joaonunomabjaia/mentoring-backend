@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.professionalCategory;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,6 +23,7 @@ public class ProfessionalCategoryDTO extends BaseEntityDTO {
         this.setDescription(professionalCategory.getDescription());
     }
 
+    @JsonIgnore
     public ProfessionalCategory getProfessionalCategory() {
         ProfessionalCategory professionalCategory = new ProfessionalCategory();
         professionalCategory.setId(this.getId());

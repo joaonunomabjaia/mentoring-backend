@@ -8,6 +8,7 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.form.Form;
 import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -106,4 +107,5 @@ public interface FormRepository extends CrudRepository<Form, Long> {
     List<Form> findFormsByTutorId(Long tutorId);
 
 
+    long countByProgrammaticArea(ProgrammaticArea area);
 }

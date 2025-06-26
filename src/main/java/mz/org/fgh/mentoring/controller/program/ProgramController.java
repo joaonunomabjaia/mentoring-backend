@@ -1,22 +1,12 @@
 package mz.org.fgh.mentoring.controller.program;
 
-import java.util.List;
-import io.micronaut.data.model.Pageable;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
-import io.micronaut.http.HttpStatus;
-import mz.org.fgh.mentoring.error.MentoringAPIError;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
+import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Delete;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Patch;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -24,12 +14,21 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import mz.org.fgh.mentoring.api.PaginatedResponse;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.api.RestAPIResponse;
+import mz.org.fgh.mentoring.api.SuccessResponse;
 import mz.org.fgh.mentoring.base.BaseController;
+import mz.org.fgh.mentoring.dto.LifeCycleStatusDTO;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.program.ProgramService;
+import mz.org.fgh.mentoring.util.Utilities;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Jose Julai Ritsure
@@ -43,6 +42,33 @@ public class ProgramController extends BaseController {
 
     public ProgramController(ProgramService programService) {
         this.programService = programService;
+    }
+
+    @Operation(summary = "List or search programs (paginated)")
+    @Get
+    public HttpResponse<?> listOrSearch(@Nullable @QueryValue("name") String name,
+                                        @Nullable Pageable pageable) {
+
+        Page<Program> groups = !Utilities.stringHasValue(name)
+                ? programService.findAll(resolvePageable(pageable))
+                : programService.searchByName(name, resolvePageable(pageable));
+
+        List<ProgramDTO> groupDTOs = groups.getContent().stream()
+                .map(ProgramDTO::new)
+                .collect(Collectors.toList());
+
+        String message = groups.getTotalSize() == 0
+                ? "Sem Dados para esta pesquisa"
+                : "Dados encontrados";
+
+        return HttpResponse.ok(
+                PaginatedResponse.of(
+                        groupDTOs,
+                        groups.getTotalSize(),
+                        groups.getPageable(),
+                        message
+                )
+        );
     }
 
     @Operation(summary = "Return a list off all Programs")
@@ -66,20 +92,6 @@ public class ProgramController extends BaseController {
         }
     }
 
-    @Operation(summary = "Save Program to database")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Program")
-    @Post("/save")
-    public HttpResponse<RestAPIResponse> create (@Body ProgramDTO programDTO, Authentication authentication) {
-
-        Program program = new Program(programDTO);
-        program = this.programService.create(program, (Long) authentication.getAttributes().get("userInfo"));
-
-        LOG.info("Created program {}", program);
-
-        return HttpResponse.ok().body(new ProgramDTO(program));
-    }
-
     @Operation(summary = "Get Program from database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Program")
@@ -90,43 +102,37 @@ public class ProgramController extends BaseController {
         return new ProgramDTO(program);
     }
 
-    @Operation(summary = "Update Program to database")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Program")
-    @Patch("/update")
-    public HttpResponse<RestAPIResponse> update (@Body ProgramDTO programDTO, Authentication authentication) {
-
-        Program program = this.programService.findById(programDTO.getId()).get();
-        program.setDescription(programDTO.getDescription());
-        program.setName(programDTO.getName());
-        program = this.programService.update(program, (Long) authentication.getAttributes().get("userInfo"));
-
-        LOG.info("Updated program {}", program);
-
-        return HttpResponse.ok().body(new ProgramDTO(program));
+    @Operation(summary = "Delete a group by UUID")
+    @Delete("/{uuid}")
+    public HttpResponse<?> delete(@PathVariable String uuid) {
+        programService.delete(uuid);
+        return HttpResponse.ok(SuccessResponse.messageOnly("Programa eliminado com sucesso"));
     }
 
-    @Operation(summary = "Delete Program from database")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Program")
-    @Patch("/{id}")
-    public ProgramDTO deleteProgram(@PathVariable("id") Long id, Authentication authentication){
-
-        Program program = this.programService.findById(id).get();        
-        program = this.programService.delete(program, (Long) authentication.getAttributes().get("userInfo"));       
-
-        return new ProgramDTO(program);
+    @Operation(summary = "Activate or deactivate a program by changing its LifeCycleStatus")
+    @Put("/{uuid}/status")
+    public HttpResponse<?> updateLifeCycleStatus(@PathVariable String uuid, @Body LifeCycleStatusDTO dto, Authentication authentication) {
+        Program updatedGroup = programService.updateLifeCycleStatus(uuid, dto.getLifeCycleStatus(), (String) authentication.getAttributes().get("useruuid"));
+        return HttpResponse.ok(SuccessResponse.of("Estado do Programa atualizado com sucesso", new ProgramDTO(updatedGroup)));
     }
 
-    @Operation(summary = "Destroy Program from database")
-    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
-    @Tag(name = "Program")
-    @Delete("/{id}")
-    public ProgramDTO destroyProgram(@PathVariable("id") Long id, Authentication authentication){
+    @Operation(summary = "Update an existing Program")
+    @Put
+    public HttpResponse<?> update(@Body ProgramDTO dto, Authentication authentication) {
+        String userUuid = (String) authentication.getAttributes().get("useruuid");
+        Program group = new Program(dto);
+        group.setUpdatedBy(userUuid);
+        Program updated = programService.update(group);
+        return HttpResponse.ok(SuccessResponse.of("Programa atualizado com sucesso", new ProgramDTO(updated)));
+    }
 
-        Program program = this.programService.findById(id).get();        
-        this.programService.destroy(program);       
-
-        return new ProgramDTO(program);
+    @Operation(summary = "Create a new Program")
+    @Post
+    public HttpResponse<?> create(@Body ProgramDTO dto, Authentication authentication) {
+        String userUuid = (String) authentication.getAttributes().get("userUuid");
+        Program group = new Program(dto);
+        group.setCreatedBy(userUuid);
+        Program created = programService.create(group);
+        return HttpResponse.created(SuccessResponse.of("Programa criado com sucesso", new ProgramDTO(created)));
     }
 }

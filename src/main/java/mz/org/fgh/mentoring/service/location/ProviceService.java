@@ -1,5 +1,8 @@
 package mz.org.fgh.mentoring.service.location;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.province.ProvinceDTO;
 import mz.org.fgh.mentoring.entity.location.Province;
@@ -64,5 +67,13 @@ public class ProviceService {
         Province province = this.provinceRepository.findById(id).get();
 
         return new ProvinceDTO(province);
+    }
+
+    public Page<Province> findAll(@Nullable Pageable pageable) {
+        return provinceRepository.findAll(pageable);
+    }
+
+    public Page<Province> searchByName(String name, Pageable pageable) {
+        return provinceRepository.findByDesignationIlike("%" + name + "%", pageable);
     }
 }

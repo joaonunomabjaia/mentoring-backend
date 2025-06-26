@@ -1,98 +1,35 @@
 package mz.org.fgh.mentoring.service.programaticarea;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
-import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.dto.partner.PartnerDTO;
 import mz.org.fgh.mentoring.dto.programmaticarea.ProgrammaticAreaDTO;
-import mz.org.fgh.mentoring.entity.form.Form;
-import mz.org.fgh.mentoring.entity.partner.Partner;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
-import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
-import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.error.RecordInUseException;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
 import mz.org.fgh.mentoring.repository.programaticarea.TutorProgrammaticAreaRepository;
-import mz.org.fgh.mentoring.repository.user.UserRepository;
-import mz.org.fgh.mentoring.service.form.FormService;
-import mz.org.fgh.mentoring.service.tutor.TutorService;
-import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
+import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
-
-import javax.transaction.Transactional;
 
 @Singleton
 public class ProgramaticAreaService {
 
-    private ProgramaticAreaRepository programaticAreaRepository;
+    private final ProgramaticAreaRepository programaticAreaRepository;
 
-    @Inject
-    private UserRepository userRepository;
+    private final TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository;
+    private final FormRepository formRepository;
 
-    @Inject
-    private FormService formService;
-
-    @Inject
-    private FormRepository formRepository;
-
-    @Inject
-    private TutorService tutorService;
-
-    @Inject
-    private TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository;
-    public ProgramaticAreaService(ProgramaticAreaRepository programaticAreaRepository) {
+    public ProgramaticAreaService(ProgramaticAreaRepository programaticAreaRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository, FormRepository formRepository) {
         this.programaticAreaRepository = programaticAreaRepository;
+        this.tutorProgrammaticAreaRepository = tutorProgrammaticAreaRepository;
+        this.formRepository = formRepository;
     }
 
-    public ProgrammaticArea createProgrammaticArea(final ProgrammaticArea programaticArea, Long userId){
-
-         User user = userRepository.findById(userId).get();
-         programaticArea.setCreatedBy(user.getUuid());
-         programaticArea.setUuid(UUID.randomUUID().toString());
-         programaticArea.setCreatedAt(DateUtils.getCurrentDate());
-         programaticArea.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-   
-        return this.programaticAreaRepository.save(programaticArea);
-    }
-
-    public ProgrammaticArea updateProgrammaticArea(final ProgrammaticArea programaticArea, Long userId){
-     
-        ProgrammaticArea programmaticAreaDB = this.getProgrammaticAreaById(programaticArea.getId());     
-        User user = userRepository.findById(userId).get();
-       
-        programmaticAreaDB.setUpdatedBy(user.getUuid());
-        programmaticAreaDB.setUpdatedAt(DateUtils.getCurrentDate());
-        programmaticAreaDB.setCode(programaticArea.getCode());
-        programmaticAreaDB.setDescription(programaticArea.getDescription());
-        programmaticAreaDB.setName(programaticArea.getName());
-        programmaticAreaDB.setProgram(programaticArea.getProgram());
-
-        return this.programaticAreaRepository.update(programmaticAreaDB);
-    }
-
-//    public List<ProgrammaticAreaDTO> fetchProgrammaticAreasAll(final Long limit,final Long offset){
-//        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
-//        List<ProgrammaticArea> programmaticAreas = new ArrayList<>();
-//
-//        if(limit==null || offset==null) {
-//            programmaticAreas  = this.programaticAreaRepository.findAll();
-//        } else if(limit > 0){
-//            programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaWithLimit(limit, offset);
-//        }
-//        else {
-//            programmaticAreas  = this.programaticAreaRepository.findAll();
-//        }
-//
-//        for(ProgrammaticArea programmaticArea : programmaticAreas){
-//            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
-//        }
-//        return programmaticAreaDTOS;
-//    }
 
     public List<ProgrammaticAreaDTO> findProgrammaticAreas(final String code, final String name){
         List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
@@ -103,18 +40,6 @@ public class ProgramaticAreaService {
         }
         return programmaticAreaDTOS;
     }
-//    public List<ProgrammaticAreaDTO> findProgrammaticAreaByTutorProgrammaticAreaUuid(final String tutorUuid){
-//
-//        List<ProgrammaticAreaDTO> programmaticAreaDTOS = new ArrayList<>();
-//
-//        List<ProgrammaticArea> programmaticAreas = this.programaticAreaRepository.findProgrammaticAreaByTutorProgrammaticAreaUuid(tutorUuid);
-//
-//        for (ProgrammaticArea programmaticArea : programmaticAreas){
-//            programmaticAreaDTOS.add(new ProgrammaticAreaDTO(programmaticArea));
-//        }
-//
-//        return programmaticAreaDTOS;
-//    }
 
     public List<ProgrammaticAreaDTO> findProgrammaticAreasByProgramId(final Long programId){
 
@@ -144,22 +69,61 @@ public class ProgramaticAreaService {
         return this.programaticAreaRepository.getById(id);
     }
 
-    @Transactional
-    public ProgrammaticArea delete(ProgrammaticArea programmaticArea, Long userId) {
-        User user = userRepository.findById(userId).get();
-        programmaticArea.setLifeCycleStatus(LifeCycleStatus.DELETED);
-        programmaticArea.setUpdatedBy(user.getUuid());
-        programmaticArea.setUpdatedAt(DateUtils.getCurrentDate());
 
-        return this.programaticAreaRepository.update(programmaticArea);
+    public Page<ProgrammaticArea> findAll(@Nullable Pageable pageable) {
+        return programaticAreaRepository.findAll(pageable);
+    }
+
+    public Page<ProgrammaticArea> searchByName(String name, Pageable pageable) {
+        return programaticAreaRepository.findByNameIlike("%" + name + "%", pageable);
     }
 
     @Transactional
-    public void destroy(ProgrammaticArea programmaticArea) {
-        List<Form> forms = formRepository.findFormByProgrammaticAreaId(programmaticArea.getId());
-        List<TutorProgrammaticArea> tutorProgrammaticAreas = tutorProgrammaticAreaRepository.findByProgrammaticAreaId(programmaticArea.getId());
-        if(forms.isEmpty() && tutorProgrammaticAreas.isEmpty()) {
-            programaticAreaRepository.delete(programmaticArea);
-        }
+    public ProgrammaticArea create(ProgrammaticArea area) {
+        area.setUuid(java.util.UUID.randomUUID().toString());
+        area.setDescription(area.getName());
+        area.setCode(area.getName().toUpperCase());
+        area.setCreatedAt(mz.org.fgh.mentoring.util.DateUtils.getCurrentDate());
+        area.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        return programaticAreaRepository.save(area);
+    }
+
+    @Transactional
+    public ProgrammaticArea update(ProgrammaticArea area) {
+        ProgrammaticArea existing = programaticAreaRepository.findByUuid(area.getUuid())
+                .orElseThrow(() -> new RuntimeException("Área programática não encontrada com UUID: " + area.getUuid()));
+
+        existing.setName(area.getName());
+        existing.setDescription(area.getDescription());
+        existing.setProgram(area.getProgram());
+        existing.setUpdatedAt(mz.org.fgh.mentoring.util.DateUtils.getCurrentDate());
+        existing.setUpdatedBy(area.getUpdatedBy());
+
+        return programaticAreaRepository.update(existing);
+    }
+
+    @Transactional
+    public void delete(String uuid) {
+        ProgrammaticArea area = programaticAreaRepository.findByUuid(uuid)
+                .orElseThrow(() -> new RuntimeException("Área programática não encontrada com UUID: " + uuid));
+
+        // Verificações futuras aqui, se necessário
+        long count = formRepository.countByProgrammaticArea(area) + tutorProgrammaticAreaRepository.countByProgrammaticArea(area);
+
+         if (count > 0) throw new RecordInUseException("Área associada a Tabelas ou mentores");
+
+        programaticAreaRepository.delete(area);
+    }
+
+    @Transactional
+    public ProgrammaticArea updateLifeCycleStatus(String uuid, LifeCycleStatus status, String userUuid) {
+        ProgrammaticArea area = programaticAreaRepository.findByUuid(uuid)
+                .orElseThrow(() -> new RuntimeException("Área programática não encontrada com UUID: " + uuid));
+
+        area.setLifeCycleStatus(status);
+        area.setUpdatedAt(mz.org.fgh.mentoring.util.DateUtils.getCurrentDate());
+        area.setUpdatedBy(userUuid);
+
+        return programaticAreaRepository.update(area);
     }
 }

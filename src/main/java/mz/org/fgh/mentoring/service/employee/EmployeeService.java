@@ -62,8 +62,11 @@ public class EmployeeService {
     }
 
     public Employee createOrUpdate(Employee employee, User user) {
-        employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()));
-        employee.setPartner(partnerRepository.findByUuid(employee.getPartner().getUuid()));
+        employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()).get());
+        employee.setPartner(
+                partnerRepository.findByUuid(employee.getPartner().getUuid())
+                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
+        );
         Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
 
         Set<Location> locations =  employee.getLocations();

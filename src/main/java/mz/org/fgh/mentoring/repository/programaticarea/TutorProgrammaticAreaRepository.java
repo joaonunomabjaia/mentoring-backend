@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.programaticarea;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
 import mz.org.fgh.mentoring.entity.user.User;
@@ -30,4 +31,5 @@ public interface TutorProgrammaticAreaRepository extends CrudRepository<TutorPro
             "WHERE t.uuid IN (:tutorUuids)")
     List<TutorProgrammaticArea> findByTutorUuidIn(List<String> tutorUuids);
 
+    long countByProgrammaticArea(ProgrammaticArea area);
 }

@@ -1,13 +1,15 @@
 package mz.org.fgh.mentoring.service.professionalcategory;
 
+import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.professionalCategory.ProfessionalCategoryDTO;
-import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
-import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.error.RecordInUseException;
+import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
-import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -18,20 +20,19 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.UUID;
 
 @Singleton
 public class ProfessionalCategoryService {
 
     private final ProfessionalCategoryRepository professionalCategoryRepository;
-    private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
 
     @Inject
     private EmployeeService employeeService;
 
-    public ProfessionalCategoryService(ProfessionalCategoryRepository professionalCategoryRepository, UserRepository userRepository) {
+    public ProfessionalCategoryService(ProfessionalCategoryRepository professionalCategoryRepository, EmployeeRepository employeeRepository) {
         this.professionalCategoryRepository = professionalCategoryRepository;
-        this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
     }
 
     public List<ProfessionalCategoryDTO> getAll(Long limit, Long offset) {
@@ -57,43 +58,71 @@ public class ProfessionalCategoryService {
     }
 
     @Transactional
-    public ProfessionalCategory create(ProfessionalCategory professionalCategory, Long userId) {
-        User user = userRepository.findById(userId).get();
-        professionalCategory.setCreatedBy(user.getUuid());
-        professionalCategory.setUuid(UUID.randomUUID().toString());
+    public ProfessionalCategory create(ProfessionalCategory professionalCategory) {
         professionalCategory.setCreatedAt(DateUtils.getCurrentDate());
         professionalCategory.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-
+        professionalCategory.setCode(professionalCategory.getDescription().toUpperCase());
         return this.professionalCategoryRepository.save(professionalCategory);
     }
+
     public Optional<ProfessionalCategory> findById(final Long id){
         return this.professionalCategoryRepository.findById(id);
     }
-    @Transactional
-    public ProfessionalCategory update(ProfessionalCategory professionalCategory, Long userId) {
-        User user = userRepository.findById(userId).get();
-        professionalCategory.setUpdatedBy(user.getUuid());
-        professionalCategory.setUpdatedAt(DateUtils.getCurrentDate());
 
-        return this.professionalCategoryRepository.update(professionalCategory);
+    public Page<ProfessionalCategory> findAll(@Nullable Pageable pageable) {
+        return professionalCategoryRepository.findAll(pageable);
+    }
+
+    public Page<ProfessionalCategory> searchByName(String name, Pageable pageable) {
+        return professionalCategoryRepository.findByDescriptionIlike("%" + name + "%", pageable);
     }
 
     @Transactional
-    public ProfessionalCategory delete(ProfessionalCategory professionalCategory, Long userId) {
-        User user = userRepository.findById(userId).get();
-        professionalCategory.setLifeCycleStatus(LifeCycleStatus.DELETED);
-        professionalCategory.setUpdatedBy(user.getUuid());
-        professionalCategory.setUpdatedAt(DateUtils.getCurrentDate());
-
-        return this.professionalCategoryRepository.update(professionalCategory);
-    }
-
-    @Transactional
-    public void destroy(ProfessionalCategory professionalCategory) {
-        List<Employee> professionalCategories = employeeService.findEmployeebyProfessionalCategory(professionalCategory.getId());
-     
-        if(professionalCategories.isEmpty()) {
-            professionalCategoryRepository.delete(professionalCategory);
+    public ProfessionalCategory updateLifeCycleStatus(String uuid, LifeCycleStatus newStatus, String userUuid) {
+        Optional<ProfessionalCategory> existing = professionalCategoryRepository.findByUuid(uuid);
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Categoria profissional não encontrada com UUID: " + uuid);
         }
+
+        ProfessionalCategory category = existing.get();
+        category.setLifeCycleStatus(newStatus);
+        category.setUpdatedAt(DateUtils.getCurrentDate());
+        category.setUpdatedBy(userUuid);
+
+        return professionalCategoryRepository.update(category);
     }
+
+    @Transactional
+    public ProfessionalCategory update(ProfessionalCategory category) {
+        Optional<ProfessionalCategory> existing = professionalCategoryRepository.findByUuid(category.getUuid());
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Categoria profissional não encontrada com UUID: " + category.getUuid());
+        }
+
+        ProfessionalCategory toUpdate = existing.get();
+        toUpdate.setDescription(category.getDescription());
+        toUpdate.setUpdatedAt(DateUtils.getCurrentDate());
+        toUpdate.setUpdatedBy(category.getUpdatedBy());
+
+        return professionalCategoryRepository.update(toUpdate);
+    }
+
+    @Transactional
+    public void delete(String uuid) {
+        Optional<ProfessionalCategory> existing = professionalCategoryRepository.findByUuid(uuid);
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Categoria profissional não encontrada com UUID: " + uuid);
+        }
+
+        ProfessionalCategory category = existing.get();
+
+        // Exemplo de verificação futura:
+         long count = employeeRepository.countByProfessionalCategory(category);
+         if (count > 0) {
+             throw new RecordInUseException("A categoria não pode ser eliminada porque está associada a outros registos.");
+         }
+
+        professionalCategoryRepository.delete(category);
+    }
+
 }

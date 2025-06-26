@@ -4,6 +4,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaType;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -73,4 +74,5 @@ public interface RondaRepository extends CrudRepository<Ronda, Long> {
     @Query("SELECT r.id FROM Ronda r WHERE r.rondaType = :rondaType")
     List<Long> findAllRondaIds(RondaType rondaType);
 
+    long countByHealthFacility(HealthFacility facility);
 }

@@ -150,8 +150,9 @@ micronaut:
   http:
     services:
       ollama:
-        url: http://localhost:11434
-        read-timeout: 300s
-        connect-timeout: 30s
+        url: ${OLLAMA_URL:`http://localhost:11434`}
+        read-timeout: ${OLLAMA_READ_TIMEOUT:`300s`}
+        connect-timeout: ${OLLAMA_CONNECT_TIMEOUT:`30s`}
+
 
 

@@ -6,6 +6,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.PageableRepository;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
+import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -82,5 +83,7 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
             "FROM Answer a " +
             "WHERE a.formSectionQuestion = :formSectionQuestion")
     boolean existsInMentorShipOrAnswer(FormSectionQuestion formSectionQuestion);
+
+    long countByQuestion(Question question);
 
 }
