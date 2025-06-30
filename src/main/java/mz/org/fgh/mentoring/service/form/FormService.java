@@ -155,7 +155,17 @@ public class FormService {
                     .allMatch(section -> section.getFormSectionQuestions() != null
                             && !section.getFormSectionQuestions().isEmpty());
 
-            if (allSectionsValid) {
+            if(LifeCycleStatus.ACTIVE.equals(existingForm.getLifeCycleStatus())){
+                // Update the lifecycle status to INACTIVE
+                existingForm.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
+                existingForm.setUpdatedBy(user.getUuid());
+                existingForm.setUpdatedAt(DateUtils.getCurrentDate());
+                this.formRepository.update(existingForm);
+
+                return existingForm;
+            }
+
+            if (allSectionsValid && LifeCycleStatus.INACTIVE.equals(existingForm.getLifeCycleStatus())) {
                 // Update the lifecycle status to ACTIVE
                 existingForm.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
                 existingForm.setUpdatedBy(user.getUuid());
@@ -166,7 +176,7 @@ public class FormService {
             } else {
                 // Emit a message for the user
                 throw new IllegalStateException(
-                        "A tabela não pode ser ativada. Todas as seções do devem ter competências associadas."
+                        "A tabela não pode ser ativada. Todas as secções da tabela devem ter competências associadas."
                 );
             }
         }
