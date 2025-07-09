@@ -68,7 +68,7 @@ public class TutorProgrammaticAreaService {
 
     public TutorProgrammaticArea updateLifeCycleStatus(TutorProgrammaticArea tutorProgrammaticArea, Long userId) {
         User user = this.userRepository.fetchByUserId(userId);
-        Optional<TutorProgrammaticArea> tutorProgrammaticAreaRepositoryByUuid =  this.tutorProgrammaticAreaRepository.findByUuid(tutorProgrammaticArea.getUuid());
+        Optional<TutorProgrammaticArea> tutorProgrammaticAreaRepositoryByUuid =  this.tutorProgrammaticAreaRepository.findByUuidWithTutor(tutorProgrammaticArea.getUuid());
         if (tutorProgrammaticAreaRepositoryByUuid.isPresent()) {
             tutorProgrammaticAreaRepositoryByUuid.get().setLifeCycleStatus(tutorProgrammaticArea.getLifeCycleStatus());
             tutorProgrammaticAreaRepositoryByUuid.get().setUpdatedBy(user.getUuid());

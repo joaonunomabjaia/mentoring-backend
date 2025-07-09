@@ -22,6 +22,7 @@ import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.controller.program.ProgramController;
 import mz.org.fgh.mentoring.dto.LifeCycleStatusDTO;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
+import mz.org.fgh.mentoring.dto.user.UserPasswordDTO;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.service.role.RoleService;
 import mz.org.fgh.mentoring.service.user.UserRoleService;
@@ -89,6 +90,18 @@ public class UserController extends BaseController {
         User updated = userService.updateLifeCycleStatus(uuid, dto.getLifeCycleStatus(), userUuid);
         return HttpResponse.ok(
                 SuccessResponse.of("Estado do utilizador atualizado com sucesso", new UserDTO(updated))
+        );
+    }
+
+    @Operation(summary = "Update User password")
+    @Put("/{uuid}/password")
+    public HttpResponse<?> updatePassword(@PathVariable String uuid,
+                                          @Body UserPasswordDTO dto,
+                                          Authentication authentication) {
+        String updatedByUuid = (String) authentication.getAttributes().get("useruuid");
+        userService.updatePassword(uuid, dto.getNewPassword(), updatedByUuid);
+        return HttpResponse.ok(
+                SuccessResponse.messageOnly("Senha do utilizador atualizada com sucesso")
         );
     }
 

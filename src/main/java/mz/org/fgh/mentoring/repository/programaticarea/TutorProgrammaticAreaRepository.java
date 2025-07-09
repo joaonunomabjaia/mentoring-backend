@@ -20,6 +20,10 @@ public interface TutorProgrammaticAreaRepository extends CrudRepository<TutorPro
 
     Optional<TutorProgrammaticArea> findByUuid(@NotNull String uuid);
 
+    @Query("SELECT tpa FROM TutorProgrammaticArea tpa JOIN FETCH tpa.tutor WHERE tpa.uuid = :uuid")
+    Optional<TutorProgrammaticArea> findByUuidWithTutor(String uuid);
+
+
     @Query("select t from TutorProgrammaticArea t join fetch t.tutor join fetch t.programmaticArea where t.tutor.id = :tutorId")
     public List<TutorProgrammaticArea> getAllByTutorId(final Long tutorId);
 
