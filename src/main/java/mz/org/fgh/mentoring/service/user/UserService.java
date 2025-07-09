@@ -248,6 +248,7 @@ public class UserService {
         return userPages.map(UserDTO::new);
     }
 
+    @Deprecated
     public void updateUserPassword(User user, boolean encrypt) {
         try {
             User userDB = findByUuid(user.getUuid());
@@ -293,4 +294,17 @@ public class UserService {
 
         return userRepository.update(user);
     }
+
+    public void updatePassword(String uuid, String newPassword, String updatedByUuid) {
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
+
+
+        user.setPassword(Utilities.encryptPassword(newPassword, user.getSalt()));
+        user.setUpdatedBy(updatedByUuid);
+        user.setUpdatedAt(DateUtils.getCurrentDate());
+
+        userRepository.update(user);
+    }
+
 }

@@ -124,5 +124,38 @@
     </sql>
     </changeSet>
 
+    <changeSet id="resource_Update" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="resources"/>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM resources
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            UPDATE resources
+            SET resource = '[
+            {
+                "label": "HIV",
+                "clickable": 0,
+                "children": [
+                    {
+                        "label": "Adicionar Categoria",
+                        "clickable": 1,
+                        "icon": "add",
+                        "program": "HIV",
+                        "type": "categ"
+                    }
+                ]
+            },
+            {
+                "label": "Adicionar Programa",
+                "icon": "add",
+                "clickable": 1,
+                "type": "program"
+            }
+        ]'
+        </sql>
+    </changeSet>
+
 
 </databaseChangeLog>

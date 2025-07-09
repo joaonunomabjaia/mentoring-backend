@@ -33,7 +33,9 @@ public class TutorProgrammaticAreaDTO extends BaseEntityDTO {
 
     public TutorProgrammaticAreaDTO(TutorProgrammaticArea tutorProgrammaticArea) {
         super(tutorProgrammaticArea);
-        this.tutoruuid = tutorProgrammaticArea.getTutor().getUuid();
+        if (tutorProgrammaticArea.getTutor() != null) {
+            this.tutoruuid = tutorProgrammaticArea.getTutor().getUuid();
+        }
         if(tutorProgrammaticArea.getProgrammaticArea()!=null) {
             this.setProgrammaticAreaDTO(new ProgrammaticAreaDTO(tutorProgrammaticArea.getProgrammaticArea()));
         }
