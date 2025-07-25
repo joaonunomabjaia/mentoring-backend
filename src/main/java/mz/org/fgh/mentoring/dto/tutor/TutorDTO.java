@@ -45,7 +45,7 @@ public class TutorDTO extends BaseEntityDTO {
         return tutorProgrammaticAreaDTOList;
     }
 
-    public Tutor getTutor() {
+    public Tutor toEntity() {
         Tutor tutor = new Tutor();
         tutor.setId(this.getId());
         tutor.setUuid(this.getUuid());
@@ -53,7 +53,7 @@ public class TutorDTO extends BaseEntityDTO {
         tutor.setUpdatedAt(this.getUpdatedAt());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) tutor.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
-            tutor.setEmployee(this.getEmployeeDTO().getEmployee());
+            tutor.setEmployee(this.getEmployeeDTO().toEntity());
         }
         return tutor;
     }

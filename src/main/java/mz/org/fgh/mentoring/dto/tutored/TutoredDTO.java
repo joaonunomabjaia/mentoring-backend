@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.tutored;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -32,13 +33,14 @@ public class TutoredDTO extends BaseEntityDTO {
 
     public TutoredDTO(Tutored tutored) {
         super(tutored);
-        this.zeroEvaluationDone = tutored.isZeroEvaluationDone();
+        this.zeroEvaluationDone = tutored.getZeroEvaluationScore() != null;
         this.zeroEvaluationScore = tutored.getZeroEvaluationScore();
         if(tutored.getEmployee()!=null) this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
 
     }
 
-    public Tutored getMentee() {
+    @JsonIgnore
+    public Tutored toEntity() {
         Tutored tutored = new Tutored();
         tutored.setId(this.getId());
         tutored.setUuid(this.getUuid());
@@ -48,7 +50,7 @@ public class TutoredDTO extends BaseEntityDTO {
         tutored.setZeroEvaluationDone(this.isZeroEvaluationDone());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
-            tutored.setEmployee(this.getEmployeeDTO().getEmployee());
+            tutored.setEmployee(this.getEmployeeDTO().toEntity());
         }
         return tutored;
     }

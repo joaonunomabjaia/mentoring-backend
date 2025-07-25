@@ -25,7 +25,7 @@ public class DistrictDTO extends BaseEntityDTO {
     }
 
     @JsonIgnore
-    public District getDistrict() {
+    public District toEntity() {
         District district = new District();
         district.setUuid(this.getUuid());
         district.setId(this.getId());

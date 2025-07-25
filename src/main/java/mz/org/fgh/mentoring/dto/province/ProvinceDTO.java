@@ -20,7 +20,7 @@ public class ProvinceDTO extends BaseEntityDTO {
     }
 
     @JsonIgnore
-    public Province getProvince() {
+    public Province toEntity() {
         Province province = new Province();
         province.setUuid(this.getUuid());
         province.setId(this.getId());

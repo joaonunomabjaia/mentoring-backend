@@ -105,7 +105,7 @@ public class TutorProgrammaticareaController extends BaseController {
     @Patch("/changeLifeCicleStatus")
     @Tag(name = "TutorProgrammaticArea")
     public TutorProgrammaticAreaDTO changeLifeCicleStatus(@NonNull @Body TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO, Authentication authentication){
-        TutorProgrammaticArea tpa = tutorProgrammaticAreaDTO.toTutorProgrammaticArea();
+        TutorProgrammaticArea tpa = tutorProgrammaticAreaDTO.toEntity();
         tpa.setLifeCycleStatus(LifeCycleStatus.valueOf(tutorProgrammaticAreaDTO.getLifeCycleStatus()));
         TutorProgrammaticArea tutorProgrammaticArea = this.tutorProgrammaticAreaService.updateLifeCycleStatus(tpa, (Long) authentication.getAttributes().get("userInfo"));
         return new TutorProgrammaticAreaDTO(tutorProgrammaticArea);

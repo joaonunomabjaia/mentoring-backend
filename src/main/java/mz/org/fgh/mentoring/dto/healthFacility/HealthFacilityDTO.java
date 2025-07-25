@@ -30,7 +30,7 @@ public class HealthFacilityDTO extends BaseEntityDTO {
     }
 
     @JsonIgnore
-    public HealthFacility getHealthFacilityObj() {
+    public HealthFacility toEntity() {
         HealthFacility healthFacility = new HealthFacility();
         healthFacility.setUuid(this.getUuid());
         healthFacility.setId(this.getId());

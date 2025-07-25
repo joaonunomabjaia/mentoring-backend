@@ -24,7 +24,7 @@ public class ProfessionalCategoryDTO extends BaseEntityDTO {
     }
 
     @JsonIgnore
-    public ProfessionalCategory getProfessionalCategory() {
+    public ProfessionalCategory toEntity() {
         ProfessionalCategory professionalCategory = new ProfessionalCategory();
         professionalCategory.setId(this.getId());
         professionalCategory.setUpdatedAt(this.getUpdatedAt());
