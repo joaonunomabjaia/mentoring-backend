@@ -10,17 +10,10 @@ import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import java.util.List;
 
-@Schema(name = "Tutoreds", description = "A professional that provide mentoring to the tutored individuals")
+@Schema(name = "Tutoreds", description = "A professional that provides mentoring to tutored individuals")
 @Entity(name = "Tutored")
 @Table(name = "tutoreds")
 @Data
@@ -32,9 +25,6 @@ public class Tutored extends BaseEntity {
     @JoinColumn(name = "EMPLOYEE_ID")
     private Employee employee;
 
-    @Transient
-    private boolean zeroEvaluationDone;
-
     @Column(name = "ZERO_EVALUATION_SCORE")
     private Double zeroEvaluationScore;
 
@@ -42,9 +32,7 @@ public class Tutored extends BaseEntity {
     private List<SessionRecommendedResource> recommendedResources;
 
     @Creator
-    public Tutored() {
-
-    }
+    public Tutored() {}
 
     public Tutored(String uuid) {
         super(uuid);
@@ -52,9 +40,13 @@ public class Tutored extends BaseEntity {
 
     public Tutored(TutoredDTO tutoredDTO) {
         super(tutoredDTO);
-        this.setZeroEvaluationDone(tutoredDTO.isZeroEvaluationDone());
         this.setZeroEvaluationScore(tutoredDTO.getZeroEvaluationScore());
         this.setEmployee(new Employee(tutoredDTO.getEmployeeDTO()));
+    }
+
+    @Transient
+    public boolean isZeroEvaluationDone() {
+        return this.zeroEvaluationScore != null && this.zeroEvaluationScore > 0;
     }
 
     @Override

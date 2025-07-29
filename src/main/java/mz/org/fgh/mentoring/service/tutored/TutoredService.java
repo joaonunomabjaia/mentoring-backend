@@ -20,7 +20,6 @@ import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
@@ -197,18 +196,13 @@ public class TutoredService {
         return tutoredDTO;
     }
 
-    public List<Tutored> getTutoredsByHealthFacilityUuids(final List<String> uuids, Long offset, Long limit){
-        if (offset > 0) offset = offset/limit;
+    public List<Tutored> getTutoredsByHealthFacilityUuids(final List<String> uuids, Long offset, Long limit) {
+        if (offset > 0) offset = offset / limit;
 
         Pageable pageable = Pageable.from(Math.toIntExact(offset), Math.toIntExact(limit));
-        List<Tutored> tutoreds = tutoredRepository.getTutoredsByHealthFacilityUuids(uuids, pageable);
-        if (Utilities.listHasElements(tutoreds)) {
-            for (Tutored tutored : tutoreds) {
-                tutored.setZeroEvaluationDone(tutored.getZeroEvaluationScore() != null && tutored.getZeroEvaluationScore() > 0);
-            }
-        }
-        return tutoreds;
+        return tutoredRepository.getTutoredsByHealthFacilityUuids(uuids, pageable);
     }
+
 
     private boolean checkZeroEvaluation(Tutored tutored) {
         return tutored.getZeroEvaluationScore() != null;
