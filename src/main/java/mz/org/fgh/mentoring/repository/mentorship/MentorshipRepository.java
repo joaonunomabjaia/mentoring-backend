@@ -3,6 +3,7 @@ package mz.org.fgh.mentoring.repository.mentorship;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.session.Session;
@@ -51,4 +52,5 @@ public interface MentorshipRepository extends CrudRepository<Mentorship, Long> {
             "ORDER BY m.performedDate DESC")
     List<Mentorship> fetchLatestBySessionAndEvaluationType(Session session, EvaluationType evaluationType, Pageable pageable);
 
+    long countByCabinet(Cabinet cabinet);
 }
