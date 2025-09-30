@@ -35,22 +35,22 @@ public class LocationDTO extends BaseEntityDTO {
         this.setLocationLevel(location.getLocationLevel());
     }
 
-    public Location getLocation() {
+    public Location toEntity() {
         Location location = new Location();
         location.setId(this.getId());
         location.setUuid(this.getUuid());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) location.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getEmployeeDTO()!=null) {
-            location.setEmployee(this.employeeDTO.getEmployee());
+            location.setEmployee(this.employeeDTO.toEntity());
         }
         if(this.getDistrictDTO()!=null) {
-            location.setDistrict(this.getDistrictDTO().getDistrict());
+            location.setDistrict(this.getDistrictDTO().toEntity());
         }
         if(this.getProvinceDTO()!=null) {
-            location.setProvince(this.getProvinceDTO().getProvince());
+            location.setProvince(this.getProvinceDTO().toEntity());
         }
         if(this.getHealthFacilityDTO()!=null) {
-            location.setHealthFacility(this.getHealthFacilityDTO().getHealthFacilityObj());
+            location.setHealthFacility(this.getHealthFacilityDTO().toEntity());
         }
         return location;
     }

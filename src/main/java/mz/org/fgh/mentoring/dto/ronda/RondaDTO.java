@@ -84,7 +84,7 @@ public class RondaDTO extends BaseEntityDTO {
         }
 
         if (this.getHealthFacility() != null) {
-            ronda.setHealthFacility(this.getHealthFacility().getHealthFacilityObj());
+            ronda.setHealthFacility(this.getHealthFacility().toEntity());
         }
 
         if (this.getRondaType() != null) {

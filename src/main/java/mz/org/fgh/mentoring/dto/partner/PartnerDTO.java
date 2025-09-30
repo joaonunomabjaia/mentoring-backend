@@ -29,7 +29,7 @@ public class PartnerDTO extends BaseEntityDTO {
     }
 
     @JsonIgnore
-    public Partner getPartner() {
+    public Partner toEntity() {
         Partner partner = new Partner();
         partner.setId(this.getId());
         partner.setUpdatedAt(this.getUpdatedAt());
