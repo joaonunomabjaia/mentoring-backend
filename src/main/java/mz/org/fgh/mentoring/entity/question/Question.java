@@ -1,7 +1,7 @@
 package mz.org.fgh.mentoring.entity.question;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.micronaut.core.annotation.Creator;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
@@ -39,6 +39,8 @@ public class Question extends BaseEntity {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "PROGRAM_ID", nullable = false)
     private Program program;
+
+
 
     @Creator
     public Question() {}

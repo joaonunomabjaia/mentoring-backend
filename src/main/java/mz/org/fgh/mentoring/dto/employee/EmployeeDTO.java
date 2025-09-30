@@ -67,7 +67,7 @@ public class EmployeeDTO extends BaseEntityDTO {
         return locationDTOSet;
     }
 
-    public Employee getEmployee() {
+    public Employee toEntity() {
         Employee employee = new Employee();
         employee.setId(this.getId());
         employee.setUuid(this.getUuid());
@@ -79,15 +79,15 @@ public class EmployeeDTO extends BaseEntityDTO {
         employee.setEmail(this.getEmail());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) employee.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getProfessionalCategoryDTO()!=null) {
-            employee.setProfessionalCategory(this.getProfessionalCategoryDTO().getProfessionalCategory());
+            employee.setProfessionalCategory(this.getProfessionalCategoryDTO().toEntity());
         }
         if(this.getPartnerDTO()!=null) {
-            employee.setPartner(this.partnerDTO.getPartner());
+            employee.setPartner(this.partnerDTO.toEntity());
         }
         if(this.getLocationDTOSet()!=null && !this.getLocationDTOSet().isEmpty()) {
             Set<Location> locations = new TreeSet<>();
             for (LocationDTO locationDTO: this.getLocationDTOSet()) {
-                Location location = locationDTO.getLocation();
+                Location location = locationDTO.toEntity();
                 locations.add(location);
             }
             employee.setLocations(locations);

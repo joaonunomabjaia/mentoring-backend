@@ -4,12 +4,7 @@ import io.micronaut.core.annotation.NonNull;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Patch;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -27,11 +22,9 @@ import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.lang.reflect.InvocationTargetException;
 import java.util.List;
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.TUTOR_PROGRAMMATIC_AREAS)
@@ -86,11 +79,15 @@ public class TutorProgrammaticareaController extends BaseController {
     @Tag(name = "TutorProgrammaticarea")
     @Get("/getByTutorUuidd/{tutorUuid}")
     public List<TutorProgrammaticAreaDTO> getByTutorUuidd(@PathVariable("tutorUuid") String tutorUuid) {
-        try {
-            return Utilities.parseList(tutorProgrammaticAreaService.getByTutorUuidd(tutorUuid), TutorProgrammaticAreaDTO.class);
-        } catch (InstantiationException | IllegalAccessException | NoSuchMethodException | InvocationTargetException e) {
-            throw new RuntimeException(e);
-        }
+        return listAsDtos(tutorProgrammaticAreaService.getByTutorUuidd(tutorUuid), TutorProgrammaticAreaDTO.class);
+    }
+
+    @Operation(summary = "Return a list of all TutorProgrammaticArea for a given list of Mentors")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "TutorProgrammaticArea")
+    @Get("/getByTutorUuids")
+    public List<TutorProgrammaticAreaDTO> getByTutorUuids(@QueryValue List<String> tutorUuids) {
+        return listAsDtos(tutorProgrammaticAreaService.getByTutorUuids(tutorUuids), TutorProgrammaticAreaDTO.class);
     }
 
     @Operation(summary = "Get TutorProgrammaticarea from database")
@@ -108,7 +105,7 @@ public class TutorProgrammaticareaController extends BaseController {
     @Patch("/changeLifeCicleStatus")
     @Tag(name = "TutorProgrammaticArea")
     public TutorProgrammaticAreaDTO changeLifeCicleStatus(@NonNull @Body TutorProgrammaticAreaDTO tutorProgrammaticAreaDTO, Authentication authentication){
-        TutorProgrammaticArea tpa = tutorProgrammaticAreaDTO.toTutorProgrammaticArea();
+        TutorProgrammaticArea tpa = tutorProgrammaticAreaDTO.toEntity();
         tpa.setLifeCycleStatus(LifeCycleStatus.valueOf(tutorProgrammaticAreaDTO.getLifeCycleStatus()));
         TutorProgrammaticArea tutorProgrammaticArea = this.tutorProgrammaticAreaService.updateLifeCycleStatus(tpa, (Long) authentication.getAttributes().get("userInfo"));
         return new TutorProgrammaticAreaDTO(tutorProgrammaticArea);

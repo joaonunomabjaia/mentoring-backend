@@ -9,7 +9,8 @@ import lombok.ToString;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.form.FormSectionQuestionDTO;
 import mz.org.fgh.mentoring.entity.form.FormSection;
-import mz.org.fgh.mentoring.entity.question.EvaluationType;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationLocation;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.question.Question;
 import mz.org.fgh.mentoring.entity.question.ResponseType;
 
@@ -54,6 +55,11 @@ public class FormSectionQuestion extends BaseEntity {
     @JoinColumn(name = "EVALUATION_TYPE_ID")
     private EvaluationType evaluationType;
 
+    @NotNull
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "EVALUATION_LOCATION_ID")
+    private EvaluationLocation evaluationLocation;
+
     @Column( name ="SEQUENCE" )
     private Integer sequence;
 
@@ -69,8 +75,7 @@ public class FormSectionQuestion extends BaseEntity {
         this.setSequence(formQuestionDTO.getSequence());
         if(formQuestionDTO.getQuestionDTO()!=null) this.setQuestion(new Question(formQuestionDTO.getQuestionDTO()));
         if(formQuestionDTO.getEvaluationType()!=null) this.setEvaluationType(new EvaluationType(formQuestionDTO.getEvaluationType()));
+        if(formQuestionDTO.getEvaluationLocation()!=null) this.setEvaluationLocation(new EvaluationLocation(formQuestionDTO.getEvaluationLocation()));
         if(formQuestionDTO.getResponseType()!=null) this.setResponseType(new ResponseType(formQuestionDTO.getResponseType()));
-
     }
-
 }

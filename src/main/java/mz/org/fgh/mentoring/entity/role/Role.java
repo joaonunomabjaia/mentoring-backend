@@ -1,17 +1,14 @@
 package mz.org.fgh.mentoring.entity.role;
 
+import io.micronaut.core.annotation.Creator;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.role.RoleDTO;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import java.util.List;
 
@@ -20,7 +17,6 @@ import java.util.List;
 @Table(name = "role")
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
 public class Role extends BaseEntity {
 
@@ -42,6 +38,18 @@ public class Role extends BaseEntity {
 
     @OneToMany(fetch = FetchType.EAGER, mappedBy = "role")
     private List<RoleAuthority> roleAuthorities;
+
+    @Creator
+    public Role() {
+    }
+
+    public Role(RoleDTO dto) {
+        super(dto); // se BaseEntity possui um construtor com DTO
+        this.description = dto.getDescription();
+        this.code = dto.getCode();
+        this.level = dto.getLevel();
+        this.hierarchyLevel = dto.getHierarchyLevel();
+    }
 
     @Override
     public String toString() {

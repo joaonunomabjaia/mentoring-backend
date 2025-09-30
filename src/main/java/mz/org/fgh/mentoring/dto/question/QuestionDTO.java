@@ -2,13 +2,12 @@ package mz.org.fgh.mentoring.dto.question;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.micronaut.core.annotation.Creator;
-import jakarta.inject.Inject;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
+import mz.org.fgh.mentoring.dto.mentorship.EvaluationLocationDTO;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.repository.question.QuestionRepository;
 
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.Size;
@@ -39,6 +38,11 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
     @JsonProperty(value = "programUuid")
     private String programUuid;
 
+    private EvaluationLocationDTO evaluationLocationDTO;
+
+    private String evaluationLocationUuid;
+
+
     @Creator
     public QuestionDTO() {}
 
@@ -47,7 +51,6 @@ public class QuestionDTO extends BaseEntityDTO implements Serializable {
         this.setCode(question.getCode());
         this.setTableCode(question.getTableCode());
         this.setQuestion(question.getQuestion());
-        this.usedInFormSection = usedInFormSection;
         this.setProgramUuid(question.getProgram().getUuid());
         if (question.getProgram() != null) {
             this.setProgramDTO(new ProgramDTO(question.getProgram()));

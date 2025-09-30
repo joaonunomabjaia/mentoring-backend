@@ -54,4 +54,6 @@ public interface QuestionRepository extends JpaRepository<Question, Long> {
             "WHERE fsq.question = :question")
     boolean existsInFormSectionQuestion(Question question);
 
+    Page<Question> findByQuestionIlikeOrTableCodeIlike(String question, String tableCode, Pageable pageable);
+
 }

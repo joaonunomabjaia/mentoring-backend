@@ -9,6 +9,7 @@ import mz.org.fgh.mentoring.entity.ronda.RondaMentor;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 @Repository
 public interface RondaMentorRepository extends CrudRepository<RondaMentor, Long> {
@@ -23,7 +24,13 @@ public interface RondaMentorRepository extends CrudRepository<RondaMentor, Long>
 
     @Query("select rm from RondaMentor rm " +
             "where rm.ronda.id = :rondaId")
-    List<RondaMentor> findByRonda(Long rondaId);
+    Set<RondaMentor> findByRonda(Long rondaId);
 
     void deleteByRonda(Ronda ronda);
+
+    @Query("SELECT DISTINCT rm FROM RondaMentor rm " +
+            "JOIN FETCH rm.mentor " +
+            "JOIN FETCH rm.ronda r " +
+            "WHERE r.id = :rondaId and rm.endDate is null ")
+    Set<RondaMentor> findMentorsForRondas(Long rondaId);
 }

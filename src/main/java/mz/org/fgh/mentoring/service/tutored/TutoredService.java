@@ -4,21 +4,28 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
+import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.district.DistrictRepository;
+import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
+import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.location.LocationRepository;
+import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
+import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
+import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class TutoredService {
@@ -26,17 +33,30 @@ public class TutoredService {
     private final EmployeeService employeeService;
     private final TutoredRepository tutoredRepository;
     private final UserRepository userRepository;
+    private final EmployeeRepository employeeRepository;
+    private final LocationRepository locationRepository;
+    private final DistrictRepository  districtRepository;
+    private final ProvinceRepository provinceRepository;
+    private final HealthFacilityRepository healthFacilityRepository;
+    private final PartnerRepository  partnerRepository;
+    private final ProfessionalCategoryRepository  professionalCategoryRepository;
+
     @Inject
     private SessionRepository sessionRepository;
-    @Inject
-    private LocationRepository locationRepository;
 
 
 
-    public TutoredService(EmployeeService employeeService, TutoredRepository tutoredRepository, UserRepository userRepository) {
+    public TutoredService(EmployeeService employeeService, TutoredRepository tutoredRepository, UserRepository userRepository, EmployeeRepository employeeRepository, LocationRepository locationRepository, DistrictRepository districtRepository, ProvinceRepository provinceRepository, HealthFacilityRepository healthFacilityRepository, PartnerRepository partnerRepository, ProfessionalCategoryRepository professionalCategoryRepository) {
         this.employeeService = employeeService;
         this.tutoredRepository = tutoredRepository;
         this.userRepository = userRepository;
+        this.employeeRepository = employeeRepository;
+        this.locationRepository = locationRepository;
+        this.districtRepository = districtRepository;
+        this.provinceRepository = provinceRepository;
+        this.healthFacilityRepository = healthFacilityRepository;
+        this.partnerRepository = partnerRepository;
+        this.professionalCategoryRepository = professionalCategoryRepository;
     }
 
     public List<TutoredDTO> findAll(long offset, long  limit){
@@ -93,10 +113,48 @@ public class TutoredService {
 
         return new TutoredDTO(tutored);
     }
-    public TutoredDTO update(TutoredDTO tutoredDTO){
 
-       Tutored tutored = this.tutoredRepository.update(new Tutored(tutoredDTO));
-       return new TutoredDTO(tutored);
+    @Transactional
+    public Tutored update(Tutored tutored){
+
+        Optional<Tutored> existing = tutoredRepository.findByUuid(tutored.getUuid());
+        if (existing.isEmpty()) throw new RuntimeException("Mentee not found");
+
+        Tutored toUpdate = existing.get();
+        toUpdate.getEmployee().setUpdatedBy(tutored.getUpdatedBy());
+        toUpdate.getEmployee().setUpdatedAt(tutored.getUpdatedAt());
+        toUpdate.getEmployee().setName(tutored.getEmployee().getName());
+        toUpdate.getEmployee().setPhoneNumber(tutored.getEmployee().getPhoneNumber());
+        toUpdate.getEmployee().setSurname(tutored.getEmployee().getSurname());
+        toUpdate.getEmployee().setEmail(tutored.getEmployee().getEmail());
+        toUpdate.getEmployee().setNuit(tutored.getEmployee().getNuit());
+        toUpdate.getEmployee().setPartner(partnerRepository.findByUuid(tutored.getEmployee().getPartner().getUuid()).get());
+        toUpdate.getEmployee().setProfessionalCategory(professionalCategoryRepository.findByUuid(tutored.getEmployee().getProfessionalCategory().getUuid()).get());
+
+        toUpdate.getEmployee().setTrainingYear(tutored.getEmployee().getTrainingYear());
+        toUpdate.setUpdatedAt(DateUtils.getCurrentDate());
+        toUpdate.setUpdatedBy(tutored.getUpdatedBy());
+
+        locationRepository.deleteAll(toUpdate.getEmployee().getLocations());
+
+        toUpdate.getEmployee().setLocations(tutored.getEmployee().getLocations());
+
+        for (Location location : toUpdate.getEmployee().getLocations()){
+            location.setCreatedAt(DateUtils.getCurrentDate());
+            location.setCreatedBy(toUpdate.getCreatedBy());
+            location.setEmployee(toUpdate.getEmployee());
+            location.setUuid(UUID.randomUUID().toString());
+            location.setDistrict(districtRepository.findByUuid(location.getDistrict().getUuid()));
+            location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
+            location.setHealthFacility(healthFacilityRepository.findByUuid(location.getHealthFacility().getUuid()).get());
+        }
+        locationRepository.saveAll(toUpdate.getEmployee().getLocations());
+
+        toUpdate.getEmployee().setUpdatedAt(DateUtils.getCurrentDate());
+        toUpdate.getEmployee().setUpdatedBy(tutored.getUpdatedBy());
+        employeeRepository.update(toUpdate.getEmployee());
+
+        return tutoredRepository.update(toUpdate);
     }
 
     public TutoredDTO updateTutored(TutoredDTO tutoredDTO, Long userId){
@@ -138,21 +196,16 @@ public class TutoredService {
         return tutoredDTO;
     }
 
-    public List<Tutored> getTutoredsByHealthFacilityUuids(final List<String> uuids, Long offset, Long limit){
-        if (offset > 0) offset = offset/limit;
+    public List<Tutored> getTutoredsByHealthFacilityUuids(final List<String> uuids, Long offset, Long limit) {
+        if (offset > 0) offset = offset / limit;
 
         Pageable pageable = Pageable.from(Math.toIntExact(offset), Math.toIntExact(limit));
-        List<Tutored> tutoreds = tutoredRepository.getTutoredsByHealthFacilityUuids(uuids, pageable);
-        if (Utilities.listHasElements(tutoreds)) {
-            for (Tutored tutored : tutoreds) {
-                tutored.setZeroEvaluationDone(checkZeroEvaluation(tutored));
-            }
-        }
-        return tutoreds;
+        return tutoredRepository.getTutoredsByHealthFacilityUuids(uuids, pageable);
     }
 
+
     private boolean checkZeroEvaluation(Tutored tutored) {
-        return this.sessionRepository.getTutoredZeroSession(tutored.getId()).isPresent();
+        return tutored.getZeroEvaluationScore() != null;
     }
 
     /*public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {
@@ -171,6 +224,10 @@ public class TutoredService {
 
     public Tutored findByUuid(String uuid) {
         return tutoredRepository.findByUuid(uuid).orElseThrow(() -> new IllegalArgumentException("Tutored not found"));
+    }
+
+    public Optional<Tutored> findOptionalByUuid(String uuid) {
+        return tutoredRepository.findByUuid(uuid);
     }
 
 }

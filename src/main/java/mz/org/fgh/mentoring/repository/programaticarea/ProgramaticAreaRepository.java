@@ -2,19 +2,20 @@ package mz.org.fgh.mentoring.repository.programaticarea;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
-import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
-public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticArea, Long> {
+public interface ProgramaticAreaRepository extends JpaRepository<ProgrammaticArea, Long> {
 
-    @Override
-    List<ProgrammaticArea> findAll();
+    Page<ProgrammaticArea> findByNameIlike(String name, Pageable pageable);
 
     @Query("select p from ProgrammaticArea p where p.code like concat(concat('%', :code) ,'%')  and p.name like concat(concat('%', :name),'%') and p.lifeCycleStatus =:lifeCycleStatus")
     List<ProgrammaticArea> findBySelectedFilter(final String code, final String name, final LifeCycleStatus lifeCycleStatus);
@@ -37,4 +38,8 @@ public interface ProgramaticAreaRepository extends CrudRepository<ProgrammaticAr
 
     @Query("SELECT p FROM ProgrammaticArea p JOIN FETCH p.program WHERE p.id = :id")
     ProgrammaticArea getById(Long id);
+
+    long countByProgram(Program program);
+
+    Optional<ProgrammaticArea> findByUuid(String uuid);
 }

@@ -1,7 +1,10 @@
 package mz.org.fgh.mentoring.repository.mentorship;
 
 import io.micronaut.data.annotation.Query;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.CrudRepository;
+import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -33,10 +36,21 @@ public interface MentorshipRepository extends CrudRepository<Mentorship, Long> {
             "INNER JOIN FETCH m.form f " +
             "INNER JOIN FETCH m.cabinet c " +
             "INNER JOIN FETCH m.evaluationType et " +
+            "INNER JOIN FETCH m.evaluationLocation el " +
             "INNER JOIN FETCH m.door d " +
             "INNER JOIN FETCH m.session s " +
             "WHERE s.uuid = :sessionUuid ")
     List<Mentorship> fetchBySessionUuid(String sessionUuid, LifeCycleStatus lifeCycleStatus);
 
     List<Mentorship> findBySession(Session session);
+
+    @Query("SELECT m FROM Mentorship m " +
+            "JOIN FETCH m.tutored t " +
+            "JOIN FETCH t.employee e " +
+            "WHERE m.session = :session " +
+            "AND m.evaluationType = :evaluationType " +
+            "ORDER BY m.performedDate DESC")
+    List<Mentorship> fetchLatestBySessionAndEvaluationType(Session session, EvaluationType evaluationType, Pageable pageable);
+
+    long countByCabinet(Cabinet cabinet);
 }

@@ -2,7 +2,6 @@ package mz.org.fgh.mentoring.service.user;
 
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.role.UserRoleDTO;
-import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.role.Role;
 import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.user.User;
@@ -11,7 +10,7 @@ import mz.org.fgh.mentoring.repository.role.UserRoleRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
-import javax.persistence.EntityNotFoundException;
+
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
@@ -74,22 +73,13 @@ public class UserRoleService {
 
     }
 
-    @Transactional
-    public UserRole create(Long userId,Long roleId, Long authUserId) {
-        User authUser = userRepository.findById(authUserId).get();
-        Role roleDB = roleRepository.findById(roleId).get();
-        User userDB = userRepository.findById(userId).get();
-
-        UserRole userRole = new UserRole();
-
-        userRole.setCreatedBy(authUser.getUuid());
-        userRole.setUuid(UUID.randomUUID().toString());
-        userRole.setCreatedAt(DateUtils.getCurrentDate());
-        userRole.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-
-        userRole.setUser(userDB);
-        userRole.setRole(roleDB);
-
-        return this.userRoleRepository.save(userRole);
+    public void create(List<UserRole> userRoles) {
+        for (UserRole  userRole: userRoles) {
+            userRole.setCreatedBy(userRole.getUser().getUuid());
+            userRole.setUuid(UUID.randomUUID().toString());
+            userRole.setCreatedAt(DateUtils.getCurrentDate());
+            userRole.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            this.userRoleRepository.save(userRole);
+        }
     }
 }

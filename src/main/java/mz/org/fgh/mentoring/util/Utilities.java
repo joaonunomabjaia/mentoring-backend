@@ -9,11 +9,7 @@ import java.math.RoundingMode;
 import java.security.SecureRandom;
 import java.security.spec.KeySpec;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 
 public class Utilities {
@@ -56,6 +52,11 @@ public class Utilities {
     public static boolean listHasElements(List<?> list){
         return list != null && !list.isEmpty() && list.size() > 0;
     }
+
+    public static boolean hasElements(Collection<?> collection) {
+        return collection != null && !collection.isEmpty();
+    }
+
 
     public static <T extends Object> T findOnArray(List<T> list, T toFind){
         for (T o : list) {
@@ -219,7 +220,7 @@ public class Utilities {
      */
     public static String generateSalt() {
         SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
+        byte[] salt = new byte[32];
         random.nextBytes(salt);
         return Base64.getEncoder().encodeToString(salt);
     }

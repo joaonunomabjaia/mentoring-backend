@@ -18,4 +18,6 @@ public interface UserRoleRepository extends CrudRepository<UserRole, Long> {
     
     @Query("select ur from UserRole ur where ur.user.id = :userId and ur.role.id= :roleId")
     UserRole findByUserIdAndRoleId(Long userId,Long roleId);
+
+    void deleteByUser(User user);
 }

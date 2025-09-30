@@ -70,7 +70,7 @@ public class RondaMentorDTO extends BaseEntityDTO {
         rondaMentor.setUpdatedAt(this.getUpdatedAt());
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) rondaMentor.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         if(this.getMentor()!=null) {
-            rondaMentor.setMentor(this.getMentor().getTutor());
+            rondaMentor.setMentor(this.getMentor().toEntity());
         }
         if(this.getRonda()!=null) {
             rondaMentor.setRonda(this.getRonda().getRonda());

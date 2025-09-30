@@ -5,13 +5,12 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
-import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.professionalcategory.ProfessionalCategory;
 import mz.org.fgh.mentoring.entity.role.UserRole;
 import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
+import mz.org.fgh.mentoring.repository.role.UserRoleRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
@@ -25,7 +24,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.transaction.Transactional;
-import java.util.*;
+import javax.validation.constraints.NotNull;
+import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
+import java.util.UUID;
 
 @Singleton
 public class UserService {
@@ -41,6 +44,7 @@ public class UserService {
     private final EmailSender emailSender;
     private final SettingsRepository settingsRepository;
     private final UserRoleService userRoleService;
+    private final UserRoleRepository userRoleRepository;
 
     public UserService(UserRepository userRepository,
                        EmployeeService employeeService,
@@ -49,7 +53,7 @@ public class UserService {
                        RondaService rondaService,
                        RoleService roleService,
                        EmailSender emailSender,
-                       SettingsRepository settingsRepository, UserRoleService userRoleService) {
+                       SettingsRepository settingsRepository, UserRoleService userRoleService, UserRoleRepository userRoleRepository) {
         this.userRepository = userRepository;
         this.employeeService = employeeService;
         this.professionalCategoryRepository = professionalCategoryRepository;
@@ -59,6 +63,7 @@ public class UserService {
         this.emailSender = emailSender;
         this.settingsRepository = settingsRepository;
         this.userRoleService = userRoleService;
+        this.userRoleRepository = userRoleRepository;
     }
 
     public UserDTO getByCredentials(User user) {
@@ -76,12 +81,10 @@ public class UserService {
     }
 
     @Transactional
-    public User create(User user, Long userId) {
-        User authUser = findById(userId);
+    public User create(User user) {
         String password = Utilities.generateRandomPassword(8);
 
         user.setId(null);
-        user.setCreatedBy(authUser.getUuid());
         user.setUuid(UUID.randomUUID().toString());
         user.setCreatedAt(DateUtils.getCurrentDate());
         user.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
@@ -90,7 +93,7 @@ public class UserService {
         try {
             user.setPassword(Utilities.encryptPassword(password, user.getSalt()));
             user.setShouldResetPassword(true);
-            setupEmployee(user, authUser);
+            setupEmployee(user);
 
             String serverUrl = getSettingValue("SERVER_URL");
             emailSender.sendEmailToUser(user, password, serverUrl);
@@ -99,23 +102,36 @@ public class UserService {
             throw new RuntimeException("Error encrypting password", e);
         }
 
-        return userRepository.save(user);
+        User created = userRepository.save(user);
+
+        if (Utilities.listHasElements(user.getUserRoles())) {
+            userRoleService.create(user.getUserRoles());
+        }
+
+        return created;
     }
 
-    private void setupEmployee(User user, User authUser) {
+    private void setupEmployee(User user) {
         Employee employee = user.getEmployee();
-        employee.setCreatedBy(authUser.getUuid());
+        employee.setCreatedBy(user.getCreatedBy());
         employee.setUuid(UUID.randomUUID().toString());
         employee.setCreatedAt(DateUtils.getCurrentDate());
         employee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
 
         employee.setProfessionalCategory(
-                professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()));
-        employee.setPartner(partnerRepository.findByUuid(employee.getPartner().getUuid()));
+                professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid())
+                        .orElseThrow(() -> new RuntimeException("Categoria profissional não encontrada"))
+        );
 
-        employeeService.createOrUpdate(employee, authUser);
+        employee.setPartner(
+                partnerRepository.findByUuid(employee.getPartner().getUuid())
+                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
+        );
+
+        employeeService.createOrUpdate(employee, user);
         user.setEmployee(employee);
     }
+
 
     private String getSettingValue(String designation) {
         return settingsRepository.findByDesignation(designation)
@@ -124,66 +140,78 @@ public class UserService {
     }
 
     @Transactional
-    public User update(UserDTO userDTO, Long userId) {
-        User authUser = findById(userId);
-        User userDB = findById(userDTO.getId());
+    public User update(User user) {
+        Optional<User> existing = userRepository.findByUuid(user.getUuid());
+        if (existing.isEmpty()) {
+            throw new RuntimeException("User not found with UUID: " + user.getUuid());
+        }
 
-        userDB.setUpdatedBy(authUser.getUuid());
-        userDB.setUpdatedAt(DateUtils.getCurrentDate());
-        userDB.setLifeCycleStatus(LifeCycleStatus.valueOf(userDTO.getLifeCycleStatus()));
-        userDB.setUsername(userDTO.getUsername());
+        User toUpdate = existing.get();
+        toUpdate.setUsername(user.getUsername());
+        toUpdate.setLifeCycleStatus(user.getLifeCycleStatus());
+        toUpdate.setUpdatedAt(DateUtils.getCurrentDate());
+        toUpdate.setUpdatedBy(user.getUpdatedBy());
 
-        upDateUserRoles(userDTO, authUser);
+        // Atualizações relacionadas (caso existam dentro da entidade User)
+        updateUserRoles(user, toUpdate);     // Atualiza as roles com base no novo objeto
+        updateEmployee(user, toUpdate);      // Atualiza o empregado vinculado
 
-        updateEmployee(userDTO, authUser);
+        return userRepository.update(toUpdate);
+    }
 
-        return userRepository.update(userDB);
+
+    @Transactional
+    public void updateUserRoles(User user, User updatedBy) {
+
+        userRoleRepository.deleteByUser(user);
+        userRoleService.create(user.getUserRoles());
+
     }
 
     @Transactional
-    public void upDateUserRoles(UserDTO userDTO, User authUser) {
-        Long userId = userDTO.getId();
-        List<Long> rolesIds = userDTO.getRoleIds();
-        User user = userRepository.findById(userId).orElseThrow(() -> new NoSuchElementException("User not found"));
+    public void updateEmployee(User user, User updatedBy) {
+        Employee employee = user.getEmployee();
 
+        if (employee == null || employee.getId() == null) {
+            throw new IllegalArgumentException("Employee data is missing or invalid in user");
+        }
+
+        Employee existing = employeeService.findById(employee.getId())
+                .orElseThrow(() -> new NoSuchElementException("Employee not found with ID: " + employee.getId()));
+
+        existing.setUpdatedBy(updatedBy.getUuid());
+        existing.setUpdatedAt(DateUtils.getCurrentDate());
+        existing.setEmail(employee.getEmail());
+        existing.setName(employee.getName());
+        existing.setPhoneNumber(employee.getPhoneNumber());
+        existing.setNuit(employee.getNuit());
+        existing.setSurname(employee.getSurname());
+        existing.setTrainingYear(employee.getTrainingYear());
+        existing.setProfessionalCategory(employee.getProfessionalCategory());
+        existing.setPartner(employee.getPartner());
+
+        employeeService.update(existing);
+    }
+
+
+    @Transactional
+    public void delete(String uuid) {
+        Optional<User> existing = userRepository.findByUuid(uuid);
+        if (existing.isEmpty()) {
+            throw new RuntimeException("User not found with UUID: " + uuid);
+        }
+
+        User user = existing.get();
+
+        // Remove todos os UserRoles associados ao usuário
         for (UserRole userRole : user.getUserRoles()) {
             userRoleService.deleteUserRole(userRole.getId());
         }
 
-        for (Long roleId : rolesIds) {
-            userRoleService.create(userId, roleId, authUser.getId());
-        }
-
+        // Agora remove o próprio usuário
+        userRepository.delete(user);
     }
 
-    private void updateEmployee(UserDTO userDTO, User authUser) {
-        Employee employeeDB = employeeService.findById(userDTO.getEmployeeDTO().getId())
-                .orElseThrow(() -> new NoSuchElementException("Employee not found"));
-
-        employeeDB.setUpdatedBy(authUser.getUuid());
-        employeeDB.setUpdatedAt(DateUtils.getCurrentDate());
-        employeeDB.setEmail(userDTO.getEmployeeDTO().getEmail());
-        employeeDB.setName(userDTO.getEmployeeDTO().getName());
-        employeeDB.setPhoneNumber(userDTO.getEmployeeDTO().getPhoneNumber());
-        employeeDB.setNuit(userDTO.getEmployeeDTO().getNuit());
-        employeeDB.setSurname(userDTO.getEmployeeDTO().getSurname());
-        employeeDB.setTrainingYear(userDTO.getEmployeeDTO().getTrainingYear());
-        employeeDB.setProfessionalCategory(
-                new ProfessionalCategory(userDTO.getEmployeeDTO().getProfessionalCategoryDTO()));
-        employeeDB.setPartner(new Partner(userDTO.getEmployeeDTO().getPartnerDTO()));
-
-        employeeService.update(employeeDB);
-    }
-
-    @Transactional
-    public User delete(User user, Long userId) {
-        User authUser = findById(userId);
-        user.setLifeCycleStatus(LifeCycleStatus.DELETED);
-        user.setUpdatedBy(authUser.getUuid());
-        user.setUpdatedAt(DateUtils.getCurrentDate());
-
-        return userRepository.update(user);
-    }
 
     @Transactional
     public User resetPassword(UserDTO userDTO, Long userId) {
@@ -215,12 +243,12 @@ public class UserService {
         return userRepository.findByUuid(uuid).orElse(null);
     }
 
-    public Page<UserDTO> searchUser(Long userId, String name, String nuit, String userName, Pageable pageable) {
-        findById(userId);  // Verify the user exists
-        Page<User> userPages = userRepository.search(name, nuit, userName, pageable);
+    public Page<UserDTO> searchUser(String query, Pageable pageable) {
+        Page<User> userPages = userRepository.searchByFilters(query, pageable);
         return userPages.map(UserDTO::new);
     }
 
+    @Deprecated
     public void updateUserPassword(User user, boolean encrypt) {
         try {
             User userDB = findByUuid(user.getUuid());
@@ -241,4 +269,42 @@ public class UserService {
             throw new RuntimeException("Error resetting password", e);
         }
     }
+
+    public List<User> findByUuids(List<String> uuids) {
+        return userRepository.findByUuidIn(uuids);
+    }
+
+    public void updateUserPasswords(List<User> userDTOs, boolean b) {
+        for (User user : userDTOs) {
+            updateUserPassword(user, b);
+        }
+    }
+
+    @Transactional
+    public User updateLifeCycleStatus(String uuid, @NotNull LifeCycleStatus lifeCycleStatus, String userUuid) {
+        Optional<User> existing = userRepository.findByUuid(uuid);
+        if (existing.isEmpty()) {
+            throw new RuntimeException("User not found with UUID: " + uuid);
+        }
+
+        User user = existing.get();
+        user.setLifeCycleStatus(lifeCycleStatus);
+        user.setUpdatedAt(DateUtils.getCurrentDate());
+        user.setUpdatedBy(userUuid);
+
+        return userRepository.update(user);
+    }
+
+    public void updatePassword(String uuid, String newPassword, String updatedByUuid) {
+        User user = userRepository.findByUuid(uuid)
+                .orElseThrow(() -> new RuntimeException("Utilizador não encontrado"));
+
+
+        user.setPassword(Utilities.encryptPassword(newPassword, user.getSalt()));
+        user.setUpdatedBy(updatedByUuid);
+        user.setUpdatedAt(DateUtils.getCurrentDate());
+
+        userRepository.update(user);
+    }
+
 }

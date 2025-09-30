@@ -5,7 +5,6 @@ import io.micronaut.data.annotation.Repository;
 import mz.org.fgh.mentoring.base.AbstaractBaseRepository;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
-import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
 import javax.persistence.Query;
@@ -13,7 +12,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -58,33 +56,4 @@ public abstract class AbstractTutoredRepository extends AbstaractBaseRepository 
         return tutoreds;
     }
 
-    @Override
-    public List<Tutored> getTutoredsByHealthFacilityUuids(List<String> uuids) {
-        Session sess = null;
-        List<Tutored> tutoreds = new ArrayList<>();
-        try {
-            sess = this.session.openSession();
-            // HQL/JPQL query to directly fetch Tutored entities
-            String hql = "select distinct t FROM Tutored t " +
-                        "join t.employee e " +
-                        "join e.locations l " +
-                        "join l.district d " +
-                        "join d.healthFacilities hf " +
-                        "where l.lifeCycleStatus = 'ACTIVE' " +
-                        "and hf.lifeCycleStatus = 'ACTIVE' " +
-                        "and hf.uuid in :uuids";
-
-            Query query = sess.createQuery(hql, Tutored.class);
-            query.setParameter("uuids", uuids);
-
-            tutoreds = query.getResultList();
-        } catch (Exception e) {
-            e.printStackTrace(); // Logging the exception is better practice
-        } finally {
-            if (sess != null) {
-                sess.close();
-            }
-        }
-        return tutoreds;
-    }
 }

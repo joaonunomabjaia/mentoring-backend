@@ -7,7 +7,6 @@ import io.micronaut.data.model.Pageable;
 import io.micronaut.data.repository.PageableRepository;
 import mz.org.fgh.mentoring.entity.formQuestion.FormSectionQuestion;
 import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -27,6 +26,7 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
                     "INNER JOIN FETCH fs.form f " +
                     "INNER JOIN FETCH fq.question q " +
                     "INNER JOIN FETCH fq.evaluationType et " +
+                    "INNER JOIN FETCH fq.evaluationLocation el " +
                     "INNER JOIN FETCH fq.responseType rt " +
                     "INNER JOIN FETCH q.program " +
                     "WHERE f.id = :formId AND fq.lifeCycleStatus = 'ACTIVE'",
@@ -45,6 +45,7 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
             "INNER JOIN FETCH fs.form f " +
             "INNER JOIN FETCH fq.question q " +
             "INNER JOIN FETCH fq.evaluationType et " +
+            "INNER JOIN FETCH fq.evaluationLocation el " +
             "INNER JOIN FETCH fq.responseType rt " +
             "INNER JOIN FETCH q.program " +
             "WHERE f.id = :formId AND fq.lifeCycleStatus = 'ACTIVE'")
@@ -59,6 +60,7 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
             "INNER JOIN FETCH fs.form f " +
             "INNER JOIN FETCH fq.question q " +
             "INNER JOIN FETCH fq.evaluationType et " +
+            "INNER JOIN FETCH fq.evaluationLocation el " +
             "INNER JOIN FETCH fq.responseType rt " +
             "INNER JOIN FETCH q.program " +
             "WHERE f.uuid IN (:formsUuids)")
@@ -69,6 +71,7 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
             "INNER JOIN FETCH fs.form f " +
             "INNER JOIN FETCH fq.question q " +
             "INNER JOIN FETCH fq.evaluationType et " +
+            "INNER JOIN FETCH fq.evaluationLocation el " +
             "INNER JOIN FETCH fq.responseType rt " +
             "INNER JOIN FETCH q.program " +
             "WHERE f.uuid IN (:formsUuids)")
@@ -80,5 +83,7 @@ public interface FormSectionQuestionRepository extends PageableRepository<FormSe
             "FROM Answer a " +
             "WHERE a.formSectionQuestion = :formSectionQuestion")
     boolean existsInMentorShipOrAnswer(FormSectionQuestion formSectionQuestion);
+
+    long countByQuestion(Question question);
 
 }

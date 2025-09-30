@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
@@ -55,7 +56,7 @@ public class RondaController extends BaseController {
     @Inject
     private UserRepository userRepository;
 
-    public static final Logger LOG = LoggerFactory.getLogger(RondaController.class);
+    public static final Logger LOG = LoggerFactory.getLogger(RondaController.class.getSimpleName());
     public RondaController() {
     }
 
@@ -123,17 +124,26 @@ public class RondaController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
     @Post("/changeMentor/{rondaId}/{newMentorId}")
-    public HttpResponse<RondaDTO> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
+    public HttpResponse<RestAPIResponse> changeMentor(@Body Long rondaId, Long newMentorId, Authentication authentication)
     {
-        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).get();
+        User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).orElse(null);
+
+        if (user == null) {
+            return HttpResponse.unauthorized();
+        }
+
         try {
             RondaDTO updatedRonda = rondaService.changeMentor(rondaId, newMentorId, user);
             return HttpResponse.ok(updatedRonda);
         } catch (Exception e) {
-            // Handle any exceptions or errors
-            return HttpResponse.serverError();
+            LOG.error(e.getMessage());
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                .status(HttpStatus.BAD_REQUEST.getCode())
+                .error(e.getLocalizedMessage())
+                .message(e.getMessage()).build());
         }
     }
+
 
 
     @Get("/{id}")
@@ -212,8 +222,40 @@ public class RondaController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
     @Get("/getAllOfMentor")
-    public List<RondaDTO> getAllOfMentor(@QueryValue("mentorUuid") String mentorUuid) {
-        return listAsDtos(this.rondaService.getAllOfMentor(mentorUuid), RondaDTO.class);
+    public HttpResponse<?> getAllOfMentor(@QueryValue("mentorUuid") String mentorUuid) {
+        try {
+            List<Ronda> rondas = rondaService.getAllOfMentors(Collections.singletonList(mentorUuid));
+            if (Utilities.listHasElements(rondas)) {
+                return HttpResponse.ok(Utilities.parseList(rondas, RondaDTO.class));
+            }
+            return HttpResponse.ok(new ArrayList<>());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
+    }
+
+    @Operation(summary = "Return a list of all Rounds for a given list of mentors")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Ronda")
+    @Get("/getAllOfMentors")
+    public HttpResponse<?> getAllOfMentors(@QueryValue List<String> mentorUuids) {
+        try {
+            List<Ronda> rondas = rondaService.getAllOfMentors(mentorUuids);
+            if (Utilities.listHasElements(rondas)) {
+                return HttpResponse.ok(Utilities.parseList(rondas, RondaDTO.class));
+            }
+            return HttpResponse.ok(new ArrayList<>());
+        } catch (Exception e) {
+            LOG.error(e.getMessage(), e);
+            return HttpResponse.badRequest().body(MentoringAPIError.builder()
+                    .status(HttpStatus.BAD_REQUEST.getCode())
+                    .error(e.getLocalizedMessage())
+                    .message(e.getMessage()).build());
+        }
     }
 
     @Operation(summary = "update Ronda")

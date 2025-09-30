@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.service.question;
 
 import io.micronaut.core.annotation.Creator;
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
@@ -8,12 +9,9 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.question.QuestionDTO;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.question.Question;
-import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.error.RecordInUseException;
+import mz.org.fgh.mentoring.repository.form.FormSectionQuestionRepository;
 import mz.org.fgh.mentoring.repository.question.QuestionRepository;
-import mz.org.fgh.mentoring.repository.question.SectionRepository;
-import mz.org.fgh.mentoring.repository.user.UserRepository;
-import mz.org.fgh.mentoring.service.answer.AnswerService;
-import mz.org.fgh.mentoring.service.form.FormSectionQuestionService;
 import mz.org.fgh.mentoring.service.program.ProgramService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -32,31 +30,15 @@ public class QuestionService {
     @Inject
     private QuestionRepository questionRepository;
     @Inject
-    private SectionRepository questionCategoryRepository;
-    @Inject
-    private UserRepository userRepository;
-
-    @Inject
-    private AnswerService answerService;
-
-    @Inject
-    private FormSectionQuestionService formQuestionService ;
-    @Inject
     private ProgramService programService;
 
+    private final FormSectionQuestionRepository  formSectionQuestionRepository;
+
     @Creator
-    public QuestionService(){}
-
-    public QuestionService(QuestionRepository questionRepository, SectionRepository sectionRepository) {
-        this.questionRepository = questionRepository;
-        this.questionCategoryRepository = sectionRepository;
+    public QuestionService(FormSectionQuestionRepository formSectionQuestionRepository){
+        this.formSectionQuestionRepository = formSectionQuestionRepository;
     }
 
-
-    public QuestionService(QuestionRepository questionRepository, UserRepository userRepository) {
-        this.questionRepository = questionRepository;
-        this.userRepository = userRepository;
-    }
 
     public List<Question> getQuestionsByFormCode(String formCode) {
         return null;
@@ -98,12 +80,11 @@ public class QuestionService {
     }
 
     @Transactional
-    public Question create(Question question, Long userId) {
-        User user = userRepository.findById(userId).get();
-        question.setCreatedBy(user.getUuid());
+    public Question create(Question question) {
         question.setCreatedAt(DateUtils.getCurrentDate());
         question.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
         question.setCode(generateQuestionCode(question));
+
 
         return this.questionRepository.save(question);
     }
@@ -152,43 +133,7 @@ public class QuestionService {
     public Optional<Question> findById(final Long id){
         return this.questionRepository.findById(id);
     }
-    @Transactional
-    public Question update(Question question, Long userId) {
-        User user = userRepository.findById(userId).get();
-        question.setUpdatedBy(user.getUuid());
-        question.setUpdatedAt(DateUtils.getCurrentDate());
-//        question.setQuestion(question.getQuestion());
-//        question.setProgram(question.getProgram());
 
-        return this.questionRepository.update(question);
-    }
-
-    public Question updateLifeCycleStatus(Question question, Long userId) {
-        User user = this.userRepository.fetchByUserId(userId);
-            question.setUpdatedBy(user.getUuid());
-            question.setUpdatedAt(DateUtils.getCurrentDate());
-            this.questionRepository.update(question);
-            return question;
-    }
-
-    @Transactional
-    public Question delete(Question question, Long userId) {
-        User user = userRepository.findById(userId).get();
-        question.setLifeCycleStatus(LifeCycleStatus.DELETED);
-        question.setUpdatedBy(user.getUuid());
-        question.setUpdatedAt(DateUtils.getCurrentDate());
-
-        return this.questionRepository.update(question);
-    }
-
-    @Transactional
-    public void destroy(Question question) {
-        boolean hasAnswers = answerService.doesQuestionHaveAnswers(question);
-        boolean hasFormQuestions = formQuestionService.doesQuestionHaveFormQuestions(question);
-        if(!hasAnswers && !hasFormQuestions){
-            this.questionRepository.delete(question);
-        }
-    }
 
     public Page<QuestionDTO> getByPageAndSize(Pageable pageable) {
         
@@ -213,4 +158,64 @@ public class QuestionService {
 
         return resp;
     };
+
+    public Page<Question> findAll(@Nullable Pageable pageable) {
+        return questionRepository.findAll(pageable);
+    }
+
+    public Page<Question> searchByName(String name, Pageable pageable) {
+        return questionRepository.findByQuestionIlikeOrTableCodeIlike("%" + name + "%", "%" + name + "%", pageable);
+    }
+
+    @Transactional
+    public Question update(Question question) {
+        Optional<Question> existing = questionRepository.findByUuid(question.getUuid());
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Question not found with UUID: " + question.getUuid());
+        }
+
+        Question toUpdate = existing.get();
+        toUpdate.setQuestion(question.getQuestion());
+        toUpdate.setTableCode(question.getTableCode());
+        toUpdate.setProgram(question.getProgram());
+        toUpdate.setUpdatedAt(DateUtils.getCurrentDate());
+        toUpdate.setUpdatedBy(question.getUpdatedBy());
+
+        return questionRepository.update(toUpdate);
+    }
+
+    @Transactional
+    public void delete(String uuid) {
+        Optional<Question> existing = questionRepository.findByUuid(uuid);
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Question not found with UUID: " + uuid);
+        }
+
+        Question question = existing.get();
+
+        // Exemplo de verificação futura:
+         long count = formSectionQuestionRepository.countByQuestion(question);
+         if (count > 0) {
+             throw new RecordInUseException("A pergunta não pode ser eliminada porque está associada a outros registos.");
+         }
+
+        questionRepository.delete(question);
+    }
+
+    @Transactional
+    public Question updateLifeCycleStatus(String uuid, LifeCycleStatus newStatus, String userUuid) {
+        Optional<Question> existing = questionRepository.findByUuid(uuid);
+        if (existing.isEmpty()) {
+            throw new RuntimeException("Question not found with UUID: " + uuid);
+        }
+
+        Question question = existing.get();
+        question.setLifeCycleStatus(newStatus);
+        question.setUpdatedAt(DateUtils.getCurrentDate());
+        question.setUpdatedBy(userUuid);
+
+        return questionRepository.update(question);
+    }
+
+
 }

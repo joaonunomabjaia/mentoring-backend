@@ -5,13 +5,7 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
-import io.micronaut.http.annotation.Body;
-import io.micronaut.http.annotation.Controller;
-import io.micronaut.http.annotation.Get;
-import io.micronaut.http.annotation.Patch;
-import io.micronaut.http.annotation.PathVariable;
-import io.micronaut.http.annotation.Post;
-import io.micronaut.http.annotation.QueryValue;
+import io.micronaut.http.annotation.*;
 import io.micronaut.security.annotation.Secured;
 import io.micronaut.security.authentication.Authentication;
 import io.micronaut.security.rules.SecurityRule;
@@ -23,6 +17,7 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.api.RestAPIResponseImpl;
+import mz.org.fgh.mentoring.api.SuccessResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
@@ -35,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.TUTORED_CONTROLLER)
@@ -105,6 +101,8 @@ public class TutoredController extends BaseController {
 
         return tutoredDTOs;
     }
+
+    @Deprecated
     @Operation(summary = "Save Mentorados to database")
     @Tag(name = "mentorados")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
@@ -120,6 +118,16 @@ public class TutoredController extends BaseController {
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
         }
+    }
+
+    @Operation(summary = "Update an existing mentee")
+    @Put
+    public HttpResponse<?> update(@Body TutoredDTO dto, Authentication authentication) {
+        String userUuid = (String) authentication.getAttributes().get("userUuid");
+        Tutored tutored = new Tutored(dto);
+        tutored.setUpdatedBy(userUuid);
+        Tutored updated = this.tutoredService.update(tutored);
+        return HttpResponse.ok(SuccessResponse.of("Mentorado atualizado com sucesso", new TutoredDTO(updated)));
     }
 
 
@@ -142,8 +150,8 @@ public class TutoredController extends BaseController {
                     .message(e.getMessage()).build());
         }
     }
-    @Operation(summary = "Batch update tutoreds to database")
-    @ApiResponse(responseCode = "200", description = "Tutoreds updated successfully")
+    @Operation(summary = "Batch update mentees to database")
+    @ApiResponse(responseCode = "200", description = "Mentee updated successfully")
     @ApiResponse(responseCode = "400", description = "Invalid data provided")
     @Patch("/batch-update")
     public HttpResponse<RestAPIResponse> updateTutoredBatch(
@@ -167,6 +175,15 @@ public class TutoredController extends BaseController {
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
         }
+    }
+
+    @Operation(summary = "Get mentee by UUID")
+    @Get("/{uuid}")
+    public HttpResponse<?> findById(@PathVariable String uuid) {
+        Optional<Tutored> optional = tutoredService.findOptionalByUuid(uuid);
+        return optional.map(tutored ->
+                HttpResponse.ok(SuccessResponse.of("Mentorando encontrado com sucesso", new TutoredDTO(tutored)))
+        ).orElse(HttpResponse.notFound());
     }
     
 }

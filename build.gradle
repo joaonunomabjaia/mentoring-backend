@@ -3,7 +3,7 @@ plugins {
     id("io.micronaut.application") version "3.7.7"
 }
 
-version = "1.2.3"
+version = "1.2.7"
 group = "mz.org.fgh"
 
 repositories {
@@ -44,11 +44,15 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-integration:2.1.11")
     implementation("io.swagger.core.v3:swagger-jaxrs2:2.1.11")
     implementation("io.swagger.core.v3:swagger-core:2.1.11")
+
+
     implementation("io.micronaut.security:micronaut-security-jwt")
     implementation("io.reactivex.rxjava2:rxjava:2.2.21")
     implementation("com.sun.mail:jakarta.mail:1.6.7")
     implementation 'org.jsoup:jsoup:1.15.3'
     implementation 'commons-io:commons-io:2.11.0'
+    implementation("org.yaml:snakeyaml:1.33")
+    implementation("com.fasterxml.jackson.dataformat:jackson-dataformat-yaml:2.15.2")
 
     // Runtime Only Dependencies
     runtimeOnly("ch.qos.logback:logback-classic")
@@ -90,4 +94,9 @@ micronaut {
         incremental(true)
         annotations("mz.org.fgh.*")
     }
+}
+
+tasks.withType(JavaCompile) {
+    options.fork = true
+    options.forkOptions.jvmArgs << '-Dmicronaut.openapi.views.spec=rapidoc.enabled=true,swagger-ui.enabled=true,swagger-ui.theme=flattop'
 }

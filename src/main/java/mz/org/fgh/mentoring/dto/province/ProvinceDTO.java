@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.province;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,7 +19,8 @@ public class ProvinceDTO extends BaseEntityDTO {
         this.setDesignation(province.getDesignation());
     }
 
-    public Province getProvince() {
+    @JsonIgnore
+    public Province toEntity() {
         Province province = new Province();
         province.setUuid(this.getUuid());
         province.setId(this.getId());

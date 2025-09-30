@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="add-evaluation-location-id-to-forms" author="Joao Nuno Mabjaia">
+        <!-- Check if the column EVALUATION_LOCATION_ID already exists in the forms table -->
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="forms" columnName="EVALUATION_LOCATION_ID"/>
+            </not>
+        </preConditions>
+
+        <!-- Add the column EVALUATION_LOCATION_ID to the forms table -->
+        <addColumn tableName="forms">
+            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="1">
+            </column>
+        </addColumn>
+
+        <!-- Define the foreign key between forms.EVALUATION_LOCATION_ID and evaluation_location.ID -->
+        <addForeignKeyConstraint baseTableName="forms"
+                                 baseColumnNames="EVALUATION_LOCATION_ID"
+                                 referencedTableName="evaluation_location"
+                                 referencedColumnNames="ID"
+                                 constraintName="fk_forms_evaluation_location"/>
+    </changeSet>
+
+    <changeSet id="add-evaluation-location-id-to-form_section_questions" author="Joao Nuno Mabjaia">
+        <!-- Check if the column EVALUATION_LOCATION_ID already exists in the form_section_questions table -->
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="form_section_questions" columnName="EVALUATION_LOCATION_ID"/>
+            </not>
+        </preConditions>
+
+        <!-- Add the column EVALUATION_LOCATION_ID to the form_section_questions table -->
+        <addColumn tableName="form_section_questions">
+            <column name="EVALUATION_LOCATION_ID" type="BIGINT(20)" defaultValue="1">
+            </column>
+        </addColumn>
+
+        <!-- Define the foreign key between form_section_questions.EVALUATION_LOCATION_ID and evaluation_location.ID -->
+        <addForeignKeyConstraint baseTableName="form_section_questions"
+                                 baseColumnNames="EVALUATION_LOCATION_ID"
+                                 referencedTableName="evaluation_location"
+                                 referencedColumnNames="ID"
+                                 constraintName="fk_questions_evaluation_location"/>
+    </changeSet>
+    <changeSet id="add-unique-constraint-form-section-question" author="Joao Nuno Mabjaia">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <indexExists
+                        indexName="UK_form_section_question_unique"
+                        tableName="form_section_questions"/>
+            </not>
+        </preConditions>
+
+        <addUniqueConstraint
+                tableName="form_section_questions"
+                columnNames="FORM_SECTION_ID, QUESTION_ID, RESPONSE_TYPE_ID, EVALUATION_TYPE_ID, EVALUATION_LOCATION_ID"
+                constraintName="UK_form_section_question_unique"/>
+    </changeSet>
+    <changeSet id="insert-initial-setting-resource-directory" author="voloide">
+        <insert tableName="settings">
+            <column name="CREATED_AT" value="2024-05-27 14:10:12"/>
+            <column name="CREATED_BY" value="49dcfc96e18644d1ae9e82dbb7e873a1"/>
+            <column name="LIFE_CYCLE_STATUS" value="ACTIVE"/>
+            <column name="UPDATED_AT" valueComputed="NULL"/>
+            <column name="UPDATED_BY" valueComputed="NULL"/>
+            <column name="UUID" value="e3f9d947-b2ef-4f5c-b9d1-7b09a44dvdc9"/>
+            <column name="DESIGNATION" value="Mentee_ronda_removal_interval"/>
+            <column name="SETTING_VALUE" value="60"/>
+            <column name="DESCRIPTION" value="Muximum number of days for inactive mentee to be removed from a given mentoring cicle"/>
+            <column name="SETTING_TYPE" valueComputed="NULL"/>
+            <column name="ENABLED" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+    <changeSet id="add-session-summary-column" author="voloide">
+        <addColumn tableName="sessions">
+            <column name="SESSION_SUMMARY" type="TEXT"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="alter-session-summary-charset" author="voloide">
+        <modifyDataType
+                tableName="sessions"
+                columnName="SESSION_SUMMARY"
+                newDataType="TEXT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci"/>
+    </changeSet>
+    <changeSet id="insert-ai-session-summary-setting" author="voloide">
+        <insert tableName="settings">
+            <column name="UUID" value="e3f9d947-b2ef-4f5c-b9d1-7b09a44vdcx1"/>
+            <column name="DESIGNATION" value="AI_SESSION_SUMMARY_GENERATION"/>
+            <column name="SETTING_VALUE" value="true"/>
+            <column name="DESCRIPTION" value="Enable automatic AI generation of session summaries"/>
+            <column name="ENABLED" valueNumeric="1"/>
+            <column name="LIFE_CYCLE_STATUS" value="ACTIVE"/>
+            <column name="CREATED_AT" valueDate="2025-05-12T10:00:00"/>
+            <column name="CREATED_BY" value="49dcfc96e18644d1ae9e82bdb7e873a1"/>
+        </insert>
+    </changeSet>
+
+    <changeSet id="add-performance-risk-to-session" author="voloide">
+        <sql>
+            ALTER TABLE sessions
+                ADD COLUMN PERFORMANCE_RISK TEXT
+                CHARACTER SET utf8mb4
+        COLLATE utf8mb4_unicode_ci;
+        </sql>
+    </changeSet>
+    <changeSet id="add-ai-performance-risk-setting" author="voloide">
+        <sql>
+            INSERT INTO settings (UUID, DESIGNATION, SETTING_VALUE, DESCRIPTION, ENABLED, LIFE_CYCLE_STATUS, CREATED_AT, CREATED_BY)
+            VALUES (
+                       '3a8c1fd5-7d3f-47f2-b999-8e2c0e0b1234',
+                       'AI_PERFORMANCE_RISK_EVALUATION',
+                       'true',
+                       'Ativa a avaliação de risco de desempenho do mentorado com IA',
+                       1,
+                       'ACTIVE',
+                       NOW(),
+                       'dbc04012-6b95-4beb-a0ec-7e5354efa8c1'
+        );
+    </sql>
+    </changeSet>
+
+    <changeSet id="resource_Update" author="voloide">
+        <preConditions onFail="MARK_RAN">
+            <tableExists tableName="resources"/>
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*) FROM resources
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            UPDATE resources
+            SET resource = '[
+            {
+                "label": "HIV",
+                "clickable": 0,
+                "children": [
+                    {
+                        "label": "Adicionar Categoria",
+                        "clickable": 1,
+                        "icon": "add",
+                        "program": "HIV",
+                        "type": "categ"
+                    }
+                ]
+            },
+            {
+                "label": "Adicionar Programa",
+                "icon": "add",
+                "clickable": 1,
+                "type": "program"
+            }
+        ]'
+        </sql>
+    </changeSet>
+
+
+</databaseChangeLog>

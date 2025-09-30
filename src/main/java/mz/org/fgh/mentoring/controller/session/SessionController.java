@@ -17,6 +17,7 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.session.SessionDTO;
+import mz.org.fgh.mentoring.dto.session.SessionReportDTO;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.service.session.SessionService;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -48,4 +49,21 @@ public class SessionController extends BaseController {
         List<Session> savedSessionList = sessionService.createOrUpdate(sessions, (Long) authentication.getAttributes().get("userInfo"));
         return listAsDtos(savedSessionList, SessionDTO.class);
     }
+
+    @Operation(summary = "Get a report of total sessions performed, including by internal and external mentors")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "Session Report")
+    @Get("/report")
+    public SessionReportDTO getSessionReport() {
+        return sessionService.getSessionReport();
+    }
+    /*@Operation(summary = "Gerar resumo em linguagem natural com foco nos pontos fracos do mentorado")
+    @ApiResponse(content = @Content(mediaType = MediaType.TEXT_PLAIN))
+    @Tag(name = "Session AI")
+    @Get("/ai-summary")
+    public String getWeakPointsSummary(@QueryValue("menteeId") Long menteeId) {
+        return sessionService.generateWeakPointsSummary(menteeId);
+    }*/
+
+
 }

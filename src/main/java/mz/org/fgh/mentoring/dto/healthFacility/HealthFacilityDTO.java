@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.dto.healthFacility;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -28,7 +29,8 @@ public class HealthFacilityDTO extends BaseEntityDTO {
         if (healthFacility.getDistrict() != null && healthFacility.getDistrict().getId() != null) this.setDistrictDTO(new DistrictDTO(healthFacility.getDistrict()));
     }
 
-    public HealthFacility getHealthFacilityObj() {
+    @JsonIgnore
+    public HealthFacility toEntity() {
         HealthFacility healthFacility = new HealthFacility();
         healthFacility.setUuid(this.getUuid());
         healthFacility.setId(this.getId());

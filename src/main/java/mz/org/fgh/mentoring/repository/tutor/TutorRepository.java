@@ -4,13 +4,14 @@ import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.employee.Employee;
+import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.user.User;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
 import java.util.Optional;
-
+import java.util.Set;
 
 
 public interface TutorRepository extends CrudRepository<Tutor, Long> {
@@ -22,6 +23,12 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
     @Override
     Optional<Tutor> findById(@NotNull Long id);
 
+    @Query("SELECT DISTINCT t FROM Tutor t " +
+            "INNER JOIN FETCH t.tutorProgrammaticAreas tpa " +
+            "INNER JOIN FETCH tpa.programmaticArea pa " +
+            "WHERE t.id = :tutorId")
+    Optional<Tutor> findByIdDetailed(@NotNull Long tutorId);
+
     Optional<Tutor> findByUuid(String uuid);
 /*
     Tutor findByUser(User user);*/
@@ -32,10 +39,5 @@ public interface TutorRepository extends CrudRepository<Tutor, Long> {
     List<Tutor> search(@Nullable String name,@Nullable String nuit, User user,@Nullable String phoneNumber);
 
     Tutor findByEmployee(Employee employee);
-
-
-/*
-    @Query("From Tutor t inner join fetch t.user u where u.uuid = :userUUID ")
-    Tutor findTutorByUserUuid(String userUUID);*/
 
 }

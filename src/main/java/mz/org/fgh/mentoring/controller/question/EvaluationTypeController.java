@@ -12,7 +12,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RESTAPIMapping;
 import mz.org.fgh.mentoring.base.BaseController;
-import mz.org.fgh.mentoring.dto.question.EvaluationTypeDTO;
+import mz.org.fgh.mentoring.dto.mentorship.EvaluationTypeDTO;
 import mz.org.fgh.mentoring.service.question.EvaluationTypeService;
 
 import java.util.List;

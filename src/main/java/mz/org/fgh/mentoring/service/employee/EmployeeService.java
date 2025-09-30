@@ -14,7 +14,6 @@ import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategory
 import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 
-import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
@@ -62,8 +61,11 @@ public class EmployeeService {
     }
 
     public Employee createOrUpdate(Employee employee, User user) {
-        employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()));
-        employee.setPartner(partnerRepository.findByUuid(employee.getPartner().getUuid()));
+        employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()).get());
+        employee.setPartner(
+                partnerRepository.findByUuid(employee.getPartner().getUuid())
+                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
+        );
         Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
 
         Set<Location> locations =  employee.getLocations();
@@ -93,10 +95,6 @@ public class EmployeeService {
         locationRepository.createOrUpdate(locations, user);
 
         return createdEmployee;
-    }
-
-    public List<Employee> findEmployeebyProfessionalCategory(Long professionalCategory){
-       return employeeRepository.findByProfessionalCategory(professionalCategory);
     }
 
     public Optional<Employee> findById(Long id) {

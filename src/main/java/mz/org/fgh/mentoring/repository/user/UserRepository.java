@@ -3,12 +3,12 @@ package mz.org.fgh.mentoring.repository.user;
 import io.micronaut.core.annotation.Nullable;
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
-
 import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import mz.org.fgh.mentoring.entity.user.User;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,22 +21,22 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByUuid(String uuid);
 
-    @Query(value = "SELECT DISTINCT u FROM User u " +
-            "INNER JOIN u.employee e " +
-            "INNER JOIN u.userRoles ur " +
-            "WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) " +
-            "AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) " +
-            "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) " +
-            "AND (u.id = ur.user.id)",
+    @Query(
+            value = "SELECT DISTINCT u FROM User u " +
+                    "INNER JOIN u.employee e " +
+                    "WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                    "OR LOWER(e.nuit) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                    "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                    "ORDER BY e.name",
             countQuery = "SELECT COUNT(DISTINCT u) FROM User u " +
                     "INNER JOIN u.employee e " +
-                    "INNER JOIN u.userRoles ur " +
-                    "WHERE (:name IS NULL OR e.name LIKE CONCAT('%', :name, '%')) " +
-                    "AND (:nuit IS NULL OR e.nuit LIKE CONCAT('%', :nuit, '%')) " +
-                    "AND (:username IS NULL OR u.username LIKE CONCAT('%', :username, '%')) " +
-                    "AND (u.id = ur.user.id)"
+                    "WHERE LOWER(e.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                    "OR LOWER(e.nuit) LIKE LOWER(CONCAT('%', :query, '%')) " +
+                    "OR LOWER(u.username) LIKE LOWER(CONCAT('%', :query, '%'))"
     )
-    Page<User> search(@Nullable String name,@Nullable String nuit,@Nullable String username, Pageable pageable);
+    Page<User> searchByFilters(@Nullable String query, Pageable pageable);
 
 
+    List<User> findByUuidIn(List<String> uuids);
 }
+

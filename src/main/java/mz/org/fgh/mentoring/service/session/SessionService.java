@@ -1,23 +1,32 @@
 package mz.org.fgh.mentoring.service.session;
 
+import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.base.BaseService;
+import mz.org.fgh.mentoring.dto.session.SessionReportDTO;
+import mz.org.fgh.mentoring.entity.answer.Answer;
+import mz.org.fgh.mentoring.entity.mentorship.EvaluationType;
 import mz.org.fgh.mentoring.entity.mentorship.Mentorship;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.entity.ronda.RondaType;
 import mz.org.fgh.mentoring.entity.session.Session;
 import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.answer.AnswerRepository;
 import mz.org.fgh.mentoring.repository.form.FormRepository;
 import mz.org.fgh.mentoring.repository.mentorship.MentorshipRepository;
+import mz.org.fgh.mentoring.repository.question.EvaluationTypeRepository;
 import mz.org.fgh.mentoring.repository.ronda.RondaRepository;
+import mz.org.fgh.mentoring.repository.ronda.RondaTypeRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.repository.session.SessionStatusRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.ai.AiSummaryService;
+import mz.org.fgh.mentoring.service.resource.ResourceService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -27,13 +36,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 
 @Singleton
 public class SessionService extends BaseService {
@@ -49,18 +52,25 @@ public class SessionService extends BaseService {
     private final TutorRepository tutorRepository;
     private final TutoredRepository tutoredRepository;
     private final FormRepository formRepository;
+    private final ResourceService resourceService;
+    private final RondaTypeRepository rondaTypeRepository;
+
     @Inject
     private EmailService emailService;
+    @Inject
+    AiSummaryService aiSummaryService;
 
     @Inject
     private SettingsRepository settingsRepository;
+    @Inject
+    private EvaluationTypeRepository evaluationTypeRepository;
 
 
     public SessionService(SessionRepository sessionRepository, RondaRepository rondaRepository,
                           AnswerRepository answerRepository, MentorshipRepository mentorshipRepository,
                           UserRepository userRepository, SessionStatusRepository sessionStatusRepository,
                           TutorRepository tutorRepository, TutoredRepository tutoredRepository,
-                          FormRepository formRepository) {
+                          FormRepository formRepository, ResourceService resourceService, RondaTypeRepository rondaTypeRepository) {
         this.sessionRepository = sessionRepository;
         this.rondaRepository = rondaRepository;
         this.answerRepository = answerRepository;
@@ -70,13 +80,15 @@ public class SessionService extends BaseService {
         this.tutorRepository = tutorRepository;
         this.tutoredRepository = tutoredRepository;
         this.formRepository = formRepository;
+        this.resourceService = resourceService;
+        this.rondaTypeRepository = rondaTypeRepository;
     }
 
     public List<Session> getAllRondas(List<String> rondasUuids) {
         List<Ronda> rondas = rondaRepository.findRondasByUuids(rondasUuids);
         List<Session> sessions = new ArrayList<>();
         for (Ronda ronda : rondas) {
-            List<Session> sessionList = sessionRepository.findAllOfRonda(ronda.getId());
+            Set<Session> sessionList = sessionRepository.findAllOfRonda(ronda.getId());
             for (Session session : sessionList) {
                 session.setMentorships(mentorshipRepository.fetchBySessionUuid(session.getUuid(), LifeCycleStatus.ACTIVE));
                 if (Utilities.listHasElements(session.getMentorships())) {
@@ -165,4 +177,112 @@ public class SessionService extends BaseService {
             }
         }
     }
+
+    public SessionReportDTO getSessionReport() {
+        long totalSessions = sessionRepository.countAllActiveSessions();
+        long totalInternal = sessionRepository.countActiveSessionsByRondaTypeCode("MENTORIA_INTERNA");
+        long totalExternal = sessionRepository.countActiveSessionsByRondaTypeCode("MENTORIA_EXTERNA");
+
+        return new SessionReportDTO(totalSessions, totalInternal, totalExternal);
+    }
+
+    public List<String> getWeakPointsSummaryForMentee(Long tutoredId) {
+        return sessionRepository.findWeakPointsFromLastSessionByTutoredId(tutoredId);
+    }
+
+    public String generateWeakPointsSummary(Mentorship mentorship) {
+        List<Answer> weakAnswers = answerRepository.findWeakAnswersByMentorshipId(mentorship.getId());
+
+        if (weakAnswers == null || weakAnswers.isEmpty()) {
+            return "Nenhum ponto fraco encontrado para este mentorado.";
+        }
+
+        String menteeName = mentorship.getTutored().getEmployee().getFullName();
+        StringBuilder context = new StringBuilder();
+
+        for (Answer answer : weakAnswers) {
+            context.append("- ").append(answer.getQuestion().getQuestion()).append("\n");
+        }
+
+        // 🟩 Obtém o programa da sessão
+        String programName = mentorship.getForm().getProgrammaticArea().getProgram().getCode();
+
+        // 🟩 Filtra os recursos do mesmo programa
+        List<Map<String, String>> recommendedResources = resourceService.extractResourceSummariesByProgram(programName);
+
+        return aiSummaryService.summarizeWeakPoints(menteeName, context.toString());
+    }
+
+
+
+    public void generateSummary() {
+        List<Session> sessions = sessionRepository.findAllWithoutSummary();
+
+        if (!Utilities.listHasElements(sessions)) {
+            LOG.info("No sessions without summary found. Skipping summary generation.");
+            return;
+        }
+        LOG.info("Generating summary for {} sessions", sessions.size());
+
+        for (Session session : sessions) {
+            try {
+                EvaluationType evaluationType = evaluationTypeRepository.getByCode("Consulta");
+                Pageable pageable = Pageable.from(0, 1);
+                List<Mentorship> result = mentorshipRepository.fetchLatestBySessionAndEvaluationType(session, evaluationType, pageable);
+                Mentorship latest = result.isEmpty() ? null : result.get(0);
+
+                String summary = generateWeakPointsSummary(latest);
+                session.setSessionSummary(summary);
+                sessionRepository.update(session);
+                LOG.info("Resumo gerado e salvo para sessão UUID: {}", session.getUuid());
+            } catch (Exception e) {
+                LOG.error("Erro ao gerar resumo para a sessão UUID: {}", session.getUuid(), e);
+            }
+        }
+    }
+
+    @Transactional
+    public void evaluatePerformanceRiskPerRonda() {
+        RondaType rondaType = rondaTypeRepository.findByCode("MENTORIA_INTERNA");
+        List<Long> rondaIds = rondaRepository.findAllRondaIds(rondaType);
+
+        for (Long rondaId : rondaIds) {
+            List<Session> sessions = sessionRepository.findAllWithSummaryByRondaId(rondaId);
+
+            if (sessions.isEmpty()) continue;
+
+            Map<Long, List<Session>> sessionsByMentee = new HashMap<>();
+
+            for (Session session : sessions) {
+                sessionsByMentee
+                        .computeIfAbsent(session.getMentee().getId(), k -> new ArrayList<>())
+                        .add(session);
+            }
+
+            for (List<Session> menteeSessions : sessionsByMentee.values()) {
+                menteeSessions.sort(Comparator.comparing(Session::getStartDate));
+
+                if (menteeSessions.size() < 2) continue;
+
+                // Coleta os resumos das sessões anteriores (exclui a última)
+                List<String> summaries = new ArrayList<>();
+                for (int i = 0; i < menteeSessions.size(); i++) {
+                    summaries.add(menteeSessions.get(i).getSessionSummary());
+                }
+
+                // Última sessão da ronda (a que vai receber o resultado)
+                Session targetSession = menteeSessions.get(menteeSessions.size() - 1);
+                String menteeName = targetSession.getMentee().getEmployee().getFullName();
+
+                String evaluation = aiSummaryService.evaluatePerformanceRisk(menteeName, summaries);
+                targetSession.setPerformanceRisk(evaluation);
+                sessionRepository.update(targetSession);
+
+                LOG.info("Risco salvo para sessão UUID {}", targetSession.getUuid());
+            }
+
+        }
+    }
+
+
 }

@@ -7,8 +7,6 @@ import mz.org.fgh.mentoring.entity.cabinet.Cabinet;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
-import java.io.Serializable;
-
 /**
  * @author Jose Julai Ritsure
  */
@@ -23,7 +21,7 @@ public class CabinetDTO extends BaseEntityDTO {
         this.setName(cabinet.getName());
     }
 
-    public Cabinet getCabinet(){
+    public Cabinet toEntity(){
         Cabinet cabinet = new Cabinet();
         cabinet.setUuid(this.getUuid());
         cabinet.setId(this.getId());
