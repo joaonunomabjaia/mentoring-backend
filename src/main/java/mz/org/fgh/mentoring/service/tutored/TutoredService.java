@@ -75,6 +75,11 @@ public class TutoredService {
         return tutoredDTOS;
     }
 
+    public List<Tutored> findAll(){
+        List<Tutored> tutoreds = this.tutoredRepository.findAll();
+        return tutoreds;
+    }
+
     public List<TutoredDTO> findTutorByUserUuid(String tutorUuid){
         List<Tutored> tutoreds = this.tutoredRepository.findTutoredByTutorUuid(tutorUuid);
         List<TutoredDTO> tutoredDTOS = new ArrayList<>(tutoreds.size());
