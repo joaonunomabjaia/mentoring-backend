@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.repository.tutored;
 
 import io.micronaut.data.annotation.Query;
 import io.micronaut.data.annotation.Repository;
+import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
@@ -11,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MenteeFlowHistoryRepository extends CrudRepository<MenteeFlowHistory, Long> {
+public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHistory, Long> {
 
     @Override
     List<MenteeFlowHistory> findAll();

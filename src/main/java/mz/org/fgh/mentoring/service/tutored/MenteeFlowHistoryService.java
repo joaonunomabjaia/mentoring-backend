@@ -6,6 +6,7 @@ import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.enums.FlowHistoryProgressStatus;
+import mz.org.fgh.mentoring.enums.FlowHistoryStatus;
 import mz.org.fgh.mentoring.repository.tutored.MenteeFlowHistoryRepository;
 
 import javax.transaction.Transactional;
@@ -41,7 +42,7 @@ public class MenteeFlowHistoryService extends BaseService {
 
     public List<MenteeFlowHistory> findCompletedRondaMentoria() {
         return menteeFlowHistoryRepository.findByFlowHistoryNameAndProgressStatus(
-                "RONDA_MENTORIA",
+                FlowHistoryStatus.RONDA_MENTORIA.name(),
                 FlowHistoryProgressStatus.FEITO
         );
     }

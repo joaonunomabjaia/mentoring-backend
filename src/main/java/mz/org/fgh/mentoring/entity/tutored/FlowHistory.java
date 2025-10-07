@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutored.FlowHistoryDTO;
+import mz.org.fgh.mentoring.enums.FlowHistoryStatus;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -19,7 +20,7 @@ import javax.persistence.Table;
 public class FlowHistory extends BaseEntity {
 
     @Column(name = "NAME", nullable = false)
-    private String name = "NOVO"; // Ex.: NOVO, SESSAO_ZERO, RONDA_MENTORIA, SESSAO_SEMESTRAL, etc.
+    private String name = FlowHistoryStatus.NOVO.name(); // Ex.: NOVO, SESSAO_ZERO, RONDA_MENTORIA, SESSAO_SEMESTRAL, etc.
 
     @Creator
     public FlowHistory() {}

@@ -268,5 +268,21 @@
         </insert>
     </changeSet>
 
+    <changeSet id="insert-initial-setting-flow-history-job-interval" author="JOAO NUNO MABJAIA">
+        <insert tableName="settings">
+            <column name="CREATED_AT" value="2025-11-06 14:10:12"/>
+            <column name="CREATED_BY" value="49dcfc96e18644d1ae9e82dbb7e873a1"/>
+            <column name="LIFE_CYCLE_STATUS" value="ACTIVE"/>
+            <column name="UPDATED_AT" valueComputed="NULL"/>
+            <column name="UPDATED_BY" valueComputed="NULL"/>
+            <column name="UUID" value="e3f9d947-b2ef-4f5c-b9d1-7b09a44dtd34"/>
+            <column name="DESIGNATION" value="FLOW_HISTORY_JOB_INTERVAL_MIN"/>
+            <column name="SETTING_VALUE" value="5"/>
+            <column name="DESCRIPTION" value="FLOW_HISTORY_JOB_INTERVAL_MIN"/>
+            <column name="SETTING_TYPE" valueComputed="NULL"/>
+            <column name="ENABLED" valueNumeric="1"/>
+        </insert>
+    </changeSet>
+
 
 </databaseChangeLog>
