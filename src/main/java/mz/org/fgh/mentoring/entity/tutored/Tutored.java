@@ -11,6 +11,7 @@ import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Schema(name = "Tutoreds", description = "A professional that provides mentoring to tutored individuals")
@@ -30,6 +31,10 @@ public class Tutored extends BaseEntity {
 
     @OneToMany(mappedBy = "tutored")
     private List<SessionRecommendedResource> recommendedResources;
+
+
+    @OneToMany(mappedBy = "tutored")
+    private List<MenteeFlowHistory> menteeFlowHistories;
 
     @Creator
     public Tutored() {}
@@ -54,5 +59,12 @@ public class Tutored extends BaseEntity {
         return "Tutored{" +
                 "employee=" + employee +
                 '}';
+    }
+
+    public void addFlowHistory(MenteeFlowHistory menteeFlowHistory) {
+        if (menteeFlowHistories == null) {
+            menteeFlowHistories = new ArrayList<>();
+        }
+        menteeFlowHistories.add(menteeFlowHistory);
     }
 }
