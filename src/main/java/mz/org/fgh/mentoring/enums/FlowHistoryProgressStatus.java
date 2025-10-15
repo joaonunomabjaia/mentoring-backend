@@ -5,5 +5,6 @@ public enum FlowHistoryProgressStatus {
     ISENTO,
     ELEGIVEL,
     FIM,
-    FEITO
+    FEITO,
+    NOVO;
 }
