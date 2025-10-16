@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.task;
 
+import io.micronaut.core.annotation.Nullable;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.runtime.event.ApplicationStartupEvent;
@@ -7,21 +8,26 @@ import io.micronaut.runtime.event.ApplicationStartupEvent;
 import io.micronaut.context.event.ApplicationEventListener;
 import jakarta.annotation.PreDestroy;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
+import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
-import mz.org.fgh.mentoring.enums.FlowHistoryProgressStatus;
-import mz.org.fgh.mentoring.enums.FlowHistoryStatus;
+import mz.org.fgh.mentoring.enums.EnumFlowHistory;
+import mz.org.fgh.mentoring.enums.EnumFlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.error.MentoringBusinessException;
 import mz.org.fgh.mentoring.repository.tutored.FlowHistoryRepository;
 import mz.org.fgh.mentoring.service.setting.SettingService;
+import mz.org.fgh.mentoring.service.tutored.FlowHistoryProgressStatusService;
 import mz.org.fgh.mentoring.service.tutored.MenteeFlowHistoryService;
 import mz.org.fgh.mentoring.service.tutored.TutoredService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.Utilities;
 
+import java.util.EnumSet;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -33,15 +39,17 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
 
     private final MenteeFlowHistoryService menteeFlowHistoryService;
     private final FlowHistoryRepository flowHistoryRepository;
+    private final FlowHistoryProgressStatusService flowHistoryProgressStatusService;
     private final SettingService settingService;
     private final TutoredService tutoredService;
 
     private ScheduledExecutorService scheduler;
 
-    public MenteeFlowHistoryScheduler(MenteeFlowHistoryService menteeFlowHistoryService, FlowHistoryRepository flowHistoryRepository, SettingService settingService,
+    public MenteeFlowHistoryScheduler(MenteeFlowHistoryService menteeFlowHistoryService, FlowHistoryRepository flowHistoryRepository, FlowHistoryProgressStatusService flowHistoryProgressStatusService, SettingService settingService,
                                       TutoredService tutoredService) {
         this.menteeFlowHistoryService = menteeFlowHistoryService;
         this.flowHistoryRepository = flowHistoryRepository;
+        this.flowHistoryProgressStatusService = flowHistoryProgressStatusService;
         this.settingService = settingService;
         this.tutoredService = tutoredService;
     }
@@ -76,27 +84,57 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
     }
 
     private void processMenteeFlowHistories() {
-        List<MenteeFlowHistory> completedHistories = menteeFlowHistoryService.findCompletedRondaMentoria();
 
-        FlowHistory flowHistory = flowHistoryRepository.findByName(FlowHistoryStatus.SESSAO_SEMESTRAL.name())
-                .orElseThrow(() -> new HttpStatusException(HttpStatus.NOT_FOUND, "SESSAO_SEMESTRAL não encontrada"));
+        // 🔹 1. Buscar todos estados e estdos de forma centralizada e segura
+        Map<EnumFlowHistoryProgressStatus, FlowHistoryProgressStatus> statusMap = flowHistoryProgressStatusService.findAllByNames(
+                EnumSet.of(
+                        EnumFlowHistoryProgressStatus.INTERROMPIDO,
+                        EnumFlowHistoryProgressStatus.AGUARDA_INICIO,
+                        EnumFlowHistoryProgressStatus.INICIO
+                )
+        );
 
-        for (MenteeFlowHistory history : completedHistories) {
-            Tutored tutored = history.getTutored();
+        FlowHistoryProgressStatus estadoInterrompido = statusMap.get(EnumFlowHistoryProgressStatus.INTERROMPIDO);
+        FlowHistoryProgressStatus estadoAguardaInicio = statusMap.get(EnumFlowHistoryProgressStatus.AGUARDA_INICIO);
 
-            MenteeFlowHistory newHistory = new MenteeFlowHistory();
-            newHistory.setTutored(tutored);
-            newHistory.setFlowHistory(flowHistory);
-            newHistory.setProgressStatus(FlowHistoryProgressStatus.ELEGIVEL);
-            newHistory.setUuid(Utilities.generateUUID());
-            newHistory.setCreatedBy("System");
-            newHistory.setCreatedAt(DateUtils.getCurrentDate());
-            newHistory.setRonda(null); // opcional
+        FlowHistory sessaoSemestral = flowHistoryRepository.findByName(EnumFlowHistory.SESSAO_SEMESTRAL.name())
+                .orElseThrow(() -> new HttpStatusException(HttpStatus.NOT_FOUND,
+                        EnumFlowHistory.SESSAO_SEMESTRAL.name() + " não encontrada"));
 
-            menteeFlowHistoryService.save(newHistory);
-            LOG.info("Criada nova MenteeFlowHistory para tutored: " + tutored.getUuid());
-        }
+        // 🔹 2. Interromper Rondas/Ciclos que ultrapassaram 60 dias
+        menteeFlowHistoryService.findRondasOuCicloAtcIniciadasHaMaisDe60Dias()
+                .forEach(history -> {
+                    Tutored tutored = history.getTutored();
+
+                    createAndSaveMenteeFlowHistory(tutored, history.getFlowHistory(), estadoInterrompido, history.getRonda());
+                    createAndSaveMenteeFlowHistory(tutored, history.getFlowHistory(), estadoAguardaInicio, null);
+                });
+
+        // 🔹 3. Enviar para Sessão Semestral os que completaram Ronda há +6 meses
+        menteeFlowHistoryService.findRondaTerminadaHaMaisDe6Meses()
+                .forEach(history -> {
+                    Tutored tutored = history.getTutored();
+                    createAndSaveMenteeFlowHistory(tutored, sessaoSemestral, estadoAguardaInicio, null);
+                });
     }
+
+    private void createAndSaveMenteeFlowHistory(
+            Tutored tutored,
+            FlowHistory flowHistory,
+            FlowHistoryProgressStatus progressStatus,
+            @Nullable Ronda ronda
+    ) {
+        MenteeFlowHistory newHistory = new MenteeFlowHistory();
+        newHistory.setTutored(tutored);
+        newHistory.setFlowHistory(flowHistory);
+        newHistory.setProgressStatus(progressStatus);
+        newHistory.setRonda(ronda);
+        newHistory.setClassification(0.0); // Valor padrão
+
+        menteeFlowHistoryService.saveFromSchedule(newHistory);
+    }
+
+
 
 
     @PreDestroy

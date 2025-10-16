@@ -6,11 +6,8 @@ import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutored.FlowHistoryDTO;
-import mz.org.fgh.mentoring.enums.FlowHistoryStatus;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 @Schema(name = "FlowHistory", description = "Defines the stages or events of a mentee's mentoring flow")
 @Entity
@@ -20,7 +17,10 @@ import javax.persistence.Table;
 public class FlowHistory extends BaseEntity {
 
     @Column(name = "NAME", nullable = false)
-    private String name = FlowHistoryStatus.NOVO.name(); // Ex.: NOVO, SESSAO_ZERO, RONDA_MENTORIA, SESSAO_SEMESTRAL, etc.
+    private String name; // Ex.: NOVO, SESSAO_ZERO, RONDA_MENTORIA, SESSAO_SEMESTRAL, etc.
+
+    @Column(name = "DESCRIPTION", length = 500)
+    private String description; // Texto legível/descritivo da ronda/sessão
 
     @Creator
     public FlowHistory() {}
@@ -29,16 +29,11 @@ public class FlowHistory extends BaseEntity {
         super(uuid);
     }
 
-    public FlowHistory(FlowHistoryDTO dto) {
-        super(dto);
-        this.name = dto.getName();
-    }
-
     @Override
     public String toString() {
         return "FlowHistory{" +
                 "name='" + name + '\'' +
+                ", description='" + description + '\'' +
                 '}';
     }
 }
-

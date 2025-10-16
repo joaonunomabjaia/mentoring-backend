@@ -3,7 +3,7 @@ package mz.org.fgh.mentoring.dto.tutored;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
-import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
+import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -11,33 +11,31 @@ import mz.org.fgh.mentoring.util.Utilities;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class FlowHistoryDTO extends BaseEntityDTO {
+public class FlowHistoryProgressStatusDTO extends BaseEntityDTO {
 
     private String name;
     private String description;
-    private FlowHistoryProgressStatusDTO progressStatus;
 
-    public FlowHistoryDTO(FlowHistory entity) {
+    public FlowHistoryProgressStatusDTO(FlowHistoryProgressStatus entity) {
         super(entity);
         this.name = entity.getName();
         this.description = entity.getDescription();
     }
 
     @JsonIgnore
-    public FlowHistory toEntity() {
-        FlowHistory entity = new FlowHistory();
+    public FlowHistoryProgressStatus toEntity() {
+        FlowHistoryProgressStatus entity = new FlowHistoryProgressStatus();
         entity.setId(this.getId());
         entity.setUuid(this.getUuid());
         entity.setCreatedAt(this.getCreatedAt());
         entity.setUpdatedAt(this.getUpdatedAt());
-        entity.setName(this.getName());
-        entity.setDescription(this.getDescription());
 
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
             entity.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
         }
 
+        entity.setName(this.name);
+        entity.setDescription(this.getDescription());
         return entity;
     }
 }

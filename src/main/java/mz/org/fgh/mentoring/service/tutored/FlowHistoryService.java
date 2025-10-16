@@ -21,9 +21,8 @@ public class FlowHistoryService extends BaseService {
         return flowHistoryRepository.findById(id);
     }
 
-    public FlowHistory findByCode(String code) {
-        return flowHistoryRepository.findByName(code)
-                .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + code));
+    public Optional<FlowHistory> findByName(String name) {
+        return flowHistoryRepository.findByName(name);
     }
 
     @Transactional

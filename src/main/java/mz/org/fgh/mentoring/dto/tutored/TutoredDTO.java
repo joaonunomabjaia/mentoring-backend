@@ -17,6 +17,8 @@ public class TutoredDTO extends BaseEntityDTO {
     private EmployeeDTO employeeDTO;
     private Double zeroEvaluationScore;
     private boolean zeroEvaluationDone;
+    //NOVO
+    private FlowHistoryMenteeAuxDTO flowHistoryMenteeAuxDTO;
 
     public TutoredDTO(Tutored tutored) {
         super(tutored);
@@ -25,7 +27,17 @@ public class TutoredDTO extends BaseEntityDTO {
         if (tutored.getEmployee() != null) {
             this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
         }
+
+        tutored.getLastMenteeFlowHistory().ifPresent(last -> {
+            this.flowHistoryMenteeAuxDTO = FlowHistoryMenteeAuxDTO.builder()
+                    .estagio(last.getFlowHistory().getName())
+                    .estado(last.getProgressStatus().getName())
+                    .classification(last.getClassification())
+                    .build();
+        });
+
     }
+
 
     @JsonIgnore
     public Tutored toEntity() {

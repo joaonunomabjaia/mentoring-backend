@@ -61,4 +61,5 @@ public class RESTAPIMapping {
     public final static String SESSION_STATUS = "sessionStatuses";
     public final static String SESSIONS = "sessions";
     public static final String SESSIONS_REOMMENDED_RESOURCES = "sessionsReommendedResources";
+    public static final String MENTEE_FLOW_HISTORIES = "menteeFlowHistories";
 }

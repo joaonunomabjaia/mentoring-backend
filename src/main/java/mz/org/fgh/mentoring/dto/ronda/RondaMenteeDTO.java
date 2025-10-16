@@ -5,6 +5,7 @@ import java.util.Date;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
+import mz.org.fgh.mentoring.dto.tutored.FlowHistoryMenteeAuxDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -21,6 +22,9 @@ public class RondaMenteeDTO extends BaseEntityDTO {
     private TutoredDTO mentee;
 
     private RondaDTO ronda;
+
+    private FlowHistoryMenteeAuxDTO flowHistoryMenteeAuxDTO;
+
 
     public RondaMenteeDTO(RondaMentee rondaMentee) {
         super(rondaMentee);

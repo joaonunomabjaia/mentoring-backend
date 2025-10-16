@@ -8,9 +8,11 @@ import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutored.MenteeFlowHistoryDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
-import mz.org.fgh.mentoring.enums.FlowHistoryProgressStatus;
 
 import javax.persistence.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 
 @Schema(name = "MenteeFlowHistory", description = "Tracks the mentee's progress across different flow histories")
 @Entity
@@ -28,14 +30,22 @@ public class MenteeFlowHistory extends BaseEntity {
     @JoinColumn(name = "FLOW_HISTORY_ID", nullable = false)
     private FlowHistory flowHistory;
 
-    @Column(name = "PROGRESS_STATUS", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "PROGRESS_STATUS_ID", nullable = false)
     private FlowHistoryProgressStatus progressStatus;
-    // valores: INICIO, ISENTO, ELEGIVEL, FIM, FEITO, etc.
+    // Valores: dinâmicos, provenientes da tabela flow_history_progress_statuses
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "RONDA_ID")
     private Ronda ronda;
-    // opcional: só será preenchido caso o progresso esteja ligado a uma Ronda
+    // Opcional: só será preenchido se o progresso estiver ligado a uma Ronda
+
+    @Column(name = "CLASSIFICATION")
+    private double classification;
+
+    @Column(name = "SEQUENCE_NUMBER")
+    private Integer sequenceNumber;
+
 
     @Creator
     public MenteeFlowHistory() {}
@@ -45,13 +55,12 @@ public class MenteeFlowHistory extends BaseEntity {
     }
 
     public MenteeFlowHistory(MenteeFlowHistoryDTO dto) {
-        super(dto);
-        this.progressStatus = dto.getProgressStatus();
-        this.tutored = new Tutored(dto.getTutoredDTO());
-        this.flowHistory = new FlowHistory(dto.getFlowHistoryDTO());
-        if (dto.getRondaDTO() != null) {
-            this.ronda = new Ronda(dto.getRondaDTO());
-        }
+        super(dto); // seta UUID da base
+        this.tutored = dto.toEntity().getTutored();
+        this.flowHistory = dto.toEntity().getFlowHistory();
+        this.progressStatus = dto.toEntity().getProgressStatus();
+        this.ronda = dto.toEntity().getRonda();
+        this.classification = dto.toEntity().getClassification();
     }
 
     @Override
@@ -59,7 +68,8 @@ public class MenteeFlowHistory extends BaseEntity {
         return "MenteeFlowHistory{" +
                 "tutored=" + tutored +
                 ", flowHistory=" + flowHistory +
-                ", progressStatus='" + progressStatus + '\'' +
+                ", progressStatus=" + (progressStatus != null ? progressStatus.getName() : "null") +
+                ", classification=" + classification +
                 ", ronda=" + (ronda != null ? ronda.getUuid() : "null") +
                 '}';
     }

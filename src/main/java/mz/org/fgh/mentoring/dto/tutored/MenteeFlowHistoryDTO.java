@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.ronda.RondaDTO;
+import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
-import mz.org.fgh.mentoring.enums.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
 
@@ -19,10 +19,12 @@ public class MenteeFlowHistoryDTO extends BaseEntityDTO {
     private FlowHistoryDTO flowHistoryDTO;
     private FlowHistoryProgressStatus progressStatus;
     private RondaDTO rondaDTO;
+    private double classification;
 
     public MenteeFlowHistoryDTO(MenteeFlowHistory entity) {
         super(entity);
         this.progressStatus = entity.getProgressStatus();
+        this.classification = entity.getClassification();
 
         if (entity.getTutored() != null) {
             this.tutoredDTO = new TutoredDTO(entity.getTutored());
@@ -43,6 +45,7 @@ public class MenteeFlowHistoryDTO extends BaseEntityDTO {
         entity.setCreatedAt(this.getCreatedAt());
         entity.setUpdatedAt(this.getUpdatedAt());
         entity.setProgressStatus(this.getProgressStatus());
+        entity.setClassification(this.getClassification());
 
         if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
             entity.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
