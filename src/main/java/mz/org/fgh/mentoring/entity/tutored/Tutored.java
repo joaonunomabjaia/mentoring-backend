@@ -12,6 +12,7 @@ import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 
 import javax.persistence.*;
 import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,6 +33,7 @@ public class Tutored extends BaseEntity {
 
     @OneToMany(mappedBy = "tutored")
     private List<SessionRecommendedResource> recommendedResources;
+
 
     @Creator
     public Tutored() {}
@@ -74,4 +76,10 @@ public class Tutored extends BaseEntity {
 
 
 
+    public void addFlowHistory(MenteeFlowHistory menteeFlowHistory) {
+        if (menteeFlowHistories == null) {
+            menteeFlowHistories = new ArrayList<>();
+        }
+        menteeFlowHistories.add(menteeFlowHistory);
+    }
 }

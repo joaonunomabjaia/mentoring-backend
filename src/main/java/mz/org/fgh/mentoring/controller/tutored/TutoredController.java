@@ -2,6 +2,8 @@ package mz.org.fgh.mentoring.controller.tutored;
 
 import io.micronaut.core.annotation.NonNull;
 import io.micronaut.core.annotation.Nullable;
+import io.micronaut.data.model.Page;
+import io.micronaut.data.model.Pageable;
 import io.micronaut.http.HttpResponse;
 import io.micronaut.http.HttpStatus;
 import io.micronaut.http.MediaType;
@@ -14,14 +16,13 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.inject.Inject;
-import mz.org.fgh.mentoring.api.RESTAPIMapping;
-import mz.org.fgh.mentoring.api.RestAPIResponse;
-import mz.org.fgh.mentoring.api.RestAPIResponseImpl;
-import mz.org.fgh.mentoring.api.SuccessResponse;
+import mz.org.fgh.mentoring.api.*;
 import mz.org.fgh.mentoring.base.BaseController;
+import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
+import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.tutored.FlowHistoryProgressStatusService;
@@ -35,6 +36,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Secured(SecurityRule.IS_AUTHENTICATED)
 @Controller(RESTAPIMapping.TUTORED_CONTROLLER)
@@ -140,7 +142,6 @@ public class TutoredController extends BaseController {
         return HttpResponse.ok(SuccessResponse.of("Mentorado atualizado com sucesso", new TutoredDTO(updated)));
     }
 
-
     @Operation(summary = "Save Mentee to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentee")
@@ -166,6 +167,7 @@ public class TutoredController extends BaseController {
                     .message(e.getMessage()).build());
         }
     }
+
     @Operation(summary = "Batch update mentees to database")
     @ApiResponse(responseCode = "200", description = "Mentee updated successfully")
     @ApiResponse(responseCode = "400", description = "Invalid data provided")
@@ -200,6 +202,33 @@ public class TutoredController extends BaseController {
         return optional.map(tutored ->
                 HttpResponse.ok(SuccessResponse.of("Mentorando encontrado com sucesso", new TutoredDTO(tutored)))
         ).orElse(HttpResponse.notFound());
+    }
+
+    @Operation(summary = "List or search Mentees (paginated)")
+    @Get
+    public HttpResponse<?> listOrSearch(@Nullable @QueryValue("uuids") List<String> uuids,
+                                        @Nullable Pageable pageable) {
+
+        Page<Tutored> groups = !Utilities.listHasElements(uuids)
+                ? tutoredService.findAll(resolvePageable(pageable))
+                : tutoredService.getTutoredsByHealthFacilityUuids(uuids, resolvePageable(pageable));
+
+        List<TutoredDTO> groupDTOs = groups.getContent().stream()
+                .map(TutoredDTO::new)
+                .collect(Collectors.toList());
+
+        String message = groups.getTotalSize() == 0
+                ? "Sem Dados para esta pesquisa"
+                : "Dados encontrados";
+
+        return HttpResponse.ok(
+                PaginatedResponse.of(
+                        groupDTOs,
+                        groups.getTotalSize(),
+                        groups.getPageable(),
+                        message
+                )
+        );
     }
     
 }
