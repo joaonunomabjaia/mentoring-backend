@@ -20,9 +20,13 @@ import mz.org.fgh.mentoring.api.*;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.program.ProgramDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
+import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
+import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
+import mz.org.fgh.mentoring.service.tutored.FlowHistoryProgressStatusService;
+import mz.org.fgh.mentoring.service.tutored.FlowHistoryService;
 import mz.org.fgh.mentoring.service.tutored.TutoredService;
 import mz.org.fgh.mentoring.util.Utilities;
 import org.slf4j.Logger;
@@ -40,6 +44,12 @@ public class TutoredController extends BaseController {
 
     @Inject
     TutoredService tutoredService;
+
+    @Inject
+    FlowHistoryService  flowHistoryService;
+
+    @Inject
+    FlowHistoryProgressStatusService flowHistoryProgressStatusService;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(TutoredController.class);
 
@@ -140,7 +150,13 @@ public class TutoredController extends BaseController {
         try {
             Tutored tutored = new Tutored(tutoredDTO);
 
-            this.tutoredService.create(tutored, (Long) authentication.getAttributes().get("userInfo"));
+            FlowHistory flowHistory = flowHistoryService.findByName(tutoredDTO.getFlowHistoryMenteeAuxDTO().estagio())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + tutoredDTO.getFlowHistoryMenteeAuxDTO().estagio()));
+
+            FlowHistoryProgressStatus flowHistoryProgressStatus = flowHistoryProgressStatusService.findByName(tutoredDTO.getFlowHistoryMenteeAuxDTO().estado())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + tutoredDTO.getFlowHistoryMenteeAuxDTO().estado()));
+
+            this.tutoredService.create(tutored, flowHistory, flowHistoryProgressStatus, (Long) authentication.getAttributes().get("userInfo"));
 
             return HttpResponse.created(new TutoredDTO(tutored));
         } catch (Exception e) {

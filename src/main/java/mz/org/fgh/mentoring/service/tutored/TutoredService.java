@@ -7,11 +7,12 @@ import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
+import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
-import mz.org.fgh.mentoring.enums.FlowHistoryProgressStatus;
-import mz.org.fgh.mentoring.enums.FlowHistoryStatus;
+import mz.org.fgh.mentoring.enums.EnumFlowHistory;
+import mz.org.fgh.mentoring.enums.EnumFlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.repository.district.DistrictRepository;
 import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
@@ -51,7 +52,14 @@ public class TutoredService {
     @Inject
     private SessionRepository sessionRepository;
 
+    @Inject
+    private MenteeFlowHistoryService  menteeFlowHistoryService;
 
+    @Inject
+    FlowHistoryProgressStatusService flowHistoryProgressStatusService;
+
+    @Inject
+    FlowHistoryService flowHistoryService;
 
     public TutoredService(EmployeeService employeeService, TutoredRepository tutoredRepository, UserRepository userRepository, EmployeeRepository employeeRepository, LocationRepository locationRepository, DistrictRepository districtRepository, ProvinceRepository provinceRepository, HealthFacilityRepository healthFacilityRepository, PartnerRepository partnerRepository, ProfessionalCategoryRepository professionalCategoryRepository, FlowHistoryRepository flowHistoryRepository) {
         this.employeeService = employeeService;
@@ -229,17 +237,83 @@ public class TutoredService {
     }
 
     @Transactional
-    public Tutored create(Tutored tutored, Long userId) {
-        User user = userRepository.findById(userId).get();
+    public Tutored create(Tutored tutored, FlowHistory flowHistory, FlowHistoryProgressStatus flowHistoryProgressStatus, Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + userId));
+
         tutored.setCreatedBy(user.getUuid());
         tutored.setCreatedAt(DateUtils.getCurrentDate());
         tutored.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-        tutored.addFlowHistory(initFlowHistory(tutored, flowHistoryRepository.findByName(FlowHistoryStatus.NOVO.name())));
+
+        // Cria ou atualiza o employee vinculado ao tutored
+        tutored.addFlowHistory(initFlowHistory(tutored, flowHistoryRepository.findByName(EnumFlowHistory.NOVO.name()), flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.INICIO.name())));
         employeeService.createOrUpdate(tutored.getEmployee(), user);
-        return this.tutoredRepository.save(tutored);
+
+        boolean isIsento = flowHistoryProgressStatus.getName()
+                .equalsIgnoreCase(EnumFlowHistoryProgressStatus.ISENTO.name());
+
+        if (isIsento) {
+            // SESSÃO ZERO - ISENTO
+            createMenteeFlowHistory(
+                    tutored,
+                    flowHistory,
+                    flowHistoryProgressStatus,
+                    user
+            );
+
+            // RONDA - AGUARDA INÍCIO
+            FlowHistory rondaFlowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.name())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.name()));
+
+            FlowHistoryProgressStatus aguardaInicioStatus = flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name()));
+
+            createMenteeFlowHistory(
+                    tutored,
+                    rondaFlowHistory,
+                    aguardaInicioStatus,
+                    user
+            );
+
+        } else {
+            // NÃO ISENTO - Cria apenas SESSÃO ZERO com AGUARDA INÍCIO
+            FlowHistory sessaoZeroFlowHistory = flowHistoryService.findByName(EnumFlowHistory.SESSAO_ZERO.name())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.SESSAO_ZERO.name()));
+
+            FlowHistoryProgressStatus aguardaInicioStatus = flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name()));
+
+            createMenteeFlowHistory(
+                    tutored,
+                    sessaoZeroFlowHistory,
+                    aguardaInicioStatus,
+                    user
+            );
+        }
+
+        return tutoredRepository.save(tutored);
     }
 
-    private MenteeFlowHistory initFlowHistory(Tutored tutored, Optional<FlowHistory> flowHistoryOptional) {
+    /**
+     * Método auxiliar para criar e salvar um MenteeFlowHistory.
+     */
+    private void createMenteeFlowHistory(
+            Tutored tutored,
+            FlowHistory flowHistory,
+            FlowHistoryProgressStatus progressStatus,
+            User user
+    ) {
+        MenteeFlowHistory menteeFlowHistory = new MenteeFlowHistory();
+        menteeFlowHistory.setTutored(tutored);
+        menteeFlowHistory.setFlowHistory(flowHistory);
+        menteeFlowHistory.setProgressStatus(progressStatus);
+        menteeFlowHistory.setClassification(0.0);
+
+        menteeFlowHistoryService.save(menteeFlowHistory, user);
+    }
+
+
+    private MenteeFlowHistory initFlowHistory(Tutored tutored, Optional<FlowHistory> flowHistoryOptional, Optional<FlowHistoryProgressStatus> flowHistoryProgressStatus) {
         MenteeFlowHistory  menteeFlowHistory = new MenteeFlowHistory();
         if(flowHistoryOptional.isPresent()){
             FlowHistory flowHistory = flowHistoryOptional.get();
@@ -248,7 +322,7 @@ public class TutoredService {
             menteeFlowHistory.setCreatedAt(DateUtils.getCurrentDate());
             menteeFlowHistory.setLifeCycleStatus(tutored.getLifeCycleStatus());
             menteeFlowHistory.setTutored(tutored);
-            menteeFlowHistory.setProgressStatus(FlowHistoryProgressStatus.NOVO);
+            menteeFlowHistory.setProgressStatus(flowHistoryProgressStatus.get());
 
         }
         return null;
