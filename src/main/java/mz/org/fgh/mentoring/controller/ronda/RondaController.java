@@ -166,7 +166,6 @@ public class RondaController extends BaseController {
     )
     public HttpResponse<RestAPIResponse> create (@Body Ronda ronda, Authentication authentication) {
 
-
         LOG.debug("Created tutor {}", ronda);
 
         this.rondaService.createRonda(ronda, (Long) authentication.getAttributes().get("userInfo"));
@@ -193,7 +192,7 @@ public class RondaController extends BaseController {
     )
     public List<RondaDTO> closeRonda(@Body List<RondaDTO> rondaDTOS, Authentication authentication) {
         List<Ronda> rondas = Utilities.parse(rondaDTOS, Ronda.class);
-        return listAsDtos(this.rondaService.updateMany(rondas, (Long) authentication.getAttributes().get("userInfo")), RondaDTO.class);
+        return listAsDtos(this.rondaService.updateMany(rondas, rondaDTOS, (Long) authentication.getAttributes().get("userInfo")), RondaDTO.class);
     }
 
     @Operation(summary = "Save Ronda")

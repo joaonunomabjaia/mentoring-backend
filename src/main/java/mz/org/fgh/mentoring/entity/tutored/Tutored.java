@@ -11,7 +11,10 @@ import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
 
 import javax.persistence.*;
+import java.util.Comparator;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Schema(name = "Tutoreds", description = "A professional that provides mentoring to tutored individuals")
 @Entity(name = "Tutored")
@@ -30,6 +33,7 @@ public class Tutored extends BaseEntity {
 
     @OneToMany(mappedBy = "tutored")
     private List<SessionRecommendedResource> recommendedResources;
+
 
     @Creator
     public Tutored() {}
@@ -54,5 +58,28 @@ public class Tutored extends BaseEntity {
         return "Tutored{" +
                 "employee=" + employee +
                 '}';
+    }
+
+    @OneToMany(mappedBy = "tutored", fetch = FetchType.LAZY)
+    private List<MenteeFlowHistory> menteeFlowHistories;
+
+    public Optional<MenteeFlowHistory> getLastMenteeFlowHistory() {
+        if (menteeFlowHistories == null || menteeFlowHistories.isEmpty()) {
+            return Optional.empty();
+        }
+
+        // Usa o sequenceNumber para definir a ordem do progresso
+        return menteeFlowHistories.stream()
+                .filter(m -> m.getSequenceNumber() != null)
+                .max(Comparator.comparing(MenteeFlowHistory::getSequenceNumber));
+    }
+
+
+
+    public void addFlowHistory(MenteeFlowHistory menteeFlowHistory) {
+        if (menteeFlowHistories == null) {
+            menteeFlowHistories = new ArrayList<>();
+        }
+        menteeFlowHistories.add(menteeFlowHistory);
     }
 }
