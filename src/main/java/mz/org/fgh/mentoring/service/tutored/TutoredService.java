@@ -246,8 +246,9 @@ public class TutoredService {
         tutored.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
 
         // Cria ou atualiza o employee vinculado ao tutored
-        tutored.addFlowHistory(initFlowHistory(tutored, flowHistoryRepository.findByName(EnumFlowHistory.NOVO.name()), flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.INICIO.name())));
         employeeService.createOrUpdate(tutored.getEmployee(), user);
+
+        Tutored newTutored = tutoredRepository.save(tutored);
 
         boolean isIsento = flowHistoryProgressStatus.getName()
                 .equalsIgnoreCase(EnumFlowHistoryProgressStatus.ISENTO.name());
@@ -255,7 +256,7 @@ public class TutoredService {
         if (isIsento) {
             // SESSÃO ZERO - ISENTO
             createMenteeFlowHistory(
-                    tutored,
+                    newTutored,
                     flowHistory,
                     flowHistoryProgressStatus,
                     user
@@ -269,7 +270,7 @@ public class TutoredService {
                     .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name()));
 
             createMenteeFlowHistory(
-                    tutored,
+                    newTutored,
                     rondaFlowHistory,
                     aguardaInicioStatus,
                     user
@@ -284,14 +285,14 @@ public class TutoredService {
                     .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name()));
 
             createMenteeFlowHistory(
-                    tutored,
+                    newTutored,
                     sessaoZeroFlowHistory,
                     aguardaInicioStatus,
                     user
             );
         }
 
-        return tutoredRepository.save(tutored);
+        return newTutored;
     }
 
     /**
@@ -310,22 +311,6 @@ public class TutoredService {
         menteeFlowHistory.setClassification(0.0);
 
         menteeFlowHistoryService.save(menteeFlowHistory, user);
-    }
-
-
-    private MenteeFlowHistory initFlowHistory(Tutored tutored, Optional<FlowHistory> flowHistoryOptional, Optional<FlowHistoryProgressStatus> flowHistoryProgressStatus) {
-        MenteeFlowHistory  menteeFlowHistory = new MenteeFlowHistory();
-        if(flowHistoryOptional.isPresent()){
-            FlowHistory flowHistory = flowHistoryOptional.get();
-            menteeFlowHistory.setFlowHistory(flowHistory);
-            menteeFlowHistory.setCreatedBy(tutored.getCreatedBy());
-            menteeFlowHistory.setCreatedAt(DateUtils.getCurrentDate());
-            menteeFlowHistory.setLifeCycleStatus(tutored.getLifeCycleStatus());
-            menteeFlowHistory.setTutored(tutored);
-            menteeFlowHistory.setProgressStatus(flowHistoryProgressStatus.get());
-
-        }
-        return null;
     }
 
     public Tutored findByUuid(String uuid) {
