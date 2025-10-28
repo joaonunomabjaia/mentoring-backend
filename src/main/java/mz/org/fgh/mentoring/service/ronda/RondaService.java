@@ -638,17 +638,17 @@ public class RondaService extends BaseService {
                 createMenteeFlowHistory(
                         tutored,
                         rondaMentee.getRonda(),
-                        auxDTO.classification(),
+                        auxDTO.classificacao(),
                         EnumFlowHistoryProgressStatus.TERMINADO.name(),
                         user
                 );
 
                 // ⚙️ Caso classificação < 86, cria novo histórico com "AGUARDA INICIO"
-                if (auxDTO.classification() < 86) {
+                if (auxDTO.classificacao() < 86) {
                     createMenteeFlowHistory(
                             tutored,
                             rondaMentee.getRonda(),
-                            auxDTO.classification(),
+                            auxDTO.classificacao(),
                             EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name(),
                             user
                     );

@@ -6,5 +6,5 @@ import lombok.Builder;
 public record FlowHistoryMenteeAuxDTO(
         String estagio,
         String estado,
-        double classification
+        double classificacao
 ) {}

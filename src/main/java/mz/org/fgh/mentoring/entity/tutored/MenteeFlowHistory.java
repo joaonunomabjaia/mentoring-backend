@@ -69,7 +69,7 @@ public class MenteeFlowHistory extends BaseEntity {
                 "tutored=" + tutored +
                 ", flowHistory=" + flowHistory +
                 ", progressStatus=" + (progressStatus != null ? progressStatus.getName() : "null") +
-                ", classification=" + classification +
+                ", classificacao=" + classification +
                 ", ronda=" + (ronda != null ? ronda.getUuid() : "null") +
                 '}';
     }
