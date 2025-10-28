@@ -97,9 +97,9 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
         FlowHistoryProgressStatus estadoInterrompido = statusMap.get(EnumFlowHistoryProgressStatus.INTERROMPIDO);
         FlowHistoryProgressStatus estadoAguardaInicio = statusMap.get(EnumFlowHistoryProgressStatus.AGUARDA_INICIO);
 
-        FlowHistory sessaoSemestral = flowHistoryRepository.findByName(EnumFlowHistory.SESSAO_SEMESTRAL.name())
+        FlowHistory sessaoSemestral = flowHistoryRepository.findByName(EnumFlowHistory.SESSAO_SEMESTRAL.getLabel())
                 .orElseThrow(() -> new HttpStatusException(HttpStatus.NOT_FOUND,
-                        EnumFlowHistory.SESSAO_SEMESTRAL.name() + " não encontrada"));
+                        EnumFlowHistory.SESSAO_SEMESTRAL.getLabel() + " não encontrada"));
 
         // 🔹 2. Interromper Rondas/Ciclos que ultrapassaram 60 dias
         menteeFlowHistoryService.findRondasOuCicloAtcIniciadasHaMaisDe60Dias()

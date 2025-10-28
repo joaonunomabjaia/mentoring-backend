@@ -239,7 +239,7 @@ public class RondaService extends BaseService {
                     tutored,
                     rondaMentee.getRonda(),
                     0.0,
-                    EnumFlowHistoryProgressStatus.INICIO.name(),
+                    EnumFlowHistoryProgressStatus.INICIO.getLabel(),
                     user
             );
         }
@@ -639,7 +639,7 @@ public class RondaService extends BaseService {
                         tutored,
                         rondaMentee.getRonda(),
                         auxDTO.classificacao(),
-                        EnumFlowHistoryProgressStatus.TERMINADO.name(),
+                        EnumFlowHistoryProgressStatus.TERMINADO.getLabel(),
                         user
                 );
 
@@ -649,7 +649,7 @@ public class RondaService extends BaseService {
                             tutored,
                             rondaMentee.getRonda(),
                             auxDTO.classificacao(),
-                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name(),
+                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getLabel(),
                             user
                     );
                 }
@@ -664,8 +664,8 @@ public class RondaService extends BaseService {
             String progressStatusName,
             User user
     ) {
-        FlowHistory flowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.name())
-                .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.name()));
+        FlowHistory flowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.getLabel())
+                .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.getLabel()));
 
         FlowHistoryProgressStatus status = flowHistoryProgressStatusService.findByName(progressStatusName)
                 .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + progressStatusName));
