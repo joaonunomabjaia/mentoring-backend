@@ -32,10 +32,9 @@ public class TutoredDTO extends BaseEntityDTO {
             this.flowHistoryMenteeAuxDTO = FlowHistoryMenteeAuxDTO.builder()
                     .estagio(last.getFlowHistory().getName())
                     .estado(last.getProgressStatus().getName())
-                    .classification(last.getClassification())
+                    .classificacao(last.getClassification())
                     .build();
         });
-
     }
 
 

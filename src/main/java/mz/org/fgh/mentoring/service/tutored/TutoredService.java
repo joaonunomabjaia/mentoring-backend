@@ -251,7 +251,7 @@ public class TutoredService {
         Tutored newTutored = tutoredRepository.save(tutored);
 
         boolean isIsento = flowHistoryProgressStatus.getName()
-                .equalsIgnoreCase(EnumFlowHistoryProgressStatus.ISENTO.name());
+                .equalsIgnoreCase(EnumFlowHistoryProgressStatus.ISENTO.getLabel());
 
         if (isIsento) {
             // SESSÃO ZERO - ISENTO
@@ -263,33 +263,37 @@ public class TutoredService {
             );
 
             // RONDA - AGUARDA INÍCIO
-            FlowHistory rondaFlowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.name())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.name()));
+            FlowHistory rondaFlowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.getLabel())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.getLabel()));
 
-            FlowHistoryProgressStatus aguardaInicioStatus = flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name()));
+            FlowHistoryProgressStatus aguardaInicioStatus = flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getLabel())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getLabel()));
 
-            createMenteeFlowHistory(
+            MenteeFlowHistory lastSaved = createMenteeFlowHistory(
                     newTutored,
                     rondaFlowHistory,
                     aguardaInicioStatus,
                     user
             );
 
+            newTutored.getMenteeFlowHistories().add(lastSaved);
+
         } else {
             // NÃO ISENTO - Cria apenas SESSÃO ZERO com AGUARDA INÍCIO
-            FlowHistory sessaoZeroFlowHistory = flowHistoryService.findByName(EnumFlowHistory.SESSAO_ZERO.name())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.SESSAO_ZERO.name()));
+            FlowHistory sessaoZeroFlowHistory = flowHistoryService.findByName(EnumFlowHistory.SESSAO_ZERO.getLabel())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.SESSAO_ZERO.getLabel()));
 
-            FlowHistoryProgressStatus aguardaInicioStatus = flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name()));
+            FlowHistoryProgressStatus aguardaInicioStatus = flowHistoryProgressStatusService.findByName(EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getLabel())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getLabel()));
 
-            createMenteeFlowHistory(
+            MenteeFlowHistory lastSaved = createMenteeFlowHistory(
                     newTutored,
                     sessaoZeroFlowHistory,
                     aguardaInicioStatus,
                     user
             );
+
+            newTutored.getMenteeFlowHistories().add(lastSaved);
         }
 
         return newTutored;
@@ -298,7 +302,7 @@ public class TutoredService {
     /**
      * Método auxiliar para criar e salvar um MenteeFlowHistory.
      */
-    private void createMenteeFlowHistory(
+    private MenteeFlowHistory createMenteeFlowHistory(
             Tutored tutored,
             FlowHistory flowHistory,
             FlowHistoryProgressStatus progressStatus,
@@ -310,7 +314,7 @@ public class TutoredService {
         menteeFlowHistory.setProgressStatus(progressStatus);
         menteeFlowHistory.setClassification(0.0);
 
-        menteeFlowHistoryService.save(menteeFlowHistory, user);
+        return menteeFlowHistoryService.save(menteeFlowHistory, user);
     }
 
     public Tutored findByUuid(String uuid) {
