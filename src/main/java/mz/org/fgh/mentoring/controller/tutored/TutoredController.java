@@ -24,6 +24,8 @@ import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.entity.program.Program;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.enums.EnumFlowHistory;
+import mz.org.fgh.mentoring.enums.EnumFlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.tutored.FlowHistoryProgressStatusService;
 import mz.org.fgh.mentoring.service.tutored.FlowHistoryService;
@@ -146,27 +148,34 @@ public class TutoredController extends BaseController {
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentee")
     @Post("/save")
-    public HttpResponse<RestAPIResponse> create (@Body TutoredDTO tutoredDTO, Authentication authentication) {
+    public HttpResponse<RestAPIResponse> create (@Body TutoredDTO dto, Authentication auth) {
         try {
-            Tutored tutored = new Tutored(tutoredDTO);
+            Tutored tutored = new Tutored(dto);
 
-            FlowHistory flowHistory = flowHistoryService.findByName(tutoredDTO.getFlowHistoryMenteeAuxDTO().estagio())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + tutoredDTO.getFlowHistoryMenteeAuxDTO().estagio()));
+            // DTO brings codes now
+            String estagioCode = dto.getFlowHistoryMenteeAuxDTO().estagio();
+            String estadoCode  = dto.getFlowHistoryMenteeAuxDTO().estado();
 
-            FlowHistoryProgressStatus flowHistoryProgressStatus = flowHistoryProgressStatusService.findByName(tutoredDTO.getFlowHistoryMenteeAuxDTO().estado())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + tutoredDTO.getFlowHistoryMenteeAuxDTO().estado()));
+            FlowHistory flowHistory = flowHistoryService.findByCode(estagioCode)
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado (code): " + estagioCode));
 
-            this.tutoredService.create(tutored, flowHistory, flowHistoryProgressStatus, (Long) authentication.getAttributes().get("userInfo"));
+            FlowHistoryProgressStatus fhps = flowHistoryProgressStatusService.findByCode(estadoCode)
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado (code): " + estadoCode));
+
+            this.tutoredService.create(
+                    tutored, flowHistory, fhps, (Long) auth.getAttributes().get("userInfo")
+            );
 
             return HttpResponse.created(new TutoredDTO(tutored));
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             return HttpResponse.badRequest().body(MentoringAPIError.builder()
                     .status(HttpStatus.BAD_REQUEST.getCode())
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
         }
     }
+
 
     @Operation(summary = "Batch update mentees to database")
     @ApiResponse(responseCode = "200", description = "Mentee updated successfully")
