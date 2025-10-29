@@ -10,4 +10,6 @@ import java.util.Optional;
 @Repository
 public interface FlowHistoryProgressStatusRepository extends JpaRepository<FlowHistoryProgressStatus, Long> {
     Optional<FlowHistoryProgressStatus> findByName(String name);
+
+    Optional<FlowHistoryProgressStatus> findByCode(String code);
 }

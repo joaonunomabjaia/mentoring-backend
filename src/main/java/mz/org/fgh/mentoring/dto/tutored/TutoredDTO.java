@@ -1,6 +1,7 @@
 package mz.org.fgh.mentoring.dto.tutored;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
@@ -12,46 +13,54 @@ import mz.org.fgh.mentoring.util.Utilities;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(name = "TutoredDTO")
 public class TutoredDTO extends BaseEntityDTO {
 
     private EmployeeDTO employeeDTO;
     private Double zeroEvaluationScore;
     private boolean zeroEvaluationDone;
-    //NOVO
+
+    /** Carries ENUM CODES (name()), not labels */
     private FlowHistoryMenteeAuxDTO flowHistoryMenteeAuxDTO;
 
     public TutoredDTO(Tutored tutored) {
         super(tutored);
         this.zeroEvaluationScore = tutored.getZeroEvaluationScore();
-        this.zeroEvaluationDone = tutored.isZeroEvaluationDone(); // usa o getter inteligente
+        this.zeroEvaluationDone  = tutored.isZeroEvaluationDone();
+
         if (tutored.getEmployee() != null) {
-            this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
+            this.employeeDTO = new EmployeeDTO(tutored.getEmployee());
         }
 
         tutored.getLastMenteeFlowHistory().ifPresent(last -> {
+            // Entities must expose code (enum name) via getCode()
+            String estagioCode = last.getFlowHistory().getCode();
+            String estadoCode  = last.getProgressStatus().getCode();
+
             this.flowHistoryMenteeAuxDTO = FlowHistoryMenteeAuxDTO.builder()
-                    .estagio(last.getFlowHistory().getName())
-                    .estado(last.getProgressStatus().getName())
+                    .estagio(estagioCode)       // e.g., "RONDA_CICLO"
+                    .estado(estadoCode)         // e.g., "AGUARDA_INICIO"
                     .classificacao(last.getClassification())
                     .build();
         });
     }
 
-
     @JsonIgnore
     public Tutored toEntity() {
-        Tutored tutored = new Tutored();
-        tutored.setId(this.getId());
-        tutored.setUuid(this.getUuid());
-        tutored.setCreatedAt(this.getCreatedAt());
-        tutored.setUpdatedAt(this.getUpdatedAt());
-        tutored.setZeroEvaluationScore(this.getZeroEvaluationScore());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
-            tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        Tutored t = new Tutored();
+        t.setId(getId());
+        t.setUuid(getUuid());
+        t.setCreatedAt(getCreatedAt());
+        t.setUpdatedAt(getUpdatedAt());
+        t.setZeroEvaluationScore(getZeroEvaluationScore());
+
+        if (Utilities.stringHasValue(getLifeCycleStatus())) {
+            t.setLifeCycleStatus(LifeCycleStatus.valueOf(getLifeCycleStatus()));
         }
-        if (this.getEmployeeDTO() != null) {
-            tutored.setEmployee(this.getEmployeeDTO().toEntity());
+        if (employeeDTO != null) {
+            t.setEmployee(employeeDTO.toEntity());
         }
-        return tutored;
+        // FlowHistory for the mentee is managed by service layer (not here)
+        return t;
     }
 }

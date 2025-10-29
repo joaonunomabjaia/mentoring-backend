@@ -13,5 +13,7 @@ public interface FlowHistoryRepository extends JpaRepository<FlowHistory, Long> 
     @Override
     Optional<FlowHistory> findById(Long id);
 
+    Optional<FlowHistory> findByCode(String code);
+
     Optional<FlowHistory> findByName(String name);
 }

@@ -29,4 +29,8 @@ public class FlowHistoryService extends BaseService {
     public FlowHistory save(FlowHistory flowHistory) {
         return flowHistoryRepository.save(flowHistory);
     }
+
+    public Optional<FlowHistory> findByCode(String code) {
+        return flowHistoryRepository.findByCode(code);
+    }
 }

@@ -9,7 +9,6 @@ import mz.org.fgh.mentoring.enums.EnumFlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.repository.tutored.FlowHistoryProgressStatusRepository;
 
 import javax.transaction.Transactional;
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -47,4 +46,7 @@ public class FlowHistoryProgressStatusService extends BaseService {
                 ));
     }
 
+    public Optional<FlowHistoryProgressStatus> findByCode(String code) {
+        return flowHistoryProgressStatusRepository.findByCode(code);
+    }
 }

@@ -36,7 +36,8 @@ public interface RondaMenteeRepository extends CrudRepository<RondaMentee, Long>
     void deleteByRonda(Ronda ronda);
 
     @Query("SELECT DISTINCT rm FROM RondaMentee rm " +
-            "JOIN FETCH rm.tutored " +
+            "JOIN FETCH rm.tutored t " +
+            "LEFT JOIN FETCH t.menteeFlowHistories mfh " +
             "JOIN FETCH rm.ronda r " +
             "WHERE r.id = :rondaId")
     Set<RondaMentee> findMenteesForRondas(Long rondaId);

@@ -1,10 +1,6 @@
 package mz.org.fgh.mentoring.enums;
 
-import lombok.Getter;
-
-@Getter
 public enum EnumFlowHistoryProgressStatus {
-
     INICIO("INICIO"),
     ISENTO("ISENTO"),
     AGUARDA_INICIO("AGUARDA INICIO"),
@@ -12,8 +8,12 @@ public enum EnumFlowHistoryProgressStatus {
     INTERROMPIDO("INTERROMPIDO");
 
     private final String label;
+    EnumFlowHistoryProgressStatus(String label) { this.label = label; }
 
-    EnumFlowHistoryProgressStatus(String label) {
-        this.label = label;
+    public String getCode() { return name(); }
+    public String getLabel() { return label; }
+
+    public static EnumFlowHistoryProgressStatus fromCode(String code) {
+        return EnumFlowHistoryProgressStatus.valueOf(code);
     }
 }
