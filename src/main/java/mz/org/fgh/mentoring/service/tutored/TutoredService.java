@@ -276,7 +276,7 @@ public class TutoredService {
                     user
             );
 
-            newTutored.getMenteeFlowHistories().add(lastSaved);
+            newTutored.addFlowHistory(lastSaved);
 
         } else {
             // NÃO ISENTO - Cria apenas SESSÃO ZERO com AGUARDA INÍCIO
@@ -293,7 +293,7 @@ public class TutoredService {
                     user
             );
 
-            newTutored.getMenteeFlowHistories().add(lastSaved);
+            newTutored.addFlowHistory(lastSaved);
         }
 
         return newTutored;
