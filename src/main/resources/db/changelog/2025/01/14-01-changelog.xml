@@ -460,4 +460,10 @@
 
 
 
+<changeSet id="RONDA_TYPE_20251029" author="Joao Nuno Mabjaia" >
+        <sql>
+            INSERT INTO ronda_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (4, 'ga8rw3c-2cc9-49ec-bff8-179ea7380d60', 'SESSAO_SEMESTRAL', 'Sessao Semestral', 'ts43441d-4bfd-11ee-9e75-0242ac150002','2025-10-29 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
 </databaseChangeLog>
