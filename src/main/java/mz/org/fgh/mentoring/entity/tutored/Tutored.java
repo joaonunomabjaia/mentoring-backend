@@ -9,6 +9,7 @@ import mz.org.fgh.mentoring.base.BaseEntity;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
+import org.hibernate.Hibernate;
 
 import javax.persistence.*;
 import java.util.Comparator;
@@ -64,11 +65,10 @@ public class Tutored extends BaseEntity {
     private List<MenteeFlowHistory> menteeFlowHistories;
 
     public Optional<MenteeFlowHistory> getLastMenteeFlowHistory() {
-        if (menteeFlowHistories == null || menteeFlowHistories.isEmpty()) {
+        if (menteeFlowHistories == null || !Hibernate.isInitialized(menteeFlowHistories) || menteeFlowHistories.isEmpty()) {
             return Optional.empty();
         }
 
-        // Usa o sequenceNumber para definir a ordem do progresso
         return menteeFlowHistories.stream()
                 .filter(m -> m.getSequenceNumber() != null)
                 .max(Comparator.comparing(MenteeFlowHistory::getSequenceNumber));

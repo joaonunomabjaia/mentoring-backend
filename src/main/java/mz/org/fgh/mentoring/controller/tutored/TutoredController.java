@@ -141,7 +141,8 @@ public class TutoredController extends BaseController {
         Tutored tutored = new Tutored(dto);
         tutored.setUpdatedBy(userUuid);
         Tutored updated = this.tutoredService.update(tutored);
-        return HttpResponse.ok(SuccessResponse.of("Mentorado atualizado com sucesso", new TutoredDTO(updated)));
+        TutoredDTO tutoredDTO = new TutoredDTO(updated);
+        return HttpResponse.ok(SuccessResponse.of("Mentorado atualizado com sucesso", tutoredDTO));
     }
 
     @Operation(summary = "Save Mentee to database")
