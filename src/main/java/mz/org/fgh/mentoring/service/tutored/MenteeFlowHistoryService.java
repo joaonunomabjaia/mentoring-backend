@@ -147,6 +147,6 @@ public class MenteeFlowHistoryService {
     }
 
     public void deleteByTutored(Tutored tutored) {
-        menteeFlowHistoryRepository.deleteByTutored(tutored);
+        menteeFlowHistoryRepository.deleteByTutoredId(tutored.getId());
     }
 }

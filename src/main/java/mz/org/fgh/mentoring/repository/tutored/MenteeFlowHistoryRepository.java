@@ -123,4 +123,7 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
     List<MenteeFlowHistory> findRondaTerminadaHaMaisDe6Meses();
 
     void deleteByTutored(Tutored tutored);
+
+    @Query("DELETE FROM MenteeFlowHistory m WHERE m.tutored.id = :tutoredId")
+    long deleteByTutoredId(Long tutoredId);
 }
