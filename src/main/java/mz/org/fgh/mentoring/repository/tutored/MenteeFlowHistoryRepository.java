@@ -122,4 +122,5 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
     """)
     List<MenteeFlowHistory> findRondaTerminadaHaMaisDe6Meses();
 
+    void deleteByTutored(Tutored tutored);
 }

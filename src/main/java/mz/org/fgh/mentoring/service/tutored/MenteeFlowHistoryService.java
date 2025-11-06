@@ -146,12 +146,7 @@ public class MenteeFlowHistoryService {
         return page.map(MenteeFlowHistoryDTO::new);
     }
 
-
-
-//    public List<MenteeFlowHistory> findCompletedRondaMentoria() {
-//        return menteeFlowHistoryRepository.findByFlowHistoryNameAndProgressStatus(
-//                EnumFlowHistory.RONDA_MENTORIA.name(),
-//                EumFlowHistoryProgressStatus.TERMINADO.name()
-//        );
-//    }
+    public void deleteByTutored(Tutored tutored) {
+        menteeFlowHistoryRepository.deleteByTutored(tutored);
+    }
 }

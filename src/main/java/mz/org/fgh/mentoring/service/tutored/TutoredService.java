@@ -5,6 +5,7 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
+import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
@@ -28,11 +29,15 @@ import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
+
+import static mz.org.fgh.mentoring.enums.EnumFlowHistoryProgressStatus.ISENTO;
 
 @Singleton
 public class TutoredService {
@@ -60,6 +65,9 @@ public class TutoredService {
 
     @Inject
     FlowHistoryService flowHistoryService;
+
+    @PersistenceContext
+    private EntityManager entityManager;
 
     public TutoredService(EmployeeService employeeService, TutoredRepository tutoredRepository, UserRepository userRepository, EmployeeRepository employeeRepository, LocationRepository locationRepository, DistrictRepository districtRepository, ProvinceRepository provinceRepository, HealthFacilityRepository healthFacilityRepository, PartnerRepository partnerRepository, ProfessionalCategoryRepository professionalCategoryRepository, FlowHistoryRepository flowHistoryRepository) {
         this.employeeService = employeeService;
@@ -140,29 +148,31 @@ public class TutoredService {
     }
 
     @Transactional
-    public Tutored update(Tutored tutored){
+    public Tutored update(Tutored inComingTutored, String userUuid) {
+        User user = userRepository.findByUuid(userUuid)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado: " + userUuid));
 
-        Optional<Tutored> existing = tutoredRepository.findByUuid(tutored.getUuid());
+        Optional<Tutored> existing = tutoredRepository.findByUuid(inComingTutored.getUuid());
         if (existing.isEmpty()) throw new RuntimeException("Mentee not found");
 
         Tutored toUpdate = existing.get();
-        toUpdate.getEmployee().setUpdatedBy(tutored.getUpdatedBy());
-        toUpdate.getEmployee().setUpdatedAt(tutored.getUpdatedAt());
-        toUpdate.getEmployee().setName(tutored.getEmployee().getName());
-        toUpdate.getEmployee().setPhoneNumber(tutored.getEmployee().getPhoneNumber());
-        toUpdate.getEmployee().setSurname(tutored.getEmployee().getSurname());
-        toUpdate.getEmployee().setEmail(tutored.getEmployee().getEmail());
-        toUpdate.getEmployee().setNuit(tutored.getEmployee().getNuit());
-        toUpdate.getEmployee().setPartner(partnerRepository.findByUuid(tutored.getEmployee().getPartner().getUuid()).get());
-        toUpdate.getEmployee().setProfessionalCategory(professionalCategoryRepository.findByUuid(tutored.getEmployee().getProfessionalCategory().getUuid()).get());
+        toUpdate.getEmployee().setUpdatedBy(inComingTutored.getUpdatedBy());
+        toUpdate.getEmployee().setUpdatedAt(inComingTutored.getUpdatedAt());
+        toUpdate.getEmployee().setName(inComingTutored.getEmployee().getName());
+        toUpdate.getEmployee().setPhoneNumber(inComingTutored.getEmployee().getPhoneNumber());
+        toUpdate.getEmployee().setSurname(inComingTutored.getEmployee().getSurname());
+        toUpdate.getEmployee().setEmail(inComingTutored.getEmployee().getEmail());
+        toUpdate.getEmployee().setNuit(inComingTutored.getEmployee().getNuit());
+        toUpdate.getEmployee().setPartner(partnerRepository.findByUuid(inComingTutored.getEmployee().getPartner().getUuid()).get());
+        toUpdate.getEmployee().setProfessionalCategory(professionalCategoryRepository.findByUuid(inComingTutored.getEmployee().getProfessionalCategory().getUuid()).get());
 
-        toUpdate.getEmployee().setTrainingYear(tutored.getEmployee().getTrainingYear());
+        toUpdate.getEmployee().setTrainingYear(inComingTutored.getEmployee().getTrainingYear());
         toUpdate.setUpdatedAt(DateUtils.getCurrentDate());
-        toUpdate.setUpdatedBy(tutored.getUpdatedBy());
+        toUpdate.setUpdatedBy(inComingTutored.getUpdatedBy());
 
         locationRepository.deleteAll(toUpdate.getEmployee().getLocations());
 
-        toUpdate.getEmployee().setLocations(tutored.getEmployee().getLocations());
+        toUpdate.getEmployee().setLocations(inComingTutored.getEmployee().getLocations());
 
         for (Location location : toUpdate.getEmployee().getLocations()){
             location.setCreatedAt(DateUtils.getCurrentDate());
@@ -176,10 +186,32 @@ public class TutoredService {
         locationRepository.saveAll(toUpdate.getEmployee().getLocations());
 
         toUpdate.getEmployee().setUpdatedAt(DateUtils.getCurrentDate());
-        toUpdate.getEmployee().setUpdatedBy(tutored.getUpdatedBy());
+        toUpdate.getEmployee().setUpdatedBy(inComingTutored.getUpdatedBy());
         employeeRepository.update(toUpdate.getEmployee());
 
-        return tutoredRepository.update(toUpdate);
+        if (toUpdate.canResetMenteeFlowHistory(inComingTutored.getMenteeFlowHistories().get(0))){
+            // Apagar todos menteeFlowHistories
+            menteeFlowHistoryService.deleteByTutored(toUpdate);
+
+            // Refazer
+            boolean isIsento = inComingTutored.getMenteeFlowHistories().get(0).getProgressStatus().getCode().equals(ISENTO.getCode());
+            FlowHistory flowHistory = flowHistoryService.findByCode(inComingTutored.getMenteeFlowHistories().get(0).getFlowHistory().getCode())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado"));
+
+            FlowHistoryProgressStatus progressStatus = flowHistoryProgressStatusService.findByCode(
+                            inComingTutored.getMenteeFlowHistories().get(0).getProgressStatus().getCode())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado"));
+
+            menteeFlowHistorySetting(isIsento, toUpdate, flowHistory, progressStatus, user);
+        }
+
+        Tutored updatedTutored = tutoredRepository.update(toUpdate);
+
+        // Forçar flush e refresh para garantir estado consistente
+        entityManager.flush();
+        entityManager.refresh(updatedTutored);
+
+        return updatedTutored;
     }
 
     public TutoredDTO updateTutored(TutoredDTO tutoredDTO, Long userId){
@@ -194,25 +226,6 @@ public class TutoredService {
         }
 
         employeeService.createOrUpdate(tutored.getEmployee(), user);
-
-        tutored.setUpdatedAt(DateUtils.getCurrentDate());
-        tutored.setUpdatedBy(user.getUuid());
-        this.tutoredRepository.update(tutored);
-
-        return tutoredDTO;
-    }
-
-    public TutoredDTO update(TutoredDTO tutoredDTO, Long userId){
-        User user = this.userRepository.findById(userId).get();
-        Tutored tutored = new Tutored(tutoredDTO);
-        Optional<Tutored> t = tutoredRepository.findByUuid(tutored.getUuid());
-        if(t.isPresent()){
-            tutored.setCreatedAt(t.get().getCreatedAt());
-            tutored.setCreatedBy(t.get().getCreatedBy());
-            tutored.setLifeCycleStatus(t.get().getLifeCycleStatus());
-            tutored.setId(t.get().getId());
-            tutored.setEmployee(employeeService.getByUuid(tutored.getEmployee().getUuid()));
-        }
 
         tutored.setUpdatedAt(DateUtils.getCurrentDate());
         tutored.setUpdatedBy(user.getUuid());
@@ -236,6 +249,36 @@ public class TutoredService {
         return tutored.getZeroEvaluationScore() != null;
     }
 
+    public void menteeFlowHistorySetting(boolean isIsento, Tutored tutored, FlowHistory flowHistory, FlowHistoryProgressStatus flowHistoryProgressStatus, User user) {
+        if (isIsento) {
+            // Sessão Zero - ISENTO
+            createMenteeFlowHistory(tutored, flowHistory, flowHistoryProgressStatus, user);
+
+            // RONDA - AGUARDA_INICIO
+            FlowHistory ronda = flowHistoryService.findByCode(EnumFlowHistory.RONDA_CICLO.getCode())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: RONDA_CICLO"));
+
+            FlowHistoryProgressStatus aguarda = flowHistoryProgressStatusService.findByCode(
+                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: AGUARDA_INICIO"));
+
+            MenteeFlowHistory lastSaved = createMenteeFlowHistory(tutored, ronda, aguarda, user);
+            tutored.addFlowHistory(lastSaved);
+
+        } else {
+            // NÃO ISENTO → SESSAO_ZERO + AGUARDA_INICIO
+            FlowHistory sessaoZero = flowHistoryService.findByCode(EnumFlowHistory.SESSAO_ZERO.getCode())
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: SESSAO_ZERO"));
+
+            FlowHistoryProgressStatus aguarda = flowHistoryProgressStatusService.findByCode(
+                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode())
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: AGUARDA_INICIO"));
+
+            MenteeFlowHistory lastSaved = createMenteeFlowHistory(tutored, sessaoZero, aguarda, user);
+            tutored.addFlowHistory(lastSaved);
+        }
+    }
+
     @Transactional
     public Tutored create(Tutored tutored,
                           FlowHistory flowHistory,
@@ -253,37 +296,13 @@ public class TutoredService {
 
         Tutored newTutored = tutoredRepository.save(tutored);
 
-        boolean isIsento = status.getCode().equals(EnumFlowHistoryProgressStatus.ISENTO.getCode());
+        boolean isIsento = status.getCode().equals(ISENTO.getCode());
 
-        if (isIsento) {
-            // Sessão Zero - ISENTO
-            createMenteeFlowHistory(newTutored, flowHistory, status, user);
+        menteeFlowHistorySetting(isIsento, newTutored, flowHistory, status, user);
 
-            // RONDA - AGUARDA_INICIO
-            FlowHistory ronda = flowHistoryService.findByCode(EnumFlowHistory.RONDA_CICLO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: RONDA_CICLO"));
-
-            FlowHistoryProgressStatus aguarda = flowHistoryProgressStatusService.findByCode(
-                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: AGUARDA_INICIO"));
-
-            MenteeFlowHistory lastSaved = createMenteeFlowHistory(newTutored, ronda, aguarda, user);
-            newTutored.addFlowHistory(lastSaved);
-
-        } else {
-            // NÃO ISENTO → SESSAO_ZERO + AGUARDA_INICIO
-            FlowHistory sessaoZero = flowHistoryService.findByCode(EnumFlowHistory.SESSAO_ZERO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: SESSAO_ZERO"));
-
-            FlowHistoryProgressStatus aguarda = flowHistoryProgressStatusService.findByCode(
-                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: AGUARDA_INICIO"));
-
-            MenteeFlowHistory lastSaved = createMenteeFlowHistory(newTutored, sessaoZero, aguarda, user);
-            newTutored.addFlowHistory(lastSaved);
-        }
-
-        return newTutored;
+        // 🔁 Garante que os MenteeFlowHistories estejam reflectidos na entidade retornada
+        return tutoredRepository.findByUuid(newTutored.getUuid())
+                .orElseThrow(() -> new RuntimeException("Erro ao recarregar Tutored após criação"));
     }
 
 
@@ -312,5 +331,4 @@ public class TutoredService {
     public Optional<Tutored> findOptionalByUuid(String uuid) {
         return tutoredRepository.findByUuid(uuid);
     }
-
 }

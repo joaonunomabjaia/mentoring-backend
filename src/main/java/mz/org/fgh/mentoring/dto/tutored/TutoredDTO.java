@@ -5,9 +5,15 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
+import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
+import org.hibernate.Hibernate;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
@@ -20,29 +26,48 @@ public class TutoredDTO extends BaseEntityDTO {
     private Double zeroEvaluationScore;
     private boolean zeroEvaluationDone;
 
-    /** Carries ENUM CODES (name()), not labels */
-    private FlowHistoryMenteeAuxDTO flowHistoryMenteeAuxDTO;
+    /** Lista com 1 ou 2 registros (primeiro e último MenteeFlowHistory) */
+    private List<FlowHistoryMenteeAuxDTO> flowHistoryMenteeAuxDTO = new ArrayList<>();
 
     public TutoredDTO(Tutored tutored) {
         super(tutored);
+
         this.zeroEvaluationScore = tutored.getZeroEvaluationScore();
-        this.zeroEvaluationDone  = tutored.isZeroEvaluationDone();
+        this.zeroEvaluationDone = tutored.isZeroEvaluationDone();
 
         if (tutored.getEmployee() != null) {
             this.employeeDTO = new EmployeeDTO(tutored.getEmployee());
         }
 
-        tutored.getLastMenteeFlowHistory().ifPresent(last -> {
-            // Entities must expose code (enum name) via getCode()
-            String estagioCode = last.getFlowHistory().getCode();
-            String estadoCode  = last.getProgressStatus().getCode();
+        // ⚙️ Verifica se há históricos de mentoria
+        if (tutored.getMenteeFlowHistories() != null
+                && Hibernate.isInitialized(tutored.getMenteeFlowHistories())
+                && !tutored.getMenteeFlowHistories().isEmpty()) {
 
-            this.flowHistoryMenteeAuxDTO = FlowHistoryMenteeAuxDTO.builder()
-                    .estagio(estagioCode)       // e.g., "RONDA_CICLO"
-                    .estado(estadoCode)         // e.g., "AGUARDA_INICIO"
-                    .classificacao(last.getClassification())
-                    .build();
-        });
+            List<MenteeFlowHistory> sorted = tutored.getMenteeFlowHistories().stream()
+                    .filter(m -> m.getSequenceNumber() != null)
+                    .sorted(Comparator.comparing(MenteeFlowHistory::getSequenceNumber))
+                    .toList();
+
+            MenteeFlowHistory first = sorted.get(0);
+            MenteeFlowHistory last = sorted.get(sorted.size() - 1);
+
+            // Sempre adiciona o primeiro
+            this.flowHistoryMenteeAuxDTO.add(buildFlowHistoryAux(first));
+
+            // Se houver mais de um, adiciona também o último
+            if (sorted.size() > 1 && !first.equals(last)) {
+                this.flowHistoryMenteeAuxDTO.add(buildFlowHistoryAux(last));
+            }
+        }
+    }
+
+    private FlowHistoryMenteeAuxDTO buildFlowHistoryAux(MenteeFlowHistory history) {
+        return FlowHistoryMenteeAuxDTO.builder()
+                .estagio(history.getFlowHistory() != null ? history.getFlowHistory().getCode() : null)
+                .estado(history.getProgressStatus() != null ? history.getProgressStatus().getCode() : null)
+                .classificacao(history.getClassification())
+                .build();
     }
 
     @JsonIgnore
@@ -57,10 +82,12 @@ public class TutoredDTO extends BaseEntityDTO {
         if (Utilities.stringHasValue(getLifeCycleStatus())) {
             t.setLifeCycleStatus(LifeCycleStatus.valueOf(getLifeCycleStatus()));
         }
+
         if (employeeDTO != null) {
             t.setEmployee(employeeDTO.toEntity());
         }
-        // FlowHistory for the mentee is managed by service layer (not here)
+
+        // FlowHistory do mentee é tratado pela camada de serviço
         return t;
     }
 }
