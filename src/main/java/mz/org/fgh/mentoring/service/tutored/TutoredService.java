@@ -5,7 +5,6 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
-import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.location.Location;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
@@ -207,11 +206,15 @@ public class TutoredService {
 
         Tutored updatedTutored = tutoredRepository.update(toUpdate);
 
-        // Forçar flush e refresh para garantir estado consistente
+        // Forçar sincronização e limpar persistence context
         entityManager.flush();
-        entityManager.refresh(updatedTutored);
+        entityManager.clear();
 
-        return updatedTutored;
+        // Recarregar da DB para garantir coleções consistentes
+        Tutored reloaded = tutoredRepository.findByUuid(updatedTutored.getUuid())
+                .orElseThrow(() -> new RuntimeException("Erro ao recarregar Tutored após atualização"));
+
+        return reloaded;
     }
 
     public TutoredDTO updateTutored(TutoredDTO tutoredDTO, Long userId){
@@ -252,7 +255,8 @@ public class TutoredService {
     public void menteeFlowHistorySetting(boolean isIsento, Tutored tutored, FlowHistory flowHistory, FlowHistoryProgressStatus flowHistoryProgressStatus, User user) {
         if (isIsento) {
             // Sessão Zero - ISENTO
-            createMenteeFlowHistory(tutored, flowHistory, flowHistoryProgressStatus, user);
+            MenteeFlowHistory firstSaved = createMenteeFlowHistory(tutored, flowHistory, flowHistoryProgressStatus, user);
+            tutored.addFlowHistory(firstSaved);
 
             // RONDA - AGUARDA_INICIO
             FlowHistory ronda = flowHistoryService.findByCode(EnumFlowHistory.RONDA_CICLO.getCode())
@@ -297,10 +301,13 @@ public class TutoredService {
         Tutored newTutored = tutoredRepository.save(tutored);
 
         boolean isIsento = status.getCode().equals(ISENTO.getCode());
-
         menteeFlowHistorySetting(isIsento, newTutored, flowHistory, status, user);
 
-        // 🔁 Garante que os MenteeFlowHistories estejam reflectidos na entidade retornada
+        // Forçar flush e limpar contexto
+        entityManager.flush();
+        entityManager.clear();
+
+        // Recarrega a entidade com as novas coleções
         return tutoredRepository.findByUuid(newTutored.getUuid())
                 .orElseThrow(() -> new RuntimeException("Erro ao recarregar Tutored após criação"));
     }
