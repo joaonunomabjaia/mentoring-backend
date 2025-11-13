@@ -5,6 +5,7 @@ import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.MenteeFlowHistoryDTO;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
@@ -72,8 +73,6 @@ public class MenteeFlowHistoryService {
         history.setUuid(Utilities.generateUUID());
         history.setCreatedAt(DateUtils.getCurrentDate());
         history.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-
-
         // 🔢 Calcula o número sequencial por Tutored
         if (history.getSequenceNumber() == null && history.getTutored() != null) {
             int nextSeq = menteeFlowHistoryRepository.countByTutored(history.getTutored()) + 1;
@@ -144,6 +143,10 @@ public class MenteeFlowHistoryService {
         });
 
         return page.map(MenteeFlowHistoryDTO::new);
+    }
+
+    public void deleteByRonda(Ronda ronda) {
+        menteeFlowHistoryRepository.deleteByRonda(ronda);
     }
 
     public void deleteByTutored(Tutored tutored) {

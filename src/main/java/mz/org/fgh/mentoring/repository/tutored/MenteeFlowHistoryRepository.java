@@ -6,6 +6,7 @@ import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 
@@ -126,4 +127,6 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
 
     @Query("DELETE FROM MenteeFlowHistory m WHERE m.tutored.id = :tutoredId")
     long deleteByTutoredId(Long tutoredId);
+
+    void deleteByRonda(Ronda ronda);
 }

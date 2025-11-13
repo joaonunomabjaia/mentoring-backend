@@ -30,6 +30,8 @@ public interface RondaMenteeRepository extends CrudRepository<RondaMentee, Long>
     List<RondaMentee> findByRonda(Long rondaId, LifeCycleStatus lifeCycleStatus);
 
     @Query("select rm from RondaMentee rm " +
+            "JOIN FETCH rm.tutored t " +
+            "LEFT JOIN FETCH t.menteeFlowHistories mfh " +
             "where rm.ronda.id = :rondaId")
     Set<RondaMentee> findByRonda(Long rondaId);
 

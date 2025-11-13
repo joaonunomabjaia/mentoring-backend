@@ -221,25 +221,15 @@ public class RondaService extends BaseService {
             createdRonda.setRondaMentees(savedRondaMentees);
         }
 
-        for (RondaMenteeDTO rondaMenteeDTO: rondaDTO.getRondaMentees()){
+        for (RondaMentee rondaMentee: createdRonda.getRondaMentees()){
 
-            // Verifica se a relação de ronda-mentee existe no BD
-            RondaMentee rondaMentee = rondaMenteeRepository.findById(
-                    rondaMenteeDTO.getRondaMentee().getId()
-            ).orElseThrow(() -> new RuntimeException("RondaMentee não encontrado: " +
-                    rondaMenteeDTO.getRondaMentee().getId()));
-
-            Tutored tutored = rondaMentee.getTutored();
-            FlowHistoryMenteeAuxDTO auxDTO = rondaMenteeDTO.getFlowHistoryMenteeAuxDTO();
-
-            if (auxDTO == null) continue;
 
             // Cria primeiro histórico com estado TERMINADO
             createMenteeFlowHistory(
-                    tutored,
-                    rondaMentee.getRonda(),
+                    rondaMentee.getTutored(),
+                    createdRonda,
                     0.0,
-                    EnumFlowHistoryProgressStatus.INICIO.getLabel(),
+                    EnumFlowHistoryProgressStatus.INICIO.getCode(),
                     user
             );
         }
@@ -314,93 +304,6 @@ public class RondaService extends BaseService {
         return new RondaDTO(ronda);
     }
 
-
-//    public RondaDTO changeMentor(Long rondaId, Long newMentorId, User user) {
-//        Ronda ronda = rondaRepository.findById(rondaId)
-//                .orElseThrow(() -> new RuntimeException("Ronda não encontrada"));
-//
-//        Tutor mentor = tutorRepository.findById(newMentorId)
-//                .orElseThrow(() -> new RuntimeException("Mentor não encontrado"));
-//
-//        Set<ProgrammaticArea> rondaAreas = new HashSet<>();
-//        Set<ProgrammaticArea> mentorAreas = new HashSet<>();
-//        Set<Session> sessionsOfRonda = sessionRepository.findAllOfRonda(ronda.getId());
-//
-//        for (Session session : sessionsOfRonda) {
-//            rondaAreas.add(session.getForm().getProgrammaticArea());
-//        }
-//
-//        for (TutorProgrammaticArea tpa : tutorRepository.findByIdDetailed(mentor.getId()).get().getTutorProgrammaticAreas()) {
-//            mentorAreas.add(tpa.getProgrammaticArea());
-//        }
-//
-//        for (ProgrammaticArea rondaArea : rondaAreas) {
-//            if (!mentorAreas.contains(rondaArea)) {
-//                throw new RuntimeException("O mentor selecionado não possui a área programática: " + rondaArea.getName());
-//            }
-//        }
-//
-//        // Criar novo RondaMentor
-//        RondaMentor rondaMentor = new RondaMentor();
-//        rondaMentor.setCreatedAt(new Date());
-//        rondaMentor.setMentor(mentor);
-//        rondaMentor.setCreatedBy(user.getUuid());
-//        rondaMentor.setStartDate(new Date());
-//        rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-//        rondaMentor.setUuid(Utilities.generateUUID().toString());
-//        rondaMentor.setRonda(ronda);
-//
-//        // Carrega os mentores e mentees da ronda
-//        ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
-//        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
-//
-//        // Finaliza vínculo anterior (se houver)
-//        for (RondaMentor activeMentor : ronda.getRondaMentors()) {
-//            if (activeMentor.getEndDate() == null) {
-//                activeMentor.setEndDate(new Date());
-//                rondaMentorRepository.update(activeMentor);
-//            }
-//        }
-//
-//        rondaMentorRepository.save(rondaMentor);
-//
-//        return new RondaDTO(ronda);
-//    }
-
-
-//    public RondaDTO changeMentor(Long rondaId, Long newMentorId, User user) {
-//        Ronda ronda = rondaRepository.findById(rondaId).get();
-//        Tutor mentor = tutorRepository.findById(newMentorId).get();
-//
-//        // A ronda tem Sessions, cada session tem form e esta tem programaticArea
-//        // O Tutor tem tutorProgrammaticAreas
-//        // o que e garantir que as ProgrammaticAreas da ronda estejam presentes nas do tutor, caso contrario devolvemos uma exception com mensagem
-//
-//        RondaMentor rondaMentor = new RondaMentor();
-//
-//        rondaMentor.setCreatedAt(new Date());
-//        rondaMentor.setMentor(mentor);
-//        rondaMentor.setCreatedBy(user.getUuid());
-//        rondaMentor.setStartDate(new Date());
-//        rondaMentor.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
-//        rondaMentor.setUuid(Utilities.generateUUID().toString());
-//        rondaMentor.setRonda(ronda);
-//
-//        ronda.setRondaMentors(rondaMentorRepository.findByRonda(ronda.getId()));
-//        ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
-//
-//        for(RondaMentor rondaMentor1: ronda.getRondaMentors()){
-//            if(rondaMentor1.getEndDate() == null) {
-//                rondaMentor1.setEndDate(new Date());
-//                rondaMentorRepository.update(rondaMentor1);
-//            }
-//        }
-//
-//        rondaMentorRepository.save(rondaMentor);
-//
-//        return new RondaDTO(ronda);
-//    }
-
     @Transactional
     public Ronda update(Ronda ronda, Long userId) {
 
@@ -420,6 +323,7 @@ public class RondaService extends BaseService {
         Ronda createdRonda = this.rondaRepository.update(ronda);
 
         this.rondaMenteeRepository.deleteByRonda(ronda);
+        this.menteeFlowHistoryService.deleteByRonda(ronda);
 
         if(Utilities.hasElements(ronda.getRondaMentees())) {
             for (RondaMentee rondaMentee: ronda.getRondaMentees()) {
@@ -429,6 +333,14 @@ public class RondaService extends BaseService {
                 rondaMentee.setCreatedAt(DateUtils.getCurrentDate());
                 rondaMentee.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
                 this.rondaMenteeRepository.save(rondaMentee);
+
+                rondaMentee.getTutored().addFlowHistory(createMenteeFlowHistory(
+                        rondaMentee.getTutored(),
+                        createdRonda,
+                        0.0,
+                        EnumFlowHistoryProgressStatus.INICIO.getCode(),
+                        user
+                ));
             }
         }
         ronda.setRondaMentees(rondaMenteeRepository.findByRonda(ronda.getId()));
@@ -446,6 +358,7 @@ public class RondaService extends BaseService {
         this.rondaMenteeRepository.deleteByRonda(existingRonda.get());
         this.rondaMentorRepository.deleteByRonda(existingRonda.get());
         this.rondaRepository.delete(existingRonda.get());
+        menteeFlowHistoryService.deleteByRonda(existingRonda.get());
     }
 
     public RondaReportDTO generateReport(String uuid) {
@@ -639,7 +552,7 @@ public class RondaService extends BaseService {
                         tutored,
                         rondaMentee.getRonda(),
                         auxDTO.classificacao(),
-                        EnumFlowHistoryProgressStatus.TERMINADO.getLabel(),
+                        EnumFlowHistoryProgressStatus.TERMINADO.getCode(),
                         user
                 );
 
@@ -649,7 +562,7 @@ public class RondaService extends BaseService {
                             tutored,
                             rondaMentee.getRonda(),
                             auxDTO.classificacao(),
-                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getLabel(),
+                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode(),
                             user
                     );
                 }
@@ -657,17 +570,17 @@ public class RondaService extends BaseService {
         }
     }
 
-    private void createMenteeFlowHistory(
+    private MenteeFlowHistory createMenteeFlowHistory(
             Tutored tutored,
             Ronda ronda,
             double classification,
             String progressStatusName,
             User user
     ) {
-        FlowHistory flowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.getLabel())
+        FlowHistory flowHistory = flowHistoryService.findByCode(EnumFlowHistory.RONDA_CICLO.getCode())
                 .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.getLabel()));
 
-        FlowHistoryProgressStatus status = flowHistoryProgressStatusService.findByName(progressStatusName)
+        FlowHistoryProgressStatus status = flowHistoryProgressStatusService.findByCode(progressStatusName)
                 .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + progressStatusName));
 
         MenteeFlowHistory menteeFlowHistory = new MenteeFlowHistory();
@@ -678,6 +591,7 @@ public class RondaService extends BaseService {
         menteeFlowHistory.setProgressStatus(status);
 
         menteeFlowHistoryService.save(menteeFlowHistory, user);
+        return menteeFlowHistory;
     }
 
 

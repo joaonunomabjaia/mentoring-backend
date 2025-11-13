@@ -118,73 +118,90 @@ public class SessionRecommendedResourceService {
     }
 
     @Transactional
-    public void processPendingResources() throws MessagingException {
-        List<SessionRecommendedResource> pendingResources = sessionRecommendedResourceRepository.findByNotificationStatus(SessionRecommendedResource.NotificationStatus.PENDING);
+    public void processPendingResources() throws Exception {
+        List<SessionRecommendedResource> pendingResources =
+                sessionRecommendedResourceRepository.findByNotificationStatus(SessionRecommendedResource.NotificationStatus.PENDING);
         if (!Utilities.listHasElements(pendingResources)) return;
 
-        List<String> menteesNames = new ArrayList<>();
+        Setting serverUrlSetting = settingsRepository.findByDesignation("SERVER_URL")
+                .orElseThrow(() -> new RuntimeException("Server URL not configured"));
 
-        List<String> links = new ArrayList<>();
+        // Agrupar por mentee (usar ID para evitar colisões de nomes iguais)
+        Map<Long, EmailPayload> groupedByMentee = new HashMap<>();
 
-        Map<SessionRecommendedResource, List<String>> variableList = new HashMap<>();
-
-        Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
-
-        if (!settingOpt.isPresent()) {
-            throw new RuntimeException("Server URL not configured");
-        }
-
-        try {
         for (SessionRecommendedResource resource : pendingResources) {
-
+            // Gera token para o mentee (atributo usado no seu template/link)
             Map<String, Object> attributes = new HashMap<>();
             attributes.put("nuit", resource.getTutored().getEmployee().getNuit());
+            String tokenForTutored = jwtTokenGenerator.generateToken(attributes)
+                    .orElseThrow(() -> new RuntimeException("Could not generate JWT token for mentee"));
 
-            String tokenForTutored = this.jwtTokenGenerator.generateToken(attributes).get();
             resource.setToken(tokenForTutored);
 
-            if(menteesNames.contains(resource.getTutored().getEmployee().getFullName())){
-                String link = this.applicationConfiguration.getBaseUrl()+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
+            String link = applicationConfiguration.getBaseUrl()
+                    + "/resources/load/documento?nuit=" + resource.getTutored().getEmployee().getNuit()
+                    + "&token=" + resource.getToken()
+                    + "&fileName=" + resource.getResourceName();
 
-                variableList.get(resource).add(link);
-            }else {
-                String link = this.applicationConfiguration.getBaseUrl()+"/resources/load/documento?nuit="+resource.getTutored().getEmployee().getNuit()+"&token="+resource.getToken()+"&fileName="+resource.getResourceName();
-                links = new ArrayList<>();
-                links.add(link);
-                variableList.put(resource, links);
-            }
+            Long menteeId = resource.getTutored().getId();
 
-            menteesNames.add(resource.getTutored().getEmployee().getFullName());
+            EmailPayload payload = groupedByMentee.computeIfAbsent(
+                    menteeId,
+                    id -> new EmailPayload(
+                            resource.getTutored().getEmployee().getFullName(),
+                            resource.getTutor().getEmployee().getFullName(),
+                            resource.getTutored().getEmployee().getEmail()
+                    )
+            );
+            payload.links.add(link);
 
+            // Atualiza o recurso como notificado
             resource.setNotificationStatus(SessionRecommendedResource.NotificationStatus.SENT);
-            sessionRecommendedResourceRepository.update(resource); // Update the status to SENT
+            resource.setNotificationDate(DateUtils.getCurrentDate());
+            sessionRecommendedResourceRepository.update(resource);
         }
 
-        for(Map.Entry<SessionRecommendedResource, List<String>> entry : variableList.entrySet()){
+        // Enviar um e-mail por mentee com todos os links
+        for (EmailPayload payload : groupedByMentee.values()) {
+            String htmlTemplate = emailService.loadHtmlTemplate("emailNotificationRecomendeResource");
 
-            String htmlTampleteResult = emailService.loadHtmlTemplate("emailNotificationRecomendeResource");
-
-            String results = htmlString(entry.getValue());
-
-            Document htm = Jsoup.parse(htmlTampleteResult);
-
-            htm.getElementsByTag("ul").append(results);
+            Document doc = Jsoup.parse(htmlTemplate);
+            doc.getElementsByTag("ul").append(buildLinksListHtml(payload.links));
 
             Map<String, String> variables = new HashMap<>();
-            variables.put("serverUrl", settingOpt.get().getValue());
-            variables.put("menteesName", entry.getKey().getTutored().getEmployee().getFullName());
-            variables.put("mentorName", entry.getKey().getTutor().getEmployee().getFullName());
+            variables.put("serverUrl", serverUrlSetting.getValue());
+            variables.put("menteesName", payload.menteeName);
+            variables.put("mentorName", payload.tutorName);
 
-            String populationHtml = emailService.populateTemplateVariables(htm.html(), variables);
-
-            emailService.sendEmail(entry.getKey().getTutored().getEmployee().getEmail(), "Acesso aos Recursos de Ensino e Aprendizagem", populationHtml);
-
-        }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            String populatedHtml = emailService.populateTemplateVariables(doc.html(), variables);
+            emailService.sendEmail(payload.email, "Acesso aos Recursos de Ensino e Aprendizagem", populatedHtml);
         }
     }
+
+    private String buildLinksListHtml(List<String> links) {
+        StringBuilder sb = new StringBuilder();
+        for (String url : links) {
+            String[] parts = url.split("fileName=", 2);
+            String fileName = parts.length == 2 ? parts[1] : url;
+            sb.append("<li><a href=\"").append(url).append("\">").append(fileName).append("</a></li>");
+        }
+        return sb.toString();
+    }
+
+    // Estrutura simples para consolidar dados do e-mail
+    private static class EmailPayload {
+        final String menteeName;
+        final String tutorName;
+        final String email;
+        final List<String> links = new ArrayList<>();
+
+        EmailPayload(String menteeName, String tutorName, String email) {
+            this.menteeName = menteeName;
+            this.tutorName = tutorName;
+            this.email = email;
+        }
+    }
+
 
     public List<SessionRecommendedResource> saveMany(List<SessionRecommendedResource> resources, Long userId) {
         List<SessionRecommendedResource> list = new ArrayList<>();
