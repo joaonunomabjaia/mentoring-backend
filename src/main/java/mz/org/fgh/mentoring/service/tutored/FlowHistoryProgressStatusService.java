@@ -31,18 +31,19 @@ public class FlowHistoryProgressStatusService extends BaseService {
         return flowHistoryProgressStatusRepository.findByName(name);
     }
 
+
     @Transactional
     public FlowHistoryProgressStatus save(FlowHistoryProgressStatus progressStatus) {
         return flowHistoryProgressStatusRepository.save(progressStatus);
     }
 
-    public Map<EnumFlowHistoryProgressStatus, FlowHistoryProgressStatus> findAllByNames(Set<EnumFlowHistoryProgressStatus> statuses) {
+    public Map<EnumFlowHistoryProgressStatus, FlowHistoryProgressStatus> findAllByCodes(Set<EnumFlowHistoryProgressStatus> statuses) {
         return statuses.stream()
                 .collect(Collectors.toMap(
                         status -> status,
-                        status -> findByName(status.name())
+                        status -> findByCode(status.getCode())
                                 .orElseThrow(() -> new HttpStatusException(HttpStatus.NOT_FOUND,
-                                        "Estado não encontrado: " + status.name()))
+                                        "Estado não encontrado: " + status.getCode()))
                 ));
     }
 
