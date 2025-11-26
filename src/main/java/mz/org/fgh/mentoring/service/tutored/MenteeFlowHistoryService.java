@@ -6,10 +6,12 @@ import io.micronaut.data.model.Pageable;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.dto.tutored.MenteeFlowHistoryDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
+import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
+import mz.org.fgh.mentoring.repository.ronda.RondaMenteeRepository;
 import mz.org.fgh.mentoring.repository.tutored.MenteeFlowHistoryRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -25,9 +27,11 @@ import java.util.Optional;
 public class MenteeFlowHistoryService {
 
     private final MenteeFlowHistoryRepository menteeFlowHistoryRepository;
+    private final RondaMenteeRepository rondaMenteeRepository;
 
-    public MenteeFlowHistoryService(MenteeFlowHistoryRepository menteeFlowHistoryRepository) {
+    public MenteeFlowHistoryService(MenteeFlowHistoryRepository menteeFlowHistoryRepository,  RondaMenteeRepository rondaMenteeRepository) {
         this.menteeFlowHistoryRepository = menteeFlowHistoryRepository;
+        this.rondaMenteeRepository =  rondaMenteeRepository;
     }
 
     // 🔍 Buscar por ID
@@ -82,6 +86,15 @@ public class MenteeFlowHistoryService {
         menteeFlowHistoryRepository.save(history);
     }
 
+    @Transactional
+    public void interruptionFromSchedule(MenteeFlowHistory history) {
+
+        history.setUpdatedBy("System");
+        history.setUpdatedAt(DateUtils.getCurrentDate());
+
+        menteeFlowHistoryRepository.update(history);
+    }
+
     // 🔄 Atualizar histórico existente
     @Transactional
     public MenteeFlowHistory update(MenteeFlowHistory history) {
@@ -99,12 +112,12 @@ public class MenteeFlowHistoryService {
     }
 
     /**
-     * Retorna todos os MenteeFlowHistory com FlowHistory "RONDA / CICLO ATC"
-     * e ProgressStatus "INICIO", criados há 60 ou mais dias.
+     * Filtra MenteeFlowHistory pelo flowHistory.code e progressStatus.code desejados.
+     * Traz apenas aqueles cujo tutored não tem nenhuma Mentorship realizada nos últimos 60 dias.
      * Esses serao interrompidos
      */
-    public List<MenteeFlowHistory> findRondasOuCicloAtcIniciadasHaMaisDe60Dias(){
-        return menteeFlowHistoryRepository.findRondasOuCicloAtcIniciadasHaMaisDe60Dias();
+    public List<MenteeFlowHistory> findRondasOuCicloAtcIniciadasHaMaisDe60Dias(String flowHistoryCode, String flowHistoryStatusCode, int menteeRondaRemovalInterval){
+        return menteeFlowHistoryRepository.findRondasOuCicloAtcIniciadasSemMentorshipHaMaisDe60Dias(flowHistoryCode, flowHistoryStatusCode, menteeRondaRemovalInterval);
     }
 
     /**
@@ -151,5 +164,18 @@ public class MenteeFlowHistoryService {
 
     public void deleteByTutored(Tutored tutored) {
         menteeFlowHistoryRepository.deleteByTutoredId(tutored.getId());
+    }
+
+    @Transactional
+    public void removeTutoredFromRonda(Set<RondaMentee> rondaMentees, Tutored tutored) {
+        rondaMentees.forEach( rondaMentee ->  {
+            if (rondaMentee.getTutored().equals(tutored)) {
+                rondaMentee.setEndDate(DateUtils.getCurrentDate());
+                rondaMentee.setUpdatedAt(DateUtils.getCurrentDate());
+                rondaMentee.setUpdatedBy("System");
+
+                rondaMenteeRepository.update(rondaMentee);
+            }
+        });
     }
 }
