@@ -9,7 +9,6 @@ import mz.org.fgh.mentoring.enums.EnumFlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.repository.tutored.FlowHistoryProgressStatusRepository;
 
 import javax.transaction.Transactional;
-import java.util.EnumSet;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
@@ -32,19 +31,23 @@ public class FlowHistoryProgressStatusService extends BaseService {
         return flowHistoryProgressStatusRepository.findByName(name);
     }
 
+
     @Transactional
     public FlowHistoryProgressStatus save(FlowHistoryProgressStatus progressStatus) {
         return flowHistoryProgressStatusRepository.save(progressStatus);
     }
 
-    public Map<EnumFlowHistoryProgressStatus, FlowHistoryProgressStatus> findAllByNames(Set<EnumFlowHistoryProgressStatus> statuses) {
+    public Map<EnumFlowHistoryProgressStatus, FlowHistoryProgressStatus> findAllByCodes(Set<EnumFlowHistoryProgressStatus> statuses) {
         return statuses.stream()
                 .collect(Collectors.toMap(
                         status -> status,
-                        status -> findByName(status.name())
+                        status -> findByCode(status.getCode())
                                 .orElseThrow(() -> new HttpStatusException(HttpStatus.NOT_FOUND,
-                                        "Estado não encontrado: " + status.name()))
+                                        "Estado não encontrado: " + status.getCode()))
                 ));
     }
 
+    public Optional<FlowHistoryProgressStatus> findByCode(String code) {
+        return flowHistoryProgressStatusRepository.findByCode(code);
+    }
 }

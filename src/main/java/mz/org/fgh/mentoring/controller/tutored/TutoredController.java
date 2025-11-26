@@ -23,7 +23,10 @@ import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.FlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.entity.program.Program;
+import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.enums.EnumFlowHistory;
+import mz.org.fgh.mentoring.enums.EnumFlowHistoryProgressStatus;
 import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.service.tutored.FlowHistoryProgressStatusService;
 import mz.org.fgh.mentoring.service.tutored.FlowHistoryService;
@@ -135,38 +138,50 @@ public class TutoredController extends BaseController {
     @Operation(summary = "Update an existing mentee")
     @Put
     public HttpResponse<?> update(@Body TutoredDTO dto, Authentication authentication) {
-        String userUuid = (String) authentication.getAttributes().get("userUuid");
+        String userUuid = (String) authentication.getAttributes().get("useruuid");
         Tutored tutored = new Tutored(dto);
+        tutored.addFlowHistory(new MenteeFlowHistory(dto.getFlowHistoryMenteeAuxDTO().get(0)));
+
         tutored.setUpdatedBy(userUuid);
-        Tutored updated = this.tutoredService.update(tutored);
-        return HttpResponse.ok(SuccessResponse.of("Mentorado atualizado com sucesso", new TutoredDTO(updated)));
+        Tutored res = this.tutoredService.update(tutored, userUuid);
+
+        TutoredDTO updatedTutoredDTO = new TutoredDTO(res);
+
+        return HttpResponse.ok(SuccessResponse.of("Mentorado atualizado com sucesso", updatedTutoredDTO));
     }
 
     @Operation(summary = "Save Mentee to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentee")
     @Post("/save")
-    public HttpResponse<RestAPIResponse> create (@Body TutoredDTO tutoredDTO, Authentication authentication) {
+    public HttpResponse<RestAPIResponse> create (@Body TutoredDTO dto, Authentication auth) {
         try {
-            Tutored tutored = new Tutored(tutoredDTO);
+            Tutored tutored = new Tutored(dto);
 
-            FlowHistory flowHistory = flowHistoryService.findByName(tutoredDTO.getFlowHistoryMenteeAuxDTO().estagio())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + tutoredDTO.getFlowHistoryMenteeAuxDTO().estagio()));
+            // DTO brings codes now
+            String estagioCode = dto.getFlowHistoryMenteeAuxDTO().get(0).estagio();
+            String estadoCode  = dto.getFlowHistoryMenteeAuxDTO().get(0).estado();
 
-            FlowHistoryProgressStatus flowHistoryProgressStatus = flowHistoryProgressStatusService.findByName(tutoredDTO.getFlowHistoryMenteeAuxDTO().estado())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + tutoredDTO.getFlowHistoryMenteeAuxDTO().estado()));
+            FlowHistory flowHistory = flowHistoryService.findByCode(estagioCode)
+                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado (code): " + estagioCode));
 
-            this.tutoredService.create(tutored, flowHistory, flowHistoryProgressStatus, (Long) authentication.getAttributes().get("userInfo"));
+            FlowHistoryProgressStatus fhps = flowHistoryProgressStatusService.findByCode(estadoCode)
+                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado (code): " + estadoCode));
 
-            return HttpResponse.created(new TutoredDTO(tutored));
+            this.tutoredService.create(
+                    tutored, flowHistory, fhps, (Long) auth.getAttributes().get("userInfo")
+            );
+            TutoredDTO tutoredDTO = new TutoredDTO(tutored);
+            return HttpResponse.created(tutoredDTO);
         } catch (Exception e) {
-            LOGGER.error(e.getMessage());
+            LOGGER.error(e.getMessage(), e);
             return HttpResponse.badRequest().body(MentoringAPIError.builder()
                     .status(HttpStatus.BAD_REQUEST.getCode())
                     .error(e.getLocalizedMessage())
                     .message(e.getMessage()).build());
         }
     }
+
 
     @Operation(summary = "Batch update mentees to database")
     @ApiResponse(responseCode = "200", description = "Mentee updated successfully")
@@ -176,11 +191,11 @@ public class TutoredController extends BaseController {
             @Body List<TutoredDTO> tutoredDTOs, 
             Authentication authentication) {
         try {
-            Long userInfo = (Long) authentication.getAttributes().get("userInfo");
+            String userUuid = (String) authentication.getAttributes().get("userUuid");
     
             // Loop through each TutoredDTO and update it
             for (TutoredDTO dto : tutoredDTOs) {
-                tutoredService.update(dto, userInfo);
+                tutoredService.update(new Tutored(dto), userUuid);
             }
     
             return HttpResponse.ok(new RestAPIResponseImpl(

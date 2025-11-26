@@ -18,8 +18,6 @@ public interface TutoredRepository extends JpaRepository<Tutored, Long> {
     @Query(value = "select * from tutoreds limit :limi offset :off", nativeQuery = true)
     List<Tutored> findTutoredWithLimit (long limi, long off);
 
-    Optional<Tutored> findByUuid(String uuid);
-
     @Query("From Tutored td inner join fetch td.career c inner join fetch c.tutors t where t.uuid = :tutorUuid")
     List<Tutored> findTutoredByTutorUuid(String tutorUuid);
 
@@ -67,6 +65,10 @@ public interface TutoredRepository extends JpaRepository<Tutored, Long> {
     )
     Page<Tutored> findAllOfHealthFacilities(List<String> healFacilitiesUuids, Pageable pageable);
 
+    @Query("SELECT t FROM Tutored t LEFT JOIN FETCH t.menteeFlowHistories WHERE t.uuid = :uuid")
+    Optional<Tutored> findByUuid(String uuid);
 
+    @Query("SELECT COUNT(mfh) FROM MenteeFlowHistory mfh WHERE mfh.tutored.id = :tutoredId")
+    long countMenteeFlowHistoriesByTutoredId(Long tutoredId);
 
 }

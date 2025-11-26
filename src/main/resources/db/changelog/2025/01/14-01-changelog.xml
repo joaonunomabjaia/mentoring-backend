@@ -394,5 +394,76 @@
         </insert>
     </changeSet>
 
+    <changeSet id="fh-add-code-col" author="voloide">
+        <addColumn tableName="flow_histories">
+            <column name="CODE" type="varchar(64)"/>
+        </addColumn>
+    </changeSet>
 
+    <changeSet id="fhps-add-code-col" author="voloide">
+        <addColumn tableName="flow_history_progress_statuses">
+            <column name="CODE" type="varchar(64)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="fh-backfill-code" author="voloide">
+        <update tableName="flow_histories">
+            <column name="CODE" value="NOVO"/>
+            <where>NAME IN ('NOVO')</where>
+        </update>
+        <update tableName="flow_histories">
+            <column name="CODE" value="SESSAO_ZERO"/>
+            <where>NAME IN ('SESSÃO ZERO','SESSAO ZERO')</where>
+        </update>
+        <update tableName="flow_histories">
+            <column name="CODE" value="RONDA_CICLO"/>
+            <where>NAME IN ('RONDA / CICLO ATC','RONDA / CICLO')</where>
+        </update>
+        <update tableName="flow_histories">
+            <column name="CODE" value="SESSAO_SEMESTRAL"/>
+            <where>NAME IN ('SESSÃO SEMESTRAL','SESSAO SEMESTRAL')</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="fhps-backfill-code" author="voloide">
+        <update tableName="flow_history_progress_statuses">
+            <column name="CODE" value="INICIO"/>
+            <where>NAME IN ('INICIO','INÍCIO')</where>
+        </update>
+        <update tableName="flow_history_progress_statuses">
+            <column name="CODE" value="ISENTO"/>
+            <where>NAME='ISENTO'</where>
+        </update>
+        <update tableName="flow_history_progress_statuses">
+            <column name="CODE" value="AGUARDA_INICIO"/>
+            <where>NAME IN ('AGUARDA INICIO','AGUARDA INÍCIO')</where>
+        </update>
+        <update tableName="flow_history_progress_statuses">
+            <column name="CODE" value="TERMINADO"/>
+            <where>NAME='TERMINADO'</where>
+        </update>
+        <update tableName="flow_history_progress_statuses">
+            <column name="CODE" value="INTERROMPIDO"/>
+            <where>NAME='INTERROMPIDO'</where>
+        </update>
+    </changeSet>
+
+    <changeSet id="fh-enforce-code-constraints" author="voloide">
+        <addNotNullConstraint tableName="flow_histories" columnName="CODE" columnDataType="varchar(64)"/>
+        <addUniqueConstraint tableName="flow_histories" columnNames="CODE" constraintName="UK_FLOW_HISTORIES_CODE"/>
+    </changeSet>
+
+    <changeSet id="fhs-enforce-code-constraints" author="voloide">
+        <addNotNullConstraint tableName="flow_history_progress_statuses" columnName="CODE" columnDataType="varchar(64)"/>
+        <addUniqueConstraint tableName="flow_history_progress_statuses" columnNames="CODE" constraintName="UK_FHPS_CODE"/>
+    </changeSet>
+
+
+
+<changeSet id="RONDA_TYPE_20251029" author="Joao Nuno Mabjaia" >
+        <sql>
+            INSERT INTO ronda_type (ID, uuid, code, description, CREATED_BY, CREATED_AT, LIFE_CYCLE_STATUS)
+            VALUES (4, 'ga8rw3c-2cc9-49ec-bff8-179ea7380d60', 'SESSAO_SEMESTRAL', 'Sessao Semestral', 'ts43441d-4bfd-11ee-9e75-0242ac150002','2025-10-29 09:00:00.000','ACTIVE');
+        </sql>
+    </changeSet>
 </databaseChangeLog>

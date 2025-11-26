@@ -239,7 +239,7 @@ public class RondaService extends BaseService {
                     tutored,
                     rondaMentee.getRonda(),
                     0.0,
-                    EnumFlowHistoryProgressStatus.INICIO.name(),
+                    EnumFlowHistoryProgressStatus.INICIO.getLabel(),
                     user
             );
         }
@@ -638,18 +638,18 @@ public class RondaService extends BaseService {
                 createMenteeFlowHistory(
                         tutored,
                         rondaMentee.getRonda(),
-                        auxDTO.classification(),
-                        EnumFlowHistoryProgressStatus.TERMINADO.name(),
+                        auxDTO.classificacao(),
+                        EnumFlowHistoryProgressStatus.TERMINADO.getLabel(),
                         user
                 );
 
                 // ⚙️ Caso classificação < 86, cria novo histórico com "AGUARDA INICIO"
-                if (auxDTO.classification() < 86) {
+                if (auxDTO.classificacao() < 86) {
                     createMenteeFlowHistory(
                             tutored,
                             rondaMentee.getRonda(),
-                            auxDTO.classification(),
-                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.name(),
+                            auxDTO.classificacao(),
+                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getLabel(),
                             user
                     );
                 }
@@ -664,8 +664,8 @@ public class RondaService extends BaseService {
             String progressStatusName,
             User user
     ) {
-        FlowHistory flowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.name())
-                .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.name()));
+        FlowHistory flowHistory = flowHistoryService.findByName(EnumFlowHistory.RONDA_CICLO.getLabel())
+                .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.getLabel()));
 
         FlowHistoryProgressStatus status = flowHistoryProgressStatusService.findByName(progressStatusName)
                 .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + progressStatusName));

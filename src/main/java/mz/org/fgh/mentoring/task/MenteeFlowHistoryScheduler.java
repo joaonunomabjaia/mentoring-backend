@@ -1,8 +1,6 @@
 package mz.org.fgh.mentoring.task;
 
 import io.micronaut.core.annotation.Nullable;
-import io.micronaut.http.HttpStatus;
-import io.micronaut.http.exceptions.HttpStatusException;
 import io.micronaut.runtime.event.ApplicationStartupEvent;
 
 import io.micronaut.context.event.ApplicationEventListener;
@@ -22,11 +20,8 @@ import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.service.tutored.FlowHistoryProgressStatusService;
 import mz.org.fgh.mentoring.service.tutored.MenteeFlowHistoryService;
 import mz.org.fgh.mentoring.service.tutored.TutoredService;
-import mz.org.fgh.mentoring.util.DateUtils;
-import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.EnumSet;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -85,8 +80,23 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
 
     private void processMenteeFlowHistories() {
 
-        // 🔹 1. Buscar todos estados e estdos de forma centralizada e segura
-        Map<EnumFlowHistoryProgressStatus, FlowHistoryProgressStatus> statusMap = flowHistoryProgressStatusService.findAllByNames(
+
+        int menteeRondaRemovalInterval = 60; // padrão
+
+
+
+        try {
+            Setting setting = settingService.getSettingByDeignation("Mentee_ronda_removal_interval")
+                    .orElseThrow(() -> new MentoringBusinessException("Setting not found for DESIGNATION: Mentee_ronda_removal_interval"));
+            if (!setting.getEnabled())
+                throw new MentoringBusinessException("Setting Mentee_ronda_removal_interval is not enabled");
+            menteeRondaRemovalInterval = Integer.parseInt(setting.getValue());
+        } catch (Exception e) {
+            System.err.println("Erro ao obter interval. Usando 60 minutos. " + e.getMessage());
+        }
+
+        // 🔹 1. Buscar todos estados de forma centralizada e segura
+        Map<EnumFlowHistoryProgressStatus, FlowHistoryProgressStatus> statusMap = flowHistoryProgressStatusService.findAllByCodes(
                 EnumSet.of(
                         EnumFlowHistoryProgressStatus.INTERROMPIDO,
                         EnumFlowHistoryProgressStatus.AGUARDA_INICIO,
@@ -96,26 +106,33 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
 
         FlowHistoryProgressStatus estadoInterrompido = statusMap.get(EnumFlowHistoryProgressStatus.INTERROMPIDO);
         FlowHistoryProgressStatus estadoAguardaInicio = statusMap.get(EnumFlowHistoryProgressStatus.AGUARDA_INICIO);
+        FlowHistoryProgressStatus estadoInicio = statusMap.get(EnumFlowHistoryProgressStatus.INICIO);
 
-        FlowHistory sessaoSemestral = flowHistoryRepository.findByName(EnumFlowHistory.SESSAO_SEMESTRAL.name())
-                .orElseThrow(() -> new HttpStatusException(HttpStatus.NOT_FOUND,
-                        EnumFlowHistory.SESSAO_SEMESTRAL.name() + " não encontrada"));
+//        FlowHistory sessaoSemestral = flowHistoryRepository.findByName(EnumFlowHistory.SESSAO_SEMESTRAL.getLabel())
+//                .orElseThrow(() -> new HttpStatusException(HttpStatus.NOT_FOUND,
+//                        EnumFlowHistory.SESSAO_SEMESTRAL.getLabel() + " não encontrada"));
 
-        // 🔹 2. Interromper Rondas/Ciclos que ultrapassaram 60 dias
-        menteeFlowHistoryService.findRondasOuCicloAtcIniciadasHaMaisDe60Dias()
-                .forEach(history -> {
-                    Tutored tutored = history.getTutored();
+        String estagioRondaCiclo = EnumFlowHistory.RONDA_CICLO.getCode();
 
-                    createAndSaveMenteeFlowHistory(tutored, history.getFlowHistory(), estadoInterrompido, history.getRonda());
-                    createAndSaveMenteeFlowHistory(tutored, history.getFlowHistory(), estadoAguardaInicio, null);
-                });
+        // 🔹 2. Interromper Rondas/Ciclos inicioados e nao terminados em 60 dias
+        menteeFlowHistoryService.findRondasOuCicloAtcIniciadasHaMaisDe60Dias(estagioRondaCiclo, estadoInicio.getCode(), menteeRondaRemovalInterval)
+            .forEach(history -> {
+                Tutored tutored = history.getTutored();
+
+                createAndSaveMenteeFlowHistory(tutored, history.getFlowHistory(), estadoInterrompido, null);
+                createAndSaveMenteeFlowHistory(tutored, history.getFlowHistory(), estadoAguardaInicio, null);
+
+                // Remove from ronda
+                if (history.getRonda() != null && !history.getRonda().getRondaMentees().isEmpty())
+                    menteeFlowHistoryService.removeTutoredFromRonda(history.getRonda().getRondaMentees(), tutored);
+            });
 
         // 🔹 3. Enviar para Sessão Semestral os que completaram Ronda há +6 meses
-        menteeFlowHistoryService.findRondaTerminadaHaMaisDe6Meses()
-                .forEach(history -> {
-                    Tutored tutored = history.getTutored();
-                    createAndSaveMenteeFlowHistory(tutored, sessaoSemestral, estadoAguardaInicio, null);
-                });
+//        menteeFlowHistoryService.findRondaTerminadaHaMaisDe6Meses()
+//        .forEach(history -> {
+//            Tutored tutored = history.getTutored();
+//            createAndSaveMenteeFlowHistory(tutored, sessaoSemestral, estadoAguardaInicio, null);
+//        });
     }
 
     private void createAndSaveMenteeFlowHistory(
@@ -132,6 +149,15 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
         newHistory.setClassification(0.0); // Valor padrão
 
         menteeFlowHistoryService.saveFromSchedule(newHistory);
+    }
+
+    private void interruptMenteeFlowHistory(
+            MenteeFlowHistory toUpdate,
+            FlowHistoryProgressStatus newProgressStatus
+    ) {
+        toUpdate.setProgressStatus(newProgressStatus);
+
+        menteeFlowHistoryService.interruptionFromSchedule(toUpdate);
     }
 
 

@@ -1,58 +1,93 @@
 package mz.org.fgh.mentoring.dto.tutored;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
 import mz.org.fgh.mentoring.dto.employee.EmployeeDTO;
+import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
+import org.hibernate.Hibernate;
+
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 
 @EqualsAndHashCode(callSuper = true)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
+@Schema(name = "TutoredDTO")
 public class TutoredDTO extends BaseEntityDTO {
 
     private EmployeeDTO employeeDTO;
     private Double zeroEvaluationScore;
     private boolean zeroEvaluationDone;
-    //NOVO
-    private FlowHistoryMenteeAuxDTO flowHistoryMenteeAuxDTO;
+
+    /** Lista com 1 ou 2 registros (primeiro e último MenteeFlowHistory) */
+    private List<FlowHistoryMenteeAuxDTO> flowHistoryMenteeAuxDTO = new ArrayList<>();
 
     public TutoredDTO(Tutored tutored) {
         super(tutored);
+
         this.zeroEvaluationScore = tutored.getZeroEvaluationScore();
-        this.zeroEvaluationDone = tutored.isZeroEvaluationDone(); // usa o getter inteligente
+        this.zeroEvaluationDone = tutored.isZeroEvaluationDone();
+
         if (tutored.getEmployee() != null) {
-            this.setEmployeeDTO(new EmployeeDTO(tutored.getEmployee()));
+            this.employeeDTO = new EmployeeDTO(tutored.getEmployee());
         }
 
-        tutored.getLastMenteeFlowHistory().ifPresent(last -> {
-            this.flowHistoryMenteeAuxDTO = FlowHistoryMenteeAuxDTO.builder()
-                    .estagio(last.getFlowHistory().getName())
-                    .estado(last.getProgressStatus().getName())
-                    .classification(last.getClassification())
-                    .build();
-        });
+        // ⚙️ Verifica se há históricos de mentoria
+        if (tutored.getMenteeFlowHistories() != null
+                && Hibernate.isInitialized(tutored.getMenteeFlowHistories())
+                && !tutored.getMenteeFlowHistories().isEmpty()) {
 
+            List<MenteeFlowHistory> sorted = tutored.getMenteeFlowHistories().stream()
+                    .filter(m -> m.getSequenceNumber() != null)
+                    .sorted(Comparator.comparing(MenteeFlowHistory::getSequenceNumber))
+                    .toList();
+
+            MenteeFlowHistory first = sorted.get(0);
+            MenteeFlowHistory last = sorted.get(sorted.size() - 1);
+
+            // Sempre adiciona o primeiro
+            this.flowHistoryMenteeAuxDTO.add(buildFlowHistoryAux(first));
+
+            // Se houver mais de um, adiciona também o último
+            if (sorted.size() > 1 && !first.equals(last)) {
+                this.flowHistoryMenteeAuxDTO.add(buildFlowHistoryAux(last));
+            }
+        }
     }
 
+    private FlowHistoryMenteeAuxDTO buildFlowHistoryAux(MenteeFlowHistory history) {
+        return FlowHistoryMenteeAuxDTO.builder()
+                .estagio(history.getFlowHistory() != null ? history.getFlowHistory().getCode() : null)
+                .estado(history.getProgressStatus() != null ? history.getProgressStatus().getCode() : null)
+                .classificacao(history.getClassification())
+                .build();
+    }
 
     @JsonIgnore
     public Tutored toEntity() {
-        Tutored tutored = new Tutored();
-        tutored.setId(this.getId());
-        tutored.setUuid(this.getUuid());
-        tutored.setCreatedAt(this.getCreatedAt());
-        tutored.setUpdatedAt(this.getUpdatedAt());
-        tutored.setZeroEvaluationScore(this.getZeroEvaluationScore());
-        if (Utilities.stringHasValue(this.getLifeCycleStatus())) {
-            tutored.setLifeCycleStatus(LifeCycleStatus.valueOf(this.getLifeCycleStatus()));
+        Tutored t = new Tutored();
+        t.setId(getId());
+        t.setUuid(getUuid());
+        t.setCreatedAt(getCreatedAt());
+        t.setUpdatedAt(getUpdatedAt());
+        t.setZeroEvaluationScore(getZeroEvaluationScore());
+
+        if (Utilities.stringHasValue(getLifeCycleStatus())) {
+            t.setLifeCycleStatus(LifeCycleStatus.valueOf(getLifeCycleStatus()));
         }
-        if (this.getEmployeeDTO() != null) {
-            tutored.setEmployee(this.getEmployeeDTO().toEntity());
+
+        if (employeeDTO != null) {
+            t.setEmployee(employeeDTO.toEntity());
         }
-        return tutored;
+
+        // FlowHistory do mentee é tratado pela camada de serviço
+        return t;
     }
 }

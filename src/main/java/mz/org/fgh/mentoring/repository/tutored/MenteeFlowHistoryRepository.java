@@ -92,19 +92,37 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
     int countByTutored(Tutored tutored);
 
     /**
-     * Retorna todos os MenteeFlowHistory com FlowHistory "RONDA / CICLO ATC"
-     * e ProgressStatus "INICIO", criados há 60 ou mais dias.
+     * Filtra MenteeFlowHistory pelo flowHistory.code e progressStatus.code desejados (RONDA/CICLO -> INICIO).
+     * Traz apenas aqueles cujo tutored não tem nenhuma Mentorship realizada nos últimos 60 dias.
+     * Pegar ultimo de cada mentorando
      */
     @Query("""
-        SELECT mfh
-        FROM MenteeFlowHistory mfh
-        JOIN mfh.flowHistory fh
-        JOIN mfh.progressStatus ps
-        WHERE (fh.name = 'RONDA / CICLO ATC')
-          AND ps.name = 'INICIO'
-          AND mfh.createdAt <= CURRENT_DATE - 60
-    """)
-    List<MenteeFlowHistory> findRondasOuCicloAtcIniciadasHaMaisDe60Dias();
+    SELECT mfh
+    FROM MenteeFlowHistory mfh
+    JOIN mfh.flowHistory fh
+    JOIN mfh.progressStatus ps
+    JOIN mfh.tutored t
+    WHERE fh.code = :flowHistoryCode
+      AND ps.code = :flowHistoryStatusCode
+      AND mfh.sequenceNumber = (
+          SELECT MAX(mfh2.sequenceNumber)
+          FROM MenteeFlowHistory mfh2
+          WHERE mfh2.tutored = t
+      )
+      AND NOT EXISTS (
+          SELECT 1 FROM Mentorship m
+          WHERE m.tutored = t
+            AND m.performedDate > CURRENT_DATE - :menteeRondaRemovalInterval
+      )
+""")
+    List<MenteeFlowHistory> findRondasOuCicloAtcIniciadasSemMentorshipHaMaisDe60Dias(
+            String flowHistoryCode,
+            String flowHistoryStatusCode,
+            int menteeRondaRemovalInterval
+    );
+
+
+
 
 
     /**
@@ -122,4 +140,8 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
     """)
     List<MenteeFlowHistory> findRondaTerminadaHaMaisDe6Meses();
 
+    void deleteByTutored(Tutored tutored);
+
+    @Query("DELETE FROM MenteeFlowHistory m WHERE m.tutored.id = :tutoredId")
+    long deleteByTutoredId(Long tutoredId);
 }

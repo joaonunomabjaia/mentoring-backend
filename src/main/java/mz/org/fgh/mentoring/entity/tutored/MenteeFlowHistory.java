@@ -6,12 +6,14 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.tutored.FlowHistoryMenteeAuxDTO;
 import mz.org.fgh.mentoring.dto.tutored.MenteeFlowHistoryDTO;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 
 import javax.persistence.*;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Schema(name = "MenteeFlowHistory", description = "Tracks the mentee's progress across different flow histories")
@@ -63,14 +65,39 @@ public class MenteeFlowHistory extends BaseEntity {
         this.classification = dto.toEntity().getClassification();
     }
 
+    public MenteeFlowHistory(FlowHistoryMenteeAuxDTO flowHistoryMenteeAuxDTO){
+        this.flowHistory = new FlowHistory();
+        this.flowHistory.setCode(flowHistoryMenteeAuxDTO.estagio());
+        this.progressStatus = new FlowHistoryProgressStatus();
+        this.progressStatus.setCode(flowHistoryMenteeAuxDTO.estado());
+        if (flowHistoryMenteeAuxDTO.classificacao() == null) {
+            this.classification = 0;
+        } else {
+            this.classification = flowHistoryMenteeAuxDTO.classificacao();
+        }
+    }
+
     @Override
     public String toString() {
         return "MenteeFlowHistory{" +
                 "tutored=" + tutored +
                 ", flowHistory=" + flowHistory +
                 ", progressStatus=" + (progressStatus != null ? progressStatus.getName() : "null") +
-                ", classification=" + classification +
+                ", classificacao=" + classification +
                 ", ronda=" + (ronda != null ? ronda.getUuid() : "null") +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        MenteeFlowHistory that = (MenteeFlowHistory) o;
+        return Objects.equals(flowHistory, that.flowHistory) && Objects.equals(progressStatus, that.progressStatus);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), flowHistory, progressStatus);
     }
 }
