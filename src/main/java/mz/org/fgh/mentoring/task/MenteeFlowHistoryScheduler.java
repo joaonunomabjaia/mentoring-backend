@@ -56,7 +56,7 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
     }
 
     private void scheduleNextRun() {
-        int intervalMinutes = 5; // padrão
+       /* int intervalMinutes = 5; // padrão
         try {
             Setting setting = settingService.getSettingByDeignation("FLOW_HISTORY_JOB_INTERVAL_MIN")
                 .orElseThrow(() -> new MentoringBusinessException("Setting not found for DESIGNATION: FLOW_HISTORY_JOB_INTERVAL_MIN"));
@@ -75,12 +75,12 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
             } finally {
                 scheduleNextRun();
             }
-        }, intervalMinutes, TimeUnit.MINUTES);
+        }, intervalMinutes, TimeUnit.MINUTES);*/
     }
 
     private void processMenteeFlowHistories() {
 
-
+/*
         int menteeRondaRemovalInterval = 60; // padrão
 
 
@@ -125,7 +125,7 @@ public class MenteeFlowHistoryScheduler implements ApplicationEventListener<Appl
                 // Remove from ronda
                 if (history.getRonda() != null && !history.getRonda().getRondaMentees().isEmpty())
                     menteeFlowHistoryService.removeTutoredFromRonda(history.getRonda().getRondaMentees(), tutored);
-            });
+            });*/
 
         // 🔹 3. Enviar para Sessão Semestral os que completaram Ronda há +6 meses
 //        menteeFlowHistoryService.findRondaTerminadaHaMaisDe6Meses()

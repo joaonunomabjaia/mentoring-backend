@@ -67,27 +67,13 @@ public class TutoredDTO extends BaseEntityDTO {
                 .estagio(history.getFlowHistory() != null ? history.getFlowHistory().getCode() : null)
                 .estado(history.getProgressStatus() != null ? history.getProgressStatus().getCode() : null)
                 .classificacao(history.getClassification())
+                .seq(history.getSequenceNumber())
                 .build();
     }
 
     @JsonIgnore
     public Tutored toEntity() {
-        Tutored t = new Tutored();
-        t.setId(getId());
-        t.setUuid(getUuid());
-        t.setCreatedAt(getCreatedAt());
-        t.setUpdatedAt(getUpdatedAt());
-        t.setZeroEvaluationScore(getZeroEvaluationScore());
-
-        if (Utilities.stringHasValue(getLifeCycleStatus())) {
-            t.setLifeCycleStatus(LifeCycleStatus.valueOf(getLifeCycleStatus()));
-        }
-
-        if (employeeDTO != null) {
-            t.setEmployee(employeeDTO.toEntity());
-        }
-
-        // FlowHistory do mentee é tratado pela camada de serviço
-        return t;
+        return new Tutored(this);
     }
+
 }

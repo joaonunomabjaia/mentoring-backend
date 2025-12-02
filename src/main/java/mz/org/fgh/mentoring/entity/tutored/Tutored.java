@@ -6,6 +6,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import mz.org.fgh.mentoring.base.BaseEntity;
+import mz.org.fgh.mentoring.dto.tutored.FlowHistoryMenteeAuxDTO;
 import mz.org.fgh.mentoring.dto.tutored.TutoredDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.session.SessionRecommendedResource;
@@ -48,7 +49,36 @@ public class Tutored extends BaseEntity {
     public Tutored(TutoredDTO tutoredDTO) {
         super(tutoredDTO);
         this.setZeroEvaluationScore(tutoredDTO.getZeroEvaluationScore());
-        this.setEmployee(new Employee(tutoredDTO.getEmployeeDTO()));
+        if (tutoredDTO.getEmployeeDTO() != null) this.setEmployee(new Employee(tutoredDTO.getEmployeeDTO()));
+
+        // Converte flowHistoryMenteeAuxDTO -> lista de MenteeFlowHistory
+        if (tutoredDTO.getFlowHistoryMenteeAuxDTO() != null
+                && !tutoredDTO.getFlowHistoryMenteeAuxDTO().isEmpty()) {
+
+            List<MenteeFlowHistory> histories = new ArrayList<>();
+
+            for (FlowHistoryMenteeAuxDTO aux : tutoredDTO.getFlowHistoryMenteeAuxDTO()) {
+                if (aux == null) continue;
+
+                MenteeFlowHistory mfh = new MenteeFlowHistory();
+                mfh.setTutored(this); // relação dono
+
+                // FlowHistory por code
+                mfh.setFlowHistory(new FlowHistory());
+                mfh.getFlowHistory().setCode(aux.estagio());
+
+                // ProgressStatus por code
+                mfh.setProgressStatus(new FlowHistoryProgressStatus());
+                mfh.getProgressStatus().setCode(aux.estado());
+
+                if (aux.classificacao() != null) mfh.setClassification(aux.classificacao());
+                mfh.setSequenceNumber(aux.seq());
+
+                histories.add(mfh);
+            }
+
+            this.menteeFlowHistories = histories;
+        }
     }
 
     @Transient
@@ -129,5 +159,29 @@ public class Tutored extends BaseEntity {
             menteeFlowHistories = new ArrayList<>();
         }
         menteeFlowHistories.add(menteeFlowHistory);
+    }
+
+    // ===== Helpers para mapear código -> Enum =====
+
+    private EnumFlowHistory fromFlowCode(String code) {
+        if (code == null) return null;
+        String normalized = code.trim().toUpperCase();
+        for (EnumFlowHistory e : EnumFlowHistory.values()) {
+            if (e.getCode() != null && e.getCode().trim().toUpperCase().equals(normalized)) {
+                return e;
+            }
+        }
+        return null;
+    }
+
+    private EnumFlowHistoryProgressStatus fromStatusCode(String code) {
+        if (code == null) return null;
+        String normalized = code.trim().toUpperCase();
+        for (EnumFlowHistoryProgressStatus s : EnumFlowHistoryProgressStatus.values()) {
+            if (s.getCode() != null && s.getCode().trim().toUpperCase().equals(normalized)) {
+                return s;
+            }
+        }
+        return null;
     }
 }

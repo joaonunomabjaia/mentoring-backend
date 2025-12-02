@@ -229,6 +229,7 @@ public class RondaService extends BaseService {
                     rondaMentee.getTutored(),
                     createdRonda,
                     0.0,
+                    ronda.isRondaZero() ? EnumFlowHistory.SESSAO_ZERO.getCode() : EnumFlowHistory.RONDA_CICLO.getCode(),
                     EnumFlowHistoryProgressStatus.INICIO.getCode(),
                     user
             );
@@ -338,6 +339,7 @@ public class RondaService extends BaseService {
                         rondaMentee.getTutored(),
                         createdRonda,
                         0.0,
+                        ronda.isRondaZero() ? EnumFlowHistory.SESSAO_ZERO.getCode() : EnumFlowHistory.RONDA_CICLO.getCode(),
                         EnumFlowHistoryProgressStatus.INICIO.getCode(),
                         user
                 ));
@@ -498,7 +500,7 @@ public class RondaService extends BaseService {
     }
 
     @Transactional
-    public List<Ronda> updateMany(List<Ronda> rondas, List<RondaDTO> rondaDTOs, Long userId) {
+    public List<Ronda> updateMany(List<Ronda> rondas, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado com ID: " + userId));
 
@@ -517,56 +519,71 @@ public class RondaService extends BaseService {
                     .orElseThrow(() -> new RuntimeException("Tipo de Ronda não encontrado")));
 
             Ronda updated = rondaRepository.update(ronda);
-            updatedRondas.add(updated);
+            updatedRondas.add(updated);// Criar ou atualizar os históricos de mentorandos (flow history)
+            createMenteeFlowHistoriesFromRonda(ronda, user);
         }
 
-        // Criar ou atualizar os históricos de mentorandos (flow history)
-        createMenteeFlowHistoriesFromRonda(rondaDTOs, user);
+
 
         return updatedRondas;
     }
 
 
     @Transactional
-    public void createMenteeFlowHistoriesFromRonda(List<RondaDTO> rondaDTOs, User user) {
-        for (RondaDTO rondaDTO : rondaDTOs) {
-            if (rondaDTO.getRondaMentees() == null || rondaDTO.getRondaMentees().isEmpty()) {
-                continue;
-            }
+    public void createMenteeFlowHistoriesFromRonda(Ronda ronda, User user) {
+            for (RondaMentee rondaMentee : ronda.getRondaMentees()) {
+                MenteeFlowHistory mfh =
+                        rondaMentee.getTutored().getMenteeFlowHistories().stream()
+                                .filter(h -> h.getSequenceNumber() != null)
+                                .max(Comparator.comparing(MenteeFlowHistory::getSequenceNumber))
+                                .orElse(null);
 
-            for (RondaMenteeDTO rondaMenteeDTO : rondaDTO.getRondaMentees()) {
+                Optional<Tutored> tutored = tutoredRepository.findByUuid(rondaMentee.getTutored().getUuid());
+                if  (!tutored.isPresent()) {
+                    throw new RuntimeException("Tutored inexistente");
+                }
+                rondaMentee.getTutored().setId(tutored.get().getId());
 
-                // Verifica se a relação de ronda-mentee existe no BD
-                RondaMentee rondaMentee = rondaMenteeRepository.findById(
-                        rondaMenteeDTO.getRondaMentee().getId()
-                ).orElseThrow(() -> new RuntimeException("RondaMentee não encontrado: " +
-                        rondaMenteeDTO.getRondaMentee().getId()));
-
-                Tutored tutored = rondaMentee.getTutored();
-                FlowHistoryMenteeAuxDTO auxDTO = rondaMenteeDTO.getFlowHistoryMenteeAuxDTO();
-
-                if (auxDTO == null) continue;
-
-                // Cria primeiro histórico com estado TERMINADO
-                createMenteeFlowHistory(
-                        tutored,
-                        rondaMentee.getRonda(),
-                        auxDTO.classificacao(),
-                        EnumFlowHistoryProgressStatus.TERMINADO.getCode(),
-                        user
-                );
-
-                // ⚙️ Caso classificação < 86, cria novo histórico com "AGUARDA INICIO"
-                if (auxDTO.classificacao() < 86) {
+                if (ronda.isRondaZero()) {
                     createMenteeFlowHistory(
-                            tutored,
-                            rondaMentee.getRonda(),
-                            auxDTO.classificacao(),
+                            rondaMentee.getTutored(),
+                            ronda,
+                            mfh.getClassification(),
+                            EnumFlowHistory.SESSAO_ZERO.getCode(),
+                            EnumFlowHistoryProgressStatus.TERMINADO.getCode(),
+                            user
+                    );
+
+                    createMenteeFlowHistory(
+                            rondaMentee.getTutored(),
+                            null,
+                            0.0,
+                            EnumFlowHistory.RONDA_CICLO.getCode(),
                             EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode(),
                             user
                     );
+                } else {
+                    // Cria primeiro histórico com estado TERMINADO
+                    createMenteeFlowHistory(
+                            rondaMentee.getTutored(),
+                            ronda,
+                            mfh.getClassification(),
+                            EnumFlowHistory.RONDA_CICLO.getCode(),
+                            EnumFlowHistoryProgressStatus.TERMINADO.getCode(),
+                            user
+                    );
+                    // ⚙️ Caso classificação < 86, cria novo histórico com "AGUARDA INICIO"
+                    if (mfh.getClassification() < 86) {
+                        createMenteeFlowHistory(
+                                rondaMentee.getTutored(),
+                                null,
+                                0.0,
+                                EnumFlowHistory.RONDA_CICLO.getCode(),
+                                EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode(),
+                                user
+                        );
+                    }
                 }
-            }
         }
     }
 
@@ -574,11 +591,12 @@ public class RondaService extends BaseService {
             Tutored tutored,
             Ronda ronda,
             double classification,
+            String historyStatus,
             String progressStatusName,
             User user
     ) {
-        FlowHistory flowHistory = flowHistoryService.findByCode(EnumFlowHistory.RONDA_CICLO.getCode())
-                .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + EnumFlowHistory.RONDA_CICLO.getLabel()));
+        FlowHistory flowHistory = flowHistoryService.findByCode(historyStatus)
+                .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: " + historyStatus));
 
         FlowHistoryProgressStatus status = flowHistoryProgressStatusService.findByCode(progressStatusName)
                 .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: " + progressStatusName));
