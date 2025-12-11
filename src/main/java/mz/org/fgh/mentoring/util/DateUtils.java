@@ -73,6 +73,10 @@ public class DateUtils {
         return Calendar.getInstance().getTime();
     }
 
+    public static Date addMinutesDate(Date date, int minutes) {
+        return org.apache.commons.lang3.time.DateUtils.addMinutes(date, minutes);
+    }
+
     public static double dateDiff(Date dataMaior, Date dataMenor, String dateFormat){
 
         double differenceMilliSeconds =  dataMaior.getTime() - dataMenor.getTime();

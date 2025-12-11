@@ -19,6 +19,9 @@ public interface EmployeeRepository extends CrudRepository<Employee, Long> {
     //Employee findByUuid(String uuid);
     Optional<Employee> findByUuid(String uuid);
 
+
+    Optional<Employee> findByEmail(String uuid);
+
     Employee createOrUpdate(Employee employee, User user) throws NuitDuplicationException, EmailDuplicationException, PhoneDuplicationException;
 
     @Query(value = "select e from Employee e join e.professionalCategory pc where pc.id = :professionalCategoryId ")

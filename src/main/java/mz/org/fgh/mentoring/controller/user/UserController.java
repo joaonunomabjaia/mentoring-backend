@@ -21,10 +21,15 @@ import mz.org.fgh.mentoring.api.SuccessResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.controller.program.ProgramController;
 import mz.org.fgh.mentoring.dto.LifeCycleStatusDTO;
+import mz.org.fgh.mentoring.dto.tutor.PasswordResetDTO;
+import mz.org.fgh.mentoring.dto.tutor.PasswordResetRequestDTO;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.dto.user.UserPasswordDTO;
+import mz.org.fgh.mentoring.entity.employee.Employee;
+import mz.org.fgh.mentoring.entity.tutored.PasswordReset;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.service.role.RoleService;
+import mz.org.fgh.mentoring.service.tutor.PasswordResetService;
 import mz.org.fgh.mentoring.service.user.UserRoleService;
 import mz.org.fgh.mentoring.service.user.UserService;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -46,6 +51,9 @@ public class UserController extends BaseController {
     private RoleService roleService;
     @Inject
     private UserRoleService userRoleService;
+
+    @Inject
+    private PasswordResetService passwordResetService;
 
     @Get("/getByCredencials/{username}/{password}")
     public UserDTO findByCredencials(@PathVariable("username") String username, @PathVariable("password") String password) {
@@ -79,6 +87,26 @@ public class UserController extends BaseController {
         user.setUpdatedBy(userUuid);
         User updated = this.userService.update(user);
         return HttpResponse.ok(SuccessResponse.of("Utilizador atualizado com sucesso", new UserDTO(updated)));
+    }
+
+    @Secured(SecurityRule.IS_ANONYMOUS)
+    @Operation(summary = "Esqueceu a password - envia email de recuperação")
+    @Post("/forgot-password")
+    public HttpResponse<?> forgotPassword(@Body PasswordResetRequestDTO dto) {
+        try {
+
+            // Chama o serviço para gerar token e enviar email
+            PasswordReset passwordReset = passwordResetService.generateAndSendPasswordResetToken(dto);
+
+            return HttpResponse.ok(SuccessResponse.messageOnly(
+                    "Email de recuperação enviado com sucesso para " + passwordReset.getEmail()
+            ));
+        } catch (IllegalArgumentException e) {
+            return HttpResponse.badRequest(SuccessResponse.messageOnly(e.getMessage()));
+        } catch (Exception e) {
+            LOG.error("Erro ao enviar email de recuperação", e);
+            return HttpResponse.serverError(SuccessResponse.messageOnly("Erro interno ao processar pedido"));
+        }
     }
 
     @Operation(summary = "Activate or deactivate a User by changing its LifeCycleStatus")
@@ -123,6 +151,17 @@ public class UserController extends BaseController {
         LOG.info("Created User {}", user);
 
         return HttpResponse.ok().body(new UserDTO(user));
+    }
+
+    @Operation(summary = "User Password Reset with Token")
+    @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
+    @Tag(name = "User")
+    @Patch("/password-reset-with-token")
+    public HttpResponse<RestAPIResponse> resetPasswordWithToken(@Body PasswordResetDTO passwordResetDTO) {
+
+        userService.resetPasswordWithToken(passwordResetDTO);
+
+        return HttpResponse.created(SuccessResponse.of("Senha actualizada com sucesso!", true));
     }
 
     @Operation(summary = "User Password Reset to database from mobile")
