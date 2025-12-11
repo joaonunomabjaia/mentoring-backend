@@ -12,4 +12,6 @@
     <include file="db/changelog/2024/10/20241029-migrate-to-partitioned-answers.xml"/>
     <include file="db/changelog/2024/12/30-12-changelog.xml"/>
     <include file="db/changelog/2025/01/14-01-changelog.xml"/>
+    <include file="db/changelog/2025/01/db.changelog-mentoring-settings.xml"/>
+
 </databaseChangeLog>

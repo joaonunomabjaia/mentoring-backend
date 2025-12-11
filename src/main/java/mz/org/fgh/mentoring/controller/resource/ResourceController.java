@@ -27,6 +27,7 @@ import mz.org.fgh.mentoring.repository.session.SessionRecommendedResourceReposit
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.resource.ResourceService;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ import java.nio.file.Paths;
 import java.util.*;
 import java.util.List;
 
+import static mz.org.fgh.mentoring.config.SettingKeys.RESOURCES_DIRECTORY;
+
 /**
  * @author Joao Nuno Mabjaia
  */
@@ -49,18 +52,18 @@ import java.util.List;
 public class ResourceController extends BaseController {
 
     private ResourceRepository resourceRepository;
-    private SettingsRepository settingsRepository;
     private final UserRepository userRepository;
     private final ResourceService resourceService;
+    private final SettingService settings;
 
     private SessionRecommendedResourceRepository sessionRecommendedResourceRepository;
     public static final Logger LOG = LoggerFactory.getLogger(ResourceController.class);
 
-    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, SettingsRepository settingsRepository, ResourceService resourceService, SessionRecommendedResourceRepository sessionRecommendedResourceRepository) {
+    public ResourceController(ResourceRepository resourceRepository, UserRepository userRepository, ResourceService resourceService, SettingService settings, SessionRecommendedResourceRepository sessionRecommendedResourceRepository) {
         this.resourceRepository = resourceRepository;
         this.userRepository = userRepository;
-        this.settingsRepository = settingsRepository;
         this.resourceService = resourceService;
+        this.settings = settings;
         this.sessionRecommendedResourceRepository = sessionRecommendedResourceRepository;
     }
 
@@ -165,8 +168,7 @@ public class ResourceController extends BaseController {
 
                 try {
                     if (file != null && file.getFilename() != null) {
-                        Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
-                        Path path = Paths.get(pathFromSettings.get().getValue(), file.getFilename());
+                        Path path = Paths.get(settings.get(RESOURCES_DIRECTORY, "/srv/his/mentoring/backend/ea_resources"), file.getFilename());
                         Files.createDirectories(path.getParent());
                         Files.write(path, file.getBytes());
                         LOG.info("Recurso gravado.");
@@ -205,9 +207,7 @@ public class ResourceController extends BaseController {
     @Tag(name = "Resource")
     public HttpResponse<?> loadFile(@QueryValue String fileName) {
         try {
-            Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
-            if (pathFromSettings.isPresent()) {
-                Path filePath = Paths.get(pathFromSettings.get().getValue(), fileName);
+                Path filePath = Paths.get(settings.get(RESOURCES_DIRECTORY, "/srv/his/mentoring/backend/ea_resources"), fileName);
                 if (Files.exists(filePath)) {
                     byte[] fileBytes = Files.readAllBytes(filePath);
                     return HttpResponse.ok()
@@ -220,12 +220,6 @@ public class ResourceController extends BaseController {
                             .error("Arquivo não encontrado")
                             .message("Arquivo com o nome especificado não encontrado").build());
                 }
-            } else {
-                return HttpResponse.serverError().body(MentoringAPIError.builder()
-                        .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
-                        .error("Configuração não encontrada")
-                        .message("Diretório de recursos não configurado").build());
-            }
         } catch (Exception e) {
             LOG.error("Erro ao buscar arquivo de recurso: {}", e.getMessage());
             return HttpResponse.serverError().body(MentoringAPIError.builder()
@@ -255,9 +249,7 @@ public class ResourceController extends BaseController {
         if (Integer.toString(sessionRecommendedResource.get().getTutored().getEmployee().getNuit()).equals(nuit)) {
 
             try {
-                Optional<Setting> pathFromSettings = settingsRepository.findByDesignation("ResourcesDirectory");
-                if (pathFromSettings.isPresent()) {
-                    Path filePath = Paths.get(pathFromSettings.get().getValue(), fileName);
+                    Path filePath = Paths.get(settings.get(RESOURCES_DIRECTORY, "/srv/his/mentoring/backend/ea_resources"), fileName);
                     if (Files.exists(filePath)) {
                         byte[] fileBytes = Files.readAllBytes(filePath);
 
@@ -277,12 +269,6 @@ public class ResourceController extends BaseController {
                                 .error("Arquivo não encontrado")
                                 .message("Arquivo com o nome especificado não encontrado").build());
                     }
-                } else {
-                    return HttpResponse.serverError().body(MentoringAPIError.builder()
-                            .status(HttpStatus.INTERNAL_SERVER_ERROR.getCode())
-                            .error("Configuração não encontrada")
-                            .message("Diretório de recursos não configurado").build());
-                }
             } catch (Exception e) {
                 LOG.error("Erro ao buscar arquivo de recurso: {}", e.getMessage());
                 return HttpResponse.serverError().body(MentoringAPIError.builder()

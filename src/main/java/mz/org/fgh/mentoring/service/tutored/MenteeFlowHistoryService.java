@@ -13,6 +13,7 @@ import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.ronda.RondaMenteeRepository;
 import mz.org.fgh.mentoring.repository.tutored.MenteeFlowHistoryRepository;
+import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -25,10 +26,12 @@ public class MenteeFlowHistoryService {
 
     private final MenteeFlowHistoryRepository menteeFlowHistoryRepository;
     private final RondaMenteeRepository rondaMenteeRepository;
+    private final TutoredRepository tutoredRepository;
 
-    public MenteeFlowHistoryService(MenteeFlowHistoryRepository menteeFlowHistoryRepository,  RondaMenteeRepository rondaMenteeRepository) {
+    public MenteeFlowHistoryService(MenteeFlowHistoryRepository menteeFlowHistoryRepository, RondaMenteeRepository rondaMenteeRepository, TutoredRepository tutoredRepository) {
         this.menteeFlowHistoryRepository = menteeFlowHistoryRepository;
         this.rondaMenteeRepository =  rondaMenteeRepository;
+        this.tutoredRepository = tutoredRepository;
     }
 
     // 🔍 Buscar por ID
@@ -49,7 +52,7 @@ public class MenteeFlowHistoryService {
     }
 
     // 💾 Criar novo histórico
-    @Transactional
+    /*@Transactional
     public MenteeFlowHistory save(MenteeFlowHistory history, User user) {
 
         history.setCreatedBy(user.getUuid());
@@ -65,7 +68,7 @@ public class MenteeFlowHistoryService {
         }
 
         return menteeFlowHistoryRepository.save(history);
-    }
+    }*/
 
     @Transactional
     public void saveFromSchedule(MenteeFlowHistory history) {
@@ -100,10 +103,11 @@ public class MenteeFlowHistoryService {
 
         existing.setProgressStatus(history.getProgressStatus());
         existing.setFlowHistory(history.getFlowHistory());
-        existing.setTutored(history.getTutored());
-        existing.setRonda(history.getRonda());
+        //existing.setTutored(history.getTutored());
+        //existing.setRonda(history.getRonda());
         existing.setUpdatedAt(DateUtils.getCurrentDate());
         existing.setUpdatedBy(history.getUpdatedBy());
+        existing.setLifeCycleStatus(history.getLifeCycleStatus());
 
         return menteeFlowHistoryRepository.update(existing);
     }
@@ -159,10 +163,6 @@ public class MenteeFlowHistoryService {
         menteeFlowHistoryRepository.deleteByRonda(ronda);
     }
 
-    public void deleteByTutored(Tutored tutored) {
-        menteeFlowHistoryRepository.deleteByTutoredId(tutored.getId());
-    }
-
     @Transactional
     public void removeTutoredFromRonda(Set<RondaMentee> rondaMentees, Tutored tutored) {
         rondaMentees.forEach( rondaMentee ->  {
@@ -174,5 +174,68 @@ public class MenteeFlowHistoryService {
                 rondaMenteeRepository.update(rondaMentee);
             }
         });
+    }
+
+    @Transactional
+    public MenteeFlowHistory save(MenteeFlowHistory menteeFlowHistory, User user) {
+        // assume que já tens algo semelhante; só para lembrar o audit
+        if (menteeFlowHistory.getId() == null) {
+            menteeFlowHistory.setCreatedAt(DateUtils.getCurrentDate());
+            menteeFlowHistory.setCreatedBy(user.getUuid());
+            menteeFlowHistory.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        } else {
+            menteeFlowHistory.setUpdatedAt(DateUtils.getCurrentDate());
+            menteeFlowHistory.setUpdatedBy(user.getUuid());
+        }
+        return menteeFlowHistoryRepository.save(menteeFlowHistory);
+    }
+
+    public void deleteByTutored(Tutored tutored) {
+        menteeFlowHistoryRepository.deleteByTutored(tutored);
+    }
+
+    public List<MenteeFlowHistory> findByFlowAndStatus(String flowCode, String statusCode) {
+        return menteeFlowHistoryRepository.findActiveByFlowAndStatus(flowCode, statusCode, LifeCycleStatus.ACTIVE);
+    }
+
+    public List<MenteeFlowHistory> findAllByFlowAndStatus(String flowCode, String statusCode) {
+        return menteeFlowHistoryRepository
+                .findAllByFlowHistoryCodeAndProgressStatusCode(flowCode, statusCode);
+    }
+
+    public List<MenteeFlowHistory> findByRonda(Ronda ronda) {
+        return menteeFlowHistoryRepository.findByRonda(ronda);
+    }
+
+    public List<MenteeFlowHistory> findByTutored(Tutored tutored) {
+        return menteeFlowHistoryRepository.findByTutored(tutored);
+    }
+
+    /**
+     * Garante que o Tutored tem ID carregado da BD.
+     * - Se já tiver ID, retorna o mesmo objeto;
+     * - Se tiver apenas UUID, recarrega da BD;
+     * - Se não conseguir recarregar, retorna null ou lança exceção (aqui lancei).
+     */
+    public Tutored reloadTutoredIfNeeded(Tutored tutored) {
+        if (tutored == null) {
+            return null;
+        }
+
+        if (tutored.getId() != null) {
+            return tutored;
+        }
+
+        if (!Utilities.stringHasValue(tutored.getUuid())) {
+            throw new RuntimeException("Tutored sem ID e sem UUID válido para reload");
+        }
+
+        Optional<Tutored> opt = tutoredRepository.findByUuid(tutored.getUuid());
+        return opt.orElseThrow(() ->
+                new RuntimeException("Tutored não encontrado para UUID: " + tutored.getUuid()));
+    }
+
+    public void inactivatePreviousHistories(Tutored tutored) {
+        menteeFlowHistoryRepository.inactivatePreviousHistories(tutored.getId(), LifeCycleStatus.INACTIVE);
     }
 }

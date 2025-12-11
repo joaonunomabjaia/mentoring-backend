@@ -53,4 +53,17 @@ public interface MentorshipRepository extends CrudRepository<Mentorship, Long> {
     List<Mentorship> fetchLatestBySessionAndEvaluationType(Session session, EvaluationType evaluationType, Pageable pageable);
 
     long countByCabinet(Cabinet cabinet);
+
+    /**
+     * Última mentoria realizada por um mentee numa determinada ronda.
+     */
+    @Query("SELECT MAX(m.performedDate) FROM Mentorship m " +
+            "JOIN m.session s " +
+            "WHERE s.ronda.id = :rondaId " +
+            "AND m.tutored.id = :tutoredId " +
+            "AND m.lifeCycleStatus = :lifeCycleStatus")
+    Optional<Date> findLastPerformedDateByRondaAndTutored(Long rondaId,
+                                                          Long tutoredId,
+                                                          LifeCycleStatus lifeCycleStatus);
+
 }

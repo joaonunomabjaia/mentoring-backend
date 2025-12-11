@@ -41,10 +41,6 @@ public class SettingController extends BaseController {
         return settingService.findAll(limit, offset);
     }
 
-    @Get("/tutor/{uuid}")
-    public List<SettingDTO> findSettingByTutor(@PathVariable("uuid") String uuid){
-        return this.settingService.findSettingByTutor(uuid);
-    }
 
     @Secured(SecurityRule.IS_ANONYMOUS)
     @Get("/check")

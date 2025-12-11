@@ -13,6 +13,7 @@ import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.entity.user.User;
 import mz.org.fgh.mentoring.repository.session.SessionRecommendedResourceRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.service.tutored.TutoredService;
 import mz.org.fgh.mentoring.service.user.UserService;
@@ -31,6 +32,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+import static mz.org.fgh.mentoring.config.SettingKeys.SERVER_BASE_URL;
+
 @Singleton
 public class SessionRecommendedResourceService {
 
@@ -47,15 +50,14 @@ public class SessionRecommendedResourceService {
     @Inject
     private JwtTokenGenerator jwtTokenGenerator;
 
-    @Inject
-    private SettingsRepository settingsRepository;
-
     private final SessionRecommendedResourceRepository sessionRecommendedResourceRepository;
     private final ApplicationConfiguration applicationConfiguration;
+    private final SettingService settings;
 
-    public SessionRecommendedResourceService(SessionRecommendedResourceRepository sessionRecommendedResourceRepository, ApplicationConfiguration applicationConfiguration) {
+    public SessionRecommendedResourceService(SessionRecommendedResourceRepository sessionRecommendedResourceRepository, ApplicationConfiguration applicationConfiguration, SettingService settings) {
         this.sessionRecommendedResourceRepository = sessionRecommendedResourceRepository;
         this.applicationConfiguration = applicationConfiguration;
+        this.settings = settings;
     }
 
     @Transactional
@@ -123,8 +125,6 @@ public class SessionRecommendedResourceService {
                 sessionRecommendedResourceRepository.findByNotificationStatus(SessionRecommendedResource.NotificationStatus.PENDING);
         if (!Utilities.listHasElements(pendingResources)) return;
 
-        Setting serverUrlSetting = settingsRepository.findByDesignation("SERVER_URL")
-                .orElseThrow(() -> new RuntimeException("Server URL not configured"));
 
         // Agrupar por mentee (usar ID para evitar colisões de nomes iguais)
         Map<Long, EmailPayload> groupedByMentee = new HashMap<>();
@@ -169,7 +169,7 @@ public class SessionRecommendedResourceService {
             doc.getElementsByTag("ul").append(buildLinksListHtml(payload.links));
 
             Map<String, String> variables = new HashMap<>();
-            variables.put("serverUrl", serverUrlSetting.getValue());
+            variables.put("serverUrl", settings.get(SERVER_BASE_URL, "https://mentdev.csaude.org.mz"));
             variables.put("menteesName", payload.menteeName);
             variables.put("mentorName", payload.tutorName);
 

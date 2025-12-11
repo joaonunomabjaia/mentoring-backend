@@ -245,5 +245,4 @@ public class TutoredController extends BaseController {
                 )
         );
     }
-    
 }
