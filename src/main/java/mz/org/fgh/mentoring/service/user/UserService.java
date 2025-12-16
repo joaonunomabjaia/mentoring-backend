@@ -2,7 +2,9 @@ package mz.org.fgh.mentoring.service.user;
 
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.dto.tutor.PasswordResetDTO;
 import mz.org.fgh.mentoring.dto.user.UserDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.role.UserRole;
@@ -16,6 +18,7 @@ import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.service.role.RoleService;
 import mz.org.fgh.mentoring.service.ronda.RondaService;
+import mz.org.fgh.mentoring.service.tutor.PasswordResetService;
 import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -35,6 +38,9 @@ import static mz.org.fgh.mentoring.config.SettingKeys.SERVER_BASE_URL;
 
 @Singleton
 public class UserService {
+
+    @Inject
+    PasswordResetService passwordResetService;
 
     private static final Logger LOG = LoggerFactory.getLogger(UserService.class);
 
@@ -84,6 +90,35 @@ public class UserService {
     public User findById(Long id) {
         return userRepository.findById(id).orElseThrow(() -> new NoSuchElementException("User not found"));
     }
+
+    @Transactional
+    public void resetPasswordWithToken(PasswordResetDTO dto) {
+        // 1. Verificar se a senha e confirmação coincidem
+        if (!dto.getPassword().equals(dto.getConfirmPassword())) {
+            throw new IllegalArgumentException("A nova senha e a confirmação não coincidem.");
+        }
+
+        // 2. Validar token e obter Employee
+        Employee employee = passwordResetService.validateTokenForReset(dto.getToken());
+
+        // 3. Buscar User associado ao Employee
+        User user = userRepository.findByEmployee(employee)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado para este Employee."));
+
+        // 4. Atualizar senha
+        try {
+            user.setPassword(Utilities.encryptPassword(dto.getPassword(), user.getSalt()));
+            user.setUpdatedAt(DateUtils.getCurrentDate());
+            user.setUpdatedBy(user.getUuid());
+            userRepository.update(user);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao atualizar a senha do usuário.", e);
+        }
+
+        // 5. Marcar token como usado
+        passwordResetService.consumeTokenAfterReset(dto.getToken());
+    }
+
 
     @Transactional
     public User create(User user) {
