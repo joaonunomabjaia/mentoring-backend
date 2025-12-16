@@ -10,6 +10,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
+import static mz.org.fgh.mentoring.config.SettingKeys.AI_PERFORMANCE_RISK_EVALUATION_ENABLED;
+
 @Singleton
 public class PerformanceRiskScheduler {
 
@@ -23,12 +25,11 @@ public class PerformanceRiskScheduler {
         this.settingService = settingService;
     }
 
-    //@Scheduled(cron = "0 0 3 * * *") // Executa diariamente às 03:00
-    @Scheduled(fixedDelay = "10m")
+    @Scheduled(cron = "0 0 3 * * *") // Executa diariamente às 03:00
     void runRiskEvaluation() {
-        Optional<Setting> settingOpt = settingService.getSettingByDeignation("AI_PERFORMANCE_RISK_EVALUATION");
+        boolean AIPerframnce = settingService.getBoolean(AI_PERFORMANCE_RISK_EVALUATION_ENABLED, false);
 
-        if (settingOpt.isPresent() && settingOpt.get().getEnabled()) {
+        if (AIPerframnce) {
             LOG.info("Iniciando avaliação de risco de desempenho com IA...");
             sessionService.evaluatePerformanceRiskPerRonda();
         } else {

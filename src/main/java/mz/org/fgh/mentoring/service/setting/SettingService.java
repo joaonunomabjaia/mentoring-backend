@@ -1,78 +1,100 @@
 package mz.org.fgh.mentoring.service.setting;
 
 import jakarta.inject.Singleton;
+import lombok.RequiredArgsConstructor;
 import mz.org.fgh.mentoring.dto.setting.SettingDTO;
-import mz.org.fgh.mentoring.entity.partner.Partner;
-import mz.org.fgh.mentoring.entity.partnersetting.PartnerSetting;
 import mz.org.fgh.mentoring.entity.setting.Setting;
-import mz.org.fgh.mentoring.entity.tutor.Tutor;
-import mz.org.fgh.mentoring.error.MentoringBusinessException;
-import mz.org.fgh.mentoring.repository.settings.PartnerSettingRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
-import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
-import javax.persistence.NoResultException;
-import java.util.Collections;
+import io.micronaut.cache.annotation.CacheInvalidate;
+import io.micronaut.cache.annotation.Cacheable;
+
 import java.util.List;
+import java.util.Locale;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 @Singleton
+@RequiredArgsConstructor
 public class SettingService {
 
-    private final SettingsRepository settingsRepository;
-    private final PartnerSettingRepository partnerSettingRepository;
-    private final TutorRepository tutorRepository;
+    private final SettingsRepository repo;
 
-    public SettingService(SettingsRepository settingsRepository,
-                          PartnerSettingRepository partnerSettingRepository,
-                          TutorRepository tutorRepository) {
-        this.settingsRepository = settingsRepository;
-        this.partnerSettingRepository = partnerSettingRepository;
-        this.tutorRepository = tutorRepository;
+    @Cacheable("settings")
+    protected Optional<String> getRawValueCached(String key) {
+        return repo.findByDesignationAndEnabledTrueAndLifeCycleStatusNotEquals(key, LifeCycleStatus.DELETED)
+                .map(Setting::getValue)
+                .map(String::trim)
+                .filter(v -> !v.isEmpty());
     }
+
+    public String get(String key, String def) {
+        return getRawValueCached(key).orElse(def);
+    }
+
+    public boolean getBoolean(String key, boolean def) {
+        String v = get(key, null);
+        return Utilities.stringHasValue(v) ? Boolean.parseBoolean(v) : def;
+    }
+
+    public int getInt(String key, int def) {
+        String v = get(key, null);
+        try { return Utilities.stringHasValue(v) ? Integer.parseInt(v) : def; }
+        catch (NumberFormatException e) { return def; }
+    }
+
+    public long getLong(String key, long def) {
+        String v = get(key, null);
+        try { return Utilities.stringHasValue(v) ? Long.parseLong(v) : def; }
+        catch (NumberFormatException e) { return def; }
+    }
+
+    public double getDouble(String key, double def) {
+        String v = get(key, null);
+        try { return Utilities.stringHasValue(v) ? Double.parseDouble(v) : def; }
+        catch (NumberFormatException e) { return def; }
+    }
+
+    public <E extends Enum<E>> E getEnum(String key, Class<E> type, E def) {
+        String v = get(key, null);
+        if (!Utilities.stringHasValue(v)) return def;
+        try { return Enum.valueOf(type, v.trim().toUpperCase(Locale.ROOT)); }
+        catch (IllegalArgumentException ex) { return def; }
+    }
+
+    @CacheInvalidate(cacheNames = "settings", parameters = {"key"})
+    public void upsert(String key, String value, String type, String description, boolean enabled, String actor) {
+        var s = repo.findByDesignation(key).orElseGet(Setting::new);
+        s.setDesignation(key);
+        s.setValue(value);
+        s.setType(type);
+        s.setEnabled(enabled);
+        s.setDescription(description);
+
+        if (s.getId() == null) {
+            s.setCreatedBy(actor != null ? actor : "system");
+            s.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+            repo.save(s);       // insert
+        } else {
+            s.setUpdatedBy(actor != null ? actor : "system");
+            repo.update(s);     // <- crucial: UPDATE, not save/persist
+        }
+    }
+
+
+    @CacheInvalidate(cacheNames = "settings", all = true)
+    public void evictAll() {}
 
     public List<SettingDTO> findAll(Long limit, Long offset) {
         List<Setting> settings = (limit != null && offset != null && limit > 0)
-                ? settingsRepository.findSettingWithLimit(limit, offset)
-                : settingsRepository.findAll();
+                ? repo.findSettingWithLimit(limit, offset)
+                : repo.findAll();
 
         return settings.stream()
                 .map(SettingDTO::new)
                 .collect(Collectors.toList());
-    }
-
-    public SettingDTO findSettingById(Long id) {
-        return settingsRepository.findById(id)
-                .map(SettingDTO::new)
-                .orElseThrow(() -> new MentoringBusinessException("Setting not found for ID: " + id));
-    }
-
-    public List<SettingDTO> findSettingByTutor(String uuid) {
-        try {
-            Tutor tutor = tutorRepository.findByUuid(uuid)
-                    .orElseThrow(() -> new MentoringBusinessException("Tutor not found for UUID: " + uuid));
-
-            Partner partner = tutor.getEmployee().getPartner();
-            List<PartnerSetting> partnerSettings = partnerSettingRepository.findByPartner(partner);
-
-            if (partnerSettings.isEmpty()) return Collections.emptyList();
-
-            return partnerSettings.stream()
-                    .map(PartnerSetting::getSetting)
-                    .map(SettingDTO::new)
-                    .collect(Collectors.toList());
-
-        } catch (NoResultException ex) {
-            throw new MentoringBusinessException("Nenhum resultado encontrado!");
-        }
-    }
-
-    public List<Setting> findSettingWithLimit(long limit, long offset) {
-        return settingsRepository.findSettingWithLimit(limit, offset);
-    }
-
-    public Optional<Setting> getSettingByDeignation(String code) {
-        return settingsRepository.findByDesignation(code);
     }
 }

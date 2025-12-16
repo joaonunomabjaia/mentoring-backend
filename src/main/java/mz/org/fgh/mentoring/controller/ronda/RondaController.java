@@ -160,19 +160,6 @@ public class RondaController extends BaseController {
         return new RondaDTO(ronda);
     }
 
-    @Post(
-            consumes = MediaType.APPLICATION_JSON,
-            produces = MediaType.APPLICATION_JSON
-    )
-    public HttpResponse<RestAPIResponse> create (@Body Ronda ronda, Authentication authentication) {
-
-        LOG.debug("Created tutor {}", ronda);
-
-        this.rondaService.createRonda(ronda, (Long) authentication.getAttributes().get("userInfo"));
-
-        return HttpResponse.ok().body(ronda);
-    }
-
     @Operation(summary = "Return a list off all Rounds")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Ronda")
@@ -192,7 +179,7 @@ public class RondaController extends BaseController {
     )
     public List<RondaDTO> closeRonda(@Body List<RondaDTO> rondaDTOS, Authentication authentication) {
         List<Ronda> rondas = Utilities.parse(rondaDTOS, Ronda.class);
-        return listAsDtos(this.rondaService.updateMany(rondas, rondaDTOS, (Long) authentication.getAttributes().get("userInfo")), RondaDTO.class);
+        return listAsDtos(this.rondaService.updateMany(rondas, (Long) authentication.getAttributes().get("userInfo")), RondaDTO.class);
     }
 
     @Operation(summary = "Save Ronda")
@@ -291,9 +278,9 @@ public class RondaController extends BaseController {
             produces = MediaType.APPLICATION_JSON,
             value = "/delete"
     )
-    public HttpResponse<RestAPIResponse> delete (@QueryValue("uuid") String uuid) {
+    public HttpResponse<RestAPIResponse> delete (@QueryValue("uuid") String uuid, Authentication authentication) {
         try {
-            this.rondaService.delete(uuid);
+            this.rondaService.delete(uuid, (Long) authentication.getAttributes().get("userInfo"));
 
             return HttpResponse.ok();
         } catch (Exception e) {

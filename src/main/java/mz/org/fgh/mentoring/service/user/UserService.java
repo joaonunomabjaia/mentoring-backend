@@ -19,6 +19,7 @@ import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.service.role.RoleService;
 import mz.org.fgh.mentoring.service.ronda.RondaService;
 import mz.org.fgh.mentoring.service.tutor.PasswordResetService;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -32,6 +33,8 @@ import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
+
+import static mz.org.fgh.mentoring.config.SettingKeys.SERVER_BASE_URL;
 
 @Singleton
 public class UserService {
@@ -51,6 +54,7 @@ public class UserService {
     private final SettingsRepository settingsRepository;
     private final UserRoleService userRoleService;
     private final UserRoleRepository userRoleRepository;
+    private final SettingService settings;
 
     public UserService(UserRepository userRepository,
                        EmployeeService employeeService,
@@ -59,7 +63,7 @@ public class UserService {
                        RondaService rondaService,
                        RoleService roleService,
                        EmailSender emailSender,
-                       SettingsRepository settingsRepository, UserRoleService userRoleService, UserRoleRepository userRoleRepository) {
+                       SettingsRepository settingsRepository, UserRoleService userRoleService, UserRoleRepository userRoleRepository, SettingService settings) {
         this.userRepository = userRepository;
         this.employeeService = employeeService;
         this.professionalCategoryRepository = professionalCategoryRepository;
@@ -70,6 +74,7 @@ public class UserService {
         this.settingsRepository = settingsRepository;
         this.userRoleService = userRoleService;
         this.userRoleRepository = userRoleRepository;
+        this.settings = settings;
     }
 
     public UserDTO getByCredentials(User user) {
@@ -130,7 +135,7 @@ public class UserService {
             user.setShouldResetPassword(true);
             setupEmployee(user);
 
-            String serverUrl = getSettingValue("SERVER_URL");
+            String serverUrl = settings.get(SERVER_BASE_URL, "https://mentdev.csaude.org.mz");
             emailSender.sendEmailToUser(user, password, serverUrl);
         } catch (Exception e) {
             LOG.error("Error encrypting password", e);
@@ -165,13 +170,6 @@ public class UserService {
 
         employeeService.createOrUpdate(employee, user);
         user.setEmployee(employee);
-    }
-
-
-    private String getSettingValue(String designation) {
-        return settingsRepository.findByDesignation(designation)
-                .map(Setting::getValue)
-                .orElseThrow(() -> new IllegalStateException("Server URL not configured"));
     }
 
     @Transactional
@@ -340,6 +338,11 @@ public class UserService {
         user.setUpdatedAt(DateUtils.getCurrentDate());
 
         userRepository.update(user);
+    }
+
+    public User getSystemUser() {
+        return userRepository.findByUsername("system")
+                .orElseThrow(() -> new IllegalStateException("System user not found"));
     }
 
 }

@@ -51,7 +51,8 @@ public class TutoredService {
     private final HealthFacilityRepository healthFacilityRepository;
     private final PartnerRepository  partnerRepository;
     private final ProfessionalCategoryRepository  professionalCategoryRepository;
-    private final FlowHistoryRepository flowHistoryRepository;
+    private final FlowHistoryRepository flowHistoryRepository;@Inject
+    private MenteeFlowEngineService menteeFlowEngineService;
 
     @Inject
     private SessionRepository sessionRepository;
@@ -188,20 +189,22 @@ public class TutoredService {
         toUpdate.getEmployee().setUpdatedBy(inComingTutored.getUpdatedBy());
         employeeRepository.update(toUpdate.getEmployee());
 
-        if (toUpdate.canResetMenteeFlowHistory(inComingTutored.getMenteeFlowHistories().get(0))){
-            // Apagar todos menteeFlowHistories
+        // 🔁 Reset de fluxo usando o engine
+        if (toUpdate.canResetMenteeFlowHistory(inComingTutored.getMenteeFlowHistories().get(0))) {
+
+            // 1) Apagar todos os MenteeFlowHistory do mentee
             menteeFlowHistoryService.deleteByTutored(toUpdate);
 
-            // Refazer
-            boolean isIsento = inComingTutored.getMenteeFlowHistories().get(0).getProgressStatus().getCode().equals(ISENTO.getCode());
-            FlowHistory flowHistory = flowHistoryService.findByCode(inComingTutored.getMenteeFlowHistories().get(0).getFlowHistory().getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado"));
+            // 2) Determinar se é ISENTO ou não pela primeira entrada recebida
+            boolean isIsento =
+                    inComingTutored.getMenteeFlowHistories()
+                            .get(0)
+                            .getProgressStatus()
+                            .getCode()
+                            .equals(ISENTO.getCode());
 
-            FlowHistoryProgressStatus progressStatus = flowHistoryProgressStatusService.findByCode(
-                            inComingTutored.getMenteeFlowHistories().get(0).getProgressStatus().getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado"));
-
-            menteeFlowHistorySetting(isIsento, toUpdate, flowHistory, progressStatus, user);
+            // 3) Recriar fluxo inicial via engine
+            menteeFlowEngineService.initializeFlowOnCreate(toUpdate, isIsento, user);
         }
 
         Tutored updatedTutored = tutoredRepository.update(toUpdate);
@@ -248,41 +251,6 @@ public class TutoredService {
         return tutoredRepository.findAllOfHealthFacilities(uuids, pageable);
     }
 
-    private boolean checkZeroEvaluation(Tutored tutored) {
-        return tutored.getZeroEvaluationScore() != null;
-    }
-
-    public void menteeFlowHistorySetting(boolean isIsento, Tutored tutored, FlowHistory flowHistory, FlowHistoryProgressStatus flowHistoryProgressStatus, User user) {
-        if (isIsento) {
-            // Sessão Zero - ISENTO
-            MenteeFlowHistory firstSaved = createMenteeFlowHistory(tutored, flowHistory, flowHistoryProgressStatus, user);
-            tutored.addFlowHistory(firstSaved);
-
-            // RONDA - AGUARDA_INICIO
-            FlowHistory ronda = flowHistoryService.findByCode(EnumFlowHistory.RONDA_CICLO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: RONDA_CICLO"));
-
-            FlowHistoryProgressStatus aguarda = flowHistoryProgressStatusService.findByCode(
-                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: AGUARDA_INICIO"));
-
-            MenteeFlowHistory lastSaved = createMenteeFlowHistory(tutored, ronda, aguarda, user);
-            tutored.addFlowHistory(lastSaved);
-
-        } else {
-            // NÃO ISENTO → SESSAO_ZERO + AGUARDA_INICIO
-            FlowHistory sessaoZero = flowHistoryService.findByCode(EnumFlowHistory.SESSAO_ZERO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistory não encontrado: SESSAO_ZERO"));
-
-            FlowHistoryProgressStatus aguarda = flowHistoryProgressStatusService.findByCode(
-                            EnumFlowHistoryProgressStatus.AGUARDA_INICIO.getCode())
-                    .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado: AGUARDA_INICIO"));
-
-            MenteeFlowHistory lastSaved = createMenteeFlowHistory(tutored, sessaoZero, aguarda, user);
-            tutored.addFlowHistory(lastSaved);
-        }
-    }
-
     @Transactional
     public Tutored create(Tutored tutored,
                           FlowHistory flowHistory,
@@ -300,8 +268,10 @@ public class TutoredService {
 
         Tutored newTutored = tutoredRepository.save(tutored);
 
-        boolean isIsento = status.getCode().equals(ISENTO.getCode());
-        menteeFlowHistorySetting(isIsento, newTutored, flowHistory, status, user);
+        // 🔁 Inicialização do fluxo via engine
+        boolean isIsento = status != null && status.getCode().equals(ISENTO.getCode());
+        menteeFlowEngineService.initializeFlowOnCreate(newTutored, isIsento, user);
+
 
         // Forçar flush e limpar contexto
         entityManager.flush();

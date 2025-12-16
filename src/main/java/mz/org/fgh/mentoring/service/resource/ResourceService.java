@@ -7,18 +7,21 @@ import mz.org.fgh.mentoring.entity.earesource.Resource;
 import mz.org.fgh.mentoring.entity.setting.Setting;
 import mz.org.fgh.mentoring.repository.resource.ResourceRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 
 import java.util.*;
+
+import static mz.org.fgh.mentoring.config.SettingKeys.SERVER_BASE_URL;
 
 @Singleton
 public class ResourceService {
 
     private final ResourceRepository resourceRepository;
-    private final SettingsRepository settingsRepository;
+    private final SettingService settings;
 
-    public ResourceService(ResourceRepository resourceRepository, SettingsRepository settingsRepository) {
+    public ResourceService(ResourceRepository resourceRepository, SettingService settings) {
         this.resourceRepository = resourceRepository;
-        this.settingsRepository = settingsRepository;
+        this.settings = settings;
     }
 
     public List<Map<String, String>> extractResourceSummariesByProgram(String program) {
@@ -28,9 +31,7 @@ public class ResourceService {
         Optional<Resource> resourceJson = resourceRepository.findAll().stream().findFirst();
         if (resourceJson.isEmpty()) return summaries;
 
-        String baseUrl = settingsRepository.findByDesignation("SERVER_URL")
-                .map(Setting::getValue)
-                .orElse("http://localhost:8086");
+        String baseUrl = settings.get(SERVER_BASE_URL, "https://mentdev.csaude.org.mz");
 
         try {
             JsonNode root = objectMapper.readTree(resourceJson.get().getResource());

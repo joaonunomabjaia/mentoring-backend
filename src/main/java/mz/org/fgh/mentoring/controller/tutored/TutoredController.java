@@ -191,7 +191,7 @@ public class TutoredController extends BaseController {
             @Body List<TutoredDTO> tutoredDTOs, 
             Authentication authentication) {
         try {
-            String userUuid = (String) authentication.getAttributes().get("userUuid");
+            String userUuid = (String) authentication.getAttributes().get("useruuid");
     
             // Loop through each TutoredDTO and update it
             for (TutoredDTO dto : tutoredDTOs) {
@@ -245,5 +245,4 @@ public class TutoredController extends BaseController {
                 )
         );
     }
-    
 }
