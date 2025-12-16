@@ -27,6 +27,7 @@ import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.ai.AiSummaryService;
 import mz.org.fgh.mentoring.service.resource.ResourceService;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -37,6 +38,8 @@ import org.slf4j.LoggerFactory;
 import javax.mail.MessagingException;
 import javax.transaction.Transactional;
 import java.util.*;
+
+import static mz.org.fgh.mentoring.config.SettingKeys.SERVER_BASE_URL;
 
 @Singleton
 public class SessionService extends BaseService {
@@ -54,6 +57,7 @@ public class SessionService extends BaseService {
     private final FormRepository formRepository;
     private final ResourceService resourceService;
     private final RondaTypeRepository rondaTypeRepository;
+    private final SettingService settings;
 
     @Inject
     private EmailService emailService;
@@ -70,7 +74,7 @@ public class SessionService extends BaseService {
                           AnswerRepository answerRepository, MentorshipRepository mentorshipRepository,
                           UserRepository userRepository, SessionStatusRepository sessionStatusRepository,
                           TutorRepository tutorRepository, TutoredRepository tutoredRepository,
-                          FormRepository formRepository, ResourceService resourceService, RondaTypeRepository rondaTypeRepository) {
+                          FormRepository formRepository, ResourceService resourceService, RondaTypeRepository rondaTypeRepository, SettingService settings) {
         this.sessionRepository = sessionRepository;
         this.rondaRepository = rondaRepository;
         this.answerRepository = answerRepository;
@@ -82,6 +86,7 @@ public class SessionService extends BaseService {
         this.formRepository = formRepository;
         this.resourceService = resourceService;
         this.rondaTypeRepository = rondaTypeRepository;
+        this.settings = settings;
     }
 
     public List<Session> getAllRondas(List<String> rondasUuids) {
@@ -152,18 +157,13 @@ public class SessionService extends BaseService {
 
         if (!Utilities.listHasElements(sessions)) return;
 
-        Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
-
-        if (!settingOpt.isPresent()) {
-            throw new RuntimeException("Server URL not configured");
-        }
         for (Session session : sessions){
 
             try {
                 String htmlTemplate = emailService.loadHtmlTemplate("emailNotificationTemplate");
 
                 Map<String, String> variables = new HashMap<>();
-                variables.put("serverUrl", settingOpt.get().getValue());
+                variables.put("serverUrl", settings.get(SERVER_BASE_URL, "https://mentdev.csaude.org.mz"));
                 variables.put("menteesName", session.getMentee().getEmployee().getFullName());
                 variables.put("mentorName", session.getRonda().getActiveMentor().getEmployee().getFullName());
                 variables.put("date", DateUtils.formatToDDMMYYYY(session.getNextSessionDate()));

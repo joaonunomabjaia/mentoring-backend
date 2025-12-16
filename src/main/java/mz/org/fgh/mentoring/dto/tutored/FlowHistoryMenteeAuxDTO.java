@@ -18,5 +18,9 @@ public record FlowHistoryMenteeAuxDTO(
         String estado,
 
         @Schema(description = "Optional classification (0–100). Null when N/A")
-        Double classificacao
+        Double classificacao,
+
+        String rondaUUID,
+
+        Integer seq
 ) {}

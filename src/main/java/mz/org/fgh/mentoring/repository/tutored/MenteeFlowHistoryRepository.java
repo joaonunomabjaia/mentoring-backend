@@ -6,8 +6,10 @@ import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -144,4 +146,33 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
 
     @Query("DELETE FROM MenteeFlowHistory m WHERE m.tutored.id = :tutoredId")
     long deleteByTutoredId(Long tutoredId);
+
+    void deleteByRonda(Ronda ronda);
+
+    List<MenteeFlowHistory> findByTutoredOrderBySequenceNumberAsc(Tutored tutored);
+
+    List<MenteeFlowHistory> findByFlowHistoryCodeAndProgressStatusCode(String flowCode, String statusCode);
+
+    Optional<MenteeFlowHistory> findTopByTutoredOrderBySequenceNumberDesc(Tutored tutored);
+
+    @Query("SELECT mfh FROM MenteeFlowHistory mfh " +
+            "JOIN FETCH mfh.tutored t " +
+            "JOIN FETCH mfh.ronda r " +
+            "JOIN FETCH mfh.flowHistory fh " +
+            "JOIN FETCH mfh.progressStatus ps " +
+            "WHERE fh.code = :flowCode " +
+            "AND ps.code = :statusCode " +
+            "AND mfh.lifeCycleStatus = :lifeCycleStatus")
+    List<MenteeFlowHistory> findActiveByFlowAndStatus(String flowCode,
+                                                      String statusCode,
+                                                      LifeCycleStatus lifeCycleStatus);
+
+    List<MenteeFlowHistory> findAllByFlowHistoryCodeAndProgressStatusCode(String flowCode, String statusCode);
+
+    List<MenteeFlowHistory> findByRonda(Ronda ronda);
+
+    List<MenteeFlowHistory> findByTutored(Tutored tutored);
+
+    @Query("UPDATE MenteeFlowHistory SET lifeCycleStatus = :lifeCycleStatus WHERE tutored.id = :tutoredId")
+    void inactivatePreviousHistories(Long tutoredId, LifeCycleStatus lifeCycleStatus);
 }

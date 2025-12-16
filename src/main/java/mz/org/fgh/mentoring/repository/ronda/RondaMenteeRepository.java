@@ -5,6 +5,7 @@ import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.repository.CrudRepository;
 import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.ronda.RondaMentee;
+import mz.org.fgh.mentoring.entity.tutored.Tutored;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import javax.validation.constraints.NotNull;
@@ -30,6 +31,8 @@ public interface RondaMenteeRepository extends CrudRepository<RondaMentee, Long>
     List<RondaMentee> findByRonda(Long rondaId, LifeCycleStatus lifeCycleStatus);
 
     @Query("select rm from RondaMentee rm " +
+            "JOIN FETCH rm.tutored t " +
+            "LEFT JOIN FETCH t.menteeFlowHistories mfh " +
             "where rm.ronda.id = :rondaId")
     Set<RondaMentee> findByRonda(Long rondaId);
 
@@ -41,4 +44,6 @@ public interface RondaMenteeRepository extends CrudRepository<RondaMentee, Long>
             "JOIN FETCH rm.ronda r " +
             "WHERE r.id = :rondaId")
     Set<RondaMentee> findMenteesForRondas(Long rondaId);
+
+    Optional<RondaMentee> findByRondaAndTutored(Ronda ronda, Tutored tutored);
 }

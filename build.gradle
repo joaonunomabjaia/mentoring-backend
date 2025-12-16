@@ -3,7 +3,7 @@ plugins {
     id("io.micronaut.application") version "3.7.7"
 }
 
-version = "1.2.7"
+version = "1.2.8"
 group = "mz.org.fgh"
 
 repositories {
@@ -44,6 +44,9 @@ dependencies {
     implementation("io.swagger.core.v3:swagger-integration:2.1.11")
     implementation("io.swagger.core.v3:swagger-jaxrs2:2.1.11")
     implementation("io.swagger.core.v3:swagger-core:2.1.11")
+    implementation("io.micronaut.cache:micronaut-cache-caffeine")
+    implementation("com.cronutils:cron-utils:9.2.0")
+
 
 
     implementation("io.micronaut.security:micronaut-security-jwt")

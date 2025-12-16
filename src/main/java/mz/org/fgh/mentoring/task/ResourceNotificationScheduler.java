@@ -22,7 +22,7 @@ public class ResourceNotificationScheduler {
     public void sendPendingNotifications() {
         try {
             sessionRecommendedResourceService.processPendingResources();
-        } catch (MessagingException e) {
+        } catch (Exception e) {
             LOG.error(e.getMessage());
         }
     }
