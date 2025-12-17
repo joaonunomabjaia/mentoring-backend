@@ -19,4 +19,7 @@ public interface PasswordResetRepository extends JpaRepository<PasswordReset, Lo
     void deleteByEmail(String email);
 
     List<PasswordReset> findByUsedFalseAndExpiresAtBefore(Date now);
+
+    // ✅ DELETE direto e retorna quantidade apagada
+    long deleteByUsedFalseAndExpiresAtBefore(Date now);
 }

@@ -21,7 +21,7 @@ public interface SettingsRepository extends CrudRepository<Setting, Long> {
     @Override
     Optional<Setting> findById(@NotNull Long id);
 
-    Optional<Setting> findByUuidAndLifeCycleStatus(final String uuid, final LifeCycleStatus lifeCycleStatus);
+    Optional<Setting> findByUuidAndLifeCycleStatus(String uuid, LifeCycleStatus lifeCycleStatus);
 
     @Query(value = "select * from settings limit :lim offset :of ", nativeQuery = true)
     List<Setting> findSettingWithLimit(long lim, long of);
@@ -30,6 +30,13 @@ public interface SettingsRepository extends CrudRepository<Setting, Long> {
 
     Page<Setting> findByDesignationIlike(String designation, Pageable pageable);
 
+    // ✅ Base query: sempre carrega, independente do enabled
+    Optional<Setting> findByDesignationAndLifeCycleStatusNotEquals(
+            String designation, LifeCycleStatus lifeCycleStatus
+    );
+
+    // ✅ Útil quando queres explicitamente filtrar enabled=true (opcional)
     Optional<Setting> findByDesignationAndEnabledTrueAndLifeCycleStatusNotEquals(
-            String designation, LifeCycleStatus lifeCycleStatus);
+            String designation, LifeCycleStatus lifeCycleStatus
+    );
 }

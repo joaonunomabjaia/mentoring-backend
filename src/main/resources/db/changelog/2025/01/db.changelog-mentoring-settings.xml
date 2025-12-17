@@ -196,4 +196,38 @@
         </rollback>
     </changeSet>
 
+    <changeSet id="add-password-reset-cleanup-cron-setting" author="voloide">
+        <insert tableName="settings">
+            <column name="uuid" value="f1b137aa-mentoring-password-reset-cron"/>
+            <column name="designation" value="mentoring.password.reset.cleanup.cron"/>
+            <column name="setting_value" value="0 0 2 * * ?"/>
+            <column name="description"
+                    value="Cron expression that controls the Password Reset cleanup scheduler"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+    <changeSet id="add-password-reset-cleanup-enabled-setting" author="voloide">
+        <insert tableName="settings">
+            <column name="uuid" value="f1b137aa-mentoring-password-reset-enabled"/>
+            <column name="designation" value="mentoring.password.reset.cleanup.enabled"/>
+            <column name="setting_value" value="true"/>
+            <column name="description"
+                    value="Enables or disables the Password Reset cleanup scheduler"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+    <changeSet id="fix-password-reset-expiration-minutes-designation" author="voloide">
+        <update tableName="settings">
+            <column name="designation"
+                    value="mentoring.password.reset.token.expiration.time"/>
+            <where>designation = 'PASSWORD_RESET_EXPIRATION_MINUTES'</where>
+        </update>
+    </changeSet>
+
 </databaseChangeLog>

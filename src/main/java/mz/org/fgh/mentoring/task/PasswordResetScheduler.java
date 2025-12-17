@@ -1,79 +1,76 @@
 package mz.org.fgh.mentoring.task;
 
-import io.micronaut.runtime.event.ApplicationStartupEvent;
-import io.micronaut.context.event.ApplicationEventListener;
-import jakarta.annotation.PreDestroy;
+import com.cronutils.model.Cron;
+import com.cronutils.model.definition.CronDefinitionBuilder;
+import com.cronutils.model.time.ExecutionTime;
+import com.cronutils.parser.CronParser;
+import io.micronaut.scheduling.annotation.Scheduled;
 import jakarta.inject.Singleton;
-import mz.org.fgh.mentoring.entity.setting.Setting;
-import mz.org.fgh.mentoring.entity.tutored.PasswordReset;
-import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
-import mz.org.fgh.mentoring.repository.tutor.PasswordResetRepository;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.service.tutor.PasswordResetService;
 import mz.org.fgh.mentoring.util.DateUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.time.ZonedDateTime;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+
+import static com.cronutils.model.CronType.QUARTZ;
+import static mz.org.fgh.mentoring.config.SettingKeys.PASSWORD_RESET_CLEANUP_CRON;
 
 @Singleton
-public class PasswordResetScheduler implements ApplicationEventListener<ApplicationStartupEvent> {
+public class PasswordResetScheduler {
 
-    private final PasswordResetRepository passwordResetRepository;
-    private final SettingsRepository settingsRepository;
+    private static final Logger LOG = LoggerFactory.getLogger(PasswordResetScheduler.class);
+    private static final String DEFAULT_CRON = "0 0 2 * * ?"; // 02:00 diariamente
+
+    private final SettingService settingService;
     private final PasswordResetService passwordResetService;
 
-    private ScheduledExecutorService scheduler;
+    private final CronParser cronParser =
+            new CronParser(CronDefinitionBuilder.instanceDefinitionFor(QUARTZ));
 
-    public PasswordResetScheduler(PasswordResetRepository passwordResetRepository,
-                                  SettingsRepository settingsRepository, PasswordResetService passwordResetService) {
-        this.passwordResetRepository = passwordResetRepository;
-        this.settingsRepository = settingsRepository;
+    public PasswordResetScheduler(SettingService settingService,
+                                  PasswordResetService passwordResetService) {
+        this.settingService = settingService;
         this.passwordResetService = passwordResetService;
     }
 
-    @Override
-    public void onApplicationEvent(ApplicationStartupEvent event) {
-        scheduler = Executors.newSingleThreadScheduledExecutor();
-        scheduleNextRun();
-    }
+    @Scheduled(fixedDelay = "1m")
+    void controlledScheduler() {
 
-    private void scheduleNextRun() {
-        int intervalMinutes = 10; // padrão caso setting não exista
+        boolean enabled = settingService.isEnabled(PASSWORD_RESET_CLEANUP_CRON, true);
+        if (!enabled) return;
+
+        String cronExpr = settingService.get(PASSWORD_RESET_CLEANUP_CRON, DEFAULT_CRON);
+
+        Cron cron;
+        ExecutionTime executionTime;
         try {
-            Setting setting = settingsRepository.findByDesignation("PASSWORD_RESET_CLEANUP_INTERVAL_MIN")
-                    .orElseThrow(() -> new RuntimeException("Setting PASSWORD_RESET_CLEANUP_INTERVAL_MIN não configurado"));
-            intervalMinutes = Integer.parseInt(setting.getValue());
+            cron = cronParser.parse(cronExpr);
+            executionTime = ExecutionTime.forCron(cron);
         } catch (Exception e) {
-            System.err.println("Erro ao obter intervalo de limpeza de tokens. Usando 10 minutos. " + e.getMessage());
+            LOG.error("Cron inválido para PasswordReset cleanup: {}", cronExpr, e);
+            return;
         }
 
-        scheduler.schedule(() -> {
-            try {
-                cleanupExpiredTokens();
-            } catch (Exception e) {
-                System.err.println("Erro ao limpar tokens expirados: " + e.getMessage());
-            } finally {
-                scheduleNextRun();
+        ZonedDateTime now = ZonedDateTime.now()
+                .withSecond(0)
+                .withNano(0);
+
+        try {
+            if (executionTime.isMatch(now)) {
+                Date currentDate = DateUtils.getCurrentDate();
+                int deleted = passwordResetService.deleteExpiredUnused(currentDate);
+
+                if (deleted > 0) {
+                    LOG.info("PasswordResetScheduler: {} tokens expirados removidos.", deleted);
+                } else {
+                    LOG.debug("PasswordResetScheduler: nenhum token expirado para remover.");
+                }
             }
-        }, intervalMinutes, TimeUnit.MINUTES);
-    }
-
-    private void cleanupExpiredTokens() {
-        Date now = DateUtils.getCurrentDate();
-        List<PasswordReset> expiredTokens = passwordResetService.findByUsedFalseAndExpiresAtBefore(now);
-
-        if (!expiredTokens.isEmpty()) {
-            expiredTokens.forEach(token -> passwordResetRepository.delete(token));
-            System.out.println("PasswordResetScheduler: " + expiredTokens.size() + " tokens expirados removidos.");
-        }
-    }
-
-    @PreDestroy
-    public void shutdown() {
-        if (scheduler != null && !scheduler.isShutdown()) {
-            scheduler.shutdown();
+        } catch (Exception e) {
+            LOG.error("Falha ao executar PasswordResetScheduler (cron: {}).", cronExpr, e);
         }
     }
 }
