@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.service.tutor;
 
 import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
+import mz.org.fgh.mentoring.config.SettingKeys;
 import mz.org.fgh.mentoring.dto.tutor.PasswordResetRequestDTO;
 import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.setting.Setting;
@@ -11,6 +12,7 @@ import mz.org.fgh.mentoring.repository.employee.EmployeeRepository;
 import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.tutor.PasswordResetRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.util.EmailSender;
@@ -41,11 +43,14 @@ public class PasswordResetService {
     @Inject
     private EmailSender emailSender;
 
+    @Inject
+    private SettingService settingService;
+
     @Transactional
     public PasswordReset generateAndSendPasswordResetToken(PasswordResetRequestDTO dto) throws Exception {
 
 
-        Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
+        String settingServerURL = settingService.get(SettingKeys.SERVER_BASE_URL, "https://mentdev.csaude.org.mz");
 
         // 1. Validar se o email existe
         Optional<Employee> employeeOpt = employeeRepository.findByEmail(dto.getEmail());
@@ -103,7 +108,7 @@ public class PasswordResetService {
                 employee,
                 token,
                 dto.getChannel().equalsIgnoreCase("WEB") ? "WEB" : "MOBILE",
-                settingOpt.get().getValue(),
+                settingServerURL,
                 expirationMinutes + " minutos"
         );
 
