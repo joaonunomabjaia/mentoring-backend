@@ -173,6 +173,6 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
 
     List<MenteeFlowHistory> findByTutored(Tutored tutored);
 
-    @Query("UPDATE MenteeFlowHistory SET lifeCycleStatus = :lifeCycleStatus WHERE tutored.id = :tutoredId")
+    @Query("UPDATE MenteeFlowHistory SET lifeCycleStatus = :lifeCycleStatus WHERE tutored.id = :tutoredId AND lifeCycleStatus = 'ACTIVE'")
     void inactivatePreviousHistories(Long tutoredId, LifeCycleStatus lifeCycleStatus);
 }
