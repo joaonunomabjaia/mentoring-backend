@@ -43,11 +43,13 @@ public class EmailSender {
 
         String htmlTemplate = emailService.loadHtmlTemplate("emailPasswordResetTemplate");
 
-        // Define visibilidade
-        String webDisplay = platform.equalsIgnoreCase("WEB") ? "" : "display:none";
-        String mobileDisplay = platform.equalsIgnoreCase("MOBILE") ? "" : "display:none";
+        boolean isWeb = platform.equalsIgnoreCase("WEB");
+        
+        String webDisplay = isWeb ? "" : "display:none";
+        String mobileDisplay = !isWeb ? "" : "display:none";
 
-        // Variáveis
+        String expirationTarget = isWeb ? "link" : "código";
+
         Map<String, String> variables = new HashMap<>();
         variables.put("serverUrl", serverUrl);
         variables.put("name", employee.getFullName());
@@ -55,6 +57,7 @@ public class EmailSender {
         variables.put("expiration", expiration);
         variables.put("webDisplay", webDisplay);
         variables.put("mobileDisplay", mobileDisplay);
+        variables.put("expirationTarget", expirationTarget);
 
         String populatedHtml = emailService.populateTemplateVariables(htmlTemplate, variables);
 
@@ -64,5 +67,6 @@ public class EmailSender {
                 populatedHtml
         );
     }
+
 
 }
