@@ -68,6 +68,16 @@ public interface TutoredRepository extends JpaRepository<Tutored, Long> {
     @Query("SELECT t FROM Tutored t LEFT JOIN FETCH t.menteeFlowHistories WHERE t.uuid = :uuid")
     Optional<Tutored> findByUuid(String uuid);
 
+    @Query("""
+                SELECT DISTINCT t
+                FROM Tutored t
+                LEFT JOIN FETCH t.menteeFlowHistories mfh
+                    ON (mfh.sequenceNumber = 0 OR mfh.lifeCycleStatus = mz.org.fgh.mentoring.util.LifeCycleStatus.ACTIVE)
+                WHERE t.uuid = :uuid
+            """)
+    Optional<Tutored> findByUuidWithInitialAndActiveFlowHistory(String uuid);
+
+
     @Query("SELECT COUNT(mfh) FROM MenteeFlowHistory mfh WHERE mfh.tutored.id = :tutoredId")
     long countMenteeFlowHistoriesByTutoredId(Long tutoredId);
 

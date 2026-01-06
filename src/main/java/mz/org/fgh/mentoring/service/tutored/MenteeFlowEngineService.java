@@ -106,13 +106,15 @@ public class MenteeFlowEngineService {
      * @param isIsento true se foi marcado ISENTO à sessão zero no app
      */
     @Transactional
-    public void initializeFlowOnCreate(Tutored tutored,
+    public List<MenteeFlowHistory> initializeFlowOnCreate(Tutored tutored,
                                        boolean isIsento,
                                        User user) {
 
+        List<MenteeFlowHistory> createdFl = new ArrayList<>();
         if (isIsento) {
             // 1) SESSAO_ZERO / ISENTO
-            createAndSave(
+            createdFl.add(
+                    createAndSave(
                     tutored,
                     flow(EnumFlowHistory.SESSAO_ZERO),
                     status(ISENTO),
@@ -120,10 +122,12 @@ public class MenteeFlowEngineService {
                     null,
                     user,
                     1
+                )
             );
 
             // 2) RONDA_CICLO / AGUARDA_INICIO
-            createAndSave(
+            createdFl.add(
+                    createAndSave(
                     tutored,
                     flow(EnumFlowHistory.RONDA_CICLO),
                     status(AGUARDA_INICIO),
@@ -131,11 +135,13 @@ public class MenteeFlowEngineService {
                     null,
                     user,
                     2
+                    )
             );
 
         } else {
             // NÃO ISENTO: começa em SESSAO_ZERO / AGUARDA_INICIO
-            createAndSave(
+            createdFl.add(
+                    createAndSave(
                     tutored,
                     flow(EnumFlowHistory.SESSAO_ZERO),
                     status(AGUARDA_INICIO),
@@ -143,8 +149,10 @@ public class MenteeFlowEngineService {
                     null,
                     user,
                     1
+                    )
             );
         }
+        return createdFl;
     }
 
     // ---------- 3. Ronda criada / iniciada ----------
@@ -160,7 +168,7 @@ public class MenteeFlowEngineService {
 
         createAndSave(
                 tutored,
-                flow(EnumFlowHistory.RONDA_CICLO),
+                flow(ronda.isRondaZero() ? EnumFlowHistory.SESSAO_ZERO : EnumFlowHistory.RONDA_CICLO),
                 status(EnumFlowHistoryProgressStatus.INICIO),
                 null,
                 ronda,
