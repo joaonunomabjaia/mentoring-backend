@@ -62,7 +62,7 @@ public class FlowHistoryScheduler {
                 menteeFlowEngineService.checkAndInterruptInactiveRounds(systemUser);
             }
         } catch (Exception e) {
-            LOG.error("Falha ao executar o flow history scheduler: " + cronExpr, e);
+            LOG.error("Falha ao executar o flow history scheduler: {}", cronExpr, e);
         }
     }
 

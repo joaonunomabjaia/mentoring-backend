@@ -168,10 +168,10 @@ public class TutoredController extends BaseController {
             FlowHistoryProgressStatus fhps = flowHistoryProgressStatusService.findByCode(estadoCode)
                     .orElseThrow(() -> new RuntimeException("FlowHistoryProgressStatus não encontrado (code): " + estadoCode));
 
-            this.tutoredService.create(
+            Tutored createdTutored =  this.tutoredService.create(
                     tutored, flowHistory, fhps, (Long) auth.getAttributes().get("userInfo")
             );
-            TutoredDTO tutoredDTO = new TutoredDTO(tutored);
+            TutoredDTO tutoredDTO = new TutoredDTO(createdTutored);
             return HttpResponse.created(tutoredDTO);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

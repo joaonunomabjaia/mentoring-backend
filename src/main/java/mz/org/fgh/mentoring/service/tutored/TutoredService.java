@@ -22,11 +22,13 @@ import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategory
 import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.session.SessionRepository;
 import mz.org.fgh.mentoring.repository.tutored.FlowHistoryRepository;
+import mz.org.fgh.mentoring.repository.tutored.MenteeFlowHistoryRepository;
 import mz.org.fgh.mentoring.repository.tutored.TutoredRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -53,6 +55,7 @@ public class TutoredService {
     private final ProfessionalCategoryRepository  professionalCategoryRepository;
     private final FlowHistoryRepository flowHistoryRepository;@Inject
     private MenteeFlowEngineService menteeFlowEngineService;
+    private final MenteeFlowHistoryRepository mtfhrepo;
 
     @Inject
     private SessionRepository sessionRepository;
@@ -69,7 +72,7 @@ public class TutoredService {
     @PersistenceContext
     private EntityManager entityManager;
 
-    public TutoredService(EmployeeService employeeService, TutoredRepository tutoredRepository, UserRepository userRepository, EmployeeRepository employeeRepository, LocationRepository locationRepository, DistrictRepository districtRepository, ProvinceRepository provinceRepository, HealthFacilityRepository healthFacilityRepository, PartnerRepository partnerRepository, ProfessionalCategoryRepository professionalCategoryRepository, FlowHistoryRepository flowHistoryRepository) {
+    public TutoredService(EmployeeService employeeService, TutoredRepository tutoredRepository, UserRepository userRepository, EmployeeRepository employeeRepository, LocationRepository locationRepository, DistrictRepository districtRepository, ProvinceRepository provinceRepository, HealthFacilityRepository healthFacilityRepository, PartnerRepository partnerRepository, ProfessionalCategoryRepository professionalCategoryRepository, FlowHistoryRepository flowHistoryRepository, MenteeFlowHistoryRepository mtfhrepo) {
         this.employeeService = employeeService;
         this.tutoredRepository = tutoredRepository;
         this.userRepository = userRepository;
@@ -81,6 +84,7 @@ public class TutoredService {
         this.partnerRepository = partnerRepository;
         this.professionalCategoryRepository = professionalCategoryRepository;
         this.flowHistoryRepository = flowHistoryRepository;
+        this.mtfhrepo = mtfhrepo;
     }
 
     public List<TutoredDTO> findAll(long offset, long  limit){
@@ -190,6 +194,7 @@ public class TutoredService {
         employeeRepository.update(toUpdate.getEmployee());
 
         // 🔁 Reset de fluxo usando o engine
+        List<MenteeFlowHistory> menteeFlowHistoryList = new ArrayList<>();
         if (toUpdate.canResetMenteeFlowHistory(inComingTutored.getMenteeFlowHistories().get(0))) {
 
             // 1) Apagar todos os MenteeFlowHistory do mentee
@@ -204,7 +209,7 @@ public class TutoredService {
                             .equals(ISENTO.getCode());
 
             // 3) Recriar fluxo inicial via engine
-            menteeFlowEngineService.initializeFlowOnCreate(toUpdate, isIsento, user);
+            menteeFlowHistoryList = menteeFlowEngineService.initializeFlowOnCreate(toUpdate, isIsento, user);
         }
 
         Tutored updatedTutored = tutoredRepository.update(toUpdate);
@@ -217,6 +222,9 @@ public class TutoredService {
         Tutored reloaded = tutoredRepository.findByUuid(updatedTutored.getUuid())
                 .orElseThrow(() -> new RuntimeException("Erro ao recarregar Tutored após atualização"));
 
+        if (Utilities.listHasElements(menteeFlowHistoryList)) {
+            reloaded.setMenteeFlowHistories(menteeFlowHistoryList);
+        }
         return reloaded;
     }
 
@@ -270,7 +278,7 @@ public class TutoredService {
 
         // 🔁 Inicialização do fluxo via engine
         boolean isIsento = status != null && status.getCode().equals(ISENTO.getCode());
-        menteeFlowEngineService.initializeFlowOnCreate(newTutored, isIsento, user);
+        List<MenteeFlowHistory> menteeFlowHistoryList = menteeFlowEngineService.initializeFlowOnCreate(newTutored, isIsento, user);
 
 
         // Forçar flush e limpar contexto
@@ -278,8 +286,11 @@ public class TutoredService {
         entityManager.clear();
 
         // Recarrega a entidade com as novas coleções
-        return tutoredRepository.findByUuid(newTutored.getUuid())
+        Tutored t =  tutoredRepository.findByUuid(newTutored.getUuid())
                 .orElseThrow(() -> new RuntimeException("Erro ao recarregar Tutored após criação"));
+
+        t.setMenteeFlowHistories(menteeFlowHistoryList);
+        return t;
     }
 
 
