@@ -24,6 +24,7 @@ import jakarta.inject.Inject;
 import mz.org.fgh.mentoring.api.RestAPIResponse;
 import mz.org.fgh.mentoring.base.BaseController;
 import mz.org.fgh.mentoring.dto.tutor.TutorDTO;
+import mz.org.fgh.mentoring.dto.tutor.TutorInternalLocationDTO;
 import mz.org.fgh.mentoring.entity.programaticarea.ProgrammaticArea;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
 import mz.org.fgh.mentoring.entity.tutorprogramaticarea.TutorProgrammaticArea;
@@ -32,6 +33,7 @@ import mz.org.fgh.mentoring.error.MentoringAPIError;
 import mz.org.fgh.mentoring.repository.programaticarea.ProgramaticAreaRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.programaticarea.ProgramaticAreaService;
+import mz.org.fgh.mentoring.service.tutor.TutorInternalLocationService;
 import mz.org.fgh.mentoring.service.tutor.TutorService;
 import mz.org.fgh.mentoring.service.tutorprogrammaticarea.TutorProgrammaticAreaService;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
@@ -64,6 +66,9 @@ public class TutorController extends BaseController {
     @Inject
     private UserRepository userRepository;
 
+    @Inject
+    private TutorInternalLocationService tutorInternalLocationService;
+
     public TutorController() {
     }
 
@@ -86,7 +91,17 @@ public class TutorController extends BaseController {
         }
 
         for (Tutor tutor : tutors){
-            tutorDTOS.add(new TutorDTO(tutor));
+            TutorDTO dto = new TutorDTO(tutor);
+
+            tutorInternalLocationService
+                    .findActiveByTutorUuid(tutor.getUuid())
+                    .ifPresent(il ->
+                            dto.setInternalLocationDTO(
+                                    new TutorInternalLocationDTO(il)
+                            )
+                    );
+
+            tutorDTOS.add(dto);
         }
         return tutorDTOS;
     }
@@ -96,7 +111,19 @@ public class TutorController extends BaseController {
     @Tag(name = "Mentor")
     @Get("/employee/{uuid}")
     public TutorDTO getTutorByEmployeeUuid(@PathVariable("uuid") String uuid) {
-        return new TutorDTO(tutorService.getTutorByEmployeeUuid(uuid));
+
+        Tutor tutor = tutorService.getTutorByEmployeeUuid(uuid);
+        TutorDTO dto = new TutorDTO(tutor);
+
+        tutorInternalLocationService
+                .findActiveByTutorUuid(tutor.getUuid())
+                .ifPresent(il ->
+                        dto.setInternalLocationDTO(
+                                new TutorInternalLocationDTO(il)
+                        )
+                );
+
+        return dto;
     }
     @Operation(summary = "Return a list off all Tutor")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
@@ -113,13 +140,24 @@ public class TutorController extends BaseController {
         tutors =  tutorService.search(name, nuit, userId, phoneNumber);
 
 
-        for (Tutor tutor : tutors){
+        for (Tutor tutor : tutors) {
             List<TutorProgrammaticArea> tutorProgrammaticAreas = tutorProgrammaticAreaService.fetchAllTutorProgrammaticAreas(tutor.getId());
             tutor.setTutorProgrammaticAreas(tutorProgrammaticAreas);
             for (TutorProgrammaticArea t: tutor.getTutorProgrammaticAreas()) {
                 t.setProgrammaticArea(programmaticAreaService.getProgrammaticAreaById(t.getProgrammaticArea().getId()));
             }
-            tutorDTOS.add(new TutorDTO(tutor));
+
+            TutorDTO dto = new TutorDTO(tutor);
+
+            tutorInternalLocationService
+                    .findActiveByTutorUuid(tutor.getUuid())
+                    .ifPresent(il ->
+                            dto.setInternalLocationDTO(
+                                    new TutorInternalLocationDTO(il)
+                            )
+                    );
+
+            tutorDTOS.add(dto);
         }
         return tutorDTOS;
     }
@@ -134,9 +172,21 @@ public class TutorController extends BaseController {
         tutors = tutorService.findAll();
 
         if (!Utilities.listHasElements((ArrayList<?>) tutors)) return null;
-        for(Tutor tutor : tutors){
-            tutorDTOS.add(new TutorDTO(tutor));
+
+        for (Tutor tutor : tutors){
+            TutorDTO dto = new TutorDTO(tutor);
+
+            tutorInternalLocationService
+                    .findActiveByTutorUuid(tutor.getUuid())
+                    .ifPresent(il ->
+                            dto.setInternalLocationDTO(
+                                    new TutorInternalLocationDTO(il)
+                            )
+                    );
+
+            tutorDTOS.add(dto);
         }
+
         return tutorDTOS;
     }
 
@@ -157,6 +207,18 @@ public class TutorController extends BaseController {
         try {
             Tutor tutor = new Tutor(tutorDTO);
             tutor = this.tutorService.create(tutor, user.getId());
+
+            if (tutorDTO.getInternalLocationDTO() != null) {
+                tutorInternalLocationService.assignInternalLocation(
+                        tutor.getUuid(),
+                        tutorDTO.getInternalLocationDTO()
+                                .getHealthFacilityDTO()
+                                .getUuid(),
+                        user
+                );
+            }
+
+
             List<ProgrammaticArea> programmaticAreas = programaticAreaRepository.findAll();
 
             for (ProgrammaticArea programmaticArea: programmaticAreas) {

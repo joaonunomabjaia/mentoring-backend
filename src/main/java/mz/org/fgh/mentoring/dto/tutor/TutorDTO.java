@@ -21,6 +21,10 @@ public class TutorDTO extends BaseEntityDTO {
     private EmployeeDTO employeeDTO;
     private List<TutorProgrammaticAreaDTO> tutorProgrammaticAreaDTOS;
 
+    // Para a location onde ele e Ienterno
+    private TutorInternalLocationDTO internalLocationDTO;
+
+
     public TutorDTO(Tutor tutor) {
         super(tutor);
         if(tutor.getEmployee()!=null) this.setEmployeeDTO(new EmployeeDTO(tutor.getEmployee()));
@@ -31,6 +35,12 @@ public class TutorDTO extends BaseEntityDTO {
             }
         } catch (Exception e) {
         }
+
+        /*
+             * NOTA IMPORTANTE:
+             * internalLocationDTO NÃO é resolvido aqui
+             * Ele será injetado no SERVICE / CONTROLLER
+         */
     }
 
     private List<TutorProgrammaticAreaDTO> setTutorProgrammaticAreas(List<TutorProgrammaticArea> tutorProgrammaticAreas) {
