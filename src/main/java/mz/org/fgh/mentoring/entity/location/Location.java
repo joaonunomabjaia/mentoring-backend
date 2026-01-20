@@ -19,7 +19,8 @@ import javax.persistence.Table;
 @Entity(name = "Location")
 @Table(name = "location")
 @Data
-@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+//@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @AllArgsConstructor
 public class Location extends BaseEntity {
     public static final String LOCATION_LEVEL_NATIONAL = "NATIONAL";
@@ -28,6 +29,7 @@ public class Location extends BaseEntity {
     public static final String LOCATION_LEVEL_HEALTH_FACILITY = "HEALTH_FACILITY";
 
 
+    @EqualsAndHashCode.Include
     @ManyToOne
     @JoinColumn(name="EMPLOYEE_ID", nullable=false)
     private Employee employee;
@@ -40,6 +42,7 @@ public class Location extends BaseEntity {
     @JoinColumn(name = "DISTRICT_ID")
     private District district;
 
+    @EqualsAndHashCode.Include
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "HEALTH_FACILITY_ID")
     private HealthFacility healthFacility;

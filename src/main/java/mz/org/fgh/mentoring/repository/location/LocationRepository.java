@@ -20,4 +20,6 @@ public interface LocationRepository extends CrudRepository<Location, Long> {
     void createOrUpdate(Set<Location> locations, User user);
 
     long countByHealthFacility(HealthFacility facility);
+
+    Set<Location> findByEmployeeId(Long id);
 }

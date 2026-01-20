@@ -13,9 +13,15 @@ import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.DateUtils;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
+import mz.org.fgh.mentoring.util.Utilities;
 
+import javax.transaction.Transactional;
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @Singleton
 public class EmployeeService {
@@ -60,42 +66,163 @@ public class EmployeeService {
         return new EmployeeDTO(employee);
     }
 
-    public Employee createOrUpdate(Employee employee, User user) {
-        employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()).get());
-        employee.setPartner(
-                partnerRepository.findByUuid(employee.getPartner().getUuid())
-                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
-        );
-        Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
+//    public Employee createOrUpdate(Employee employee, User user) {
+//        employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()).get());
+//        employee.setPartner(
+//                partnerRepository.findByUuid(employee.getPartner().getUuid())
+//                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
+//        );
+//        Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
+//
+//        Set<Location> locations =  employee.getLocations();
+//
+//        if(locations.isEmpty()) {
+//            throw new RuntimeException("É obrigatório indicar pelo menos uma localização deste Employee!");
+//        }
+//
+//        for (Location location : locations) {
+//            location.setEmployee(createdEmployee);
+//            if(location.getProvince()!=null)
+//            {
+//                location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
+//            }
+//            if(location.getDistrict() !=null)
+//            {
+//                location.setDistrict(districtRepository.findByUuid(location.getDistrict().getUuid()));
+//            }
+//            if(location.getHealthFacility() !=null)
+//            {
+//                location.setHealthFacility(healthFacilityRepository.findByUuid(location.getHealthFacility().getUuid()).get());
+//            }
+//
+//            locations.add(location);
+//        }
+//
+//        locationRepository.createOrUpdate(locations, user);
+//
+//        return createdEmployee;
+//    }
 
-        Set<Location> locations =  employee.getLocations();
+    private void resolveFKs(Location location) {
+        if (location.getProvince() != null)
+            location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
 
-        if(locations.isEmpty()) {
-            throw new RuntimeException("É obrigatório indicar pelo menos uma localização deste Employee!");
-        }
+        if (location.getDistrict() != null)
+            location.setDistrict(districtRepository.findByUuid(location.getDistrict().getUuid()));
 
-        for (Location location : locations) {
-            location.setEmployee(createdEmployee);
-            if(location.getProvince()!=null)
-            {
-                location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
-            }
-            if(location.getDistrict() !=null)
-            {
-                location.setDistrict(districtRepository.findByUuid(location.getDistrict().getUuid()));
-            }
-            if(location.getHealthFacility() !=null)
-            {
-                location.setHealthFacility(healthFacilityRepository.findByUuid(location.getHealthFacility().getUuid()).get());
-            }
-
-            locations.add(location);
-        }
-      
-        locationRepository.createOrUpdate(locations, user);
-
-        return createdEmployee;
+        if (location.getHealthFacility() != null)
+            location.setHealthFacility(
+                    healthFacilityRepository.findByUuid(location.getHealthFacility().getUuid()).orElseThrow()
+            );
     }
+
+
+    private void applyLocationData(Location from, Location to) {
+        resolveFKs(from);
+
+        to.setProvince(from.getProvince());
+        to.setDistrict(from.getDistrict());
+        to.setHealthFacility(from.getHealthFacility());
+        to.setLocationLevel(from.getLocationLevel());
+    }
+
+    @Transactional
+    public Employee createOrUpdate(Employee incoming, User user) {
+
+        /* =========================================================
+         * 1️⃣ Resolver FKs do Employee
+         * ========================================================= */
+        incoming.setProfessionalCategory(
+                professionalCategoryRepository.findByUuid(
+                        incoming.getProfessionalCategory().getUuid()
+                ).orElseThrow()
+        );
+
+        incoming.setPartner(
+                partnerRepository.findByUuid(
+                        incoming.getPartner().getUuid()
+                ).orElseThrow()
+        );
+
+        /* =========================================================
+         * 2️⃣ Persistir Employee base
+         * ========================================================= */
+        Employee dbEmployee = employeeRepository.createOrUpdate(incoming, user);
+
+        /* =========================================================
+         * 3️⃣ Validação
+         * ========================================================= */
+        if (incoming.getLocations() == null || incoming.getLocations().isEmpty()) {
+            throw new RuntimeException("É obrigatório indicar pelo menos uma localização.");
+        }
+
+        /* =========================================================
+         * 4️⃣ Buscar locations atuais da BD
+         * ========================================================= */
+        Set<Location> dbLocations =
+                locationRepository.findByEmployeeId(dbEmployee.getId());
+
+        /* =========================================================
+         * 5️⃣ Mapear incoming por ID
+         * ========================================================= */
+        Map<Long, Location> incomingById =
+                incoming.getLocations().stream()
+                        .filter(l -> l.getId() != null)
+                        .collect(Collectors.toMap(
+                                Location::getId,
+                                l -> l
+                        ));
+
+        /* =========================================================
+         * 6️⃣ Atualizar / Inativar existentes
+         * ========================================================= */
+        for (Location dbLoc : dbLocations) {
+
+            Location incomingLoc = incomingById.get(dbLoc.getId());
+
+            if (incomingLoc == null) {
+                // ❌ Removida
+                if (dbLoc.getLifeCycleStatus() == LifeCycleStatus.ACTIVE) {
+                    dbLoc.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
+                    dbLoc.setUpdatedBy(user.getUuid());
+                    dbLoc.setUpdatedAt(DateUtils.getCurrentDate());
+                    locationRepository.update(dbLoc);
+                }
+            } else {
+                // ✔️ Atualizar
+                applyLocationData(incomingLoc, dbLoc);
+                dbLoc.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                dbLoc.setUpdatedBy(user.getUuid());
+                dbLoc.setUpdatedAt(DateUtils.getCurrentDate());
+                locationRepository.update(dbLoc);
+            }
+        }
+
+        /* =========================================================
+         * 7️⃣ Criar NOVAS (INSTÂNCIA NOVA!)
+         * ========================================================= */
+        incoming.getLocations().stream()
+                .filter(l -> l.getId() == null)
+                .forEach(incomingLoc -> {
+
+                    Location newLoc = new Location();
+
+                    applyLocationData(incomingLoc, newLoc);
+                    resolveFKs(newLoc);
+
+                    newLoc.setUuid(Utilities.generateUUID());
+                    newLoc.setEmployee(dbEmployee);
+                    newLoc.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+                    newLoc.setCreatedBy(user.getUuid());
+                    newLoc.setCreatedAt(DateUtils.getCurrentDate());
+
+                    locationRepository.save(newLoc);
+                });
+
+        return dbEmployee;
+    }
+
+
 
     public Optional<Employee> findById(Long id) {
         return this.employeeRepository.findById(id);

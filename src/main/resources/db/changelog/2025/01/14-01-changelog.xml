@@ -632,5 +632,46 @@
 
     </changeSet>
 
+    <changeSet id="drop-uk-tutor-internal-location-active" author="JNMabjaia">
+        <preConditions onFail="MARK_RAN">
+            <uniqueConstraintExists
+                    tableName="tutor_internal_locations"
+                    constraintName="UK_tutor_internal_location_active"/>
+        </preConditions>
+
+        <dropUniqueConstraint
+                tableName="tutor_internal_locations"
+                constraintName="UK_tutor_internal_location_active"/>
+    </changeSet>
+
+    <changeSet id="add-index-til-location-id" author="JNMabjaia">
+        <createIndex
+                tableName="tutor_internal_locations"
+                indexName="IDX_til_location_id">
+            <column name="LOCATION_ID"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet id="add-index-til-tutor-id" author="JNMabjaia">
+        <createIndex
+                tableName="tutor_internal_locations"
+                indexName="IDX_til_tutor_id">
+            <column name="TUTOR_ID"/>
+        </createIndex>
+    </changeSet>
+
+
+    <changeSet id="drop-uk-tutor-internal-location-active1" author="JNMabjaia">
+        <preConditions onFail="MARK_RAN">
+            <indexExists
+                    tableName="tutor_internal_locations"
+                    indexName="UK_tutor_internal_location_active"/>
+        </preConditions>
+
+        <dropIndex
+                tableName="tutor_internal_locations"
+                indexName="UK_tutor_internal_location_active"/>
+    </changeSet>
+
 
 </databaseChangeLog>

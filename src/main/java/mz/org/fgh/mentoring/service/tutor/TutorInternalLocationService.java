@@ -1,5 +1,6 @@
 package mz.org.fgh.mentoring.service.tutor;
 
+import jakarta.inject.Inject;
 import jakarta.inject.Singleton;
 import mz.org.fgh.mentoring.entity.healthfacility.HealthFacility;
 import mz.org.fgh.mentoring.entity.tutor.Tutor;
@@ -9,9 +10,12 @@ import mz.org.fgh.mentoring.repository.healthFacility.HealthFacilityRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorInternalLocationRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.service.healthfacility.HealthFacilityService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
@@ -24,6 +28,16 @@ public class TutorInternalLocationService {
     private final TutorRepository tutorRepository;
     private final HealthFacilityRepository healthFacilityRepository;
     private final UserRepository userRepository;
+
+    @PersistenceContext
+    private EntityManager entityManager;
+
+
+    @Inject
+    TutorService tutorService;
+
+    @Inject
+    HealthFacilityService healthFacilityService;
 
     public TutorInternalLocationService(
             TutorInternalLocationRepository repository,
@@ -63,7 +77,7 @@ public class TutorInternalLocationService {
      * - Cria um novo registo ACTIVE
      */
     @Transactional
-    public TutorInternalLocation assignInternalLocation(
+    public TutorInternalLocation assignInternalLocation (
             String tutorUuid,
             String healthFacilityUuid,
             User user
@@ -97,6 +111,35 @@ public class TutorInternalLocationService {
         entity.setCreatedBy(user.getUuid());
 
         return repository.save(entity);
+    }
+
+    @Transactional
+    public void changeInternalLocation(String tutorUuid, Long newHealthFacilityId, User user) {
+
+        Tutor tutor = tutorService.findByUuid(tutorUuid);
+
+        repository.findByTutorAndLifeCycleStatus(tutor, LifeCycleStatus.ACTIVE)
+                .ifPresent(active -> {
+                    active.setLifeCycleStatus(LifeCycleStatus.INACTIVE);
+                    active.setEndDate(DateUtils.getCurrentDate());
+                    active.setUpdatedBy(user.getUuid());
+                    active.setUpdatedAt(DateUtils.getCurrentDate());
+
+                    // NÃO precisa de repository.update(active)
+                    // a entidade já está managed
+                    entityManager.flush(); // 🔥 garante UPDATE imediato
+                });
+
+        TutorInternalLocation newLoc = new TutorInternalLocation();
+        newLoc.setTutor(tutor);
+        newLoc.setLocation(healthFacilityService.findById(newHealthFacilityId));
+        newLoc.setUuid(UUID.randomUUID().toString());
+        newLoc.setStartDate(DateUtils.getCurrentDate());
+        newLoc.setLifeCycleStatus(LifeCycleStatus.ACTIVE);
+        newLoc.setCreatedAt(DateUtils.getCurrentDate());
+        newLoc.setCreatedBy(user.getUuid());
+
+        repository.save(newLoc);
     }
 
 

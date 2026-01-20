@@ -139,6 +139,14 @@ public class TutorController extends BaseController {
 
         tutors =  tutorService.search(name, nuit, userId, phoneNumber);
 
+        tutors.forEach(tutor -> {
+            if (tutor != null && tutor.getEmployee() != null && tutor.getEmployee().getLocations() != null) {
+                tutor.getEmployee().getLocations().removeIf(
+                        location -> location.getLifeCycleStatus().equals(LifeCycleStatus.INACTIVE)
+                );
+            }
+        });
+
 
         for (Tutor tutor : tutors) {
             List<TutorProgrammaticArea> tutorProgrammaticAreas = tutorProgrammaticAreaService.fetchAllTutorProgrammaticAreas(tutor.getId());
@@ -159,6 +167,7 @@ public class TutorController extends BaseController {
 
             tutorDTOS.add(dto);
         }
+
         return tutorDTOS;
     }
 
@@ -242,22 +251,37 @@ public class TutorController extends BaseController {
         }
     }
 
+
     @Operation(summary = "Update Mentor to database")
     @ApiResponse(content = @Content(mediaType = MediaType.APPLICATION_JSON))
     @Tag(name = "Mentor")
     @Patch("/update")
     public HttpResponse<RestAPIResponse> update (@Body TutorDTO tutorDTO, Authentication authentication) {
         try {
+            User user = userRepository.findById((Long) authentication.getAttributes().get("userInfo")).get();
+
             Tutor tutor = new Tutor(tutorDTO);
-            tutor = this.tutorService.update(tutor, (Long) authentication.getAttributes().get("userInfo"));
-            LOG.info("Updated mentor {}", tutor);
+            tutor = this.tutorService.update(tutor, user.getId());
+
+            // 🔥 AQUI é o que falta
+            if (tutorDTO.getInternalLocationDTO() != null) {
+                tutorInternalLocationService.changeInternalLocation(
+                        tutor.getUuid(),
+                        tutorDTO.getInternalLocationDTO().getHealthFacilityDTO().getId(),
+                        user
+                );
+            }
+
             return HttpResponse.ok().body(new TutorDTO(tutor));
         } catch (Exception e) {
             LOG.error(e.getMessage());
-            return HttpResponse.badRequest().body(MentoringAPIError.builder()
-                    .status(HttpStatus.BAD_REQUEST.getCode())
-                    .error(e.getLocalizedMessage())
-                    .message(e.getMessage()).build());
+            return HttpResponse.badRequest().body(
+                    MentoringAPIError.builder()
+                            .status(HttpStatus.BAD_REQUEST.getCode())
+                            .error(e.getLocalizedMessage())
+                            .message(e.getMessage()).build()
+            );
         }
     }
+
 }
