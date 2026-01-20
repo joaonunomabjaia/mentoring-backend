@@ -59,50 +59,6 @@ public class EmployeeService {
         return this.employeeRepository.findByUuid(uuid).get();
     }
 
-    public EmployeeDTO updade(EmployeeDTO employeeDTO){
-
-        Employee employee = this.employeeRepository.update( new Employee(employeeDTO));
-
-        return new EmployeeDTO(employee);
-    }
-
-//    public Employee createOrUpdate(Employee employee, User user) {
-//        employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()).get());
-//        employee.setPartner(
-//                partnerRepository.findByUuid(employee.getPartner().getUuid())
-//                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
-//        );
-//        Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
-//
-//        Set<Location> locations =  employee.getLocations();
-//
-//        if(locations.isEmpty()) {
-//            throw new RuntimeException("É obrigatório indicar pelo menos uma localização deste Employee!");
-//        }
-//
-//        for (Location location : locations) {
-//            location.setEmployee(createdEmployee);
-//            if(location.getProvince()!=null)
-//            {
-//                location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
-//            }
-//            if(location.getDistrict() !=null)
-//            {
-//                location.setDistrict(districtRepository.findByUuid(location.getDistrict().getUuid()));
-//            }
-//            if(location.getHealthFacility() !=null)
-//            {
-//                location.setHealthFacility(healthFacilityRepository.findByUuid(location.getHealthFacility().getUuid()).get());
-//            }
-//
-//            locations.add(location);
-//        }
-//
-//        locationRepository.createOrUpdate(locations, user);
-//
-//        return createdEmployee;
-//    }
-
     private void resolveFKs(Location location) {
         if (location.getProvince() != null)
             location.setProvince(provinceRepository.findByUuid(location.getProvince().getUuid()));
