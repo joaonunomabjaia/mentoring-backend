@@ -6,6 +6,7 @@ import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import mz.org.fgh.mentoring.entity.employee.Employee;
 import mz.org.fgh.mentoring.entity.user.User;
 
 import java.util.List;
@@ -38,5 +39,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
 
     List<User> findByUuidIn(List<String> uuids);
+
+    Optional<User> findByEmployee(Employee employee);
 }
 

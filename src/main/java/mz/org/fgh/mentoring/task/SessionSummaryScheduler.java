@@ -11,24 +11,26 @@ import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
 
+import static mz.org.fgh.mentoring.config.SettingKeys.AI_SESSION_SUMMARY_ENABLED;
+
 @Singleton
 public class SessionSummaryScheduler {
 
     private static final Logger LOG = LoggerFactory.getLogger(SessionSummaryScheduler.class);
 
     private final SessionService sessionService;
-    private final SettingService settingService;
+    private final SettingService settings;
 
     public SessionSummaryScheduler(SessionService sessionService, SettingService settingService) {
         this.sessionService = sessionService;
-        this.settingService = settingService;
+        this.settings = settingService;
     }
 
-    @Scheduled(fixedDelay = "10m")
+    @Scheduled(cron = "0 0 3 * * *") // Executa diariamente às 03:00
     void generateMissingSummaries() {
-        Optional<Setting> optionalSetting = settingService.getSettingByDeignation(Setting.AI_SESSION_SUMMARY_GENERATION);
+        boolean AIGeneration = settings.getBoolean(AI_SESSION_SUMMARY_ENABLED, false);
 
-        if (optionalSetting.isPresent() && optionalSetting.get().getEnabled()) {
+        if (AIGeneration) {
             sessionService.generateSummary();
         }
         else {

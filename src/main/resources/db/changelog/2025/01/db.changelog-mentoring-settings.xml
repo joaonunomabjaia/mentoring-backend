@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="20251208-rename-mentoring-settings-keys" author="voloide">
+        <comment>
+            Renomeia as chaves de configuração para o namespace mentoring.* e melhora as descrições.
+        </comment>
+
+        <!-- ResourcesDirectory -> mentoring.resources.directory -->
+        <update tableName="settings">
+            <column name="designation" value="mentoring.resources.directory"/>
+            <column name="description"
+                    value="Diretório absoluto onde o backend guarda recursos enviados (PDFs, imagens, anexos)."/>
+            <where>designation = 'ResourcesDirectory'</where>
+        </update>
+
+        <!-- SERVER_URL -> mentoring.server.baseUrl -->
+        <update tableName="settings">
+            <column name="designation" value="mentoring.server.baseUrl"/>
+            <column name="description"
+                    value="URL pública base do servidor Mentoring utilizada por aplicações móveis e web."/>
+            <where>designation = 'SERVER_URL'</where>
+        </update>
+
+        <!-- Mentee_ronda_removal_interval -> mentoring.ronda.removal.inactiveDays -->
+        <update tableName="settings">
+            <column name="designation" value="mentoring.ronda.removal.inactiveDays"/>
+            <column name="description"
+                    value="Número máximo de dias de inatividade antes de um mentee ser automaticamente removido de uma ronda."/>
+            <where>designation = 'Mentee_ronda_removal_interval'</where>
+        </update>
+
+        <!-- AI_SESSION_SUMMARY_GENERATION -> mentoring.ai.sessionSummary.enabled -->
+        <update tableName="settings">
+            <column name="designation" value="mentoring.ai.sessionSummary.enabled"/>
+            <column name="description"
+                    value="Ativa ou desativa a geração automática de resumos de sessões com IA."/>
+            <where>designation = 'AI_SESSION_SUMMARY_GENERATION'</where>
+        </update>
+
+        <!-- AI_PERFORMANCE_RISK_EVALUATION -> mentoring.ai.performanceRisk.enabled -->
+        <update tableName="settings">
+            <column name="designation" value="mentoring.ai.performanceRisk.enabled"/>
+            <column name="description"
+                    value="Ativa ou desativa a avaliação automática de risco de desempenho do mentorado com IA."/>
+            <where>designation = 'AI_PERFORMANCE_RISK_EVALUATION'</where>
+        </update>
+
+        <!-- FLOW_HISTORY_JOB_INTERVAL_MIN -> mentoring.flowHistory.job.intervalMinutes -->
+        <update tableName="settings">
+            <column name="designation" value="mentoring.flowHistory.job.intervalMinutes"/>
+            <column name="description"
+                    value="Intervalo, em minutos, para execução do job que avalia e atualiza o flow history."/>
+            <where>designation = 'FLOW_HISTORY_JOB_INTERVAL_MIN'</where>
+        </update>
+
+
+        <!-- Rollback: volta para os nomes antigos -->
+        <rollback>
+            <update tableName="settings">
+                <column name="designation" value="ResourcesDirectory"/>
+                <column name="description" value="Directory for the resources"/>
+                <where>designation = 'mentoring.resources.directory'</where>
+            </update>
+
+            <update tableName="settings">
+                <column name="designation" value="SERVER_URL"/>
+                <column name="description" value="SERVER_URL"/>
+                <where>designation = 'mentoring.server.baseUrl'</where>
+            </update>
+
+            <update tableName="settings">
+                <column name="designation" value="Mentee_ronda_removal_interval"/>
+                <column name="description"
+                        value="Muximum number of days for inactive mentee to be removed from a given mentoring round."/>
+                <where>designation = 'mentoring.ronda.removal.inactiveDays'</where>
+            </update>
+
+            <update tableName="settings">
+                <column name="designation" value="AI_SESSION_SUMMARY_GENERATION"/>
+                <column name="description" value="Enable automatic AI generation of session summaries"/>
+                <where>designation = 'mentoring.ai.sessionSummary.enabled'</where>
+            </update>
+
+            <update tableName="settings">
+                <column name="designation" value="AI_PERFORMANCE_RISK_EVALUATION"/>
+                <column name="description"
+                        value="Ativa a avaliação de risco de desempenho do mentorado com IA"/>
+                <where>designation = 'mentoring.ai.performanceRisk.enabled'</where>
+            </update>
+
+            <update tableName="settings">
+                <column name="designation" value="FLOW_HISTORY_JOB_INTERVAL_MIN"/>
+                <column name="description" value="FLOW_HISTORY_JOB_INTERVAL_MIN"/>
+                <where>designation = 'mentoring.flowHistory.job.intervalMinutes'</where>
+            </update>
+        </rollback>
+    </changeSet>
+    <changeSet id="add-flow-history-cron-setting" author="voloide">
+        <insert tableName="settings">
+            <column name="uuid" value="f1b137aa-mentoring-flow-cron"/>
+            <column name="designation" value="mentoring.flowHistory.cron"/>
+            <column name="setting_value" value="0 0 2 * * ?"/>
+            <column name="description" value="Cron expression that controls the Flow History inactivity scheduler"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+    <changeSet id="add-flow-history-interrupt-enabled-setting" author="voloide">
+        <insert tableName="settings">
+            <column name="uuid" value="f1b137aa-mentoring-flow-interrupt-enabled"/>
+            <column name="designation" value="mentoring.flowHistory.interruptJob.enabled"/>
+            <column name="setting_value" value="true"/>
+            <column name="description"
+                    value="Enables or disables the Flow History interruption job (checkAndInterruptInactiveRounds)."/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+    <changeSet id="20251209-create-system-user" author="voloide">
+        <comment>
+            Cria o utilizador técnico 'system' para jobs de backend (FlowHistoryScheduler, etc.).
+        </comment>
+
+        <!-- 1) Employee técnico para o utilizador system -->
+        <insert tableName="employee">
+            <!-- Ajusta este ID se necessário -->
+            <column name="id" valueNumeric="9000"/>
+
+            <!-- BaseEntity -->
+            <column name="uuid" value="11111111-1111-1111-1111-111111111111"/>
+            <column name="created_by" value="system"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="updated_by" value="system"/>
+            <column name="updated_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+
+            <!-- Campos Employee -->
+            <column name="NAME" value="System"/>
+            <column name="SURNAME" value="User"/>
+            <column name="NUIT" valueNumeric="999999999"/>
+
+            <column name="CATEGORY_ID" valueNumeric="1"/>
+            <column name="PARTNER_ID" valueNumeric="1"/>
+            <column name="TRAINING_YEAR" valueNumeric="2000"/>
+            <column name="PHONE_NUMBER" value="+000000000"/>
+            <column name="EMAIL" value="system@mentoring.local"/>
+
+        </insert>
+
+        <!-- 2) User 'system' ligado ao employee acima -->
+        <insert tableName="users">
+            <!-- Ajusta este ID se necessário -->
+            <column name="id" valueNumeric="9000"/>
+
+            <!-- BaseEntity -->
+            <column name="uuid" value="22222222-2222-2222-2222-222222222222"/>
+            <column name="created_by" value="system"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="updated_by" value="system"/>
+            <column name="updated_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+
+            <!-- Campos User -->
+            <column name="USERNAME" value="system"/>
+
+            <!--
+                PASSWORD e SALT:
+                - podes pôr um hash real (ex: BCrypt) se o utilizador 'system' for de login
+                - ou valores aleatórios se for apenas técnico para jobs.
+            -->
+            <column name="PASSWORD" value="SYSTEM_PASSWORD_CHANGE_ME"/>
+            <column name="SALT" value="SYSTEM_SALT_CHANGE_ME"/>
+
+            <!-- Deve coincidir com o tipo boolean da tua BD (0/1, true/false) -->
+            <column name="SHOULD_RESET_PASSWORD" valueBoolean="false"/>
+
+            <!-- FK para o employee acima -->
+            <column name="EMPLOYEE_ID" valueNumeric="9000"/>
+        </insert>
+
+        <rollback>
+            <delete tableName="users">
+                <where>uuid = '22222222-2222-2222-2222-222222222222'</where>
+            </delete>
+            <delete tableName="employee">
+                <where>uuid = '11111111-1111-1111-1111-111111111111'</where>
+            </delete>
+        </rollback>
+    </changeSet>
+
+    <changeSet id="add-password-reset-cleanup-cron-setting" author="voloide">
+        <insert tableName="settings">
+            <column name="uuid" value="f1b137aa-mentoring-password-reset-cron"/>
+            <column name="designation" value="mentoring.password.reset.cleanup.cron"/>
+            <column name="setting_value" value="0 0 2 * * ?"/>
+            <column name="description"
+                    value="Cron expression that controls the Password Reset cleanup scheduler"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+    <changeSet id="add-password-reset-cleanup-enabled-setting" author="voloide">
+        <insert tableName="settings">
+            <column name="uuid" value="f1b137aa-mentoring-password-reset-enabled"/>
+            <column name="designation" value="mentoring.password.reset.cleanup.enabled"/>
+            <column name="setting_value" value="true"/>
+            <column name="description"
+                    value="Enables or disables the Password Reset cleanup scheduler"/>
+            <column name="enabled" valueBoolean="true"/>
+            <column name="life_cycle_status" value="ACTIVE"/>
+            <column name="created_at" valueDate="2025-01-01T00:00:00"/>
+            <column name="created_by" value="system"/>
+        </insert>
+    </changeSet>
+    <changeSet id="fix-password-reset-expiration-minutes-designation" author="voloide">
+        <update tableName="settings">
+            <column name="designation"
+                    value="mentoring.password.reset.token.expiration.time"/>
+            <where>designation = 'PASSWORD_RESET_EXPIRATION_MINUTES'</where>
+        </update>
+    </changeSet>
+
+</databaseChangeLog>

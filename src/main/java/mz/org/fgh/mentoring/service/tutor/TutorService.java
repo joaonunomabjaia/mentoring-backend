@@ -14,6 +14,7 @@ import mz.org.fgh.mentoring.repository.settings.SettingsRepository;
 import mz.org.fgh.mentoring.repository.tutor.TutorRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
 import mz.org.fgh.mentoring.service.employee.EmployeeService;
+import mz.org.fgh.mentoring.service.setting.SettingService;
 import mz.org.fgh.mentoring.util.DateUtils;
 import mz.org.fgh.mentoring.util.LifeCycleStatus;
 import mz.org.fgh.mentoring.util.Utilities;
@@ -26,6 +27,8 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 import java.util.UUID;
+
+import static mz.org.fgh.mentoring.config.SettingKeys.SERVER_BASE_URL;
 
 @Singleton
 public class TutorService {
@@ -42,8 +45,9 @@ public class TutorService {
     private EmailSender emailSender;
 
     private EmployeeService employeeService;
+
     @Inject
-    private SettingsRepository settingsRepository;
+    private SettingService settings;
 
     public TutorService(TutorRepository tutorRepository, UserRepository userRepository, TutorProgrammaticAreaRepository tutorProgrammaticAreaRepository, EmployeeService employeeService) {
         this.tutorRepository = tutorRepository;
@@ -100,12 +104,7 @@ public class TutorService {
             user.setCreatedAt(DateUtils.getCurrentDate());
             userRepository.save(user);
 
-            Optional<Setting> settingOpt = settingsRepository.findByDesignation("SERVER_URL");
-
-            if (!settingOpt.isPresent()) {
-                throw new RuntimeException("Server URL not configured");
-            }
-            emailSender.sendEmailToUser(user, password, settingOpt.get().getValue());
+            emailSender.sendEmailToUser(user, password, settings.get(SERVER_BASE_URL, "https://mentdev.csaude.org.mz"));
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

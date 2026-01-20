@@ -6,8 +6,10 @@ import io.micronaut.data.annotation.Repository;
 import io.micronaut.data.jpa.repository.JpaRepository;
 import io.micronaut.data.model.Page;
 import io.micronaut.data.model.Pageable;
+import mz.org.fgh.mentoring.entity.ronda.Ronda;
 import mz.org.fgh.mentoring.entity.tutored.MenteeFlowHistory;
 import mz.org.fgh.mentoring.entity.tutored.Tutored;
+import mz.org.fgh.mentoring.util.LifeCycleStatus;
 
 import java.util.Date;
 import java.util.List;
@@ -92,19 +94,37 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
     int countByTutored(Tutored tutored);
 
     /**
-     * Retorna todos os MenteeFlowHistory com FlowHistory "RONDA / CICLO ATC"
-     * e ProgressStatus "INICIO", criados há 60 ou mais dias.
+     * Filtra MenteeFlowHistory pelo flowHistory.code e progressStatus.code desejados (RONDA/CICLO -> INICIO).
+     * Traz apenas aqueles cujo tutored não tem nenhuma Mentorship realizada nos últimos 60 dias.
+     * Pegar ultimo de cada mentorando
      */
     @Query("""
-        SELECT mfh
-        FROM MenteeFlowHistory mfh
-        JOIN mfh.flowHistory fh
-        JOIN mfh.progressStatus ps
-        WHERE (fh.name = 'RONDA / CICLO ATC')
-          AND ps.name = 'INICIO'
-          AND mfh.createdAt <= CURRENT_DATE - 60
-    """)
-    List<MenteeFlowHistory> findRondasOuCicloAtcIniciadasHaMaisDe60Dias();
+    SELECT mfh
+    FROM MenteeFlowHistory mfh
+    JOIN mfh.flowHistory fh
+    JOIN mfh.progressStatus ps
+    JOIN mfh.tutored t
+    WHERE fh.code = :flowHistoryCode
+      AND ps.code = :flowHistoryStatusCode
+      AND mfh.sequenceNumber = (
+          SELECT MAX(mfh2.sequenceNumber)
+          FROM MenteeFlowHistory mfh2
+          WHERE mfh2.tutored = t
+      )
+      AND NOT EXISTS (
+          SELECT 1 FROM Mentorship m
+          WHERE m.tutored = t
+            AND m.performedDate > CURRENT_DATE - :menteeRondaRemovalInterval
+      )
+""")
+    List<MenteeFlowHistory> findRondasOuCicloAtcIniciadasSemMentorshipHaMaisDe60Dias(
+            String flowHistoryCode,
+            String flowHistoryStatusCode,
+            int menteeRondaRemovalInterval
+    );
+
+
+
 
 
     /**
@@ -121,5 +141,47 @@ public interface MenteeFlowHistoryRepository extends JpaRepository<MenteeFlowHis
           AND mfh.createdAt <= CURRENT_DATE - 180
     """)
     List<MenteeFlowHistory> findRondaTerminadaHaMaisDe6Meses();
+
+    void deleteByTutored(Tutored tutored);
+
+    @Query("DELETE FROM MenteeFlowHistory m WHERE m.tutored.id = :tutoredId")
+    long deleteByTutoredId(Long tutoredId);
+
+    void deleteByRonda(Ronda ronda);
+
+    List<MenteeFlowHistory> findByTutoredOrderBySequenceNumberAsc(Tutored tutored);
+
+    List<MenteeFlowHistory> findByFlowHistoryCodeAndProgressStatusCode(String flowCode, String statusCode);
+
+    Optional<MenteeFlowHistory> findTopByTutoredOrderBySequenceNumberDesc(Tutored tutored);
+
+    @Query("SELECT mfh FROM MenteeFlowHistory mfh " +
+            "JOIN FETCH mfh.tutored t " +
+            "JOIN FETCH mfh.ronda r " +
+            "JOIN FETCH mfh.flowHistory fh " +
+            "JOIN FETCH mfh.progressStatus ps " +
+            "WHERE fh.code = :flowCode " +
+            "AND ps.code = :statusCode " +
+            "AND mfh.lifeCycleStatus = :lifeCycleStatus")
+    List<MenteeFlowHistory> findActiveByFlowAndStatus(String flowCode,
+                                                      String statusCode,
+                                                      LifeCycleStatus lifeCycleStatus);
+
+    List<MenteeFlowHistory> findAllByFlowHistoryCodeAndProgressStatusCode(String flowCode, String statusCode);
+
+    List<MenteeFlowHistory> findByRonda(Ronda ronda);
+
+    List<MenteeFlowHistory> findByTutored(Tutored tutored);
+
+    @Query("UPDATE MenteeFlowHistory SET lifeCycleStatus = :lifeCycleStatus WHERE tutored.id = :tutoredId AND lifeCycleStatus = 'ACTIVE'")
+    void inactivatePreviousHistories(Long tutoredId, LifeCycleStatus lifeCycleStatus);
+
+    @Query("""
+           SELECT m
+           FROM MenteeFlowHistory m
+           WHERE m.tutored.uuid = :uuid
+             AND (m.sequenceNumber = 1 OR m.lifeCycleStatus = :active)
+        """)
+    List<MenteeFlowHistory> findInitialAndActiveByTutoredUuid(String uuid, LifeCycleStatus active);
 
 }

@@ -2,6 +2,7 @@ package mz.org.fgh.mentoring.dto.ronda;
 
 import java.util.Date;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import mz.org.fgh.mentoring.base.BaseEntityDTO;
@@ -65,6 +66,8 @@ public class RondaMenteeDTO extends BaseEntityDTO {
     public void setRonda(RondaDTO ronda) {
         this.ronda = ronda;
     }
+
+    @JsonIgnore
     public RondaMentee getRondaMentee() {
         RondaMentee rondaMentee = new RondaMentee();
         rondaMentee.setId(this.getId());

@@ -13,6 +13,7 @@ import mz.org.fgh.mentoring.repository.partner.PartnerRepository;
 import mz.org.fgh.mentoring.repository.professionalcategory.ProfessionalCategoryRepository;
 import mz.org.fgh.mentoring.repository.province.ProvinceRepository;
 import mz.org.fgh.mentoring.repository.user.UserRepository;
+import mz.org.fgh.mentoring.util.Utilities;
 
 import java.util.Optional;
 import java.util.Set;
@@ -53,18 +54,18 @@ public class EmployeeService {
         return this.employeeRepository.findByUuid(uuid).get();
     }
 
-    public EmployeeDTO updade(EmployeeDTO employeeDTO){
-
-        Employee employee = this.employeeRepository.update( new Employee(employeeDTO));
-
-        return new EmployeeDTO(employee);
-    }
 
     public Employee createOrUpdate(Employee employee, User user) {
+        if (employee == null) throw new RuntimeException("Employee não pode ser nulo");
+
+        if (employee.getPartner() == null || !Utilities.stringHasValue(employee.getPartner().getUuid())) {
+            throw new RuntimeException("Instituição laboral é obrigatória.");
+        }
+
         employee.setProfessionalCategory(professionalCategoryRepository.findByUuid(employee.getProfessionalCategory().getUuid()).get());
         employee.setPartner(
                 partnerRepository.findByUuid(employee.getPartner().getUuid())
-                        .orElseThrow(() -> new RuntimeException("Parceiro não encontrado"))
+                        .orElseThrow(() -> new RuntimeException("Instituição não encontrada"))
         );
         Employee createdEmployee= employeeRepository.createOrUpdate(employee, user);
 

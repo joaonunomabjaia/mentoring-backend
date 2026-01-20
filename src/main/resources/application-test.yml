@@ -1,0 +1,63 @@
+micronaut:
+  application:
+    name: mentoringBackend-test
+
+  server:
+    # Para não conflitar com a app normal durante os testes
+    port: -1
+    context-path: /api
+
+  http:
+    client:
+      read-timeout: 3m
+    services:
+      ollama:
+              url: ${OLLAMA_URL:`http://localhost:11434`}
+              read-timeout: ${OLLAMA_READ_TIMEOUT:`300s`}
+              connect-timeout: ${OLLAMA_CONNECT_TIMEOUT:`30s`}
+
+  scheduling:
+    enabled: true
+
+  data:
+    pageable:
+      max-page-size: 200
+
+# DB de testes em memória (H2 em modo MySQL/MariaDB)
+default:
+  url: jdbc:mariadb://127.0.0.1:${MENTORING_DB_PORT:3306}/mentoring
+  username: ${MENTORING_DB_USERNAME:mentoring}
+  password: ${MENTORING_DB_PASSWORD:mentoring}
+  schema-generate: NONE
+  db-type: mariadb
+  dialect: MYSQL
+  driver-class-name: org.mariadb.jdbc.Driver
+  maximum-pool-size: 10
+  minimum-idle: 1
+
+# Liquibase também roda nos testes para criar o schema
+liquibase:
+  datasources:
+    default:
+      enabled: true
+
+# JPA / Hibernate – normalmente não precisas mudar nada aqui,
+# mas é bom deixar explícito para testes.
+jpa:
+  default:
+    properties:
+      hibernate:
+        show_sql: false
+        format_sql: false
+
+# Desabilitar métricas em teste (opcional)
+metrics:
+  enabled: false
+
+# Ambiente customizado para que qualquer lógica baseada em ENV saiba que é teste
+custom:
+  app:
+    env: TEST
+    base-url: http://localhost:8087
+
+# Cliente Ollama – se não estiver a correr nos testes, podes apontar para localhost ou deixar como está
