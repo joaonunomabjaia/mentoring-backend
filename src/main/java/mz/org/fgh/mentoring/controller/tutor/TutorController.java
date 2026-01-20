@@ -262,8 +262,7 @@ public class TutorController extends BaseController {
 
             Tutor tutor = new Tutor(tutorDTO);
             tutor = this.tutorService.update(tutor, user.getId());
-
-            // 🔥 AQUI é o que falta
+            
             if (tutorDTO.getInternalLocationDTO() != null) {
                 tutorInternalLocationService.changeInternalLocation(
                         tutor.getUuid(),
